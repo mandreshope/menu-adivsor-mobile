@@ -36,7 +36,7 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
 
   @override
   bool isSupported(Locale locale) {
-    throw ['en', 'fr'].contains(locale.languageCode);
+    return ['en', 'fr'].contains(locale.languageCode);
   }
 
   @override
@@ -47,6 +47,5 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
   }
 
   @override
-  bool shouldReload(LocalizationsDelegate<AppLocalizations> old) => false;
-
+  bool shouldReload(LocalizationsDelegate<AppLocalizations> oldDelegate) => false;
 }
