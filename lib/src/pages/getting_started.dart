@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/components/logo.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/pages/home.dart';
+import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
-import 'package:page_transition/page_transition.dart';
 
 class GettingStartedPage extends StatefulWidget {
   @override
@@ -79,9 +79,9 @@ class _GettingStartedPageState extends State<GettingStartedPage> {
                       ),
                       onPressed: () {
                         RouteUtil.goTo(
+                          routeName: homeRoute,
                           context: context,
                           child: HomePage(),
-                          transitionType: PageTransitionType.rightToLeftWithFade,
                           method: RouteMethod.atTop,
                         );
                       },
