@@ -21,17 +21,19 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
         title: Text("Scan code QR"),
       ),
       backgroundColor: BACKGROUND_COLOR,
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          QRView(
-            key: qrKey,
-            onQRViewCreated: _onQRViewCreated,
-            overlay: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+      body: SafeArea(
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            QRView(
+              key: qrKey,
+              onQRViewCreated: _onQRViewCreated,
+              overlay: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
