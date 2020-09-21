@@ -10,12 +10,15 @@ class RoundedButton extends StatelessWidget {
 
   final List<BoxShadow> boxShadow;
 
+  final EdgeInsets padding;
+
   const RoundedButton({
     Key key,
     @required this.child,
     this.onPressed,
     this.backgroundColor = Colors.white,
     this.boxShadow,
+    this.padding,
   }) : super(key: key);
 
   @override
@@ -30,11 +33,14 @@ class RoundedButton extends StatelessWidget {
         ),
         child: InkWell(
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+            padding: padding ??
+                const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
             decoration: BoxDecoration(
               boxShadow: boxShadow,
             ),
-            child: child,
+            child: Center(
+              child: child,
+            ),
           ),
           onTap: () {},
         ),
