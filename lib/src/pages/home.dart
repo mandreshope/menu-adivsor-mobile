@@ -5,7 +5,10 @@ import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/components/logo.dart';
 import 'package:menu_advisor/src/components/utilities.dart';
 import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/pages/discover.dart';
+import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/types.dart';
+import 'package:menu_advisor/src/utils/routing.dart';
 
 const foodCategories = [
   {
@@ -130,7 +133,11 @@ class _HomePageState extends State<HomePage> {
                       fontWeight: FontWeight.w800,
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: () => RouteUtil.goTo(
+                    context: context,
+                    child: DiscoverPage(),
+                    routeName: discoverRoute,
+                  ),
                 ),
               ],
             ),
@@ -153,8 +160,10 @@ class _HomePageState extends State<HomePage> {
           SingleChildScrollView(
             physics: BouncingScrollPhysics(),
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(
-              horizontal: 10,
+            padding: const EdgeInsets.only(
+              left: 10,
+              right: 10,
+              bottom: 10,
             ),
             child: Row(
               children: [
