@@ -3,14 +3,14 @@ import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/pages/home.dart';
 import 'package:menu_advisor/src/pages/login.dart';
+import 'package:menu_advisor/src/pages/map.dart';
 import 'package:menu_advisor/src/pages/profile.dart';
 import 'package:menu_advisor/src/pages/qr_code_scan.dart';
-import 'package:menu_advisor/src/pages/search.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/RouteContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
+import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 class SectionTitle extends StatelessWidget {
@@ -59,7 +59,7 @@ class ScaffoldWithBottomMenu extends StatelessWidget {
             routeName: homeRoute,
             context: context,
             child: HomePage(),
-            method: RouteMethod.atTop,
+            method: RoutingMethod.atTop,
           );
         },
       ),
@@ -85,13 +85,16 @@ class ScaffoldWithBottomMenu extends StatelessWidget {
             );
         },
       ),
-      searchRoute: IconButton(
-        icon: FaIcon(FontAwesomeIcons.search, color: Colors.white),
+      qrRoute: IconButton(
+        icon: FaIcon(
+          FontAwesomeIcons.qrcode,
+          color: Colors.white,
+        ),
         onPressed: () {
           RouteUtil.goTo(
             context: context,
-            child: SearchPage(),
-            routeName: searchRoute,
+            child: QRCodeScanPage(),
+            routeName: qrRoute,
           );
         },
       ),
@@ -119,8 +122,8 @@ class ScaffoldWithBottomMenu extends StatelessWidget {
                 iconData = FontAwesomeIcons.user;
                 break;
 
-              case searchRoute:
-                iconData = FontAwesomeIcons.search;
+              case qrRoute:
+                iconData = FontAwesomeIcons.qrcode;
                 break;
 
               default:
@@ -157,7 +160,7 @@ class ScaffoldWithBottomMenu extends StatelessWidget {
                 child: Consumer<RouteContext>(
                   builder: (_, routeContext, __) {
                     if (routeContext.currentRoute == homeRoute)
-                      return menuButtons[searchRoute];
+                      return menuButtons[qrRoute];
                     return menuButtons[homeRoute];
                   },
                 ),
@@ -165,15 +168,14 @@ class ScaffoldWithBottomMenu extends StatelessWidget {
               Expanded(
                 child: IconButton(
                   icon: FaIcon(
-                    FontAwesomeIcons.qrcode,
+                    FontAwesomeIcons.locationArrow,
                     color: Colors.white,
                   ),
                   onPressed: () {
                     RouteUtil.goTo(
-                      routeName: qrRoute,
+                      routeName: mapRoute,
                       context: context,
-                      child: QRCodeScanPage(),
-                      transitionType: PageTransitionType.rightToLeftWithFade,
+                      child: MapPage(),
                     );
                   },
                 ),
@@ -185,7 +187,13 @@ class ScaffoldWithBottomMenu extends StatelessWidget {
                     FontAwesomeIcons.shoppingBag,
                     color: Colors.white,
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (_) => BagModal(),
+                      backgroundColor: Colors.transparent,
+                    );
+                  },
                 ),
               ),
               Expanded(
@@ -201,6 +209,58 @@ class ScaffoldWithBottomMenu extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class BagModal extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 400,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(40),
+          topRight: Radius.circular(40),
+        ),
+      ),
+      child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(30.0),
+              child: Text(
+                AppLocalizations.of(context).translate("in_bag"),
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                physics: BouncingScrollPhysics(),
+              ),
+            ),
+            FlatButton(
+              onPressed: () {},
+              padding: const EdgeInsets.all(
+                20.0,
+              ),
+              color: Colors.teal,
+              child: Text(
+                AppLocalizations.of(context).translate("order"),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ]),
     );
   }
 }
