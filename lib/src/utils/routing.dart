@@ -31,6 +31,10 @@ class RouteUtil {
           PageTransition(
             duration: Duration(milliseconds: 500),
             child: child,
+            child: WillPopScope(
+              onWillPop: () => _onWillPop(context),
+              child: child,
+            ),
             type: transitionType,
           ),
         );
@@ -43,6 +47,10 @@ class RouteUtil {
           PageTransition(
             duration: Duration(milliseconds: 500),
             child: child,
+            child: WillPopScope(
+              onWillPop: () => _onWillPop(context),
+              child: child,
+            ),
             type: transitionType,
           ),
         );
@@ -55,6 +63,10 @@ class RouteUtil {
           PageTransition(
             duration: Duration(milliseconds: 500),
             child: child,
+            child: WillPopScope(
+              onWillPop: () => _onWillPop(context),
+              child: child,
+            ),
             type: transitionType,
           ),
           (route) => false,
@@ -64,5 +76,13 @@ class RouteUtil {
       default:
         return false;
     }
+  }
+
+  static Future<bool> _onWillPop(BuildContext context) async {
+    final RouteContext routeContext =
+        Provider.of<RouteContext>(context, listen: false);
+
+    routeContext.pop();
+    return true;
   }
 }
