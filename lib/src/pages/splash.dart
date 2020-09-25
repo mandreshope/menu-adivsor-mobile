@@ -9,7 +9,6 @@ import 'package:menu_advisor/src/pages/login.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -42,14 +41,14 @@ class _SplashState extends State<Splash> {
           RouteUtil.goTo(
             routeName: gettingStartedRoute,
             context: context,
-            method: RouteMethod.replaceLast,
+            method: RoutingMethod.replaceLast,
             child: GettingStartedPage(),
           );
         } else if (authContext.currentUser != null)
           RouteUtil.goTo(
             routeName: homeRoute,
             context: context,
-            method: RouteMethod.replaceLast,
+            method: RoutingMethod.replaceLast,
             child: HomePage(),
           );
         else
@@ -57,7 +56,7 @@ class _SplashState extends State<Splash> {
             context: context,
             child: LoginPage(),
             routeName: loginRoute,
-            method: RouteMethod.replaceLast,
+            method: RoutingMethod.replaceLast,
           );
       },
     );

@@ -82,7 +82,7 @@ class _GettingStartedPageState extends State<GettingStartedPage> {
                           routeName: homeRoute,
                           context: context,
                           child: HomePage(),
-                          method: RouteMethod.atTop,
+                          method: RoutingMethod.atTop,
                         );
                       },
                     ),
