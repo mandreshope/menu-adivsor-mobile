@@ -4,7 +4,7 @@ class RoundedButton extends StatelessWidget {
   /// The child of the rounded button
   final Widget child;
 
-  final void Function() onPressed;
+  final VoidCallback onPressed;
 
   final Color backgroundColor;
 
@@ -15,7 +15,7 @@ class RoundedButton extends StatelessWidget {
   const RoundedButton({
     Key key,
     @required this.child,
-    this.onPressed,
+    @required this.onPressed,
     this.backgroundColor = Colors.white,
     this.boxShadow,
     this.padding,
@@ -42,8 +42,45 @@ class RoundedButton extends StatelessWidget {
               child: child,
             ),
           ),
-          onTap: () {},
+          onTap: onPressed,
         ),
+      ),
+    );
+  }
+}
+
+class CircleButton extends StatelessWidget {
+  final Color backgroundColor;
+
+  final EdgeInsets padding;
+
+  final Widget child;
+
+  final VoidCallback onPressed;
+
+  const CircleButton({
+    Key key,
+    this.backgroundColor,
+    this.padding,
+    @required this.child,
+    @required this.onPressed,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      type: MaterialType.button,
+      color: backgroundColor,
+      shape: CircleBorder(),
+      child: InkWell(
+        child: Container(
+          padding: padding ?? const EdgeInsets.all(10),
+          decoration: BoxDecoration(),
+          child: Center(
+            child: child,
+          ),
+        ),
+        onTap: onPressed,
       ),
     );
   }
