@@ -3,26 +3,33 @@ import 'package:menu_advisor/src/types.dart';
 
 class Food {
   final String name;
-
   final FoodType type;
-
   final Location location;
-
   final double ratings;
+  final double price;
+  final String imageURL;
+  final Restaurant restaurant;
 
   Food({
     @required this.name,
     @required this.location,
     @required this.type,
+    @required this.restaurant,
+    @required this.price,
     this.ratings = 0,
+    this.imageURL
   });
 }
 
 class Restaurant {
   final String name;
+  final String imageURL;
+  final String type;
 
   Restaurant({
-    this.name,
+    @required this.name,
+    this.type = 'restaurant_common',
+    this.imageURL
   });
 }
 
