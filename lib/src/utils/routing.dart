@@ -4,6 +4,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 enum RouteMethod {
+enum RoutingMethod {
   initial,
   replaceLast,
   atTop,
@@ -16,6 +17,7 @@ class RouteUtil {
     @required String routeName,
     PageTransitionType transitionType = PageTransitionType.fade,
     RouteMethod method = RouteMethod.initial,
+    RoutingMethod method = RoutingMethod.initial,
   }) {
     final RouteContext routeContext =
         Provider.of<RouteContext>(context, listen: false);
@@ -23,6 +25,7 @@ class RouteUtil {
 
     switch (method) {
       case RouteMethod.initial:
+      case RoutingMethod.initial:
         routeContext.push(routeName);
         Navigator.of(context).push(
           PageTransition(
@@ -34,6 +37,7 @@ class RouteUtil {
         return true;
 
       case RouteMethod.replaceLast:
+      case RoutingMethod.replaceLast:
         routeContext.pushAndReplace(routeName);
         Navigator.of(context).pushReplacement(
           PageTransition(
@@ -45,6 +49,7 @@ class RouteUtil {
         return true;
 
       case RouteMethod.atTop:
+      case RoutingMethod.atTop:
         routeContext.pushAtTop(routeName);
         Navigator.of(context).pushAndRemoveUntil(
           PageTransition(
