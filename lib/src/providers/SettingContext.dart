@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SettingContext extends ChangeNotifier {
   String languageCode;
 
-  ChangeNotifier(BuildContext context) {
+  SettingContext(BuildContext context) {
     _loadCurrentUserSettings(context);
   }
 
