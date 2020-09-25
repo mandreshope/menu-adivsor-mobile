@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/providers/RouteContext.dart';
+import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
-enum RouteMethod {
 enum RoutingMethod {
   initial,
   replaceLast,
@@ -11,12 +12,13 @@ enum RoutingMethod {
 }
 
 class RouteUtil {
+  static bool _isBackButtonPressedInTimeLapse = false;
+
   static bool goTo({
     @required BuildContext context,
     @required Widget child,
     @required String routeName,
     PageTransitionType transitionType = PageTransitionType.fade,
-    RouteMethod method = RouteMethod.initial,
     RoutingMethod method = RoutingMethod.initial,
   }) {
     final RouteContext routeContext =
@@ -24,13 +26,11 @@ class RouteUtil {
     if (routeContext.currentRoute == routeName) return false;
 
     switch (method) {
-      case RouteMethod.initial:
       case RoutingMethod.initial:
         routeContext.push(routeName);
         Navigator.of(context).push(
           PageTransition(
             duration: Duration(milliseconds: 500),
-            child: child,
             child: WillPopScope(
               onWillPop: () => _onWillPop(context),
               child: child,
@@ -40,13 +40,11 @@ class RouteUtil {
         );
         return true;
 
-      case RouteMethod.replaceLast:
       case RoutingMethod.replaceLast:
         routeContext.pushAndReplace(routeName);
         Navigator.of(context).pushReplacement(
           PageTransition(
             duration: Duration(milliseconds: 500),
-            child: child,
             child: WillPopScope(
               onWillPop: () => _onWillPop(context),
               child: child,
@@ -56,13 +54,11 @@ class RouteUtil {
         );
         return true;
 
-      case RouteMethod.atTop:
       case RoutingMethod.atTop:
         routeContext.pushAtTop(routeName);
         Navigator.of(context).pushAndRemoveUntil(
           PageTransition(
             duration: Duration(milliseconds: 500),
-            child: child,
             child: WillPopScope(
               onWillPop: () => _onWillPop(context),
               child: child,
@@ -78,9 +74,30 @@ class RouteUtil {
     }
   }
 
+  static void goBack({
+    @required BuildContext context,
+  }) {
+    Navigator.of(context).pop();
+    Provider.of<RouteContext>(context, listen: false).pop();
+  }
+
   static Future<bool> _onWillPop(BuildContext context) async {
     final RouteContext routeContext =
         Provider.of<RouteContext>(context, listen: false);
+
+    if (!_isBackButtonPressedInTimeLapse && !routeContext.canPop()) {
+      _isBackButtonPressedInTimeLapse = true;
+      Fluttertoast.showToast(
+        msg: AppLocalizations.of(context).translate("before_exit_message"),
+      );
+      Future.delayed(
+        Duration(seconds: 1),
+        () {
+          _isBackButtonPressedInTimeLapse = false;
+        },
+      );
+      return false;
+    }
 
     routeContext.pop();
     return true;
