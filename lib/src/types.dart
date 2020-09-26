@@ -1,19 +1,19 @@
-import 'package:flutter/material.dart';
-
 class Location {
-  final double latitude;
-  final double longitude;
-
-  Location({
-    @required this.latitude,
-    @required this.longitude,
-  });
-}
-
-class FoodType {
   final String type;
+  final List<double> coordinates;
 
-  FoodType({
-    @required this.type,
+  const Location({
+    this.type,
+    this.coordinates,
   });
+
+  factory Location.fromJson(Map<String, dynamic> json) => Location(
+        type: json['type'],
+        coordinates: json['coordinates'],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "type": type,
+        "coordinates": coordinates.toString(),
+      };
 }
