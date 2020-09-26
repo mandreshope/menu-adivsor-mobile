@@ -5,24 +5,40 @@ import 'package:menu_advisor/src/services/api.dart';
 class DataContext extends ChangeNotifier {
   List<Food> popularFoods = [];
   bool loadingPopularFoods = false;
-  List<Restaurant> nearestRestaurants = [];
+  List<Restaurant> popularRestaurants = [];
   bool loadingNeareseRestaurants = false;
 
   final Api _api = Api.instance;
 
   DataContext() {
-    _fetchNearestRestaurants();
+    _fetchPopularRestaurants();
     _fetchPopularFoods();
   }
 
-  _fetchNearestRestaurants() async {
+  Future refresh() async {
+    loadingPopularFoods = true;
+    notifyListeners();
+    await _fetchPopularFoods();
+    loadingPopularFoods = false;
+    notifyListeners();
+
+    loadingNeareseRestaurants = true;
+    notifyListeners();
+    await _fetchPopularRestaurants();
+    loadingNeareseRestaurants = false;
+    notifyListeners();
+  }
+
+  _fetchPopularRestaurants() async {
     loadingNeareseRestaurants = true;
     notifyListeners();
     try {
-      nearestRestaurants = await _api.getRestaurants(
-        filters: {"searchCategory": "nearest"},
+      popularRestaurants = await _api.getRestaurants(
+        filters: {"searchCategory": "popular"},
       );
-    } catch (error) {}
+    } catch (error) {
+      print(error);
+    }
     loadingNeareseRestaurants = false;
     notifyListeners();
   }
