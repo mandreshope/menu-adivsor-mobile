@@ -142,7 +142,8 @@ class _LoginPageState extends State<LoginPage> {
                                 child: FittedBox(
                                   child: CircularProgressIndicator(
                                     valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.white),
+                                      Colors.white,
+                                    ),
                                   ),
                                 ),
                               )
