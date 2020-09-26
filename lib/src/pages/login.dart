@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/animations/FadeAnimation.dart';
+import 'package:menu_advisor/src/components/inputs.dart';
 import 'package:menu_advisor/src/components/logo.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/pages/home.dart';
@@ -116,16 +117,14 @@ class _LoginPageState extends State<LoginPage> {
                         },
                       ),
                       SizedBox(height: 20),
-                      TextFormField(
+                      PasswordField(
                         focusNode: _passwordFocus,
                         controller: _passwordController,
                         keyboardType: TextInputType.text,
                         obscureText: true,
                         textInputAction: TextInputAction.done,
-                        decoration: InputDecoration(
-                          labelText: AppLocalizations.of(context)
-                              .translate("password_placeholder"),
-                        ),
+                        labelText: AppLocalizations.of(context)
+                            .translate("password_placeholder"),
                         onFieldSubmitted: (_) => _submitForm(),
                       ),
                       SizedBox(height: 40),
