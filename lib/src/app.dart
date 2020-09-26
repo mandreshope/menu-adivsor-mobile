@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/pages/splash.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
+import 'package:menu_advisor/src/providers/DataContext.dart';
 import 'package:menu_advisor/src/providers/RouteContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/theme.dart';
@@ -34,6 +33,9 @@ class _MyAppState extends State<MyApp> {
         ),
         ChangeNotifierProvider(
           create: (context) => SettingContext(context),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => DataContext(),
         )
       ],
       child: MaterialApp(
