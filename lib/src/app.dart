@@ -7,6 +7,7 @@ import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/RouteContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
+import 'package:menu_advisor/src/theme.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:provider/provider.dart';
 
@@ -37,31 +38,7 @@ class _MyAppState extends State<MyApp> {
       ],
       child: MaterialApp(
         title: 'Menu Advisor',
-        theme: ThemeData(
-          primaryColor: CRIMSON,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-          textTheme: GoogleFonts.ralewayTextTheme(textTheme).copyWith(
-            headline5: GoogleFonts.raleway(
-              textStyle: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: DARK_BLUE,
-              ),
-            ),
-            caption: GoogleFonts.raleway(
-              textStyle: TextStyle(
-                fontSize: 18,
-                color: Colors.grey,
-              ),
-            ),
-          ),
-          inputDecorationTheme: InputDecorationTheme(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-          scaffoldBackgroundColor: BACKGROUND_COLOR,
-        ),
+        theme: theme,
         debugShowCheckedModeBanner: false,
         localizationsDelegates: [
           AppLocalizations.delegate,
