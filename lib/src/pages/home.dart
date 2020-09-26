@@ -9,10 +9,12 @@ import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/discover.dart';
 import 'package:menu_advisor/src/pages/search.dart';
+import 'package:menu_advisor/src/providers/DataContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:provider/provider.dart';
 
 const foodCategories = [
   {
@@ -58,27 +60,36 @@ class _HomePageState extends State<HomePage> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            SingleChildScrollView(
-              physics: BouncingScrollPhysics(),
-              scrollDirection: Axis.vertical,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _renderHeader(),
-                  Transform.translate(
-                    offset: Offset(
-                      0,
-                      -130,
+            RefreshIndicator(
+              onRefresh: () async {
+                DataContext dataContext =
+                    Provider.of<DataContext>(context, listen: false);
+
+                await dataContext.refresh();
+                return;
+              },
+              child: SingleChildScrollView(
+                physics: BouncingScrollPhysics(),
+                scrollDirection: Axis.vertical,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _renderHeader(),
+                    Transform.translate(
+                      offset: Offset(
+                        0,
+                        -130,
+                      ),
+                      child: Column(
+                        children: [
+                          _renderCategories(),
+                          _renderPopularFoods(),
+                          _renderPopularRestaurants(),
+                        ],
+                      ),
                     ),
-                    child: Column(
-                      children: [
-                        _renderCategories(),
-                        _renderPopulars(),
-                        _renderNearestRestaurants(),
-                      ],
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ],
@@ -211,7 +222,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _renderPopulars() {
+  Widget _renderPopularFoods() {
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(
@@ -234,7 +245,11 @@ class _HomePageState extends State<HomePage> {
                 ),
                 child: GestureDetector(
                   onTap: () {
-                    print("Populaires");
+                    RouteUtil.goTo(
+                      context: context,
+                      child: SearchPage(),
+                      routeName: searchRoute,
+                    );
                   },
                   child: Text(
                     AppLocalizations.of(context).translate("see_all"),
@@ -244,38 +259,80 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
-          SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.only(
-              left: 20,
-              right: 20,
-              bottom: 10,
-            ),
-            child: Row(
-              children: [
-                for (var _ in foodCategories)
-                  FoodCard(
-                    food: Food(
-                      location: Location(latitude: 40, longitude: 30),
-                      name: 'Danze',
-                      type: FoodType(
-                        type: 'Type danze',
+          Consumer<DataContext>(
+            builder: (_, dataContext, __) {
+              var foods = dataContext.popularFoods;
+              var loading = dataContext.loadingPopularFoods;
+
+              if (loading)
+                return Container(
+                  height: 200,
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        CRIMSON,
                       ),
-                      restaurant: Restaurant(name: 'Restaurant danze'),
-                      ratings: 4.5,
-                      price: 5,
                     ),
                   ),
-              ],
-            ),
+                );
+
+              if (foods.length == 0)
+                return Container(
+                  height: 200,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context).translate('no_food'),
+                        style: TextStyle(
+                          fontSize: 22,
+                        ),
+                      )
+                    ],
+                  ),
+                );
+
+              return SingleChildScrollView(
+                physics: BouncingScrollPhysics(),
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.only(
+                  left: 20,
+                  right: 20,
+                  bottom: 10,
+                ),
+                child: Row(
+                  children: [
+                    for (var _ in foodCategories)
+                      FoodCard(
+                        food: Food(
+                          id: '',
+                          type: 'Type',
+                          description: 'lorem ipsum',
+                          name: 'Danze',
+                          restaurant: Restaurant(
+                            id: '',
+                            name: 'Restaurant danze',
+                            location: Location(
+                              type: 'point',
+                              coordinates: [40, 30],
+                            ),
+                          ),
+                          ratings: 4.5,
+                          price: 5,
+                        ),
+                      ),
+                  ],
+                ),
+              );
+            },
           ),
         ],
       ),
     );
   }
 
-  Widget _renderNearestRestaurants() {
+  Widget _renderPopularRestaurants() {
     return Container(
       width: double.infinity,
       child: Column(
@@ -286,7 +343,7 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SectionTitle(
-                AppLocalizations.of(context).translate("nearest_restaurants"),
+                AppLocalizations.of(context).translate("popular_restaurants"),
               ),
               Container(
                 margin: const EdgeInsets.only(
@@ -304,26 +361,58 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
-          SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.only(
-              left: 20,
-              right: 20,
-              bottom: 10,
-            ),
-            child: Row(
-              children: [
-                for (var _ in foodCategories)
-                  RestaurantCard(
-                    restaurant: Restaurant(
-                        name: "Restaurant danze",
-                        imageURL:
-                            "https://upload.wikimedia.org/wikipedia/commons/e/e2/Inside_Le_Procope.jpg"),
+          Consumer<DataContext>(builder: (_, dataContext, __) {
+            var restaurants = dataContext.popularRestaurants;
+            var loading = dataContext.loadingNeareseRestaurants;
+
+            if (loading)
+              return Container(
+                height: 200,
+                child: Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      CRIMSON,
+                    ),
                   ),
-              ],
-            ),
-          ),
+                ),
+              );
+
+            if (restaurants.length == 0)
+              return Container(
+                height: 200,
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      AppLocalizations.of(context).translate('no_restaurant') ??
+                          "Aucun restaurant trouvé",
+                      style: TextStyle(
+                        fontSize: 22,
+                      ),
+                    )
+                  ],
+                ),
+              );
+
+            return SingleChildScrollView(
+              physics: BouncingScrollPhysics(),
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.only(
+                left: 20,
+                right: 20,
+                bottom: 10,
+              ),
+              child: Row(
+                children: [
+                  for (var restaurant in restaurants)
+                    RestaurantCard(
+                      restaurant: restaurant,
+                    ),
+                ],
+              ),
+            );
+          }),
         ],
       ),
     );
