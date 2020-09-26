@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:menu_advisor/src/components/inputs.dart';
 import 'package:menu_advisor/src/components/logo.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/pages/confirm_email.dart';
@@ -153,7 +154,7 @@ class _SignupPageState extends State<SignupPage> {
                               ),
                             ),
                             SizedBox(height: 5),
-                            TextFormField(
+                            PasswordField(
                               controller: _passwordController,
                               focusNode: _passwordFocus,
                               obscureText: true,
@@ -178,7 +179,7 @@ class _SignupPageState extends State<SignupPage> {
                               ),
                             ),
                             SizedBox(height: 5),
-                            TextFormField(
+                            PasswordField(
                               controller: _confirmPasswordController,
                               focusNode: _confirmPasswordFocus,
                               obscureText: true,
@@ -238,7 +239,7 @@ class _SignupPageState extends State<SignupPage> {
     );
   }
 
-  void _submitForm() {
+  _submitForm() async {
     String email = _emailController.value.text,
         phoneNumber = _phoneNumberController.value.text,
         password = _passwordController.value.text,
@@ -254,14 +255,13 @@ class _SignupPageState extends State<SignupPage> {
       });
       AuthContext authContext =
           Provider.of<AuthContext>(context, listen: false);
-      authContext
-          .signup(
-        email: email,
-        phoneNumber: phoneNumber,
-        password: password,
-      )
-          .then((value) {
-        print('Danze: ' + value.runtimeType.toString());
+
+      try {
+        await authContext.signup(
+          email: email,
+          phoneNumber: phoneNumber,
+          password: password,
+        );
         setState(() {
           loading = false;
         });
@@ -270,8 +270,7 @@ class _SignupPageState extends State<SignupPage> {
           child: ConfirmEmailPage(),
           routeName: confirmEmailRoute,
         );
-      }).catchError((error) {
-        print('Danze: ' + error.runtimeType.toString());
+      } catch (error) {
         setState(() {
           loading = false;
         });
@@ -284,7 +283,7 @@ class _SignupPageState extends State<SignupPage> {
           Fluttertoast.showToast(
               msg: AppLocalizations.of(context)
                   .translate("phone_number_already_in_use"));
-      });
+      }
     }
   }
 }
