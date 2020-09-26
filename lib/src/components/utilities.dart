@@ -159,9 +159,9 @@ class ScaffoldWithBottomMenu extends StatelessWidget {
               Expanded(
                 child: Consumer<RouteContext>(
                   builder: (_, routeContext, __) {
-                    if (routeContext.currentRoute == homeRoute)
-                      return menuButtons[qrRoute];
-                    return menuButtons[homeRoute];
+                    if (routeContext.currentRoute == qrRoute)
+                      return menuButtons[homeRoute];
+                    return menuButtons[qrRoute];
                   },
                 ),
               ),
@@ -200,7 +200,7 @@ class ScaffoldWithBottomMenu extends StatelessWidget {
                 child: Consumer<RouteContext>(
                   builder: (_, routeContext, __) {
                     if (routeContext.currentRoute == profileRoute)
-                      return menuButtons[searchRoute];
+                      return menuButtons[homeRoute];
                     return menuButtons[profileRoute];
                   },
                 ),
