@@ -6,7 +6,7 @@
   "discover": "Discover",
   "order": "Take my order",
   "in_bag": "In my bag",
-  "nearest_restaurants": "Nearest restaurants",
+  "popular_restaurants": "Nearest restaurants",
   "before_exit_message": "Tap one more time to exit",
   "mail_address_placeholder": "Your mail address",
   "password_placeholder": "Your password",
@@ -29,5 +29,11 @@
   "my_payment_cards": "My payment cards",
   "restaurant_common": "Restaurant",
   "find_restaurant": "Find a restaurant",
-  "my_settings": "Mes paramètres"
+  "my_settings": "My settings",
+  "product_of": "Product of",
+  "description": "Description",
+  "no_description": "No description provided",
+  "add_to_bag": "Add to my bag",
+  "no_restaurant": "No restaurant found",
+  "no_food": "No food found"
 }
