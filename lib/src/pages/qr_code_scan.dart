@@ -12,6 +12,7 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   String qrText = "";
   QRViewController controller;
+  bool flashOn = false;
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +49,21 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
                 ),
               ),
             ),
+            Positioned(
+              top: 20,
+              right: 20,
+              child: FloatingActionButton(
+                child: Icon(
+                  flashOn ? Icons.flash_on : Icons.flash_off,
+                ),
+                onPressed: () {
+                  controller.toggleFlash();
+                  setState(() {
+                    flashOn = !flashOn;
+                  });
+                },
+              ),
+            ),
           ],
         ),
       ),
@@ -57,6 +73,7 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
   void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;
     controller.scannedDataStream.listen((scanData) {
+      controller.pauseCamera();
       print(scanData);
       setState(() {
         qrText = scanData;
