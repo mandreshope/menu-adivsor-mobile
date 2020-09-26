@@ -66,4 +66,95 @@ class Api {
       });
     });
   }
+
+  Future<List<Restaurant>> getRestaurants({
+    Map<String, dynamic> filters,
+  }) {
+    String query = '';
+    if (filters != null) {
+      List<String> keys = filters.keys.toList();
+      if (keys.length > 0) {
+        query = '?';
+        for (int i = 0; i < keys.length; i++) {
+          final key = keys[i];
+          query += '$key=${filters[key]}';
+          if (i < keys.length - 1) query += '&';
+        }
+      }
+    }
+
+    return http.get('$_apiURL/restaurants$query').then((response) {
+      if (response.statusCode == 200) {
+        List<Map<String, dynamic>> list = json.decode(response.body);
+        return list.map((data) => Restaurant.fromJson(data)).toList();
+      }
+
+      return Future.error(json.decode(response.body));
+    }).catchError((error) {
+      return Future.error(error);
+    });
+  }
+
+  Future<List<Food>> getFoods({
+    Map<String, String> filters,
+  }) {
+    String query = '';
+    if (filters != null) {
+      List<String> keys = filters.keys.toList();
+      if (keys.length > 0) {
+        query = '?';
+        for (int i = 0; i < keys.length; i++) {
+          final key = keys[i];
+          query += '$key=${filters[key]}';
+          if (i < keys.length - 1) query += '&';
+        }
+      }
+    }
+
+    return http.get(
+      '$_apiURL/foods$query',
+      headers: {
+        "authorization": "Bearer $_token",
+      },
+    ).then((response) {
+      if (response.statusCode == 200) {
+        List<Map<String, dynamic>> list = json.decode(response.body);
+        return list.map((data) => Food.fromJson(data)).toList();
+      }
+
+      return Future.error(json.decode(response.body));
+    }).catchError((error) {
+      return Future.error(error);
+    });
+  }
+
+  Future<bool> addToFavoriteFood(Food food) {
+    return http.post('$_apiURL/users/favoriteFood/add', body: {
+      "id": food.id,
+    }, headers: {
+      "authorization": "Bearer $_token",
+    }).then((response) {
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    }).catchError((error) {
+      return Future.error(error);
+    });
+  }
+
+  Future removeFromFavoriteFood(Food food) {
+    return http.post('$_apiURL/users/favoriteFood/delete', body: {
+      "id": food.id,
+    }, headers: {
+      "authorization": "Beare $_token",
+    }).then((response) {
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    }).catchError((error) {
+      return Future.error(error);
+    });
+  }
 }
