@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:menu_advisor/src/components/utilities.dart';
 
 class SearchPage extends StatefulWidget {
   @override
@@ -9,7 +8,7 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
-    return ScaffoldWithBottomMenu(
+    return Scaffold(
       appBar: AppBar(
         title: Text("Rechercher"),
       ),
