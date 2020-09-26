@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:menu_advisor/src/utils/AppLocalization.dart';
 
 class DiscoverPage extends StatefulWidget {
   @override
@@ -10,7 +11,9 @@ class _DiscoverPageState extends State<DiscoverPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Discover"),
+        title: Text(
+          AppLocalizations.of(context).translate('discover'),
+        ),
         centerTitle: true,
       ),
     );
