@@ -24,31 +24,34 @@ class AuthContext extends ChangeNotifier {
   }
 
   Future<bool> login(String email, String password) => _api
-        .login(
-      email,
-      password,
-    )
-        .then((User user) {
-      currentUser = user;
-      notifyListeners();
-      return true;
-    }).catchError((error) {
-      return Future.error(error['body']);
-    });
+          .login(
+        email,
+        password,
+      )
+          .then((User user) {
+        currentUser = user;
+        notifyListeners();
+        return true;
+      }).catchError((error) {
+        return Future.error(error['body']);
+      });
 
   Future<bool> signup({
     String email,
     String phoneNumber,
     String password,
-  }) => _api.register(
-      email: email,
-      phoneNumber: phoneNumber,
-      password: password
-    ).then((User user) {
-      currentUser = user;
-      notifyListeners();
-      return true;
-    }).catchError((error) {
-      return Future.error(error['body']);
-    });
+  }) =>
+      _api
+          .register(
+        email: email,
+        phoneNumber: phoneNumber,
+        password: password,
+      )
+          .then((User user) {
+        currentUser = user;
+        notifyListeners();
+        return true;
+      }).catchError((error) {
+        return Future.error(error['body']);
+      });
 }
