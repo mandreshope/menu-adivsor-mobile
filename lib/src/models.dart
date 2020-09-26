@@ -9,6 +9,7 @@ class Food {
   final double price;
   final String imageURL;
   final Restaurant restaurant;
+  final String description;
 
   Food({
     @required this.name,
@@ -17,7 +18,8 @@ class Food {
     @required this.restaurant,
     @required this.price,
     this.ratings = 0,
-    this.imageURL
+    this.imageURL,
+    this.description,
   });
 }
 
@@ -26,11 +28,8 @@ class Restaurant {
   final String imageURL;
   final String type;
 
-  Restaurant({
-    @required this.name,
-    this.type = 'restaurant_common',
-    this.imageURL
-  });
+  Restaurant(
+      {@required this.name, this.type = 'restaurant_common', this.imageURL});
 }
 
 class UserName {
