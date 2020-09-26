@@ -249,19 +249,24 @@ class _LoginPageState extends State<LoginPage> {
     AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
     try {
       final result = await authContext.login(email, password);
-      print(result.toString());
+      if (result)
+        RouteUtil.goTo(
+          context: context,
+          child: HomePage(),
+          routeName: homeRoute,
+        );
     } catch (error) {
       print(error);
-    } finally {
-      setState(() {
-        loading = false;
-      });
       Fluttertoast.showToast(
         msg:
             AppLocalizations.of(context).translate("invalid_email_or_password"),
         backgroundColor: CRIMSON,
         textColor: Colors.white,
       );
+    } finally {
+      setState(() {
+        loading = false;
+      });
     }
   }
 }
