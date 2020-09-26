@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/components/backgrounds.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/components/logo.dart';
 import 'package:menu_advisor/src/components/utilities.dart';
+import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/discover.dart';
+import 'package:menu_advisor/src/pages/search.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/types.dart';
+import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 
 const foodCategories = [
@@ -108,9 +112,33 @@ class _HomePageState extends State<HomePage> {
               crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
               children: [
-                MenuAdvisorTextLogo(
-                  fontSize: size.width / 10,
-                  color: Colors.white,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    MenuAdvisorTextLogo(
+                      fontSize: size.width / 14,
+                      color: Colors.white,
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    CircleButton(
+                      backgroundColor: Colors.white,
+                      padding: const EdgeInsets.all(12),
+                      child: FaIcon(
+                        FontAwesomeIcons.search,
+                        size: 20,
+                        color: CRIMSON,
+                      ),
+                      onPressed: () {
+                        RouteUtil.goTo(
+                          context: context,
+                          child: SearchPage(),
+                          routeName: searchRoute,
+                        );
+                      },
+                    ),
+                  ],
                 ),
                 SizedBox(
                   height: 10,
@@ -125,7 +153,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ],
                   child: Text(
-                    "Découvrir",
+                    AppLocalizations.of(context).translate("discover"),
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.black,
@@ -156,7 +184,9 @@ class _HomePageState extends State<HomePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SectionTitle("Catégories"),
+          SectionTitle(
+            AppLocalizations.of(context).translate("categories"),
+          ),
           SingleChildScrollView(
             physics: BouncingScrollPhysics(),
             scrollDirection: Axis.horizontal,
@@ -195,7 +225,9 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SectionTitle("Populaires"),
+              SectionTitle(
+                AppLocalizations.of(context).translate("populars"),
+              ),
               Container(
                 margin: const EdgeInsets.only(
                   right: 30,
@@ -205,7 +237,7 @@ class _HomePageState extends State<HomePage> {
                     print("Populaires");
                   },
                   child: Text(
-                    "Voir tout",
+                    AppLocalizations.of(context).translate("see_all"),
                     style: Theme.of(context).textTheme.caption,
                   ),
                 ),
@@ -227,8 +259,12 @@ class _HomePageState extends State<HomePage> {
                     food: Food(
                       location: Location(latitude: 40, longitude: 30),
                       name: 'Danze',
-                      type: FoodType(type: 'Type danze'),
+                      type: FoodType(
+                        type: 'Type danze',
+                      ),
+                      restaurant: Restaurant(name: 'Restaurant danze'),
                       ratings: 4.5,
+                      price: 5,
                     ),
                   ),
               ],
@@ -249,7 +285,9 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SectionTitle("Restaurants d'à côté"),
+              SectionTitle(
+                AppLocalizations.of(context).translate("nearest_restaurants"),
+              ),
               Container(
                 margin: const EdgeInsets.only(
                   right: 30,
@@ -279,8 +317,9 @@ class _HomePageState extends State<HomePage> {
                 for (var _ in foodCategories)
                   RestaurantCard(
                     restaurant: Restaurant(
-                      name: "Restaurant danze",
-                    ),
+                        name: "Restaurant danze",
+                        imageURL:
+                            "https://upload.wikimedia.org/wikipedia/commons/e/e2/Inside_Le_Procope.jpg"),
                   ),
               ],
             ),
