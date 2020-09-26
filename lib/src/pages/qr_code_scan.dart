@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class QRCodeScanPage extends StatefulWidget {
@@ -16,9 +17,8 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
         title: Text("Scan code QR"),
+        centerTitle: true,
       ),
       backgroundColor: BACKGROUND_COLOR,
       body: SafeArea(
@@ -30,6 +30,22 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
               onQRViewCreated: _onQRViewCreated,
               overlay: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            Container(
+              color: Colors.black45,
+            ),
+            Positioned(
+              top: 200,
+              left: 0,
+              right: 0,
+              child: Text(
+                AppLocalizations.of(context).translate("center_camera"),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
