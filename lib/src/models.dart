@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/types.dart';
 
 class Food {
+  final String id;
   final String name;
-  final FoodType type;
-  final Location location;
+  final String type;
   final double ratings;
   final double price;
   final String imageURL;
@@ -12,8 +12,8 @@ class Food {
   final String description;
 
   Food({
+    @required this.id,
     @required this.name,
-    @required this.location,
     @required this.type,
     @required this.restaurant,
     @required this.price,
@@ -21,38 +21,55 @@ class Food {
     this.imageURL,
     this.description,
   });
+
+  factory Food.fromJson(Map<String, dynamic> json) => Food(
+        id: json['id'],
+        name: json['name'],
+        type: json['type'],
+        restaurant: Restaurant.fromJson(json['restaurant']),
+        price: json['price'],
+      );
 }
 
 class Restaurant {
+  final String id;
   final String name;
   final String imageURL;
   final String type;
+  final Location location;
 
-  Restaurant(
-      {@required this.name, this.type = 'restaurant_common', this.imageURL});
+  Restaurant({
+    @required this.id,
+    @required this.name,
+    this.type = 'common_restaurant',
+    this.imageURL,
+    @required this.location,
+  });
+
+  factory Restaurant.fromJson(Map<String, dynamic> json) => Restaurant(
+        id: json['id'],
+        name: json['name'],
+        type: json['type'],
+        location: Location(
+          type: 'point',
+          coordinates: json['location'] ?? [0, 0],
+        ),
+      );
 }
 
 class UserName {
   final String first;
   final String last;
 
-  const UserName({this.first, this.last});
-
-  factory UserName.fromJson(Map<String, String> json) =>
-      UserName(first: json['first'], last: json['last']);
-}
-
-class UserLocation {
-  final String type;
-  final List<double> coordinates;
-
-  const UserLocation({
-    this.type,
-    this.coordinates,
+  const UserName({
+    this.first,
+    this.last,
   });
 
-  factory UserLocation.fromJson(Map<String, dynamic> json) =>
-      UserLocation(type: json['type'], coordinates: json['coordinates']);
+  factory UserName.fromJson(Map<String, dynamic> json) => UserName(
+        first: json['first'],
+        last: json['last'],
+      );
 }
 
 class User {
@@ -62,7 +79,7 @@ class User {
   final String photoURL;
   final String address;
   final String email;
-  final UserLocation location;
+  final Location location;
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
@@ -70,7 +87,6 @@ class User {
       email: json['email'],
       photoURL: json['photoURL'],
       name: UserName.fromJson(json['name']),
-      location: UserLocation.fromJson(json['location']),
     );
   }
 
