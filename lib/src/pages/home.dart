@@ -279,17 +279,13 @@ class _HomePageState extends State<HomePage> {
               if (foods.length == 0)
                 return Container(
                   height: 200,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        AppLocalizations.of(context).translate('no_food'),
-                        style: TextStyle(
-                          fontSize: 22,
-                        ),
-                      )
-                    ],
+                  child: Center(
+                    child: Text(
+                      AppLocalizations.of(context).translate('no_food'),
+                      style: TextStyle(
+                        fontSize: 22,
+                      ),
+                    ),
                   ),
                 );
 
@@ -307,7 +303,9 @@ class _HomePageState extends State<HomePage> {
                       FoodCard(
                         food: Food(
                           id: '',
-                          type: 'Type',
+                          category: FoodCategory(
+                            name: 'Danze',
+                          ),
                           description: 'lorem ipsum',
                           name: 'Danze',
                           restaurant: Restaurant(
