@@ -6,7 +6,7 @@ class DataContext extends ChangeNotifier {
   List<Food> popularFoods = [];
   bool loadingPopularFoods = false;
   List<Restaurant> popularRestaurants = [];
-  bool loadingNeareseRestaurants = false;
+  bool loadingPopularRestaurants = false;
 
   final Api _api = Api.instance;
 
@@ -22,28 +22,43 @@ class DataContext extends ChangeNotifier {
     loadingPopularFoods = false;
     notifyListeners();
 
-    loadingNeareseRestaurants = true;
+    loadingPopularRestaurants = true;
     notifyListeners();
     await _fetchPopularRestaurants();
-    loadingNeareseRestaurants = false;
+    loadingPopularRestaurants = false;
     notifyListeners();
   }
 
   _fetchPopularRestaurants() async {
-    loadingNeareseRestaurants = true;
+    loadingPopularRestaurants = true;
     notifyListeners();
     try {
       popularRestaurants = await _api.getRestaurants(
         filters: {"searchCategory": "popular"},
       );
     } catch (error) {
-      print(error);
+      print('Error while fetching popular restaurants: $error');
+    } finally {
+      loadingPopularRestaurants = false;
+      notifyListeners();
     }
-    loadingNeareseRestaurants = false;
-    notifyListeners();
   }
 
-  _fetchPopularFoods() async {}
+  _fetchPopularFoods() async {
+    loadingPopularFoods = true;
+    notifyListeners();
+
+    try {
+      popularFoods = await _api.getFoods(
+        filters: {"searchCategory": "popular"},
+      );
+    } catch (error) {
+      print('Error while fetching popular foods: $error');
+    } finally {
+      loadingPopularFoods = false;
+      notifyListeners();
+    }
+  }
 
   void fetchFoods() {}
 }
