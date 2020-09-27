@@ -299,26 +299,9 @@ class _HomePageState extends State<HomePage> {
                 ),
                 child: Row(
                   children: [
-                    for (var _ in foodCategories)
+                    for (var food in foods)
                       FoodCard(
-                        food: Food(
-                          id: '',
-                          category: FoodCategory(
-                            name: 'Danze',
-                          ),
-                          description: 'lorem ipsum',
-                          name: 'Danze',
-                          restaurant: Restaurant(
-                            id: '',
-                            name: 'Restaurant danze',
-                            location: Location(
-                              type: 'point',
-                              coordinates: [40, 30],
-                            ),
-                          ),
-                          ratings: 4.5,
-                          price: 5,
-                        ),
+                        food: food,
                       ),
                   ],
                 ),
