@@ -344,7 +344,7 @@ class _HomePageState extends State<HomePage> {
           ),
           Consumer<DataContext>(builder: (_, dataContext, __) {
             var restaurants = dataContext.popularRestaurants;
-            var loading = dataContext.loadingNeareseRestaurants;
+            var loading = dataContext.loadingPopularRestaurants;
 
             if (loading)
               return Container(
