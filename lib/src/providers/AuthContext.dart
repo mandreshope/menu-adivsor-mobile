@@ -6,8 +6,17 @@ import 'package:menu_advisor/src/services/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthContext extends ChangeNotifier {
-  User currentUser;
+  User _currentUser;
   Api _api = Api.instance;
+
+  set currentUser(User user) {
+    _currentUser = user;
+    SharedPreferences.getInstance().then((sharedPrefs) {
+      sharedPrefs.setString('currentUser', json.encode(user.toJson()));
+    });
+  }
+
+  User get currentUser => _currentUser;
 
   AuthContext() {
     _loadUser();
@@ -15,10 +24,12 @@ class AuthContext extends ChangeNotifier {
 
   _loadUser() async {
     final sharedPrefs = await SharedPreferences.getInstance();
+
     if (sharedPrefs.containsKey('currentUser') &&
         sharedPrefs.getString('currentUser') != null) {
       Map<String, String> jsonMap =
           json.decode(sharedPrefs.getString('currentUser'));
+
       currentUser = User.fromJson(jsonMap);
     }
   }
