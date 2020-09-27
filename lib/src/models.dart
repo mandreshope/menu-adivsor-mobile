@@ -1,10 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/types.dart';
 
+class FoodCategory {
+  final String name;
+
+  const FoodCategory({
+    @required this.name,
+  });
+
+  factory FoodCategory.fromJson(Map<String, dynamic> json) => FoodCategory(
+        name: json['name'],
+      );
+}
+
 class Food {
   final String id;
   final String name;
-  final String type;
+  final FoodCategory category;
   final double ratings;
   final double price;
   final String imageURL;
@@ -14,7 +26,7 @@ class Food {
   Food({
     @required this.id,
     @required this.name,
-    @required this.type,
+    @required this.category,
     @required this.restaurant,
     @required this.price,
     this.ratings = 0,
@@ -25,7 +37,7 @@ class Food {
   factory Food.fromJson(Map<String, dynamic> json) => Food(
         id: json['id'],
         name: json['name'],
-        type: json['type'],
+        category: FoodCategory.fromJson(json['category']),
         restaurant: Restaurant.fromJson(json['restaurant']),
         price: json['price'],
       );
