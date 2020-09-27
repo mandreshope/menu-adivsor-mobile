@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class Location {
   final String type;
   final List<double> coordinates;
@@ -16,4 +18,14 @@ class Location {
         "type": type,
         "coordinates": coordinates.toString(),
       };
+}
+
+class Price {
+  final double value;
+  final String currency;
+
+  const Price({
+    @required this.value,
+    @required this.currency,
+  });
 }
