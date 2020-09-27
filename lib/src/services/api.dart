@@ -8,6 +8,15 @@ class Api {
   final String _apiURL = 'https://menu-advisor.herokuapp.com/api';
   String _token;
 
+  set token(String token) {
+    _token = token;
+    SharedPreferences.getInstance().then((sharedPrefs) {
+      sharedPrefs.setString('token', token);
+    });
+  }
+
+  String get token => _token;
+
   Api._privateConstructor() {
     _checkExistingTokenCache();
   }
@@ -31,7 +40,7 @@ class Api {
     ).then((response) {
       if (response.statusCode == 200) {
         Map<String, dynamic> data = json.decode(response.body);
-        _token = data['access_token'];
+        token = data['access_token'];
         User user = User.fromJson(data['user']);
         return user;
       }
@@ -85,7 +94,9 @@ class Api {
 
     return http.get('$_apiURL/restaurants$query').then((response) {
       if (response.statusCode == 200) {
-        List<Map<String, dynamic>> list = json.decode(response.body);
+        dynamic list = json.decode(response.body);
+        if (list is List && list.length == 0) return [];
+
         return list.map((data) => Restaurant.fromJson(data)).toList();
       }
 
