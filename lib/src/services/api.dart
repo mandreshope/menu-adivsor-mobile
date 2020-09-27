@@ -92,7 +92,12 @@ class Api {
       }
     }
 
-    return http.get('$_apiURL/restaurants$query').then((response) {
+    return http.get(
+      '$_apiURL/restaurants$query',
+      headers: {
+        "authorization": "Bearer $_token",
+      },
+    ).then((response) {
       if (response.statusCode == 200) {
         dynamic list = json.decode(response.body);
         if (list is List && list.length == 0) return [];
