@@ -274,15 +274,22 @@ class _SignupPageState extends State<SignupPage> {
         setState(() {
           loading = false;
         });
-        if ((error['details'] as Map<String, String>).containsKey("email"))
+        if (error is Map &&
+            (error['details'] as Map<String, String>).containsKey("email"))
           Fluttertoast.showToast(
-              msg: AppLocalizations.of(context)
-                  .translate("email_already_in_use"));
-        else if ((error['details'] as Map<String, String>)
-            .containsKey("phoneNumber"))
+            msg: AppLocalizations.of(context).translate("email_already_in_use"),
+          );
+        else if (error is Map &&
+            (error['details'] as Map<String, String>)
+                .containsKey("phoneNumber"))
           Fluttertoast.showToast(
-              msg: AppLocalizations.of(context)
-                  .translate("phone_number_already_in_use"));
+            msg: AppLocalizations.of(context)
+                .translate("phone_number_already_in_use"),
+          );
+        else
+          Fluttertoast.showToast(
+            msg: AppLocalizations.of(context).translate("connection_error"),
+          );
       }
     }
   }
