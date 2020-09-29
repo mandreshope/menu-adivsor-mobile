@@ -72,3 +72,6 @@ flutter:
     - family: Soft Elegance
       fonts:
         - asset: assets/fonts/Soft-Elegance.ttf
+    - family: Cool Sans
+      fonts:
+        - asset: assets/fonts/Cool-Sans.ttf
