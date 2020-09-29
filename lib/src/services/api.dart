@@ -71,6 +71,13 @@ class Api {
     });
   }
 
+  Future<bool> logout() async {
+    SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
+
+    return await sharedPrefs.remove('access_token') &&
+        await sharedPrefs.remove('refresh_token');
+  }
+
   Future<User> register({
     String email,
     String phoneNumber,
@@ -112,11 +119,11 @@ class Api {
       }
     }
 
-    return http.get('$_apiURL/restaurants$query').then((response) {
+    var result = http
+        .get('$_apiURL/restaurants$query')
+        .then<List<Restaurant>>((response) {
       if (response.statusCode == 200) {
-        dynamic list = json.decode(response.body);
-        if (list is List && list.length == 0) return [];
-
+        List<dynamic> list = json.decode(response.body);
         return list.map((data) => Restaurant.fromJson(data)).toList();
       }
 
@@ -124,6 +131,7 @@ class Api {
     }).catchError((error) {
       return Future.error(error);
     });
+    return result;
   }
 
   Future<List<Food>> getFoods({
@@ -147,9 +155,9 @@ class Api {
       headers: {
         "authorization": "Bearer $_accessToken",
       },
-    ).then((response) {
+    ).then<List<Food>>((response) {
       if (response.statusCode == 200) {
-        List<Map<String, dynamic>> list = json.decode(response.body);
+        List<dynamic> list = json.decode(response.body);
         return list.map((data) => Food.fromJson(data)).toList();
       }
 

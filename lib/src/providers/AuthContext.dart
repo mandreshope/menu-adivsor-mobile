@@ -47,6 +47,11 @@ class AuthContext extends ChangeNotifier {
         return Future.error(error['body']);
       });
 
+  Future<bool> logout() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    return await sharedPreferences.remove('currentUser') && await _api.logout();
+  }
+
   Future<bool> signup({
     String email,
     String phoneNumber,
@@ -63,6 +68,9 @@ class AuthContext extends ChangeNotifier {
         notifyListeners();
         return true;
       }).catchError((error) {
-        return Future.error(error['body']);
+        if (error is Map<String, dynamic> && error.containsKey('body'))
+          return Future.error(error['body']);
+
+        return Future.error(error);
       });
 }
