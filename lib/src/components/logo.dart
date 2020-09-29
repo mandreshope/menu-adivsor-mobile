@@ -44,7 +44,7 @@ class MenuAdvisorTextLogo extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.only(right: 3.0),
                 child: Image.asset(
-                  "assets/images/round.png",
+                  "assets/images/camera-lens.png",
                   height: fontSize * 0.7,
                 ),
               ),
