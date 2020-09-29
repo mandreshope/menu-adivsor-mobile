@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/home.dart';
 import 'package:menu_advisor/src/pages/login.dart';
 import 'package:menu_advisor/src/pages/map.dart';
+import 'package:menu_advisor/src/pages/order.dart';
 import 'package:menu_advisor/src/pages/profile.dart';
 import 'package:menu_advisor/src/pages/qr_code_scan.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
@@ -269,7 +271,21 @@ class BagModal extends StatelessWidget {
             ),
           ),
           FlatButton(
-            onPressed: () {},
+            onPressed: () {
+              BagContext bagContext =
+                  Provider.of<BagContext>(context, listen: false);
+
+              if (bagContext.itemCount == 0)
+                Fluttertoast.showToast(
+                  msg: AppLocalizations.of(context).translate('empty_bag'),
+                );
+              else
+                RouteUtil.goTo(
+                  context: context,
+                  child: OrderPage(),
+                  routeName: orderRoute,
+                );
+            },
             padding: const EdgeInsets.all(
               20.0,
             ),
