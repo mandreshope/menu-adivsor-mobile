@@ -6,7 +6,7 @@ class DataContext extends ChangeNotifier {
   List<Food> popularFoods = [];
   bool loadingPopularFoods = false;
   List<Restaurant> popularRestaurants = [];
-  bool loadingNeareseRestaurants = false;
+  bool loadingNearestRestaurants = false;
 
   final Api _api = Api.instance;
 
@@ -22,15 +22,15 @@ class DataContext extends ChangeNotifier {
     loadingPopularFoods = false;
     notifyListeners();
 
-    loadingNeareseRestaurants = true;
+    loadingNearestRestaurants = true;
     notifyListeners();
     await _fetchPopularRestaurants();
-    loadingNeareseRestaurants = false;
+    loadingNearestRestaurants = false;
     notifyListeners();
   }
 
   _fetchPopularRestaurants() async {
-    loadingNeareseRestaurants = true;
+    loadingNearestRestaurants = true;
     notifyListeners();
     try {
       popularRestaurants = await _api.getRestaurants(
@@ -39,11 +39,23 @@ class DataContext extends ChangeNotifier {
     } catch (error) {
       print(error);
     }
-    loadingNeareseRestaurants = false;
+    loadingNearestRestaurants = false;
     notifyListeners();
   }
 
-  _fetchPopularFoods() async {}
+  _fetchPopularFoods() async {
+    loadingPopularFoods = true;
+    notifyListeners();
+    try {
+      popularFoods = await _api.getFoods(
+        filters: {"searchCategory": "popular"},
+      );
+    } catch (error) {
+      print(error);
+    }
+    loadingPopularFoods = false;
+    notifyListeners();
+  }
 
   void fetchFoods() {}
 }
