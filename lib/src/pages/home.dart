@@ -6,12 +6,10 @@ import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/components/logo.dart';
 import 'package:menu_advisor/src/components/utilities.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
-import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/discover.dart';
 import 'package:menu_advisor/src/pages/search.dart';
 import 'package:menu_advisor/src/providers/DataContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
-import 'package:menu_advisor/src/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:provider/provider.dart';
@@ -65,8 +63,7 @@ class _HomePageState extends State<HomePage> {
                 DataContext dataContext =
                     Provider.of<DataContext>(context, listen: false);
 
-                await dataContext.refresh();
-                return;
+                return dataContext.refresh();
               },
               child: SingleChildScrollView(
                 physics: BouncingScrollPhysics(),
@@ -344,7 +341,7 @@ class _HomePageState extends State<HomePage> {
           ),
           Consumer<DataContext>(builder: (_, dataContext, __) {
             var restaurants = dataContext.popularRestaurants;
-            var loading = dataContext.loadingNeareseRestaurants;
+            var loading = dataContext.loadingNearestRestaurants;
 
             if (loading)
               return Container(
