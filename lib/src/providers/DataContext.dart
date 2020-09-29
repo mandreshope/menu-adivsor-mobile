@@ -5,8 +5,12 @@ import 'package:menu_advisor/src/services/api.dart';
 class DataContext extends ChangeNotifier {
   List<Food> popularFoods = [];
   bool loadingPopularFoods = false;
+
   List<Restaurant> popularRestaurants = [];
   bool loadingNearestRestaurants = false;
+
+  List<Food> foods = [];
+  bool loadingFoods = false;
 
   final Api _api = Api.instance;
 
@@ -55,7 +59,22 @@ class DataContext extends ChangeNotifier {
     }
     loadingPopularFoods = false;
     notifyListeners();
+    return;
   }
 
-  void fetchFoods() {}
+  fetchFoods(Map<String, dynamic> filters) async {
+    loadingFoods = true;
+    notifyListeners();
+
+    try {
+      foods = await _api.getFoods(filters: filters);
+    } catch (error) {
+      print('Error while fetching foods...');
+      print('$error');
+    }
+
+    loadingFoods = false;
+    notifyListeners();
+    return;
+  }
 }
