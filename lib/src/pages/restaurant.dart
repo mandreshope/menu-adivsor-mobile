@@ -17,7 +17,16 @@ class _RestaurantPageState extends State<RestaurantPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0.0,
+      ),
+      body: SafeArea(
+        child: Stack(
+          fit: StackFit.expand,
+          children: [],
+        ),
+      ),
     );
   }
 }
