@@ -27,7 +27,7 @@ class MenuAdvisorTextLogo extends StatelessWidget {
           style: TextStyle(
             fontSize: fontSize * 0.9,
             color: color,
-            fontFamily: "Soft Elegance",
+            fontFamily: "Cool Sans",
           ),
         ),
         RichText(
