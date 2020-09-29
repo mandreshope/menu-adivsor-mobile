@@ -82,6 +82,11 @@ class UserName {
         first: json['first'],
         last: json['last'],
       );
+
+  Map<String, dynamic> toJson() => {
+        'first': first,
+        'last': last,
+      };
 }
 
 class User {
@@ -113,7 +118,10 @@ class User {
   });
 
   Map<String, dynamic> toJson() => {
+        'id': id,
         'email': email,
         'phoneNumber': phoneNumber,
+        'address': address,
+        'name': name.toJson()
       };
 }
