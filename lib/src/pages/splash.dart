@@ -6,10 +6,8 @@ import 'package:menu_advisor/src/components/logo.dart';
 import 'package:menu_advisor/src/pages/getting_started.dart';
 import 'package:menu_advisor/src/pages/home.dart';
 import 'package:menu_advisor/src/pages/login.dart';
-import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Splash extends StatefulWidget {
@@ -32,7 +30,6 @@ class _SplashState extends State<Splash> {
       ),
       () async {
         final sharedPrefs = await SharedPreferences.getInstance();
-        final authContext = Provider.of<AuthContext>(context, listen: false);
 
         if (!sharedPrefs.containsKey('gettingStartedAlreadyVisited') ||
             !sharedPrefs.getBool('gettingStartedAlreadyVisited')) {
@@ -44,7 +41,7 @@ class _SplashState extends State<Splash> {
             method: RoutingMethod.replaceLast,
             child: GettingStartedPage(),
           );
-        } else if (authContext.currentUser != null)
+        } else if (sharedPrefs.containsKey('currentUser'))
           RouteUtil.goTo(
             routeName: homeRoute,
             context: context,
