@@ -27,7 +27,7 @@ class AuthContext extends ChangeNotifier {
 
     if (sharedPrefs.containsKey('currentUser') &&
         sharedPrefs.getString('currentUser') != null) {
-      Map<String, String> jsonMap =
+      Map<String, dynamic> jsonMap =
           json.decode(sharedPrefs.getString('currentUser'));
 
       currentUser = User.fromJson(jsonMap);
