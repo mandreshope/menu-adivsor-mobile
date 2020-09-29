@@ -37,9 +37,13 @@ class Food {
   factory Food.fromJson(Map<String, dynamic> json) => Food(
         id: json['_id'],
         name: json['name'],
-        category: FoodCategory.fromJson(json['category']),
-        restaurant: Restaurant.fromJson(json['restaurant']),
-        price: json['price'],
+        category: json.containsKey('category') && json['category'] != null
+            ? FoodCategory.fromJson(json['category'])
+            : null,
+        restaurant: json.containsKey('restaurant') && json['restaurant'] != null
+            ? Restaurant.fromJson(json['restaurant'])
+            : null,
+        price: json['price'] / 100,
       );
 }
 
@@ -62,6 +66,7 @@ class Restaurant {
         id: json['_id'],
         name: json['name'],
         type: json['type'],
+        imageURL: json['imageURL'],
         location: Location(
           type: 'point',
           coordinates: json['location'] ?? [0, 0],
