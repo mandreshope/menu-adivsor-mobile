@@ -35,5 +35,6 @@
   "no_description": "Aucune description fournie",
   "add_to_bag": "Ajouter à mon panier",
   "no_restaurant": "Aucun restaurant trouvé",
-  "no_food": "Aucune nourriture trouvée"
+  "no_food": "Aucune nourriture trouvée",
+  "no_item_in_bag": "Aucun élément dans le panier"
 }

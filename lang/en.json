@@ -35,5 +35,6 @@
   "no_description": "No description provided",
   "add_to_bag": "Add to my bag",
   "no_restaurant": "No restaurant found",
-  "no_food": "No food found"
+  "no_food": "No food found",
+  "no_item_in_bag": "No item in bag"
 }
