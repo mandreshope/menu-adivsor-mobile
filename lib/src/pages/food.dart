@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:provider/provider.dart';
 
 class FoodPage extends StatefulWidget {
   final Food food;
@@ -93,7 +95,7 @@ class _FoodPageState extends State<FoodPage> {
                       ),
                       SizedBox(height: 5),
                       Text(
-                        widget.food.restaurant.name,
+                        widget.food.restaurant?.name ?? 'Aucun nom',
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
@@ -137,11 +139,13 @@ class _FoodPageState extends State<FoodPage> {
                 Align(
                   alignment: Alignment.center,
                   child: FlatButton(
+                    onPressed: () {},
                     child: Text(
                       AppLocalizations.of(context).translate("your_feedback"),
                       style: TextStyle(
                         color: Colors.blue[300],
                         fontSize: 20,
+                        decoration: TextDecoration.underline,
                       ),
                     ),
                   ),
@@ -174,7 +178,15 @@ class _FoodPageState extends State<FoodPage> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          onPressed: () {},
+                          onPressed: () async {
+                            bool result = await showDialog<bool>(
+                              context: context,
+                              builder: (_) => AddToBagDialog(
+                                food: widget.food,
+                              ),
+                            );
+                            if (result) {}
+                          },
                           child: Text(
                             AppLocalizations.of(context)
                                 .translate("add_to_bag"),
@@ -203,6 +215,139 @@ class _FoodPageState extends State<FoodPage> {
                       "assets/images/pizza.png",
                       height: 250,
                     ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AddToBagDialog extends StatefulWidget {
+  final Food food;
+
+  const AddToBagDialog({
+    Key key,
+    this.food,
+  }) : super(key: key);
+
+  @override
+  _AddToBagDialogState createState() => _AddToBagDialogState();
+}
+
+class _AddToBagDialogState extends State<AddToBagDialog> {
+  int itemCount = 1;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Container(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(
+                top: 25.0,
+                left: 25.0,
+                right: 25.0,
+              ),
+              child: Text(
+                AppLocalizations.of(context).translate('add_to_bag'),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25.0),
+              child: Text(
+                AppLocalizations.of(context).translate('item_count'),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25.0),
+              child: Row(
+                children: [
+                  RaisedButton(
+                    color: Colors.teal,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    padding: EdgeInsets.zero,
+                    child: Icon(
+                      Icons.add,
+                      color: Colors.white,
+                    ),
+                    onPressed: itemCount > 1
+                        ? () {
+                            setState(() {
+                              itemCount--;
+                            });
+                          }
+                        : null,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Text(
+                      itemCount.toString(),
+                    ),
+                  ),
+                  RaisedButton(
+                    color: Colors.teal,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    child: Icon(
+                      Icons.add,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        itemCount++;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  right: 10.0,
+                  bottom: 10.0,
+                ),
+                child: RaisedButton(
+                  color: CRIMSON,
+                  child: Text(
+                    AppLocalizations.of(context).translate('add'),
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  onPressed: () {
+                    BagContext bagContext =
+                        Provider.of<BagContext>(context, listen: false);
+
+                    bagContext.addItem(widget.food, itemCount);
+                    Navigator.of(context).pop(true);
+                  },
+                ),
+              ),
             ),
           ],
         ),

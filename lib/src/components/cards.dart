@@ -160,7 +160,9 @@ class FoodCard extends StatelessWidget {
                                 ),
                                 SizedBox(height: 5),
                                 Text(
-                                  food.restaurant.name,
+                                  food.restaurant?.name ??
+                                      AppLocalizations.of(context).translate(
+                                          'no_associated_restaurant'),
                                   style: TextStyle(
                                     fontSize: 16,
                                   ),
@@ -198,7 +200,14 @@ class FoodCard extends StatelessWidget {
                                   Icons.add,
                                 ),
                               ),
-                              onPressed: () {},
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (_) => AddToBagDialog(
+                                    food: food,
+                                  ),
+                                );
+                              },
                             ),
                             SizedBox(
                               width: 20,
