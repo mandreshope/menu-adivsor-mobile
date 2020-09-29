@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/home.dart';
 import 'package:menu_advisor/src/pages/login.dart';
 import 'package:menu_advisor/src/pages/map.dart';
 import 'package:menu_advisor/src/pages/profile.dart';
 import 'package:menu_advisor/src/pages/qr_code_scan.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
+import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/RouteContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
@@ -227,40 +229,84 @@ class BagModal extends StatelessWidget {
         ),
       ),
       child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(30.0),
-              child: Text(
-                AppLocalizations.of(context).translate("in_bag"),
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(30.0),
+            child: Text(
+              AppLocalizations.of(context).translate("in_bag"),
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
               ),
             ),
-            Expanded(
-              child: SingleChildScrollView(
-                physics: BouncingScrollPhysics(),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              physics: BouncingScrollPhysics(),
+              child: Consumer<BagContext>(
+                builder: (_, bagContext, __) {
+                  final List<Widget> list = [];
+                  bagContext.items.forEach((food, count) {
+                    list.add(BagItem(food: food, count: count));
+                  });
+
+                  if (bagContext.itemCount == 0)
+                    return Center(
+                      child: Text(
+                        AppLocalizations.of(context)
+                            .translate('no_item_in_bag'),
+                      ),
+                    );
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: list,
+                  );
+                },
               ),
             ),
-            FlatButton(
-              onPressed: () {},
-              padding: const EdgeInsets.all(
-                20.0,
-              ),
-              color: Colors.teal,
-              child: Text(
-                AppLocalizations.of(context).translate("order"),
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+          ),
+          FlatButton(
+            onPressed: () {},
+            padding: const EdgeInsets.all(
+              20.0,
+            ),
+            color: Colors.teal,
+            child: Text(
+              AppLocalizations.of(context).translate("order"),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
               ),
             ),
-          ]),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class BagItem extends StatelessWidget {
+  final Food food;
+  final int count;
+
+  BagItem({
+    Key key,
+    @required this.food,
+    @required this.count,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 4.0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Padding(padding: const EdgeInsets.all(10), child: Row()),
     );
   }
 }
