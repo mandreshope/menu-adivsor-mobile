@@ -29,6 +29,7 @@
   "my_payment_cards": "My payment cards",
   "restaurant_common": "Restaurant",
   "find_restaurant": "Find a restaurant",
+  "find_something": "Find some foods / restaurants",
   "my_settings": "My settings",
   "product_of": "Product of",
   "description": "Description",
@@ -36,5 +37,12 @@
   "add_to_bag": "Add to my bag",
   "no_restaurant": "No restaurant found",
   "no_food": "No food found",
-  "no_item_in_bag": "No item in bag"
+  "no_item_in_bag": "No item in bag",
+  "connection_error": "Erreur de connexion",
+  "empty_bag": "The bag is empty",
+  "your_feedback": "Your feedback?",
+  "item_count": "Count",
+  "add": "Add",
+  "chinese_restaurant": "Chinese restaurant",
+  "no_associated_restaurant": "No associated restaurant"
 }

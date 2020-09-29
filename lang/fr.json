@@ -21,7 +21,7 @@
   "invalid_email_or_password": "Email ou mot de passe invalide",
   "blank_email_or_password": "Email ou mot de passe vide",
   "add_phone_number": "Ajouter votre numéro de téléphone",
-  "enter_code": "Saisissez le code à 4 chiffres envoyéen au numéro",
+  "enter_code": "Saisissez le code à 4 chiffres envoyée au numéro",
   "is_phone_correct": "Le numéro saisi est-il correct?",
   "language": "Langue",
   "password_does_not_match": "Les mots de passes ne correspondent pas",
@@ -29,6 +29,7 @@
   "my_payment_cards": "Mes cartes de paiement",
   "restaurant_common": "Restaurant",
   "find_restaurant": "Retrouver un restaurant",
+  "find_something": "Rechercher quelque chose",
   "my_settings": "Mes paramètres",
   "product_of": "Produit de",
   "description": "Description",
@@ -36,5 +37,12 @@
   "add_to_bag": "Ajouter à mon panier",
   "no_restaurant": "Aucun restaurant trouvé",
   "no_food": "Aucune nourriture trouvée",
-  "no_item_in_bag": "Aucun élément dans le panier"
+  "no_item_in_bag": "Aucun élément dans le panier",
+  "connection_error": "Erreur de connexion",
+  "empty_bag": "Le panier est encore vide",
+  "your_feedback": "Votre commentaire?",
+  "item_count": "Nombre d'unités",
+  "add": "Ajouter",
+  "chinese_restaurant": "Restaurant chinois",
+  "no_associated_restaurant": "Aucun restaurant associé"
 }
