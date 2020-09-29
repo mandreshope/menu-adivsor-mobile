@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/models.dart';
 
 class BagContext extends ChangeNotifier {
-  Map<Food, int> _items;
+  Map<Food, int> _items = Map();
   int _itemCount = 0;
 
   bool addItem(Food item, number) {
