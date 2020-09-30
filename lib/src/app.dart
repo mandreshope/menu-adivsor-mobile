@@ -4,7 +4,6 @@ import 'package:menu_advisor/src/pages/splash.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/DataContext.dart';
-import 'package:menu_advisor/src/providers/RouteContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/theme.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
@@ -21,16 +20,13 @@ class _MyAppState extends State<MyApp> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => RouteContext(),
-        ),
-        ChangeNotifierProvider(
           create: (_) => AuthContext(),
         ),
         ChangeNotifierProvider(
           create: (_) => BagContext(),
         ),
         ChangeNotifierProvider(
-          create: (context) => SettingContext(context),
+          create: (context) => SettingContext(),
         ),
         ChangeNotifierProvider(
           create: (context) => DataContext(),
