@@ -3,18 +3,23 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingContext extends ChangeNotifier {
   String languageCode;
+  Future initialized;
 
-  SettingContext(BuildContext context) {
-    _loadCurrentUserSettings(context);
+  SettingContext() {
+    initialized = _loadCurrentUserSettings();
   }
 
-  _loadCurrentUserSettings(BuildContext context) async {
+  Future _loadCurrentUserSettings() async {
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
     if (sharedPrefs.containsKey('languageCode')) {
-
+      languageCode = sharedPrefs.getString('languageCode');
+      notifyListeners();
     } else {
-      sharedPrefs.setString('languageCode', Localizations.localeOf(context).languageCode);
-
+      sharedPrefs.setString(
+        'languageCode',
+        languageCode,
+      );
     }
+    return;
   }
 }
