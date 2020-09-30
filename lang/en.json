@@ -44,5 +44,13 @@
   "item_count": "Count",
   "add": "Add",
   "chinese_restaurant": "Chinese restaurant",
-  "no_associated_restaurant": "No associated restaurant"
+  "no_associated_restaurant": "No associated restaurant",
+  "invalid_qr_code": "Invalid QR code",
+  "profile_and_settings": "Profile and settings",
+  "signout": "Sign out",
+  "manage_cards": "Manage my cards",
+  "added_to_favorite": "Added to favorite",
+  "removed_from_favorite": "Removed from favorite",
+  "our_menus": "Our menus",
+  "no_menu": "No menu"
 }

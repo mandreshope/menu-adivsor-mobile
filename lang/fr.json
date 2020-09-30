@@ -44,5 +44,13 @@
   "item_count": "Nombre d'unités",
   "add": "Ajouter",
   "chinese_restaurant": "Restaurant chinois",
-  "no_associated_restaurant": "Aucun restaurant associé"
+  "no_associated_restaurant": "Aucun restaurant associé",
+  "invalid_qr_code": "Code QR invalide",
+  "profile_and_settings": "Profil et paramètres",
+  "signout": "Se déconnecter",
+  "manage_cards": "Gérer mes cartes",
+  "added_to_favorite": "Ajouté aux favoris",
+  "removed_from_favorite": "Supprimé des favoris",
+  "our_menus": "Nos menus",
+  "no_menu": "Aucun menu"
 }
