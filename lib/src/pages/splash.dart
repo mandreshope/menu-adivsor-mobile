@@ -3,11 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/animations/FadeAnimation.dart';
 import 'package:menu_advisor/src/components/logo.dart';
-import 'package:menu_advisor/src/pages/getting_started.dart';
 import 'package:menu_advisor/src/pages/home.dart';
 import 'package:menu_advisor/src/pages/login.dart';
+import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Splash extends StatefulWidget {
@@ -29,19 +30,12 @@ class _SplashState extends State<Splash> {
         seconds: 3,
       ),
       () async {
-        final sharedPrefs = await SharedPreferences.getInstance();
+        final AuthContext authContext =
+            Provider.of<AuthContext>(context, listen: false);
 
-        if (!sharedPrefs.containsKey('gettingStartedAlreadyVisited') ||
-            !sharedPrefs.getBool('gettingStartedAlreadyVisited')) {
-          await (await SharedPreferences.getInstance())
-              .setBool('gettingStartedAlreadyVisited', true);
-          RouteUtil.goTo(
-            routeName: gettingStartedRoute,
-            context: context,
-            method: RoutingMethod.replaceLast,
-            child: GettingStartedPage(),
-          );
-        } else if (sharedPrefs.containsKey('currentUser'))
+        await authContext.initialized;
+
+        if (authContext.currentUser != null)
           RouteUtil.goTo(
             routeName: homeRoute,
             context: context,
