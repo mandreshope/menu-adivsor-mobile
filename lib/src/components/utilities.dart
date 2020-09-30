@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/models.dart';
@@ -322,7 +323,53 @@ class BagItem extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Padding(padding: const EdgeInsets.all(10), child: Row()),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            CircleAvatar(
+              backgroundImage: NetworkImage(food.imageURL),
+              backgroundColor: Colors.grey,
+              maxRadius: 20,
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    food.name,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    '${food.price}€',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.grey[300],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5.0),
+              child: Text('$count'),
+            ),
+            CircleButton(
+              backgroundColor: CRIMSON,
+              child: Icon(
+                Icons.delete,
+                color: Colors.white,
+              ),
+              onPressed: () {},
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
