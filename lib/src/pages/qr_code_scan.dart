@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/pages/restaurant.dart';
+import 'package:menu_advisor/src/routes/routes.dart';
+import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
+import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class QRCodeScanPage extends StatefulWidget {
@@ -10,9 +16,9 @@ class QRCodeScanPage extends StatefulWidget {
 
 class _QRCodeScanPageState extends State<QRCodeScanPage> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  String qrText = "";
   QRViewController controller;
   bool flashOn = false;
+  bool loading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +41,13 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
             ),
             Container(
               color: Colors.black45,
+              child: loading
+                  ? Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
+                      ),
+                    )
+                  : null,
             ),
             Positioned(
               top: 200,
@@ -72,12 +85,30 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
 
   void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;
-    controller.scannedDataStream.listen((scanData) {
+    controller.scannedDataStream.listen((String scanData) async {
       controller.pauseCamera();
-      print(scanData);
+      print('Scanned data : $scanData');
+      if (!scanData
+          .startsWith(RegExp(r'https://(www\.|)menuadvisor.fr/restaurants/'))) {
+        Fluttertoast.showToast(
+          msg: AppLocalizations.of(context).translate('invalid_qr_code'),
+        );
+        controller.resumeCamera();
+        return;
+      }
+
       setState(() {
-        qrText = scanData;
+        loading = true;
       });
+      Restaurant restaurant =
+          await Api.instance.getRestaurant(id: scanData.split('/').last);
+
+      RouteUtil.goTo(
+        context: context,
+        child: RestaurantPage(restaurant: restaurant),
+        routeName: restaurantRoute,
+        method: RoutingMethod.replaceLast,
+      );
     });
   }
 
