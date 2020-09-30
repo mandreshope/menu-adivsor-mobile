@@ -48,7 +48,7 @@ class Api {
 
   static Api _instance;
 
-  static get instance => _instance ?? Api._privateConstructor();
+  static Api get instance => _instance ?? Api._privateConstructor();
 
   Future<User> login(String email, String password) {
     return http.post(
@@ -166,6 +166,36 @@ class Api {
       return Future.error(error);
     });
   }
+
+  Future<Food> getFood({
+    String id,
+  }) =>
+      http.get(
+        '$_apiURL/foods/$id',
+        headers: {
+          "authorization": "Bearer $_accessToken",
+        },
+      ).then<Food>((response) {
+        if (response.statusCode == 200)
+          return Food.fromJson(json.decode(response.body));
+
+        return Future.error(json.decode(response.body));
+      });
+
+  Future<Restaurant> getRestaurant({
+    String id,
+  }) =>
+      http.get(
+        '$_apiURL/restaurants/$id',
+        headers: {
+          "authorization": "Bearer $_accessToken",
+        },
+      ).then<Restaurant>((response) {
+        if (response.statusCode == 200)
+          return Restaurant.fromJson(json.decode(response.body));
+
+        return Future.error(json.decode(response.body));
+      });
 
   Future<bool> addToFavoriteFood(Food food) {
     return http.post('$_apiURL/users/favoriteFood/add', body: {
