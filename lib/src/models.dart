@@ -126,6 +126,7 @@ class User {
         'id': id,
         'email': email,
         'phoneNumber': phoneNumber,
+        'photoURL': photoURL,
         'address': address,
         'name': name.toJson()
       };
