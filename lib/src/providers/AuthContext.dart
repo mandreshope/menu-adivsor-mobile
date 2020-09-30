@@ -8,21 +8,28 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AuthContext extends ChangeNotifier {
   User _currentUser;
   Api _api = Api.instance;
+  Future initialized;
 
   set currentUser(User user) {
     _currentUser = user;
-    SharedPreferences.getInstance().then((sharedPrefs) {
-      sharedPrefs.setString('currentUser', json.encode(user.toJson()));
-    });
+    notifyListeners();
+    if (user != null)
+      SharedPreferences.getInstance().then((sharedPrefs) {
+        sharedPrefs.setString('currentUser', json.encode(user.toJson()));
+      });
+    else
+      SharedPreferences.getInstance().then((sharedPrefs) {
+        sharedPrefs.remove('currentUser');
+      });
   }
 
   User get currentUser => _currentUser;
 
   AuthContext() {
-    _loadUser();
+    initialized = _loadUser();
   }
 
-  _loadUser() async {
+  Future _loadUser() async {
     final sharedPrefs = await SharedPreferences.getInstance();
 
     if (sharedPrefs.containsKey('currentUser') &&
@@ -32,6 +39,8 @@ class AuthContext extends ChangeNotifier {
 
       currentUser = User.fromJson(jsonMap);
     }
+
+    return;
   }
 
   Future<bool> login(String email, String password) => _api
@@ -49,6 +58,7 @@ class AuthContext extends ChangeNotifier {
 
   Future<bool> logout() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    _currentUser = null;
     return await sharedPreferences.remove('currentUser') && await _api.logout();
   }
 
