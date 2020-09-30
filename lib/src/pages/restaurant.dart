@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/routes/routes.dart';
 
 class RestaurantPage extends StatefulWidget {
   final Restaurant restaurant;
@@ -17,14 +18,34 @@ class _RestaurantPageState extends State<RestaurantPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0.0,
-      ),
       body: SafeArea(
         child: Stack(
           fit: StackFit.expand,
-          children: [],
+          children: [
+            CustomScrollView(
+              physics: BouncingScrollPhysics(),
+              slivers: [
+                SliverAppBar(
+                  expandedHeight: 200.0,
+                  floating: false,
+                  pinned: true,
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: Image.network(
+                      widget.restaurant.imageURL,
+                      fit: BoxFit.cover,
+                    ),
+                    title: Text(
+                      widget.restaurant.name,
+                    ),
+                  ),
+                ),
+                SliverFillRemaining(
+                  fillOverscroll: true,
+                  child: Column(),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
