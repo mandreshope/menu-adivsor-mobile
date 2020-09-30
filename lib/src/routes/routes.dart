@@ -14,3 +14,4 @@ const String confirmEmailRoute = 'confirmEmail';
 const String confirmPhoneNumberRoute = 'confirmPhoneNumber';
 const String foodRoute = 'food';
 const String restaurantRoute = 'restaurant';
+const String paymentCardListRoute = 'paymentCardList';
