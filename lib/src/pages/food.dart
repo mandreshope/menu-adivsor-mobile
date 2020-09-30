@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
@@ -54,7 +56,7 @@ class _FoodPageState extends State<FoodPage> {
                     right: 100.0,
                   ),
                   child: Text(
-                    "Pizza de qualité",
+                    widget.food.name,
                     style: TextStyle(
                       fontFamily: 'Soft Elegance',
                       fontSize: 50,
@@ -211,9 +213,40 @@ class _FoodPageState extends State<FoodPage> {
                       widget.food.imageURL,
                       height: 250,
                     )
-                  : Image.asset(
-                      "assets/images/pizza.png",
-                      height: 250,
+                  : GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            fullscreenDialog: true,
+                            builder: (BuildContext context) {
+                              return new Scaffold(
+                                body: Container(
+                                  child: Center(
+                                    child: Hero(
+                                      tag: 'foodImage${widget.food.id}',
+                                      child: widget.food.imageURL != null
+                                          ? Image.network(widget.food.imageURL)
+                                          : Icon(
+                                              Icons.fastfood,
+                                              size: 250,
+                                            ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      },
+                      child: Hero(
+                        tag: 'foodImage${widget.food.id}',
+                        child: widget.food.imageURL != null
+                            ? Image.network(widget.food.imageURL)
+                            : Icon(
+                                Icons.fastfood,
+                                size: 250,
+                              ),
+                      ),
                     ),
             ),
           ],
@@ -280,15 +313,15 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
               padding: const EdgeInsets.symmetric(horizontal: 25.0),
               child: Row(
                 children: [
-                  RaisedButton(
-                    color: Colors.teal,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(100),
+                  CircleButton(
+                    backgroundColor: Colors.transparent,
+                    border: Border.all(
+                      width: 1,
+                      color: Colors.grey,
                     ),
-                    padding: EdgeInsets.zero,
-                    child: Icon(
-                      Icons.add,
-                      color: Colors.white,
+                    child: FaIcon(
+                      FontAwesomeIcons.minus,
+                      color: Colors.black,
                     ),
                     onPressed: itemCount > 1
                         ? () {
@@ -304,14 +337,15 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
                       itemCount.toString(),
                     ),
                   ),
-                  RaisedButton(
-                    color: Colors.teal,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(100),
+                  CircleButton(
+                    backgroundColor: Colors.transparent,
+                    border: Border.all(
+                      width: 1,
+                      color: Colors.grey,
                     ),
-                    child: Icon(
-                      Icons.add,
-                      color: Colors.white,
+                    child: FaIcon(
+                      FontAwesomeIcons.plus,
+                      color: Colors.black,
                     ),
                     onPressed: () {
                       setState(() {
