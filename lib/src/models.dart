@@ -55,6 +55,8 @@ class Restaurant {
   final String imageURL;
   final String type;
   final Location location;
+  final String description;
+  final List<Menu> menus;
 
   Restaurant({
     @required this.id,
@@ -62,6 +64,8 @@ class Restaurant {
     this.type = 'common_restaurant',
     this.imageURL,
     @required this.location,
+    this.description = '',
+    this.menus = const [],
   });
 
   factory Restaurant.fromJson(Map<String, dynamic> json) => Restaurant(
@@ -73,6 +77,7 @@ class Restaurant {
           type: 'point',
           coordinates: json['location'] ?? [0, 0],
         ),
+        description: json['description'] ?? '',
       );
 }
 
