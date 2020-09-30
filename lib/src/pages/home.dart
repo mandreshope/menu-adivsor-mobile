@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:menu_advisor/src/animations/FadeAnimation.dart';
 import 'package:menu_advisor/src/components/backgrounds.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/components/cards.dart';
@@ -51,45 +55,67 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  bool backButtonAlreadyPressed = false;
+
   @override
   Widget build(BuildContext context) {
-    return ScaffoldWithBottomMenu(
-      body: SafeArea(
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            RefreshIndicator(
-              onRefresh: () async {
-                DataContext dataContext =
-                    Provider.of<DataContext>(context, listen: false);
+    return WillPopScope(
+      onWillPop: () async {
+        if (!backButtonAlreadyPressed) {
+          backButtonAlreadyPressed = true;
+          Timer(
+            Duration(
+              seconds: 1,
+            ),
+            () {
+              backButtonAlreadyPressed = false;
+            },
+          );
+          Fluttertoast.showToast(
+            msg: AppLocalizations.of(context).translate('before_exit_message'),
+          );
+          return false;
+        }
+        return true;
+      },
+      child: ScaffoldWithBottomMenu(
+        body: SafeArea(
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              RefreshIndicator(
+                onRefresh: () async {
+                  DataContext dataContext =
+                      Provider.of<DataContext>(context, listen: false);
 
-                return dataContext.refresh();
-              },
-              child: SingleChildScrollView(
-                physics: BouncingScrollPhysics(),
-                scrollDirection: Axis.vertical,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _renderHeader(),
-                    Transform.translate(
-                      offset: Offset(
-                        0,
-                        -130,
+                  return dataContext.refresh();
+                },
+                child: SingleChildScrollView(
+                  physics: BouncingScrollPhysics(),
+                  scrollDirection: Axis.vertical,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _renderHeader(),
+                      Transform.translate(
+                        offset: Offset(
+                          0,
+                          -130,
+                        ),
+                        child: Column(
+                          children: [
+                            _renderCategories(),
+                            _renderPopularFoods(),
+                            _renderPopularRestaurants(),
+                          ],
+                        ),
                       ),
-                      child: Column(
-                        children: [
-                          _renderCategories(),
-                          _renderPopularFoods(),
-                          _renderPopularRestaurants(),
-                        ],
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -297,9 +323,12 @@ class _HomePageState extends State<HomePage> {
                 child: Row(
                   children: [
                     for (var food in foods)
-                      FoodCard(
-                        food: food,
-                      ),
+                      FadeAnimation(
+                        1,
+                        FoodCard(
+                          food: food,
+                        ),
+                      )
                   ],
                 ),
               );
@@ -384,8 +413,11 @@ class _HomePageState extends State<HomePage> {
               child: Row(
                 children: [
                   for (var restaurant in restaurants)
-                    RestaurantCard(
-                      restaurant: restaurant,
+                    FadeAnimation(
+                      1.0,
+                      RestaurantCard(
+                        restaurant: restaurant,
+                      ),
                     ),
                 ],
               ),
