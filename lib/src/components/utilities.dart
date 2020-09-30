@@ -12,7 +12,6 @@ import 'package:menu_advisor/src/pages/profile.dart';
 import 'package:menu_advisor/src/pages/qr_code_scan.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
-import 'package:menu_advisor/src/providers/RouteContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
@@ -76,6 +75,7 @@ class ScaffoldWithBottomMenu extends StatelessWidget {
         onPressed: () {
           AuthContext authContext =
               Provider.of<AuthContext>(context, listen: false);
+
           if (authContext.currentUser != null)
             RouteUtil.goTo(
               routeName: profileRoute,
@@ -113,9 +113,9 @@ class ScaffoldWithBottomMenu extends StatelessWidget {
       floatingActionButton: Container(
         width: 65,
         height: 65,
-        child: Consumer<RouteContext>(
-          builder: (_, routeContext, __) {
-            String currentRoute = routeContext.currentRoute;
+        child: LayoutBuilder(
+          builder: (buildContext, _) {
+            String currentRoute = ModalRoute.of(context).settings.name;
             IconData iconData;
 
             switch (currentRoute) {
@@ -140,7 +140,7 @@ class ScaffoldWithBottomMenu extends StatelessWidget {
               child: FloatingActionButton(
                 backgroundColor: CRIMSON,
                 onPressed: () {},
-                tooltip: routeContext.currentRoute,
+                tooltip: ModalRoute.of(context).settings.name,
                 child: FaIcon(
                   iconData,
                 ),
@@ -162,9 +162,9 @@ class ScaffoldWithBottomMenu extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
-                child: Consumer<RouteContext>(
-                  builder: (_, routeContext, __) {
-                    if (routeContext.currentRoute == qrRoute)
+                child: Builder(
+                  builder: (context) {
+                    if (ModalRoute.of(context).settings.name == qrRoute)
                       return menuButtons[homeRoute];
                     return menuButtons[qrRoute];
                   },
@@ -202,9 +202,9 @@ class ScaffoldWithBottomMenu extends StatelessWidget {
                 ),
               ),
               Expanded(
-                child: Consumer<RouteContext>(
-                  builder: (_, routeContext, __) {
-                    if (routeContext.currentRoute == profileRoute)
+                child: Builder(
+                  builder: (context) {
+                    if (ModalRoute.of(context).settings.name == profileRoute)
                       return menuButtons[homeRoute];
                     return menuButtons[profileRoute];
                   },
