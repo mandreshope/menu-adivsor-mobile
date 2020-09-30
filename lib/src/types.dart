@@ -29,3 +29,25 @@ class Price {
     @required this.currency,
   });
 }
+
+class UserName {
+  final String first;
+  final String last;
+
+  const UserName({
+    this.first,
+    this.last,
+  });
+
+  factory UserName.fromJson(Map<String, dynamic> json) => UserName(
+        first: json['first'],
+        last: json['last'],
+      );
+
+  Map<String, dynamic> toJson() => {
+        'first': first,
+        'last': last,
+      };
+}
+
+class PaymentCard {}
