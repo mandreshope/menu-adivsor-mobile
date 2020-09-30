@@ -222,12 +222,15 @@ class FoodCard extends StatelessWidget {
                     right: 40,
                     top: 0,
                     bottom: 0,
-                    child: food.imageURL != null
-                        ? Image.network(food.imageURL)
-                        : Icon(
-                            Icons.fastfood,
-                            size: 60,
-                          ),
+                    child: Hero(
+                      tag: 'foodImage${food.id}',
+                      child: food.imageURL != null
+                          ? Image.network(food.imageURL)
+                          : Icon(
+                              Icons.fastfood,
+                              size: 60,
+                            ),
+                    ),
                   ),
                 ],
               ),
