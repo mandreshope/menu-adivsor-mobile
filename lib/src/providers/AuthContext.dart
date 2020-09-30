@@ -39,7 +39,7 @@ class AuthContext extends ChangeNotifier {
         email,
         password,
       )
-          .then((User user) {
+          .then<bool>((User user) {
         currentUser = user;
         notifyListeners();
         return true;
@@ -63,7 +63,7 @@ class AuthContext extends ChangeNotifier {
         phoneNumber: phoneNumber,
         password: password,
       )
-          .then((User user) {
+          .then<bool>((User user) {
         currentUser = user;
         notifyListeners();
         return true;
