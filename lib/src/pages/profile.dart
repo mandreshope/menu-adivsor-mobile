@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:menu_advisor/src/components/utilities.dart';
 import 'package:menu_advisor/src/pages/login.dart';
+import 'package:menu_advisor/src/pages/payment_card_list.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
@@ -86,7 +88,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           fontSize: 20,
                         ),
                       ),
-                      SizedBox(height: 30),
+                      SizedBox(
+                        height: 30,
+                      ),
                       Text(
                         AppLocalizations.of(context).translate("language"),
                         style: Theme.of(context).textTheme.headline6,
@@ -109,11 +113,41 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ),
                               )
                           ]),
-                      SizedBox(height: 30),
+                      SizedBox(
+                        height: 30,
+                      ),
                       Text(
                         AppLocalizations.of(context)
                             .translate("my_payment_cards"),
                         style: Theme.of(context).textTheme.headline6,
+                      ),
+                      SizedBox(
+                        height: 30,
+                      ),
+                      RaisedButton(
+                        onPressed: () {
+                          RouteUtil.goTo(
+                            context: context,
+                            child: PaymentCardListPage(),
+                            routeName: paymentCardListRoute,
+                          );
+                        },
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(40),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 15,
+                        ),
+                        child: Text(
+                          AppLocalizations.of(context)
+                              .translate('manage_cards'),
+                          style: GoogleFonts.raleway(
+                            textStyle: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
