@@ -58,12 +58,15 @@ class CircleButton extends StatelessWidget {
 
   final VoidCallback onPressed;
 
+  final BoxBorder border;
+
   const CircleButton({
     Key key,
     this.backgroundColor,
     this.padding,
     @required this.child,
     @required this.onPressed,
+    this.border,
   }) : super(key: key);
 
   @override
@@ -75,7 +78,10 @@ class CircleButton extends StatelessWidget {
       child: InkWell(
         child: Container(
           padding: padding ?? const EdgeInsets.all(10),
-          decoration: BoxDecoration(),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: border,
+          ),
           child: Center(
             child: child,
           ),
