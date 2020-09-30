@@ -51,3 +51,5 @@ class UserName {
 }
 
 class PaymentCard {}
+
+class Menu {}
