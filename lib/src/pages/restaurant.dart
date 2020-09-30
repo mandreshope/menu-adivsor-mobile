@@ -77,7 +77,88 @@ class _RestaurantPageState extends State<RestaurantPage> {
                 ),
                 SliverFillRemaining(
                   fillOverscroll: true,
-                  child: Column(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          top: 40,
+                          left: 40,
+                          right: 40,
+                          bottom: 20,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              AppLocalizations.of(context)
+                                  .translate('description'),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 22,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 12,
+                            ),
+                            Text(
+                              widget.restaurant.description.length > 0
+                                  ? widget.restaurant.description
+                                  : AppLocalizations.of(context)
+                                      .translate('no_description'),
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Color(0xff6D6D6D),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 30,
+                            ),
+                            Text(
+                              widget.restaurant.description?.length > 0 ?? false
+                                  ? widget.restaurant.description
+                                  : AppLocalizations.of(context)
+                                      .translate('our_menus'),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 22,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 12,
+                            ),
+                            widget.restaurant.menus.length > 0
+                                ? Wrap(
+                                    children: widget.restaurant.menus
+                                        .map(
+                                          (e) => Card(
+                                            elevation: 4.0,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(10),
+                                            ),
+                                          ),
+                                        )
+                                        .toList(),
+                                  )
+                                : Text(
+                                    widget.restaurant.description.length > 0
+                                        ? widget.restaurant.description
+                                        : AppLocalizations.of(context)
+                                            .translate('no_menu'),
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Color(0xff6D6D6D),
+                                    ),
+                                  ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
