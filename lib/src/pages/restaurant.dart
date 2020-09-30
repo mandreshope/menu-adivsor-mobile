@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
+import 'package:menu_advisor/src/utils/AppLocalization.dart';
+import 'package:provider/provider.dart';
 
 class RestaurantPage extends StatefulWidget {
   final Restaurant restaurant;
@@ -15,6 +19,29 @@ class RestaurantPage extends StatefulWidget {
 }
 
 class _RestaurantPageState extends State<RestaurantPage> {
+  bool isInFavorite = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
+    if (authContext.currentUser.favoriteRestaurants
+            .indexWhere((element) => element.id == widget.restaurant.id) >
+        1) isInFavorite = true;
+  }
+
+  _toggleFavorite() {
+    Fluttertoast.showToast(
+      msg: AppLocalizations.of(context).translate(
+        !isInFavorite ? 'added_to_favorite' : 'removed_from_favorite',
+      ),
+    );
+    setState(() {
+      isInFavorite = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,6 +56,15 @@ class _RestaurantPageState extends State<RestaurantPage> {
                   expandedHeight: 200.0,
                   floating: false,
                   pinned: true,
+                  actions: [
+                    IconButton(
+                      onPressed: _toggleFavorite,
+                      icon: Icon(
+                        isInFavorite ? Icons.favorite : Icons.favorite_border,
+                        color: Colors.white,
+                      ),
+                    )
+                  ],
                   flexibleSpace: FlexibleSpaceBar(
                     background: Image.network(
                       widget.restaurant.imageURL,
