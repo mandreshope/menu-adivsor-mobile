@@ -187,7 +187,7 @@ class _FoodPageState extends State<FoodPage> {
                                 food: widget.food,
                               ),
                             );
-                            if (result) {}
+                            if (result is bool && result) {}
                           },
                           child: Text(
                             AppLocalizations.of(context)
