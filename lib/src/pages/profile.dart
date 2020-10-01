@@ -98,7 +98,13 @@ class _ProfilePageState extends State<ProfilePage> {
                           elevation: 16,
                           isExpanded: true,
                           value: languageCode,
-                          onChanged: (String languageCode) {},
+                          onChanged: (String languageCode) {
+                            SettingContext settingContext =
+                                Provider.of<SettingContext>(context,
+                                    listen: false);
+
+                            settingContext.languageCode = languageCode;
+                          },
                           style: TextStyle(
                             color: Colors.grey[700],
                           ),
