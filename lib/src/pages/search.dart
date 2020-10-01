@@ -8,16 +8,9 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  TextEditingController _searchController = TextEditingController();
+  String _searchValue = '';
   bool loading = false;
   bool isSettingExpanded = false;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _searchController.addListener(() {});
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +25,7 @@ class _SearchPageState extends State<SearchPage> {
           children: [
             SingleChildScrollView(
               padding: EdgeInsets.only(top: 90),
-              child: _searchController.value.text.length == 0
+              child: _searchValue.length == 0
                   ? Center(
                       child: Text(
                         "Commencer par entrer votre recherche...",
@@ -80,11 +73,15 @@ class _SearchPageState extends State<SearchPage> {
                         SizedBox(width: 10),
                         Expanded(
                           child: TextFormField(
-                            controller: _searchController,
                             decoration: InputDecoration.collapsed(
                               hintText: AppLocalizations.of(context)
                                   .translate("find_something"),
                             ),
+                            onChanged: (value) {
+                              setState(() {
+                                _searchValue = value;
+                              });
+                            },
                           ),
                         ),
                         IconButton(
