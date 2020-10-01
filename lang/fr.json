@@ -27,6 +27,7 @@
   "password_does_not_match": "Les mots de passes ne correspondent pas",
   "email_already_in_use": "L'adresse mail est déjà utitisé",
   "my_payment_cards": "Mes cartes de paiement",
+  "no_payment_card": "Aucune carte de paiement. Appuyez sur $ pour en ajouter",
   "restaurant_common": "Restaurant",
   "find_restaurant": "Retrouver un restaurant",
   "find_something": "Rechercher quelque chose",
@@ -52,5 +53,14 @@
   "added_to_favorite": "Ajouté aux favoris",
   "removed_from_favorite": "Supprimé des favoris",
   "our_menus": "Nos menus",
-  "no_menu": "Aucun menu"
+  "no_menu": "Aucun menu",
+  "menus": "Nos menus",
+  "our_food_categories": "Nos types de nourritures",
+  "our_foods": "Nos plats",
+  "research": "Recherche",
+  "card_details": "Détails de la carte",
+  "cancel": "Annuler",
+  "confirm": "Confirmer",
+  "abandon_change_dialog_title": "Abandonner les changements",
+  "abandon_change_dialog_content": "Voulez-vous vraiment abandonner les changements?"
 }

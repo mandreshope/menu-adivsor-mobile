@@ -27,6 +27,7 @@
   "password_does_not_match": "The passwords don't match",
   "email_already_in_use": "The mail address is already in use",
   "my_payment_cards": "My payment cards",
+  "no_payment_card": "No payment card. Press $ button to add one",
   "restaurant_common": "Restaurant",
   "find_restaurant": "Find a restaurant",
   "find_something": "Find some foods / restaurants",
@@ -52,5 +53,14 @@
   "added_to_favorite": "Added to favorite",
   "removed_from_favorite": "Removed from favorite",
   "our_menus": "Our menus",
-  "no_menu": "No menu"
+  "no_menu": "No menu",
+  "menus": "Our menus",
+  "our_food_categories": "Nos types de nourritures",
+  "our_foods": "Nos plats",
+  "research": "Research",
+  "card_details": "Card details",
+  "cancel": "Cancel",
+  "confirm": "Confirmer",
+  "abandon_change_dialog_title": "Drop changes",
+  "abandon_change_dialog_content": "Do you really want to drop changes?"
 }
