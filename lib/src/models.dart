@@ -99,14 +99,18 @@ class User {
       photoURL: json['photoURL'],
       name: UserName.fromJson(json['name']),
       favoriteRestaurants:
-          (json['favoriteRestaurants'] as List<Map<String, dynamic>>)
-                  ?.map((data) => Restaurant.fromJson(data))
+          json['favoriteRestaurants'] is List<Map<String, dynamic>>
+              ? json['favoriteRestaurants']
+                      ?.map((data) => Restaurant.fromJson(data))
+                      ?.toList() ??
+                  []
+              : [],
+      favoriteFoods: json['favoriteFoods'] is List<Map<String, dynamic>>
+          ? json['favoriteFoods']
+                  ?.map((data) => Food.fromJson(data))
                   ?.toList() ??
-              [],
-      favoriteFoods: (json['favoriteFoods'] as List<Map<String, dynamic>>)
-              ?.map((data) => Food.fromJson(data))
-              ?.toList() ??
-          [],
+              []
+          : [],
     );
   }
 
