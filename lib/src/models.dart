@@ -91,6 +91,7 @@ class User {
   final Location location;
   final List<Restaurant> favoriteRestaurants;
   final List<Food> favoriteFoods;
+  final List<PaymentCard> paymentCards;
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
@@ -111,6 +112,14 @@ class User {
                   ?.toList() ??
               []
           : [],
+      paymentCards: json['paymentCards'] is List<Map<String, dynamic>>
+          ? json['paymentCards']
+                  ?.map(
+                    (data) => PaymentCard.fromJson(data),
+                  )
+                  ?.toList() ??
+              []
+          : [],
     );
   }
 
@@ -122,8 +131,9 @@ class User {
     this.photoURL,
     this.address,
     this.location,
-    this.favoriteRestaurants,
-    this.favoriteFoods,
+    this.favoriteRestaurants = const [],
+    this.favoriteFoods = const [],
+    this.paymentCards = const [],
   });
 
   Map<String, dynamic> toJson() => {
