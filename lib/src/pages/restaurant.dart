@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
@@ -17,12 +18,20 @@ class RestaurantPage extends StatefulWidget {
   _RestaurantPageState createState() => _RestaurantPageState();
 }
 
-class _RestaurantPageState extends State<RestaurantPage> {
+class _RestaurantPageState extends State<RestaurantPage>
+    with SingleTickerProviderStateMixin {
   bool isInFavorite = false;
+  TabController _controller;
 
   @override
   void initState() {
     super.initState();
+
+    _controller = TabController(
+      vsync: this,
+      initialIndex: 0,
+      length: 3,
+    );
 
     AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
     if (authContext.currentUser.favoriteRestaurants
@@ -45,38 +54,72 @@ class _RestaurantPageState extends State<RestaurantPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            CustomScrollView(
-              physics: BouncingScrollPhysics(),
-              slivers: [
-                SliverAppBar(
-                  expandedHeight: 200.0,
-                  floating: false,
-                  pinned: true,
-                  actions: [
-                    IconButton(
-                      onPressed: _toggleFavorite,
-                      icon: Icon(
-                        isInFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: Colors.white,
-                      ),
-                    )
-                  ],
-                  flexibleSpace: FlexibleSpaceBar(
-                    background: Image.network(
-                      widget.restaurant.imageURL,
-                      fit: BoxFit.cover,
-                    ),
-                    title: Text(
-                      widget.restaurant.name,
+        child: CustomScrollView(
+          physics: BouncingScrollPhysics(),
+          slivers: [
+            SliverAppBar(
+              expandedHeight: 200.0,
+              floating: false,
+              pinned: true,
+              stretch: true,
+              title: Text(
+                widget.restaurant.name,
+              ),
+              bottom: TabBar(
+                controller: _controller,
+                tabs: [
+                  Tab(
+                    text: AppLocalizations.of(context).translate('description'),
+                    icon: FaIcon(
+                      FontAwesomeIcons.infoCircle,
                     ),
                   ),
+                  Tab(
+                    text: AppLocalizations.of(context).translate('menus'),
+                    icon: FaIcon(
+                      FontAwesomeIcons.hamburger,
+                    ),
+                  ),
+                  Tab(
+                    text: AppLocalizations.of(context).translate('research'),
+                    icon: FaIcon(
+                      FontAwesomeIcons.search,
+                    ),
+                  ),
+                ],
+              ),
+              onStretchTrigger: () async {
+                print("Danze");
+                return;
+              },
+              actions: [
+                IconButton(
+                  onPressed: _toggleFavorite,
+                  icon: Icon(
+                    isInFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: Colors.white,
+                  ),
                 ),
-                SliverFillRemaining(
-                  fillOverscroll: true,
-                  child: Column(
+              ],
+              flexibleSpace: FlexibleSpaceBar(
+                background: Image.network(
+                  widget.restaurant.imageURL,
+                  fit: BoxFit.cover,
+                  color: Colors.black45,
+                  colorBlendMode: BlendMode.darken,
+                ),
+                stretchModes: [
+                  StretchMode.zoomBackground,
+                ],
+              ),
+            ),
+            SliverFillRemaining(
+              fillOverscroll: true,
+              child: TabBarView(
+                controller: _controller,
+                physics: BouncingScrollPhysics(),
+                children: [
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
@@ -117,7 +160,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
                               widget.restaurant.description?.length > 0 ?? false
                                   ? widget.restaurant.description
                                   : AppLocalizations.of(context)
-                                      .translate('our_menus'),
+                                      .translate('our_foods'),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 22,
@@ -158,8 +201,10 @@ class _RestaurantPageState extends State<RestaurantPage> {
                       ),
                     ],
                   ),
-                ),
-              ],
+                  Column(),
+                  Column(),
+                ],
+              ),
             ),
           ],
         ),
