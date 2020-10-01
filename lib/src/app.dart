@@ -26,10 +26,10 @@ class _MyAppState extends State<MyApp> {
           create: (_) => BagContext(),
         ),
         ChangeNotifierProvider(
-          create: (context) => SettingContext(),
+          create: (_) => SettingContext(),
         ),
         ChangeNotifierProvider(
-          create: (context) => DataContext(),
+          create: (_) => DataContext(),
         )
       ],
       child: MaterialApp(
