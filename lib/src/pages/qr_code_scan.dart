@@ -87,7 +87,6 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
     this.controller = controller;
     controller.scannedDataStream.listen((String scanData) async {
       controller.pauseCamera();
-      print('Scanned data : $scanData');
       if (!scanData
           .startsWith(RegExp(r'https://(www\.|)menuadvisor.fr/restaurants/'))) {
         Fluttertoast.showToast(
