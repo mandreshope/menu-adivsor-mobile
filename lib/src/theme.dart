@@ -26,6 +26,9 @@ final ThemeData theme = ThemeData(
       ),
     ),
   ),
+  appBarTheme: AppBarTheme(
+    centerTitle: true,
+  ),
   inputDecorationTheme: InputDecorationTheme(
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),

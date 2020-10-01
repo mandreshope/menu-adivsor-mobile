@@ -11,7 +11,6 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
         title: Text(
           AppLocalizations.of(context).translate('my_payment_cards'),
         ),

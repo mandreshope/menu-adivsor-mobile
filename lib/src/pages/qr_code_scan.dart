@@ -25,7 +25,6 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Scan code QR"),
-        centerTitle: true,
       ),
       backgroundColor: BACKGROUND_COLOR,
       body: SafeArea(

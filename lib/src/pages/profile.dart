@@ -37,7 +37,6 @@ class _ProfilePageState extends State<ProfilePage> {
             title: Text(
               'Profil et paramètres',
             ),
-            centerTitle: true,
             actions: [
               IconButton(
                 tooltip: AppLocalizations.of(context).translate('signout'),

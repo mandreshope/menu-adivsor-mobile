@@ -14,7 +14,6 @@ class _DiscoverPageState extends State<DiscoverPage> {
         title: Text(
           AppLocalizations.of(context).translate('discover'),
         ),
-        centerTitle: true,
       ),
     );
   }
