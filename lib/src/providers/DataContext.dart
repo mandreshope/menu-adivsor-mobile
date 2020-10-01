@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/services/api.dart';
+import 'package:menu_advisor/src/types.dart';
 
 class DataContext extends ChangeNotifier {
   List<Food> popularFoods = [];
@@ -12,6 +13,9 @@ class DataContext extends ChangeNotifier {
   List<Food> foods = [];
   bool loadingFoods = false;
 
+  List<SearchResult> searchResults = [];
+  bool loadingSearch = false;
+
   final Api _api = Api.instance;
 
   DataContext() {
@@ -21,13 +25,13 @@ class DataContext extends ChangeNotifier {
 
   Future refresh() async {
     loadingPopularFoods = true;
+    loadingNearestRestaurants = true;
     notifyListeners();
+
     await _fetchPopularFoods();
     loadingPopularFoods = false;
     notifyListeners();
 
-    loadingNearestRestaurants = true;
-    notifyListeners();
     await _fetchPopularRestaurants();
     loadingNearestRestaurants = false;
     notifyListeners();
@@ -41,10 +45,12 @@ class DataContext extends ChangeNotifier {
         filters: {"searchCategory": "popular"},
       );
     } catch (error) {
+      print("Error while fetching popular restaurants");
       print(error);
+    } finally {
+      loadingNearestRestaurants = false;
+      notifyListeners();
     }
-    loadingNearestRestaurants = false;
-    notifyListeners();
   }
 
   _fetchPopularFoods() async {
@@ -60,6 +66,18 @@ class DataContext extends ChangeNotifier {
     loadingPopularFoods = false;
     notifyListeners();
     return;
+  }
+
+  search(String query) async {
+    loadingSearch = true;
+    notifyListeners();
+
+    try {
+      searchResults = await _api.search(query);
+    } catch (error) {} finally {
+      loadingSearch = false;
+      notifyListeners();
+    }
   }
 
   fetchFoods(Map<String, dynamic> filters) async {

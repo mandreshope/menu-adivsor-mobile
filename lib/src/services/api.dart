@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/types.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Api {
@@ -57,7 +58,7 @@ class Api {
         'email': email,
         'password': password,
       },
-    ).then((response) {
+    ).then<User>((response) {
       if (response.statusCode == 200) {
         Map<String, dynamic> data = json.decode(response.body);
         accessToken = data['access_token'];
@@ -90,12 +91,13 @@ class Api {
         'password': password,
         'phoneNumber': phoneNumber,
       },
-    ).then((response) {
+    ).then<User>((response) {
       if (response.statusCode == 200) {
         Map<String, dynamic> data = json.decode(response.body);
         User user = User.fromJson(data['newUser']);
         return user;
       }
+
       return Future.error({
         'status': response.statusCode,
         'body': json.decode(response.body),
@@ -119,7 +121,7 @@ class Api {
       }
     }
 
-    var result = http
+    return http
         .get('$_apiURL/restaurants$query')
         .then<List<Restaurant>>((response) {
       if (response.statusCode == 200) {
@@ -128,10 +130,7 @@ class Api {
       }
 
       return Future.error(json.decode(response.body));
-    }).catchError((error) {
-      return Future.error(error);
     });
-    return result;
   }
 
   Future<List<Food>> getFoods({
@@ -162,8 +161,6 @@ class Api {
       }
 
       return Future.error(json.decode(response.body));
-    }).catchError((error) {
-      return Future.error(error);
     });
   }
 
@@ -207,8 +204,6 @@ class Api {
         return true;
       }
       return false;
-    }).catchError((error) {
-      return Future.error(error);
     });
   }
 
@@ -222,8 +217,19 @@ class Api {
         return true;
       }
       return false;
-    }).catchError((error) {
-      return Future.error(error);
+    });
+  }
+
+  Future<List<SearchResult>> search(String query) {
+    return http
+        .post('$_apiURL/search?q=$query')
+        .then<List<SearchResult>>((response) {
+      if (response.statusCode == 200) {
+        List<Map<String, dynamic>> results = json.decode(response.body);
+        return results.map((e) => SearchResult.fromJson(e)).toList();
+      }
+
+      return Future.error(json.decode(response.body));
     });
   }
 }
