@@ -12,6 +12,7 @@ import 'package:menu_advisor/src/pages/profile.dart';
 import 'package:menu_advisor/src/pages/qr_code_scan.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
+import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
@@ -72,9 +73,13 @@ class ScaffoldWithBottomMenu extends StatelessWidget {
           FontAwesomeIcons.user,
           color: Colors.white,
         ),
-        onPressed: () {
+        onPressed: () async {
           AuthContext authContext =
               Provider.of<AuthContext>(context, listen: false);
+
+          SettingContext settingContext =
+              Provider.of<SettingContext>(context, listen: false);
+          await settingContext.initialized;
 
           if (authContext.currentUser != null)
             RouteUtil.goTo(
