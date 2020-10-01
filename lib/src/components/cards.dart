@@ -5,6 +5,7 @@ import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/food.dart';
 import 'package:menu_advisor/src/pages/restaurant.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
+import 'package:menu_advisor/src/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 
@@ -265,6 +266,51 @@ class FoodCard extends StatelessWidget {
               size: 15,
             )
       ],
+    );
+  }
+}
+
+class MenuCard extends StatelessWidget {
+  final Menu menu;
+
+  const MenuCard({
+    Key key,
+    @required this.menu,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return AspectRatio(
+      aspectRatio: 5,
+      child: Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            AspectRatio(
+              aspectRatio: 1,
+              child: Container(
+                width: MediaQuery.of(context).size.width / 8,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  image: DecorationImage(
+                    image: NetworkImage(
+                      menu.imageURL,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(width: 5.0),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
