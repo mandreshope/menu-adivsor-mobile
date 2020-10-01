@@ -53,3 +53,19 @@ class UserName {
 class PaymentCard {}
 
 class Menu {}
+
+enum SearchResultType { food, menu, restaurant }
+
+class SearchResult {
+  final SearchResultType type;
+  final Map<String, dynamic> content;
+
+  SearchResult({@required this.type, @required this.content});
+
+  factory SearchResult.fromJson(Map<String, dynamic> json) => SearchResult(
+        type: SearchResultType.values.firstWhere(
+          (e) => e.toString() == 'SearchResultType.${json['type']}',
+        ),
+        content: json['content'],
+      );
+}
