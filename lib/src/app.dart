@@ -32,31 +32,36 @@ class _MyAppState extends State<MyApp> {
           create: (_) => DataContext(),
         )
       ],
-      child: MaterialApp(
-        title: 'Menu Advisor',
-        theme: theme,
-        debugShowCheckedModeBanner: false,
-        localizationsDelegates: [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        localeResolutionCallback: (locale, supportedLocales) {
-          for (var supportedLocale in supportedLocales) {
-            if (supportedLocale.languageCode == locale.languageCode &&
-                supportedLocale.countryCode == locale.countryCode) {
-              return supportedLocale;
-            }
-          }
+      child: Consumer<SettingContext>(
+        builder: (_, settingContext, __) => MaterialApp(
+          title: 'Menu Advisor',
+          theme: theme,
+          debugShowCheckedModeBanner: false,
+          localizationsDelegates: [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          localeResolutionCallback: (locale, supportedLocales) {
+            if (settingContext.languageCode != null)
+              return Locale(settingContext.languageCode);
 
-          return supportedLocales.first;
-        },
-        supportedLocales: [
-          const Locale('en', 'US'),
-          const Locale('fr', 'FR'),
-        ],
-        home: Splash(),
+            for (var supportedLocale in supportedLocales) {
+              if (supportedLocale.languageCode == locale.languageCode &&
+                  supportedLocale.countryCode == locale.countryCode) {
+                return supportedLocale;
+              }
+            }
+
+            return supportedLocales.first;
+          },
+          supportedLocales: [
+            const Locale('en', 'US'),
+            const Locale('fr', 'FR'),
+          ],
+          home: Splash(),
+        ),
       ),
     );
   }
