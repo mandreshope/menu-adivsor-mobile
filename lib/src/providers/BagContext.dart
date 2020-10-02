@@ -7,8 +7,13 @@ class BagContext extends ChangeNotifier {
 
   bool addItem(Food item, number) {
     _itemCount++;
-    _items[item] = number;
-    return false;
+    _items.update(
+      item,
+      (value) => number,
+      ifAbsent: () => number,
+    );
+    notifyListeners();
+    return true;
   }
 
   Map<Food, int> get items => _items;
@@ -27,7 +32,11 @@ class BagContext extends ChangeNotifier {
 
   bool contains(Food food) {
     return _itemCount > 0 &&
-        _items.keys.firstWhere((element) => element.id == food.id) != null;
+        _items.keys.firstWhere(
+              (element) => element.id == food.id,
+              orElse: () => null,
+            ) !=
+            null;
   }
 
   void removeItem(Food food) {
