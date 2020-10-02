@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
@@ -120,6 +121,7 @@ class _RestaurantPageState extends State<RestaurantPage>
                 physics: BouncingScrollPhysics(),
                 children: [
                   Column(
+                    mainAxisSize: MainAxisSize.max,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
@@ -201,7 +203,45 @@ class _RestaurantPageState extends State<RestaurantPage>
                       ),
                     ],
                   ),
-                  Column(),
+                  widget.restaurant.menus.length > 0
+                      ? Column(
+                          mainAxisSize: MainAxisSize.max,
+                          children: widget.restaurant.menus
+                              .map(
+                                (e) => MenuCard(
+                                  menu: e,
+                                ),
+                              )
+                              .toList(),
+                        )
+                      : Column(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.warning,
+                              size: 80,
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 40.0,
+                              ),
+                              child: Text(
+                                AppLocalizations.of(context)
+                                    .translate('no_menu'),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  letterSpacing: 1.2,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                   Column(),
                 ],
               ),
