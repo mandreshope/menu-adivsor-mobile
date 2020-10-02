@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
+import 'package:menu_advisor/src/services/api.dart';
+import 'package:menu_advisor/src/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:provider/provider.dart';
 
@@ -22,8 +26,26 @@ class RestaurantPage extends StatefulWidget {
 class _RestaurantPageState extends State<RestaurantPage>
     with SingleTickerProviderStateMixin {
   bool isInFavorite = false;
+  bool loading = false;
   TabController _controller;
+
   String _searchValue = '';
+  List<SearchResult> searchResults = [];
+  Api _api = Api.instance;
+  Timer _timer;
+
+  void _onChanged(String value) {
+    setState(() {
+      loading = true;
+      _searchValue = value;
+    });
+
+    if (_timer?.isActive ?? false) {
+      _timer.cancel();
+    }
+
+    _timer = Timer(Duration(seconds: 1), _initSearch);
+  }
 
   @override
   void initState() {
@@ -41,6 +63,32 @@ class _RestaurantPageState extends State<RestaurantPage>
         1) isInFavorite = true;
   }
 
+  Future _initSearch() async {
+    if (_searchValue == '') {
+      _timer?.cancel();
+      return;
+    }
+
+    setState(() {
+      loading = true;
+    });
+    try {
+      var results = await _api.search(_searchValue);
+      setState(() {
+        searchResults = results;
+      });
+    } catch (error) {
+      print(error.toString());
+      Fluttertoast.showToast(
+        msg: AppLocalizations.of(context).translate('connection_issue'),
+      );
+    } finally {
+      setState(() {
+        loading = false;
+      });
+    }
+  }
+
   _toggleFavorite() {
     Fluttertoast.showToast(
       msg: AppLocalizations.of(context).translate(
@@ -48,7 +96,7 @@ class _RestaurantPageState extends State<RestaurantPage>
       ),
     );
     setState(() {
-      isInFavorite = true;
+      isInFavorite = !isInFavorite;
     });
   }
 
@@ -250,12 +298,13 @@ class _RestaurantPageState extends State<RestaurantPage>
                         children: [],
                       ),
                       Positioned(
-                        top: 10,
-                        left: 10,
-                        right: 10,
+                        top: 20,
+                        left: 20,
+                        right: 20,
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 20,
+                            vertical: 15,
                           ),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(.8),
@@ -285,11 +334,7 @@ class _RestaurantPageState extends State<RestaurantPage>
                                         hintText: AppLocalizations.of(context)
                                             .translate("find_something"),
                                       ),
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _searchValue = value;
-                                        });
-                                      },
+                                      onChanged: _onChanged,
                                     ),
                                   ),
                                 ],
