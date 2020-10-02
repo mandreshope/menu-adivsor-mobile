@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/services/api.dart';
-import 'package:menu_advisor/src/types.dart';
 
 class DataContext extends ChangeNotifier {
   List<Food> popularFoods = [];
@@ -12,9 +11,6 @@ class DataContext extends ChangeNotifier {
 
   List<Food> foods = [];
   bool loadingFoods = false;
-
-  List<SearchResult> searchResults = [];
-  bool loadingSearch = false;
 
   final Api _api = Api.instance;
 
@@ -66,18 +62,6 @@ class DataContext extends ChangeNotifier {
     loadingPopularFoods = false;
     notifyListeners();
     return;
-  }
-
-  search(String query) async {
-    loadingSearch = true;
-    notifyListeners();
-
-    try {
-      searchResults = await _api.search(query);
-    } catch (error) {} finally {
-      loadingSearch = false;
-      notifyListeners();
-    }
   }
 
   fetchFoods(Map<String, dynamic> filters) async {
