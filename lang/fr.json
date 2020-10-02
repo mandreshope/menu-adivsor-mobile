@@ -62,5 +62,8 @@
   "cancel": "Annuler",
   "confirm": "Confirmer",
   "abandon_change_dialog_title": "Abandonner les changements",
-  "abandon_change_dialog_content": "Voulez-vous vraiment abandonner les changements?"
+  "abandon_change_dialog_content": "Voulez-vous vraiment abandonner les changements?",
+  "start_by_typing_your_research": "Commencer par entrer votre recherche...",
+  "confirm_remove_from_bag_title": "Enlever du panier?",
+  "confirm_remove_from_bag_content": "Voulez-vous vraiment enlever l'élément du panier?"
 }
