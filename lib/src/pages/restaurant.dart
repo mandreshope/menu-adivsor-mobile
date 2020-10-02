@@ -23,6 +23,7 @@ class _RestaurantPageState extends State<RestaurantPage>
     with SingleTickerProviderStateMixin {
   bool isInFavorite = false;
   TabController _controller;
+  String _searchValue = '';
 
   @override
   void initState() {
@@ -242,7 +243,63 @@ class _RestaurantPageState extends State<RestaurantPage>
                             ),
                           ],
                         ),
-                  Column(),
+                  Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      Column(
+                        children: [],
+                      ),
+                      Positioned(
+                        top: 10,
+                        left: 10,
+                        right: 10,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(.8),
+                            borderRadius: BorderRadius.circular(50),
+                            boxShadow: [
+                              BoxShadow(
+                                blurRadius: 10,
+                                spreadRadius: 0,
+                                color: Colors.black26,
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Row(
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  FaIcon(
+                                    FontAwesomeIcons.search,
+                                    size: 16,
+                                  ),
+                                  SizedBox(width: 10),
+                                  Expanded(
+                                    child: TextFormField(
+                                      decoration: InputDecoration.collapsed(
+                                        hintText: AppLocalizations.of(context)
+                                            .translate("find_something"),
+                                      ),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _searchValue = value;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
                 ],
               ),
             ),
