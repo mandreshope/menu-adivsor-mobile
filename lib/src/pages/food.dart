@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
@@ -25,6 +26,12 @@ class _FoodPageState extends State<FoodPage> {
   @override
   void initState() {
     super.initState();
+
+    AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
+    isInFavorite = authContext.currentUser.favoriteFoods.firstWhere(
+            (element) => element.id == widget.food.id,
+            orElse: () => null) !=
+        null;
   }
 
   @override
@@ -191,7 +198,7 @@ class _FoodPageState extends State<FoodPage> {
                           },
                           child: Text(
                             AppLocalizations.of(context)
-                                .translate("add_to_bag"),
+                                .translate("add_to_cart"),
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -295,7 +302,7 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
                 right: 25.0,
               ),
               child: Text(
-                AppLocalizations.of(context).translate('add_to_bag'),
+                AppLocalizations.of(context).translate('add_to_cart'),
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
