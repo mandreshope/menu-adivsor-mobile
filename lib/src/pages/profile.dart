@@ -18,10 +18,12 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final List<String> _supportedLanguages = [
+    'system',
     'fr',
     'en',
   ];
   final List<String> _languages = [
+    'system_setting',
     'Français',
     'English',
   ];
@@ -31,11 +33,12 @@ class _ProfilePageState extends State<ProfilePage> {
     return Consumer<SettingContext>(
       builder: (_, settingContext, __) {
         String languageCode = settingContext.languageCode;
+        bool isSystemSetting = settingContext.isSystemSetting;
 
         return ScaffoldWithBottomMenu(
           appBar: AppBar(
             title: Text(
-              'Profil et paramètres',
+              AppLocalizations.of(context).translate('profile_and_settings'),
             ),
             actions: [
               IconButton(
@@ -64,10 +67,17 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: CircleAvatar(
                     radius: 60,
                     backgroundColor: Colors.white,
-                    child: Icon(
-                      Icons.person,
-                      color: Colors.black,
-                      size: 50,
+                    child: Consumer<AuthContext>(
+                      builder: (_, authContext, __) =>
+                          authContext.currentUser.photoURL == null
+                              ? Icon(
+                                  Icons.person,
+                                  color: Colors.black,
+                                  size: 50,
+                                )
+                              : Image.asset(
+                                  authContext.currentUser.photoURL,
+                                ),
                     ),
                   ),
                 ),
@@ -95,29 +105,35 @@ class _ProfilePageState extends State<ProfilePage> {
                         style: Theme.of(context).textTheme.headline6,
                       ),
                       DropdownButton<String>(
-                          elevation: 16,
-                          isExpanded: true,
-                          value: languageCode,
-                          onChanged: (String languageCode) {
-                            SettingContext settingContext =
-                                Provider.of<SettingContext>(context,
-                                    listen: false);
+                        elevation: 16,
+                        isExpanded: true,
+                        value: isSystemSetting ? 'system' : languageCode,
+                        onChanged: (String languageCode) {
+                          SettingContext settingContext =
+                              Provider.of<SettingContext>(context,
+                                  listen: false);
 
-                            settingContext.languageCode = languageCode;
-                          },
-                          style: TextStyle(
-                            color: Colors.grey[700],
-                          ),
-                          items: [
-                            for (int i = 0; i < _supportedLanguages.length; i++)
-                              DropdownMenuItem<String>(
-                                value: _supportedLanguages[i],
-                                child: Text(
-                                  _languages[i],
-                                  style: TextStyle(color: Colors.grey),
+                          settingContext.languageCode = languageCode;
+                        },
+                        style: TextStyle(
+                          color: Colors.grey[700],
+                        ),
+                        items: [
+                          for (int i = 0; i < _supportedLanguages.length; i++)
+                            DropdownMenuItem<String>(
+                              value: _supportedLanguages[i],
+                              child: Text(
+                                i == 0
+                                    ? AppLocalizations.of(context)
+                                        .translate(_languages[i])
+                                    : _languages[i],
+                                style: TextStyle(
+                                  color: Colors.grey,
                                 ),
-                              )
-                          ]),
+                              ),
+                            ),
+                        ],
+                      ),
                       SizedBox(
                         height: 30,
                       ),

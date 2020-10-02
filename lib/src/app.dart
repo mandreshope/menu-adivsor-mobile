@@ -27,6 +27,7 @@ class _MyAppState extends State<MyApp> {
         ),
         ChangeNotifierProvider(
           create: (_) => SettingContext(),
+          lazy: false,
         ),
         ChangeNotifierProvider(
           create: (_) => DataContext(),
@@ -43,6 +44,7 @@ class _MyAppState extends State<MyApp> {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
+          locale: Locale(settingContext.languageCode),
           localeResolutionCallback: (locale, supportedLocales) {
             if (settingContext.languageCode != null)
               return Locale(settingContext.languageCode);
