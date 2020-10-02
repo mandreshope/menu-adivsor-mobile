@@ -27,7 +27,8 @@ class _SearchPageState extends State<SearchPage> {
               child: _searchValue.length == 0
                   ? Center(
                       child: Text(
-                        "Commencer par entrer votre recherche...",
+                        AppLocalizations.of(context)
+                            .translate('start_by_typing_your_research'),
                       ),
                     )
                   : Column(
