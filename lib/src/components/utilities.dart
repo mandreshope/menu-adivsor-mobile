@@ -252,13 +252,23 @@ class BagModal extends StatelessWidget {
           ),
           Expanded(
             child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10,
+              ),
               physics: BouncingScrollPhysics(),
               child: Consumer<BagContext>(
                 builder: (_, bagContext, __) {
                   final List<Widget> list = [];
-                  bagContext.items.forEach((food, count) {
-                    list.add(BagItem(food: food, count: count));
-                  });
+                  bagContext.items.forEach(
+                    (food, count) {
+                      list.add(
+                        BagItem(
+                          food: food,
+                          count: count,
+                        ),
+                      );
+                    },
+                  );
 
                   if (bagContext.itemCount == 0)
                     return Center(
@@ -324,20 +334,31 @@ class BagItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 4.0,
+      elevation: 2.0,
+      margin: const EdgeInsets.all(10.0),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(10),
       ),
-      child: Padding(
+      child: Container(
         padding: const EdgeInsets.all(10),
         child: Row(
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            CircleAvatar(
-              backgroundImage: NetworkImage(food.imageURL),
-              backgroundColor: Colors.grey,
-              maxRadius: 20,
+            food.imageURL != null
+                ? CircleAvatar(
+                    backgroundImage: NetworkImage(
+                      food.imageURL,
+                    ),
+                    onBackgroundImageError: (_, __) {},
+                    backgroundColor: Colors.grey,
+                    maxRadius: 20,
+                  )
+                : Icon(
+                    Icons.fastfood,
+                  ),
+            SizedBox(
+              width: 10,
             ),
             Expanded(
               child: Column(
@@ -354,14 +375,14 @@ class BagItem extends StatelessWidget {
                     '${food.price}€',
                     style: TextStyle(
                       fontSize: 18,
-                      color: Colors.grey[300],
+                      color: Colors.grey[600],
                     ),
                   ),
                 ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5.0),
+              padding: const EdgeInsets.symmetric(horizontal: 25.0),
               child: Text('$count'),
             ),
             CircleButton(
@@ -370,7 +391,12 @@ class BagItem extends StatelessWidget {
                 Icons.delete,
                 color: Colors.white,
               ),
-              onPressed: () {},
+              onPressed: () {
+                BagContext bagContext =
+                    Provider.of<BagContext>(context, listen: false);
+
+                bagContext.removeItem(food);
+              },
             ),
           ],
         ),
