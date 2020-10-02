@@ -6,7 +6,7 @@ import 'package:menu_advisor/src/types.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Api {
-  final String _apiURL = 'https://menu-advisor.herokuapp.com/api';
+  final String _apiURL = 'https://menu-advisor.herokuapp.com';
   String _accessToken;
   String _refreshToken;
 
@@ -37,15 +37,42 @@ class Api {
       _accessToken = prefs.getString('access_token');
       _refreshToken = prefs.getString('refresh_token');
     }
-    // var newTokens = await _checkToken();
-    // if (newTokens != null)
+    await _refreshTokens();
   }
 
-  // Future _checkToken() {
-  //   return http.get('$_apiURL/check-token?access_token=$_accessToken&refresh_token=$_refreshToken').then((response) {
-  //     if (response.statusCode == 200) {}
-  //   });
-  // }
+  Future _refreshTokens() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    var newTokens = await _checkToken();
+    if (newTokens.length > 0) {
+      _accessToken = newTokens[0];
+      _refreshToken = newTokens[1];
+
+      prefs.setString('access_token', _accessToken);
+      prefs.setString('refresh_token', _refreshToken);
+    }
+
+    return;
+  }
+
+  Future<List<String>> _checkToken() {
+    return http
+        .get(
+            '$_apiURL/check-token?access_token=$_accessToken&refresh_token=$_refreshToken')
+        .then<List<String>>((response) {
+      if (response.statusCode == 200) {
+        var result = json.decode(response.body);
+
+        if (result is Map<String, dynamic> && result.containsKey('validity')) {
+          if (result['validity'] == 'valid')
+            return [];
+          else
+            return [result['access_token'], result['refresh_token']];
+        }
+      }
+      return [];
+    });
+  }
 
   static Api _instance;
 
@@ -194,7 +221,9 @@ class Api {
         return Future.error(json.decode(response.body));
       });
 
-  Future<bool> addToFavoriteFood(Food food) {
+  Future<bool> addToFavoriteFood(Food food) async {
+    await _refreshTokens();
+
     return http.post('$_apiURL/users/favoriteFood/add', body: {
       "id": food.id,
     }, headers: {
@@ -207,7 +236,9 @@ class Api {
     });
   }
 
-  Future removeFromFavoriteFood(Food food) {
+  Future removeFromFavoriteFood(Food food) async {
+    await _refreshTokens();
+
     return http.post('$_apiURL/users/favoriteFood/delete', body: {
       "id": food.id,
     }, headers: {
