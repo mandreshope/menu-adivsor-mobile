@@ -65,5 +65,7 @@
   "abandon_change_dialog_content": "Voulez-vous vraiment abandonner les changements?",
   "start_by_typing_your_research": "Commencer par entrer votre recherche...",
   "confirm_remove_from_bag_title": "Enlever du panier?",
-  "confirm_remove_from_bag_content": "Voulez-vous vraiment enlever l'élément du panier?"
+  "confirm_remove_from_bag_content": "Voulez-vous vraiment enlever l'élément du panier?",
+  "no_result": "Aucun résultat trouvé",
+  "connection_issue": "Problème de connexion"
 }

@@ -65,5 +65,7 @@
   "abandon_change_dialog_content": "Do you really want to drop changes?",
   "start_by_typing_your_research": "Start by typing your research...",
   "confirm_remove_from_bag_title": "Remove from bag?",
-  "confirm_remove_from_bag_content": "Do you really want to remove the element from bag?"
+  "confirm_remove_from_bag_content": "Do you really want to remove the element from bag?",
+  "no_result": "No result found",
+  "connection_issue": "There's a connnection issue"
 }
