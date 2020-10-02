@@ -208,10 +208,8 @@ class _RestaurantPageState extends State<RestaurantPage>
                               height: 30,
                             ),
                             Text(
-                              widget.restaurant.description?.length > 0 ?? false
-                                  ? widget.restaurant.description
-                                  : AppLocalizations.of(context)
-                                      .translate('our_foods'),
+                              AppLocalizations.of(context)
+                                  .translate('our_foods'),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 22,
@@ -220,7 +218,7 @@ class _RestaurantPageState extends State<RestaurantPage>
                             SizedBox(
                               height: 12,
                             ),
-                            widget.restaurant.menus.length > 0
+                            widget.restaurant.foods.length > 0
                                 ? Wrap(
                                     children: widget.restaurant.menus
                                         .map(
@@ -238,10 +236,8 @@ class _RestaurantPageState extends State<RestaurantPage>
                                         .toList(),
                                   )
                                 : Text(
-                                    widget.restaurant.description.length > 0
-                                        ? widget.restaurant.description
-                                        : AppLocalizations.of(context)
-                                            .translate('no_menu'),
+                                    AppLocalizations.of(context)
+                                        .translate('no_food'),
                                     style: TextStyle(
                                       fontSize: 16,
                                       color: Color(0xff6D6D6D),
