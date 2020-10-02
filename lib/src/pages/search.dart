@@ -1,5 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/services/api.dart';
+import 'package:menu_advisor/src/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 
 class SearchPage extends StatefulWidget {
@@ -11,6 +17,48 @@ class _SearchPageState extends State<SearchPage> {
   String _searchValue = '';
   bool loading = false;
   bool isSettingExpanded = false;
+  List<SearchResult> searchResults = [];
+  Api _api = Api.instance;
+  Timer _timer;
+
+  void _onChanged(String value) {
+    setState(() {
+      loading = true;
+      _searchValue = value;
+    });
+
+    if (_timer?.isActive ?? false) {
+      _timer.cancel();
+    }
+
+    _timer = Timer(Duration(seconds: 1), _initSearch);
+  }
+
+  Future _initSearch() async {
+    if (_searchValue == '') {
+      _timer?.cancel();
+      return;
+    }
+
+    setState(() {
+      loading = true;
+    });
+    try {
+      var results = await _api.search(_searchValue);
+      setState(() {
+        searchResults = results;
+      });
+    } catch (error) {
+      print(error.toString());
+      Fluttertoast.showToast(
+        msg: AppLocalizations.of(context).translate('connection_issue'),
+      );
+    } finally {
+      setState(() {
+        loading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,18 +70,41 @@ class _SearchPageState extends State<SearchPage> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            SingleChildScrollView(
-              padding: EdgeInsets.only(top: 90),
-              child: _searchValue.length == 0
-                  ? Center(
-                      child: Text(
-                        AppLocalizations.of(context)
-                            .translate('start_by_typing_your_research'),
+            RefreshIndicator(
+              onRefresh: () async {
+                await _initSearch();
+                return;
+              },
+              child: SingleChildScrollView(
+                padding: EdgeInsets.only(top: 90),
+                physics: BouncingScrollPhysics(),
+                child: _searchValue.length == 0
+                    ? Center(
+                        child: Text(
+                          AppLocalizations.of(context)
+                              .translate('start_by_typing_your_research'),
+                        ),
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          if (loading)
+                            Center(
+                              child: CircularProgressIndicator(
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(CRIMSON),
+                              ),
+                            ),
+                          if (!loading && searchResults.length == 0)
+                            Center(
+                              child: Text(
+                                AppLocalizations.of(context)
+                                    .translate('no_result'),
+                              ),
+                            ),
+                        ],
                       ),
-                    )
-                  : Column(
-                      children: [],
-                    ),
+              ),
             ),
             Positioned(
               top: 20,
@@ -46,6 +117,7 @@ class _SearchPageState extends State<SearchPage> {
                 ),
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20,
+                  vertical: 15,
                 ),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(.8),
@@ -60,43 +132,22 @@ class _SearchPageState extends State<SearchPage> {
                     ),
                   ],
                 ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
                   children: [
-                    Row(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        FaIcon(
-                          FontAwesomeIcons.search,
-                          size: 16,
+                    FaIcon(
+                      FontAwesomeIcons.search,
+                      size: 16,
+                    ),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: TextFormField(
+                        decoration: InputDecoration.collapsed(
+                          hintText: AppLocalizations.of(context)
+                              .translate("find_something"),
                         ),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: TextFormField(
-                            decoration: InputDecoration.collapsed(
-                              hintText: AppLocalizations.of(context)
-                                  .translate("find_something"),
-                            ),
-                            onChanged: (value) {
-                              setState(() {
-                                _searchValue = value;
-                              });
-                            },
-                          ),
-                        ),
-                        IconButton(
-                          padding: EdgeInsets.zero,
-                          onPressed: () {
-                            setState(() {
-                              isSettingExpanded = !isSettingExpanded;
-                            });
-                          },
-                          icon: FaIcon(
-                            FontAwesomeIcons.slidersH,
-                            size: 16,
-                          ),
-                        ),
-                      ],
+                        onChanged: _onChanged,
+                      ),
                     ),
                   ],
                 ),
