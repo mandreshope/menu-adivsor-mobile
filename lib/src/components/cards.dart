@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/food.dart';
 import 'package:menu_advisor/src/pages/restaurant.dart';
+import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:provider/provider.dart';
 
 class CategoryCard extends StatelessWidget {
   final String image;
@@ -183,32 +187,55 @@ class FoodCard extends StatelessWidget {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            RawMaterialButton(
-                              fillColor: DARK_BLUE,
-                              padding: const EdgeInsets.all(15),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.only(
-                                  bottomLeft: Radius.circular(30),
-                                  topRight: Radius.circular(30),
-                                ),
-                              ),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Colors.white,
-                                ),
-                                child: Icon(
-                                  Icons.add,
-                                ),
-                              ),
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (_) => AddToBagDialog(
-                                    food: food,
+                            Consumer<BagContext>(
+                              builder: (_, bagContext, __) => RawMaterialButton(
+                                fillColor: DARK_BLUE,
+                                padding: const EdgeInsets.all(15),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.only(
+                                    bottomLeft: Radius.circular(30),
+                                    topRight: Radius.circular(30),
                                   ),
-                                );
-                              },
+                                ),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.white,
+                                  ),
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: FaIcon(
+                                    bagContext.contains(food)
+                                        ? FontAwesomeIcons.minus
+                                        : FontAwesomeIcons.plus,
+                                    size: 10,
+                                  ),
+                                ),
+                                onPressed: () async {
+                                  if (bagContext.contains(food)) {
+                                    var result = await showDialog(
+                                      context: context,
+                                      builder: (_) => ConfirmationDialog(
+                                        title: AppLocalizations.of(context)
+                                            .translate(
+                                                'confirm_remove_from_bag_title'),
+                                        content: AppLocalizations.of(context)
+                                            .translate(
+                                                'confirm_remove_from_bag_content'),
+                                      ),
+                                    );
+
+                                    if (result is bool && result) {
+                                      bagContext.removeItem(food);
+                                    }
+                                  } else
+                                    showDialog(
+                                      context: context,
+                                      builder: (_) => AddToBagDialog(
+                                        food: food,
+                                      ),
+                                    );
+                                },
+                              ),
                             ),
                             SizedBox(
                               width: 20,

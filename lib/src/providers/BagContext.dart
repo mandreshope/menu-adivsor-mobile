@@ -7,6 +7,7 @@ class BagContext extends ChangeNotifier {
 
   bool addItem(Food item, number) {
     _itemCount++;
+    _items[item] = number;
     return false;
   }
 
@@ -22,5 +23,16 @@ class BagContext extends ChangeNotifier {
     });
 
     return totalPrice;
+  }
+
+  bool contains(Food food) {
+    return _itemCount > 0 &&
+        _items.keys.firstWhere((element) => element.id == food.id) != null;
+  }
+
+  void removeItem(Food food) {
+    _items.removeWhere((key, _) => key.id == food.id);
+    _itemCount--;
+    notifyListeners();
   }
 }
