@@ -14,6 +14,7 @@ class RouteUtil {
     @required String routeName,
     PageTransitionType transitionType = PageTransitionType.fade,
     RoutingMethod method = RoutingMethod.initial,
+    Object arguments,
   }) {
     switch (method) {
       case RoutingMethod.initial:
@@ -22,6 +23,7 @@ class RouteUtil {
             duration: Duration(milliseconds: 500),
             settings: RouteSettings(
               name: routeName,
+              arguments: arguments,
             ),
             child: child,
             type: transitionType,
@@ -35,6 +37,7 @@ class RouteUtil {
             duration: Duration(milliseconds: 500),
             settings: RouteSettings(
               name: routeName,
+              arguments: arguments,
             ),
             child: child,
             type: transitionType,
@@ -48,6 +51,7 @@ class RouteUtil {
             duration: Duration(milliseconds: 500),
             settings: RouteSettings(
               name: routeName,
+              arguments: arguments,
             ),
             child: child,
             type: transitionType,
