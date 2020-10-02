@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/animations/FadeAnimation.dart';
@@ -83,6 +84,14 @@ class _HomePageState extends State<HomePage> {
           child: Stack(
             fit: StackFit.expand,
             children: [
+              Positioned(
+                top: MediaQuery.of(context).size.height / 2 - 60,
+                left: 0,
+                child: SvgPicture.asset(
+                  'assets/images/wave-background-yellow.svg',
+                  width: 250,
+                ),
+              ),
               RefreshIndicator(
                 onRefresh: () async {
                   DataContext dataContext =
