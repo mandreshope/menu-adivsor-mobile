@@ -70,12 +70,26 @@ class BagModal extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.all(30.0),
-            child: Text(
-              AppLocalizations.of(context).translate("in_bag"),
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  AppLocalizations.of(context).translate("in_cart"),
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Consumer<BagContext>(
+                  builder: (_, bagContext, __) => Text(
+                    'Total: ${bagContext.totalPrice}€',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                )
+              ],
             ),
           ),
           Expanded(
@@ -102,7 +116,7 @@ class BagModal extends StatelessWidget {
                     return Center(
                       child: Text(
                         AppLocalizations.of(context)
-                            .translate('no_item_in_bag'),
+                            .translate('no_item_in_cart'),
                       ),
                     );
 
@@ -121,7 +135,7 @@ class BagModal extends StatelessWidget {
 
               if (bagContext.itemCount == 0)
                 Fluttertoast.showToast(
-                  msg: AppLocalizations.of(context).translate('empty_bag'),
+                  msg: AppLocalizations.of(context).translate('empty_cart'),
                 );
               else
                 RouteUtil.goTo(
@@ -219,11 +233,23 @@ class BagItem extends StatelessWidget {
                 Icons.delete,
                 color: Colors.white,
               ),
-              onPressed: () {
-                BagContext bagContext =
-                    Provider.of<BagContext>(context, listen: false);
+              onPressed: () async {
+                var result = await showDialog(
+                  context: context,
+                  child: ConfirmationDialog(
+                    title: AppLocalizations.of(context)
+                        .translate('remove_item_confirmation_title'),
+                    content: AppLocalizations.of(context)
+                        .translate('remove_item_confirmation_content'),
+                  ),
+                );
 
-                bagContext.removeItem(food);
+                if (result is bool && result) {
+                  BagContext bagContext =
+                      Provider.of<BagContext>(context, listen: false);
+
+                  bagContext.removeItem(food);
+                }
               },
             ),
           ],
