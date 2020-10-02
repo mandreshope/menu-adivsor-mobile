@@ -6,6 +6,7 @@ import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/food.dart';
 import 'package:menu_advisor/src/pages/restaurant.dart';
+import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/types.dart';
@@ -217,10 +218,10 @@ class FoodCard extends StatelessWidget {
                                       builder: (_) => ConfirmationDialog(
                                         title: AppLocalizations.of(context)
                                             .translate(
-                                                'confirm_remove_from_bag_title'),
+                                                'confirm_remove_from_cart_title'),
                                         content: AppLocalizations.of(context)
                                             .translate(
-                                                'confirm_remove_from_bag_content'),
+                                                'confirm_remove_from_cart_content'),
                                       ),
                                     );
 
@@ -380,32 +381,59 @@ class RestaurantCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 30.0,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            Text(
-                              restaurant.name,
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 30.0,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Text(
+                                    restaurant.name,
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    AppLocalizations.of(context)
+                                        .translate(restaurant.type),
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            SizedBox(height: 5),
-                            Text(
-                              AppLocalizations.of(context)
-                                  .translate(restaurant.type),
-                              style: TextStyle(
-                                fontSize: 16,
+                          ),
+                          Align(
+                            alignment: Alignment.bottomRight,
+                            child: Consumer<AuthContext>(
+                              builder: (_, authContext, __) => IconButton(
+                                icon: Icon(
+                                  authContext.currentUser.favoriteRestaurants
+                                              .firstWhere(
+                                            (element) =>
+                                                element.id == restaurant.id,
+                                            orElse: () => null,
+                                          ) !=
+                                          null
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
+                                  color: CRIMSON,
+                                ),
+                                onPressed: () {},
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                     Image.network(
