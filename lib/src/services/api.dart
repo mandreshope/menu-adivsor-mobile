@@ -36,8 +36,8 @@ class Api {
         prefs.containsKey('refresh_token')) {
       _accessToken = prefs.getString('access_token');
       _refreshToken = prefs.getString('refresh_token');
+      await _refreshTokens();
     }
-    await _refreshTokens();
   }
 
   Future _refreshTokens() async {
@@ -258,7 +258,7 @@ class Api {
   }) {
     String searchQuery = '?q=$query';
     if (type is String) searchQuery += '&type=$type';
-    if (filters != null) {
+    if (filters != null && filters.length > 0) {
       var filterQuery = 'filter={';
       filters.forEach((key, value) {
         filterQuery += '$key: $value,';
