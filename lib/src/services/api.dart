@@ -253,10 +253,22 @@ class Api {
 
   Future<List<SearchResult>> search(
     String query, {
+    String type,
     Map<String, dynamic> filters,
   }) {
+    String searchQuery = '?q=$query';
+    if (type is String) searchQuery += '&type=$type';
+    if (filters != null) {
+      var filterQuery = 'filter={';
+      filters.forEach((key, value) {
+        filterQuery += '$key: $value,';
+      });
+      filterQuery += '}';
+      searchQuery += '&$filterQuery';
+    }
+
     return http
-        .get('$_apiURL/search?q=$query')
+        .get('$_apiURL/search?$searchQuery')
         .then<List<SearchResult>>((response) {
       if (response.statusCode == 200) {
         List<dynamic> results = json.decode(response.body);
