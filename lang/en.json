@@ -21,7 +21,7 @@
   "invalid_email_or_password": "Invalid email or password",
   "blank_email_or_password": "Blank email or password",
   "add_phone_number": "Add your phone number",
-  "enter_code": "Enter the 4 digits code sent to",
+  "enter_code": "Enter the 4 digits code sent to email address *",
   "is_phone_correct": "Is that phone number correct?",
   "language": "Language",
   "password_does_not_match": "The passwords don't match",

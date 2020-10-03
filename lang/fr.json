@@ -21,7 +21,7 @@
   "invalid_email_or_password": "Email ou mot de passe invalide",
   "blank_email_or_password": "Email ou mot de passe vide",
   "add_phone_number": "Ajouter votre numéro de téléphone",
-  "enter_code": "Saisissez le code à 4 chiffres envoyée au numéro",
+  "enter_code": "Saisissez le code à 4 chiffres envoyée à l'adresse mail *",
   "is_phone_correct": "Le numéro saisi est-il correct?",
   "language": "Langue",
   "password_does_not_match": "Les mots de passes ne correspondent pas",
