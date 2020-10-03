@@ -9,7 +9,6 @@ import 'package:menu_advisor/src/pages/restaurant.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
-import 'package:menu_advisor/src/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:provider/provider.dart';
@@ -248,13 +247,16 @@ class FoodCard extends StatelessWidget {
                     ),
                   ),
                   Positioned(
-                    right: 40,
+                    right: 30,
                     top: 0,
                     bottom: 0,
                     child: Hero(
                       tag: 'foodImage${food.id}',
                       child: food.imageURL != null
-                          ? Image.network(food.imageURL)
+                          ? Image.network(
+                              food.imageURL,
+                              width: 100,
+                            )
                           : Icon(
                               Icons.fastfood,
                               size: 60,
