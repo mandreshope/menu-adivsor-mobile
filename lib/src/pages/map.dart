@@ -15,6 +15,7 @@ class MapPage extends StatefulWidget {
 class _MapPageState extends State<MapPage> {
   Position _currentPosition;
   MapController _mapController = MapControllerImpl();
+  String _searchValue = '';
 
   @override
   void initState() {
@@ -30,6 +31,12 @@ class _MapPageState extends State<MapPage> {
     Position position = await getCurrentPosition();
     setState(() {
       _currentPosition = position;
+    });
+  }
+
+  _onChanged(String value) {
+    setState(() {
+      _searchValue = value;
     });
   }
 
@@ -117,6 +124,7 @@ class _MapPageState extends State<MapPage> {
                     SizedBox(width: 10),
                     Expanded(
                       child: TextFormField(
+                        onChanged: _onChanged,
                         decoration: InputDecoration.collapsed(
                           hintText: AppLocalizations.of(context)
                               .translate("find_restaurant"),
