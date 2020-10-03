@@ -57,9 +57,8 @@ class AuthContext extends ChangeNotifier {
       });
 
   Future<bool> logout() async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    _currentUser = null;
-    return await sharedPreferences.remove('currentUser') && await _api.logout();
+    currentUser = null;
+    return await _api.logout();
   }
 
   Future<bool> signup({
