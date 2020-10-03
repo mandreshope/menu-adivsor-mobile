@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:menu_advisor/src/models.dart';
 
 class Location {
   final String type;
@@ -52,45 +51,27 @@ class UserName {
 }
 
 class PaymentCard {
-  final int number;
+  final int cardNumber;
   final DateTime expirationDate;
   final int securityCode;
   final String address;
+  final String owner;
 
-  PaymentCard(
-      {@required this.number,
-      @required this.expirationDate,
-      @required this.securityCode,
-      @required this.address});
-
-  static fromJson(Map<String, dynamic> data) => PaymentCard(
-      number: data['number'],
-      expirationDate:
-          DateTime.fromMillisecondsSinceEpoch(data['expirationDate']),
-      securityCode: data['securityCode'],
-      address: data['address']);
-}
-
-class Menu {
-  final String imageURL;
-  final String name;
-  final List<String> allergens;
-  final List<Food> foods;
-
-  Menu({
-    @required this.name,
-    this.foods,
-    this.imageURL,
-    this.allergens = const [],
+  PaymentCard({
+    @required this.cardNumber,
+    @required this.expirationDate,
+    @required this.securityCode,
+    @required this.address,
+    @required this.owner,
   });
 
-  factory Menu.fromJson(Map<String, dynamic> json) => Menu(
-        name: json['name'],
-        imageURL: json['imageURL'],
-        allergens: json['allergens'],
-        foods: json['foods'] is List<Map<String, dynamic>>
-            ? json['foods']?.map((data) => Food.fromJson(data))?.toList() ?? []
-            : [],
+  static fromJson(Map<String, dynamic> data) => PaymentCard(
+        cardNumber: data['cardNumber'],
+        expirationDate:
+            DateTime.fromMillisecondsSinceEpoch(data['expirationDate']),
+        securityCode: data['securityCode'],
+        address: data['address'],
+        owner: data['owner'],
       );
 }
 

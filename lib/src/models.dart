@@ -39,13 +39,38 @@ class Food {
   factory Food.fromJson(Map<String, dynamic> json) => Food(
         id: json['_id'],
         name: json['name'],
-        category: json.containsKey('category') && json['category'] != null
+        category: json.containsKey('category') &&
+                json['category'] != null &&
+                json['category'] is Map<String, dynamic>
             ? FoodCategory.fromJson(json['category'])
             : null,
         restaurant: json.containsKey('restaurant') && json['restaurant'] != null
             ? Restaurant.fromJson(json['restaurant'])
             : null,
         price: json['price'] / 100,
+      );
+}
+
+class Menu {
+  final String imageURL;
+  final String name;
+  final List<String> allergens;
+  final List<Food> foods;
+
+  Menu({
+    @required this.name,
+    this.foods,
+    this.imageURL,
+    this.allergens = const [],
+  });
+
+  factory Menu.fromJson(Map<String, dynamic> json) => Menu(
+        name: json['name'],
+        imageURL: json['imageURL'],
+        allergens: json['allergens'],
+        foods: json['foods'] is List<Map<String, dynamic>>
+            ? json['foods']?.map((data) => Food.fromJson(data))?.toList() ?? []
+            : [],
       );
 }
 
