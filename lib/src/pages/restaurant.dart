@@ -73,7 +73,12 @@ class _RestaurantPageState extends State<RestaurantPage>
       loading = true;
     });
     try {
-      var results = await _api.search(_searchValue);
+      var results = await _api.search(
+        _searchValue,
+        filters: {
+          'restaurant': widget.restaurant.id,
+        },
+      );
       setState(() {
         searchResults = results;
       });
