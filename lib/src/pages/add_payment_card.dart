@@ -40,6 +40,7 @@ class _AddPaymentCardPageState extends State<AddPaymentCardPage> {
             AppLocalizations.of(context).translate('card_details'),
           ),
         ),
+        resizeToAvoidBottomInset: false,
         body: Container(
           width: double.infinity,
           child: Column(
