@@ -4,8 +4,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/pages/restaurant.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
+import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:provider/provider.dart';
@@ -104,11 +106,24 @@ class _FoodPageState extends State<FoodPage> {
                         ),
                       ),
                       SizedBox(height: 5),
-                      Text(
-                        widget.food.restaurant?.name ?? 'Aucun nom',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
+                      GestureDetector(
+                        onTap: () {
+                          if (widget.food.restaurant != null)
+                            RouteUtil.goTo(
+                              context: context,
+                              child: RestaurantPage(
+                                restaurant: widget.food.restaurant,
+                              ),
+                              routeName: restaurantRoute,
+                            );
+                        },
+                        child: Text(
+                          widget.food.restaurant?.name ?? 'Aucun nom',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.underline,
+                          ),
                         ),
                       ),
                     ],
