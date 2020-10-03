@@ -39,6 +39,7 @@ class Food {
   factory Food.fromJson(Map<String, dynamic> json) => Food(
         id: json['_id'],
         name: json['name'],
+        imageURL: json['imageURL'],
         category: json.containsKey('category') &&
                 json['category'] != null &&
                 json['category'] is Map<String, dynamic>
