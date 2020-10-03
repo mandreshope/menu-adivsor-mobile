@@ -281,6 +281,7 @@ class _HomePageState extends State<HomePage> {
                       context: context,
                       child: SearchPage(),
                       routeName: searchRoute,
+                      arguments: {'see_all': 'food'},
                     );
                   },
                   child: Text(
@@ -367,10 +368,15 @@ class _HomePageState extends State<HomePage> {
                 ),
                 child: GestureDetector(
                   onTap: () {
-                    print("Populaires");
+                    RouteUtil.goTo(
+                      context: context,
+                      child: SearchPage(),
+                      routeName: searchRoute,
+                      arguments: {'see_all': 'restaurants'},
+                    );
                   },
                   child: Text(
-                    "Voir tout",
+                    AppLocalizations.of(context).translate('see_all'),
                     style: Theme.of(context).textTheme.caption,
                   ),
                 ),
