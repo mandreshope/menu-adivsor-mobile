@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
@@ -172,6 +173,13 @@ class _FoodPageState extends State<FoodPage> {
                           setState(() {
                             isInFavorite = !isInFavorite;
                           });
+                          Fluttertoast.showToast(
+                            msg: AppLocalizations.of(context).translate(
+                              isInFavorite
+                                  ? 'added_to_favorite'
+                                  : 'removed_from_favorite',
+                            ),
+                          );
                         },
                         child: Icon(
                           isInFavorite ? Icons.favorite : Icons.favorite_border,
@@ -213,48 +221,70 @@ class _FoodPageState extends State<FoodPage> {
               ],
             ),
             Positioned(
-              top: MediaQuery.of(context).size.height / 2 - 200,
+              top: MediaQuery.of(context).size.height / 2 - 150,
               right: -50,
-              child: widget.food.imageURL != null
-                  ? Image.network(
-                      widget.food.imageURL,
-                      height: 250,
-                    )
-                  : GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            fullscreenDialog: true,
-                            builder: (BuildContext context) {
-                              return new Scaffold(
-                                body: Container(
-                                  child: Center(
-                                    child: Hero(
-                                      tag: 'foodImage${widget.food.id}',
-                                      child: widget.food.imageURL != null
-                                          ? Image.network(widget.food.imageURL)
-                                          : Icon(
-                                              Icons.fastfood,
-                                              size: 250,
-                                            ),
-                                    ),
-                                  ),
-                                ),
-                              );
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      fullscreenDialog: true,
+                      builder: (BuildContext context) {
+                        return new Scaffold(
+                          appBar: AppBar(
+                            iconTheme: IconThemeData(
+                              color: Colors.black,
+                            ),
+                            title: Text(
+                              widget.food.name,
+                              style: TextStyle(
+                                color: Colors.black,
+                              ),
+                            ),
+                            elevation: 0.0,
+                            backgroundColor: Colors.transparent,
+                          ),
+                          body: GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).pop();
                             },
+                            child: Container(
+                              child: Center(
+                                child: Hero(
+                                  tag: 'foodImage${widget.food.id}',
+                                  child: widget.food.imageURL != null
+                                      ? Image.network(
+                                          widget.food.imageURL,
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width -
+                                              100,
+                                        )
+                                      : Icon(
+                                          Icons.fastfood,
+                                          size: 250,
+                                        ),
+                                ),
+                              ),
+                            ),
                           ),
                         );
                       },
-                      child: Hero(
-                        tag: 'foodImage${widget.food.id}',
-                        child: widget.food.imageURL != null
-                            ? Image.network(widget.food.imageURL)
-                            : Icon(
-                                Icons.fastfood,
-                                size: 250,
-                              ),
-                      ),
                     ),
+                  );
+                },
+                child: Hero(
+                  tag: 'foodImage${widget.food.id}',
+                  child: widget.food.imageURL != null
+                      ? Image.network(
+                          widget.food.imageURL,
+                          width: 250,
+                        )
+                      : Icon(
+                          Icons.fastfood,
+                          size: 250,
+                        ),
+                ),
+              ),
             ),
           ],
         ),
