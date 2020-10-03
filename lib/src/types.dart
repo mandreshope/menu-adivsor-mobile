@@ -73,6 +73,14 @@ class PaymentCard {
         address: data['address'],
         owner: data['owner'],
       );
+
+  Map<String, dynamic> toJson() => {
+        'cardNumber': cardNumber,
+        'expirationDate': expirationDate.millisecondsSinceEpoch,
+        'securityCode': securityCode,
+        'address': address,
+        'owner': owner,
+      };
 }
 
 enum SearchResultType { food, menu, restaurant }
