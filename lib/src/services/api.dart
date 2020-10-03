@@ -251,12 +251,15 @@ class Api {
     });
   }
 
-  Future<List<SearchResult>> search(String query) {
+  Future<List<SearchResult>> search(
+    String query, {
+    Map<String, dynamic> filters,
+  }) {
     return http
-        .post('$_apiURL/search?q=$query')
+        .get('$_apiURL/search?q=$query')
         .then<List<SearchResult>>((response) {
       if (response.statusCode == 200) {
-        List<Map<String, dynamic>> results = json.decode(response.body);
+        List<dynamic> results = json.decode(response.body);
         return results.map((e) => SearchResult.fromJson(e)).toList();
       }
 
