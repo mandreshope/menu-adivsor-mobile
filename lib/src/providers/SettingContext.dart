@@ -36,4 +36,8 @@ class SettingContext extends ChangeNotifier {
     }
     return;
   }
+
+  resetLanguage() {
+    languageCode = 'system';
+  }
 }
