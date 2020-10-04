@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
+import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
+import 'package:provider/provider.dart';
 
 class AddPaymentCardPage extends StatefulWidget {
   @override
@@ -168,7 +170,7 @@ class _AddPaymentCardPageState extends State<AddPaymentCardPage> {
                   ),
                   padding:
                       const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-                  onPressed: () {},
+                  onPressed: _submitForm,
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -200,5 +202,9 @@ class _AddPaymentCardPageState extends State<AddPaymentCardPage> {
     );
   }
 
-  _submitForm() {}
+  _submitForm() {
+    AuthContext authContext = Provider.of<AuthContext>(context);
+
+    try {} catch (error) {}
+  }
 }
