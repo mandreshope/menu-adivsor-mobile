@@ -35,7 +35,7 @@ class AuthContext extends ChangeNotifier {
     if (sharedPrefs.containsKey('currentUser') &&
         sharedPrefs.getString('currentUser') != null) {
       Map<String, dynamic> jsonMap =
-          json.decode(sharedPrefs.getString('currentUser'));
+          jsonDecode(sharedPrefs.getString('currentUser'));
 
       currentUser = User.fromJson(jsonMap);
     }
@@ -75,4 +75,12 @@ class AuthContext extends ChangeNotifier {
           .then<String>(
             (registrationToken) => registrationToken,
           );
+
+  Future resendConfirmationCode() => _api.resendConfirmationCode();
+
+  Future validateAccount({String registrationToken, int code}) =>
+      _api.validateAccount(
+        registrationToken: registrationToken,
+        code: code,
+      );
 }
