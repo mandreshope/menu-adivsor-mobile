@@ -24,6 +24,37 @@ class Api {
     });
   }
 
+  Future resendConfirmationCode({String registrationToken}) {
+    if (registrationToken == null)
+      return Future.error(Exception('No registration token provided'));
+
+    return http.post(
+      '$_apiURL/users/resend-confirmation-code',
+      body: {
+        'token': registrationToken,
+      },
+    );
+  }
+
+  Future validateAccount({String registrationToken, int code}) {
+    if (registrationToken == null || code == null)
+      return Future.error(
+        Exception('Registration token or confirmation code not provided'),
+      );
+
+    return http.post(
+      '$_apiURL/users/confirm-account',
+      body: {
+        'token': registrationToken,
+        'code': code.toString(),
+      },
+    ).then((response) async {
+      if (response.statusCode == 200) return;
+
+      return Future.error(jsonDecode(response.body));
+    });
+  }
+
   String get accessToken => _accessToken;
 
   Api._privateConstructor() {
@@ -61,7 +92,7 @@ class Api {
             '$_apiURL/check-token?access_token=$_accessToken&refresh_token=$_refreshToken')
         .then<List<String>>((response) {
       if (response.statusCode == 200) {
-        var result = json.decode(response.body);
+        var result = jsonDecode(response.body);
 
         if (result is Map<String, dynamic> && result.containsKey('validity')) {
           if (result['validity'] == 'valid')
@@ -87,14 +118,14 @@ class Api {
       },
     ).then<User>((response) {
       if (response.statusCode == 200) {
-        Map<String, dynamic> data = json.decode(response.body);
+        Map<String, dynamic> data = jsonDecode(response.body);
         accessToken = data['access_token'];
         User user = User.fromJson(data['user']);
         return user;
       }
       return Future.error({
         'status': response.statusCode,
-        'body': json.decode(response.body),
+        'body': jsonDecode(response.body),
       });
     });
   }
@@ -106,7 +137,7 @@ class Api {
         await sharedPrefs.remove('refresh_token');
   }
 
-  Future<User> register({
+  Future<String> register({
     String email,
     String phoneNumber,
     String password,
@@ -118,17 +149,14 @@ class Api {
         'password': password,
         'phoneNumber': phoneNumber,
       },
-    ).then<User>((response) {
+    ).then<String>((response) {
       if (response.statusCode == 200) {
-        Map<String, dynamic> data = json.decode(response.body);
-        User user = User.fromJson(data['newUser']);
-        return user;
+        Map<String, dynamic> data = jsonDecode(response.body);
+        String registrationToken = data['token'];
+        return registrationToken;
       }
 
-      return Future.error({
-        'status': response.statusCode,
-        'body': json.decode(response.body),
-      });
+      return Future.error(jsonDecode(response.body));
     });
   }
 
@@ -152,11 +180,11 @@ class Api {
         .get('$_apiURL/restaurants$query')
         .then<List<Restaurant>>((response) {
       if (response.statusCode == 200) {
-        List<dynamic> list = json.decode(response.body);
+        List<dynamic> list = jsonDecode(response.body);
         return list.map((data) => Restaurant.fromJson(data)).toList();
       }
 
-      return Future.error(json.decode(response.body));
+      return Future.error(jsonDecode(response.body));
     });
   }
 
@@ -183,11 +211,11 @@ class Api {
       },
     ).then<List<Food>>((response) {
       if (response.statusCode == 200) {
-        List<dynamic> list = json.decode(response.body);
+        List<dynamic> list = jsonDecode(response.body);
         return list.map((data) => Food.fromJson(data)).toList();
       }
 
-      return Future.error(json.decode(response.body));
+      return Future.error(jsonDecode(response.body));
     });
   }
 
@@ -201,9 +229,9 @@ class Api {
         },
       ).then<Food>((response) {
         if (response.statusCode == 200)
-          return Food.fromJson(json.decode(response.body));
+          return Food.fromJson(jsonDecode(response.body));
 
-        return Future.error(json.decode(response.body));
+        return Future.error(jsonDecode(response.body));
       });
 
   Future<Restaurant> getRestaurant({
@@ -216,9 +244,9 @@ class Api {
         },
       ).then<Restaurant>((response) {
         if (response.statusCode == 200)
-          return Restaurant.fromJson(json.decode(response.body));
+          return Restaurant.fromJson(jsonDecode(response.body));
 
-        return Future.error(json.decode(response.body));
+        return Future.error(jsonDecode(response.body));
       });
 
   Future<bool> addToFavoriteFood(Food food) async {
@@ -271,11 +299,11 @@ class Api {
         .get('$_apiURL/search?$searchQuery')
         .then<List<SearchResult>>((response) {
       if (response.statusCode == 200) {
-        List<dynamic> results = json.decode(response.body);
+        List<dynamic> results = jsonDecode(response.body);
         return results.map((e) => SearchResult.fromJson(e)).toList();
       }
 
-      return Future.error(json.decode(response.body));
+      return Future.error(jsonDecode(response.body));
     });
   }
 }
