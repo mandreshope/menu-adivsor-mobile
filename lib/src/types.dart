@@ -21,13 +21,18 @@ class Location {
 }
 
 class Price {
-  final double value;
+  final int amount;
   final String currency;
 
   const Price({
-    @required this.value,
+    @required this.amount,
     @required this.currency,
   });
+
+  factory Price.fromJson(Map<String, dynamic> json) => Price(
+        amount: json['amount'],
+        currency: json['currency'],
+      );
 }
 
 class UserName {

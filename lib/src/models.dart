@@ -18,7 +18,7 @@ class Food {
   final String name;
   final FoodCategory category;
   final double ratings;
-  final double price;
+  final Price price;
   final String imageURL;
   final Restaurant restaurant;
   final String description;
@@ -48,7 +48,7 @@ class Food {
         restaurant: json.containsKey('restaurant') && json['restaurant'] != null
             ? Restaurant.fromJson(json['restaurant'])
             : null,
-        price: json['price'] / 100,
+        price: Price.fromJson(json['price']),
       );
 }
 

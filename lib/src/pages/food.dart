@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
+import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/restaurant.dart';
@@ -82,7 +83,7 @@ class _FoodPageState extends State<FoodPage> {
                     right: 100.0,
                   ),
                   child: Text(
-                    '${widget.food.price}€',
+                    '${widget.food.price.amount / 100}€',
                     style: TextStyle(
                       fontSize: 40,
                       color: BRIGHT_RED,
@@ -204,28 +205,53 @@ class _FoodPageState extends State<FoodPage> {
                         width: 10,
                       ),
                       Expanded(
-                        child: RaisedButton(
-                          padding: EdgeInsets.all(20),
-                          color: CRIMSON,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          onPressed: () async {
-                            bool result = await showDialog<bool>(
-                              context: context,
-                              builder: (_) => AddToBagDialog(
-                                food: widget.food,
+                        child: Consumer<BagContext>(
+                          builder: (_, bagContext, __) => RaisedButton(
+                            padding: EdgeInsets.all(20),
+                            color: bagContext.contains(widget.food)
+                                ? Colors.teal
+                                : CRIMSON,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            onPressed: () async {
+                              if (bagContext.contains(widget.food)) {
+                                var result = await showDialog(
+                                  context: context,
+                                  builder: (_) => ConfirmationDialog(
+                                    title: AppLocalizations.of(context)
+                                        .translate(
+                                            'confirm_remove_from_cart_title'),
+                                    content: AppLocalizations.of(context)
+                                        .translate(
+                                            'confirm_remove_from_cart_content'),
+                                  ),
+                                );
+
+                                if (result is bool && result) {
+                                  bagContext.removeItem(widget.food);
+                                }
+                              } else {
+                                bool result = await showDialog<bool>(
+                                  context: context,
+                                  builder: (_) => AddToBagDialog(
+                                    food: widget.food,
+                                  ),
+                                );
+                                if (result is bool && result) {}
+                              }
+                            },
+                            child: Text(
+                              bagContext.contains(widget.food)
+                                  ? AppLocalizations.of(context)
+                                      .translate('remove_from_cart')
+                                  : AppLocalizations.of(context)
+                                      .translate("add_to_cart"),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
                               ),
-                            );
-                            if (result is bool && result) {}
-                          },
-                          child: Text(
-                            AppLocalizations.of(context)
-                                .translate("add_to_cart"),
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
                             ),
                           ),
                         ),

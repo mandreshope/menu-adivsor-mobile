@@ -174,7 +174,7 @@ class FoodCard extends StatelessWidget {
                                 ),
                                 SizedBox(height: 5),
                                 Text(
-                                  "${food.price}€",
+                                  "${food.price.amount / 100}€",
                                   style: TextStyle(
                                     fontSize: 21,
                                     color: Colors.yellow[700],

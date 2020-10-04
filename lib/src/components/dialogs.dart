@@ -214,7 +214,7 @@ class BagItem extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '${food.price}€',
+                    '${food.price.amount / 100}€',
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.grey[600],
