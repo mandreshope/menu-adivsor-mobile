@@ -24,7 +24,7 @@ class BagContext extends ChangeNotifier {
     double totalPrice = 0;
 
     _items.forEach((food, count) {
-      totalPrice += food.price * count;
+      totalPrice += food.price.amount / 100 * count;
     });
 
     return totalPrice;
