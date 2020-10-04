@@ -61,25 +61,18 @@ class AuthContext extends ChangeNotifier {
     return await _api.logout();
   }
 
-  Future<bool> signup({
+  Future<String> signup({
     String email,
     String phoneNumber,
     String password,
   }) =>
       _api
           .register(
-        email: email,
-        phoneNumber: phoneNumber,
-        password: password,
-      )
-          .then<bool>((User user) {
-        currentUser = user;
-        notifyListeners();
-        return true;
-      }).catchError((error) {
-        if (error is Map<String, dynamic> && error.containsKey('body'))
-          return Future.error(error['body']);
-
-        return Future.error(error);
-      });
+            email: email,
+            phoneNumber: phoneNumber,
+            password: password,
+          )
+          .then<String>(
+            (registrationToken) => registrationToken,
+          );
 }
