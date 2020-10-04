@@ -420,13 +420,14 @@ class RestaurantCard extends StatelessWidget {
                             child: Consumer<AuthContext>(
                               builder: (_, authContext, __) => IconButton(
                                 icon: Icon(
-                                  authContext.currentUser.favoriteRestaurants
-                                              .firstWhere(
-                                            (element) =>
-                                                element.id == restaurant.id,
-                                            orElse: () => null,
-                                          ) !=
-                                          null
+                                  authContext.currentUser?.favoriteRestaurants
+                                                  ?.firstWhere(
+                                                (element) =>
+                                                    element.id == restaurant.id,
+                                                orElse: () => null,
+                                              ) !=
+                                              null ??
+                                          false
                                       ? Icons.favorite
                                       : Icons.favorite_border,
                                   color: CRIMSON,

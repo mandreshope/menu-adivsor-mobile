@@ -46,6 +46,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 onPressed: () async {
                   await Provider.of<AuthContext>(context, listen: false)
                       .logout();
+
+                  Provider.of<SettingContext>(context, listen: false)
+                      .resetLanguage();
+
                   RouteUtil.goTo(
                     context: context,
                     child: LoginPage(),
@@ -69,7 +73,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     backgroundColor: Colors.white,
                     child: Consumer<AuthContext>(
                       builder: (_, authContext, __) =>
-                          authContext.currentUser.photoURL == null
+                          authContext.currentUser?.photoURL == null ?? true
                               ? Icon(
                                   Icons.person,
                                   color: Colors.black,
