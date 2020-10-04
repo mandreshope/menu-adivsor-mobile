@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/components/inputs.dart';
@@ -245,6 +244,14 @@ class _SignupPageState extends State<SignupPage> {
         password = _passwordController.value.text,
         confirmPassword = _confirmPasswordController.value.text;
 
+    if (email.length == 0 ||
+        phoneNumber.length == 0 ||
+        password.length == 0 ||
+        confirmPassword.length == 0)
+      return Fluttertoast.showToast(
+        msg: AppLocalizations.of(context).translate('empty_field'),
+      );
+
     if (password != confirmPassword) {
       Fluttertoast.showToast(
           msg: AppLocalizations.of(context)
@@ -257,7 +264,7 @@ class _SignupPageState extends State<SignupPage> {
           Provider.of<AuthContext>(context, listen: false);
 
       try {
-        await authContext.signup(
+        var registrationToken = await authContext.signup(
           email: email,
           phoneNumber: phoneNumber,
           password: password,
@@ -267,7 +274,10 @@ class _SignupPageState extends State<SignupPage> {
         });
         RouteUtil.goTo(
           context: context,
-          child: ConfirmEmailPage(),
+          child: ConfirmEmailPage(
+            registrationToken: registrationToken,
+            email: email,
+          ),
           routeName: confirmEmailRoute,
         );
       } catch (error) {
@@ -275,12 +285,14 @@ class _SignupPageState extends State<SignupPage> {
           loading = false;
         });
         if (error is Map &&
-            (error['details'] as Map<String, String>).containsKey("email"))
+            error.containsKey('details') &&
+            (error['details'] as Map<String, dynamic>).containsKey("email"))
           Fluttertoast.showToast(
             msg: AppLocalizations.of(context).translate("email_already_in_use"),
           );
         else if (error is Map &&
-            (error['details'] as Map<String, String>)
+            error.containsKey('details') &&
+            (error['details'] as Map<String, dynamic>)
                 .containsKey("phoneNumber"))
           Fluttertoast.showToast(
             msg: AppLocalizations.of(context)
