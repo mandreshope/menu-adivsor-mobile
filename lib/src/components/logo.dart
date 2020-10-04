@@ -23,7 +23,7 @@ class MenuAdvisorTextLogo extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          "Menu".toUpperCase(),
+          "Menu",
           style: TextStyle(
             fontSize: fontSize * 0.9,
             color: color,
