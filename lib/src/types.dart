@@ -56,6 +56,7 @@ class PaymentCard {
   final int securityCode;
   final String address;
   final String owner;
+  final String zipCode;
 
   PaymentCard({
     @required this.cardNumber,
@@ -63,6 +64,7 @@ class PaymentCard {
     @required this.securityCode,
     @required this.address,
     @required this.owner,
+    @required this.zipCode,
   });
 
   static fromJson(Map<String, dynamic> data) => PaymentCard(
@@ -72,6 +74,7 @@ class PaymentCard {
         securityCode: data['securityCode'],
         address: data['address'],
         owner: data['owner'],
+        zipCode: data['zipCode'],
       );
 
   Map<String, dynamic> toJson() => {
@@ -80,6 +83,7 @@ class PaymentCard {
         'securityCode': securityCode,
         'address': address,
         'owner': owner,
+        'zipCode': zipCode,
       };
 }
 
