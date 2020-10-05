@@ -11,6 +11,12 @@ import 'package:menu_advisor/src/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 
 class SearchPage extends StatefulWidget {
+  final String type;
+
+  SearchPage({
+    this.type = 'all',
+  });
+
   @override
   _SearchPageState createState() => _SearchPageState();
 }
@@ -22,7 +28,6 @@ class _SearchPageState extends State<SearchPage> {
   List<SearchResult> searchResults = [];
   Api _api = Api.instance;
   Timer _timer;
-  String type = 'all';
   Map<String, dynamic> filters = Map();
 
   void _onChanged(String value) {
@@ -51,7 +56,7 @@ class _SearchPageState extends State<SearchPage> {
     try {
       var results = await _api.search(
         _searchValue,
-        type: type,
+        type: widget.type,
         filters: filters,
       );
       setState(() {
@@ -66,16 +71,6 @@ class _SearchPageState extends State<SearchPage> {
       setState(() {
         loading = false;
       });
-    }
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    var arguments = ModalRoute.of(context).settings.arguments;
-    if (arguments is Map<String, dynamic> && arguments.containsKey('see_all')) {
-      type = arguments['see_all'];
     }
   }
 
