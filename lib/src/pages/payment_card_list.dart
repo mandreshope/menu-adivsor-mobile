@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_credit_card/credit_card_widget.dart';
 import 'package:menu_advisor/src/pages/add_payment_card.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
+import 'package:menu_advisor/src/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:provider/provider.dart';
@@ -25,7 +27,24 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
           var user = authContext.currentUser;
 
           return user.paymentCards.length > 0
-              ? SingleChildScrollView()
+              ? SingleChildScrollView(
+                  physics: BouncingScrollPhysics(),
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      for (PaymentCard creditCard in user.paymentCards)
+                        CreditCardWidget(
+                          cardHolderName: creditCard.owner,
+                          showBackView: false,
+                          cvvCode: creditCard.securityCode.toString(),
+                          cardNumber: creditCard.cardNumber.toString(),
+                          expiryDate:
+                              '${(creditCard.expirationDate.month < 10 ? '0' : '') + creditCard.expirationDate.month.toString()}/${creditCard.expirationDate.year.toString().substring(2)}',
+                        ),
+                    ],
+                  ),
+                )
               : Container(
                   width: double.infinity,
                   child: Column(
@@ -61,7 +80,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async {
           RouteUtil.goTo(
             context: context,
             child: AddPaymentCardPage(),
