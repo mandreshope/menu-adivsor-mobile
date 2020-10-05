@@ -296,7 +296,7 @@ class Api {
     }
 
     return http
-        .get('$_apiURL/search?$searchQuery')
+        .get('$_apiURL/search$searchQuery')
         .then<List<SearchResult>>((response) {
       if (response.statusCode == 200) {
         List<dynamic> results = jsonDecode(response.body);
