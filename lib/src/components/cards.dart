@@ -253,8 +253,9 @@ class FoodCard extends StatelessWidget {
                     child: Hero(
                       tag: 'foodImage${food.id}',
                       child: food.imageURL != null
-                          ? Image.network(
-                              food.imageURL,
+                          ? FadeInImage.assetNetwork(
+                              image: food.imageURL,
+                              placeholder: 'assets/images/loading.gif',
                               width: 100,
                             )
                           : Icon(
@@ -439,8 +440,9 @@ class RestaurantCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                    Image.network(
-                      restaurant.imageURL,
+                    FadeInImage.assetNetwork(
+                      image: restaurant.imageURL,
+                      placeholder: 'assets/images/loading.gif',
                       width: 120,
                       fit: BoxFit.cover,
                     ),
