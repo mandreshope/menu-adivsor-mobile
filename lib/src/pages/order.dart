@@ -15,7 +15,16 @@ class _OrderPageState extends State<OrderPage> {
           AppLocalizations.of(context).translate('order'),
         ),
       ),
-      body: Container(),
+      body: Container(
+        child: Center(
+          child: Text(
+            AppLocalizations.of(context).translate('under_construction'),
+            style: TextStyle(
+              fontSize: 22,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
