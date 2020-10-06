@@ -22,7 +22,6 @@ class Food {
   final String imageURL;
   final Restaurant restaurant;
   final String description;
-  final List<PaymentCard> paymentCards;
 
   Food({
     @required this.id,
@@ -33,7 +32,6 @@ class Food {
     this.ratings = 0,
     this.imageURL,
     this.description,
-    this.paymentCards,
   });
 
   factory Food.fromJson(Map<String, dynamic> json) => Food(
@@ -68,7 +66,7 @@ class Menu {
   factory Menu.fromJson(Map<String, dynamic> json) => Menu(
         name: json['name'],
         imageURL: json['imageURL'],
-        allergens: json['allergens'],
+        allergens: json['allergens'] ?? [],
         foods: json['foods'] is List<Map<String, dynamic>>
             ? json['foods']?.map((data) => Food.fromJson(data))?.toList() ?? []
             : [],
