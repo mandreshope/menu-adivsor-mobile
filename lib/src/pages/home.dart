@@ -15,6 +15,7 @@ import 'package:menu_advisor/src/pages/discover.dart';
 import 'package:menu_advisor/src/pages/search.dart';
 import 'package:menu_advisor/src/providers/DataContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
+import 'package:menu_advisor/src/services/stripe.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:provider/provider.dart';
@@ -57,6 +58,13 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool backButtonAlreadyPressed = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    StripeService.init();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -279,9 +287,10 @@ class _HomePageState extends State<HomePage> {
                   onTap: () {
                     RouteUtil.goTo(
                       context: context,
-                      child: SearchPage(),
+                      child: SearchPage(
+                        type: 'food',
+                      ),
                       routeName: searchRoute,
-                      arguments: {'see_all': 'food'},
                     );
                   },
                   child: Text(
@@ -370,9 +379,10 @@ class _HomePageState extends State<HomePage> {
                   onTap: () {
                     RouteUtil.goTo(
                       context: context,
-                      child: SearchPage(),
+                      child: SearchPage(
+                        type: 'restaurant',
+                      ),
                       routeName: searchRoute,
-                      arguments: {'see_all': 'restaurants'},
                     );
                   },
                   child: Text(
@@ -412,7 +422,7 @@ class _HomePageState extends State<HomePage> {
                       style: TextStyle(
                         fontSize: 22,
                       ),
-                    )
+                    ),
                   ],
                 ),
               );
