@@ -145,6 +145,7 @@ class _MapPageState extends State<MapPage> {
                       minZoom: 1.0,
                       maxZoom: 18.0,
                       zoom: 15.0,
+                      interactive: true,
                       center: LatLng(
                         _currentPosition.latitude,
                         _currentPosition.longitude,
@@ -153,7 +154,7 @@ class _MapPageState extends State<MapPage> {
                     layers: [
                       TileLayerOptions(
                         urlTemplate:
-                            'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                            'https://api.mapbox.com/styles/v1/darijavan/cjowev4ke3ir62rpllqkopob5/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZGFyaWphdmFuIiwiYSI6ImNqb3diNXZ0eDBxMjkzdW9kc2F3aHh6M2EifQ.gTXds1mQoGDFQ5bhIeYvqA',
                         subdomains: ['a', 'b', 'c'],
                       ),
                       MarkerLayerOptions(
@@ -178,20 +179,12 @@ class _MapPageState extends State<MapPage> {
                               )
                               .toList(),
                           Marker(
-                            width: 80.0,
-                            height: 80.0,
                             point: LatLng(
                               _currentPosition.latitude,
                               _currentPosition.longitude,
                             ),
+                            anchorPos: AnchorPos.align(AnchorAlign.top),
                             builder: (BuildContext context) => Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  width: 2,
-                                  color: Colors.grey,
-                                ),
-                              ),
                               child: Icon(
                                 Icons.location_on,
                                 color: Colors.blue[600],
@@ -366,7 +359,16 @@ class _MapPageState extends State<MapPage> {
               bottom: 20,
               right: 20,
               child: FloatingActionButton(
-                onPressed: () => _updateLocation(null),
+                onPressed: () async {
+                  _updateLocation(null);
+                  _mapController.move(
+                    LatLng(
+                      _currentPosition.latitude,
+                      _currentPosition.longitude,
+                    ),
+                    15,
+                  );
+                },
                 child: Icon(Icons.my_location),
               ),
             ),
