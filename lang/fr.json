@@ -84,5 +84,6 @@
   "please_fill_in_digits": "Veuillez entrer tous les codes",
   "validation_successfull": "Succès de la validation",
   "validation_error": "Code de confirmation incorrect",
-  "under_construction": "En cours de construction..."
+  "under_construction": "En cours de construction...",
+  "field_must_not_be_blank": "Ce champ ne doit pas être vide"
 }

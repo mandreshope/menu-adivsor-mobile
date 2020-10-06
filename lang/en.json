@@ -84,5 +84,6 @@
   "please_fill_in_digits": "Please enter all the digits",
   "validation_successfull": "Validation successfull",
   "validation_error": "Incorrect validation code",
-  "under_construction": "Under construction..."
+  "under_construction": "Under construction...",
+  "field_must_not_be_blank": "The field must not be blank"
 }
