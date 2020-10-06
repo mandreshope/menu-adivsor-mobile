@@ -38,10 +38,14 @@ class DataContext extends ChangeNotifier {
     notifyListeners();
     try {
       popularRestaurants = await _api.getRestaurants(
-        filters: {"searchCategory": "popular"},
+        filters: {
+          "searchCategory": "popular",
+        },
       );
     } catch (error) {
-      print("Error while fetching popular restaurants");
+      print(
+        "Error while fetching popular restaurants",
+      );
       print(error);
     } finally {
       loadingNearestRestaurants = false;
@@ -54,7 +58,9 @@ class DataContext extends ChangeNotifier {
     notifyListeners();
     try {
       popularFoods = await _api.getFoods(
-        filters: {"searchCategory": "popular"},
+        filters: {
+          "searchCategory": "popular",
+        },
       );
     } catch (error) {
       print(error);
@@ -71,7 +77,9 @@ class DataContext extends ChangeNotifier {
     try {
       foods = await _api.getFoods(filters: filters);
     } catch (error) {
-      print('Error while fetching foods...');
+      print(
+        'Error while fetching foods...',
+      );
       print('$error');
     }
 
