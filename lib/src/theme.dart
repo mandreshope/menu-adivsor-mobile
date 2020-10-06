@@ -33,6 +33,9 @@ final ThemeData theme = ThemeData(
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),
     ),
+    errorStyle: TextStyle(
+      fontSize: 14,
+    ),
   ),
   scaffoldBackgroundColor: BACKGROUND_COLOR,
 );
