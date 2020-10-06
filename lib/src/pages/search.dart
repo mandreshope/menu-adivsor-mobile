@@ -23,18 +23,18 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   String _searchValue = '';
-  bool loading = false;
+  bool _loading = false;
   bool isSettingExpanded = false;
-  List<SearchResult> searchResults = [];
+  List<SearchResult> _searchResults = [];
   Api _api = Api.instance;
   Timer _timer;
   Map<String, dynamic> filters = Map();
 
   void _onChanged(String value) {
     setState(() {
-      loading = true;
+      _loading = true;
       _searchValue = value;
-      searchResults = [];
+      _searchResults = [];
     });
 
     if (_timer?.isActive ?? false) {
@@ -51,7 +51,7 @@ class _SearchPageState extends State<SearchPage> {
     }
 
     setState(() {
-      loading = true;
+      _loading = true;
     });
     try {
       var results = await _api.search(
@@ -60,7 +60,7 @@ class _SearchPageState extends State<SearchPage> {
         filters: filters,
       );
       setState(() {
-        searchResults = results;
+        _searchResults = results;
       });
     } catch (error) {
       print(error.toString());
@@ -69,7 +69,7 @@ class _SearchPageState extends State<SearchPage> {
       );
     } finally {
       setState(() {
-        loading = false;
+        _loading = false;
       });
     }
   }
@@ -104,21 +104,21 @@ class _SearchPageState extends State<SearchPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            if (loading)
+                            if (_loading)
                               Center(
                                 child: CircularProgressIndicator(
                                   valueColor:
                                       AlwaysStoppedAnimation<Color>(CRIMSON),
                                 ),
                               ),
-                            if (!loading && searchResults.length == 0)
+                            if (!_loading && _searchResults.length == 0)
                               Center(
                                 child: Text(
                                   AppLocalizations.of(context)
                                       .translate('no_result'),
                                 ),
                               ),
-                            ...searchResults.map((SearchResult e) {
+                            ..._searchResults.map((SearchResult e) {
                               if (e.type.toString() ==
                                   'SearchResultType.restaurant')
                                 return RestaurantCard(
