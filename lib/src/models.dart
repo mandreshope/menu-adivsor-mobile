@@ -101,9 +101,8 @@ class Restaurant {
         name: json['name'],
         type: json['type'],
         imageURL: json['imageURL'],
-        location: Location(
-          type: 'point',
-          coordinates: json['location'] ?? [0, 0],
+        location: Location.fromJson(
+          json['location'],
         ),
         description: json['description'] ?? '',
         menus: (json['menus'] is List<Map<String, dynamic>>)

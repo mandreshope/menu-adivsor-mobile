@@ -11,7 +11,7 @@ class Location {
 
   factory Location.fromJson(Map<String, dynamic> json) => Location(
         type: json['type'],
-        coordinates: json['coordinates'],
+        coordinates: [json['coordinates'][0], json['coordinates'][1]],
       );
 
   Map<String, dynamic> toJson() => {
