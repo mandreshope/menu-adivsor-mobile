@@ -11,6 +11,10 @@ class FoodCategory {
   factory FoodCategory.fromJson(Map<String, dynamic> json) => FoodCategory(
         name: json['name'],
       );
+
+  Map<String, dynamic> toJson() => {
+        "name": name,
+      };
 }
 
 class Food {
@@ -48,6 +52,12 @@ class Food {
             : null,
         price: Price.fromJson(json['price']),
       );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
+        "category": category.toJson(),
+      };
 }
 
 class Menu {
