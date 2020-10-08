@@ -219,6 +219,16 @@ class Api {
     });
   }
 
+  Future<List<FoodCategory>> getFoodCategories() =>
+      http.get('$_apiURL/foodCategories').then<List<FoodCategory>>((response) {
+        if (response.statusCode == 200) {
+          List<dynamic> list = jsonDecode(response.body);
+          return list.map((data) => FoodCategory.fromJson(data)).toList();
+        }
+
+        return Future.error(jsonDecode(response.body));
+      });
+
   Future<Food> getFood({
     String id,
   }) =>
@@ -252,7 +262,7 @@ class Api {
   Future<bool> addToFavoriteFood(Food food) async {
     await _refreshTokens();
 
-    return http.post('$_apiURL/users/favoriteFood/add', body: {
+    return http.post('$_apiURL/users/favoriteFoods', body: {
       "id": food.id,
     }, headers: {
       "authorization": "Bearer $_accessToken",
@@ -267,9 +277,7 @@ class Api {
   Future removeFromFavoriteFood(Food food) async {
     await _refreshTokens();
 
-    return http.post('$_apiURL/users/favoriteFood/delete', body: {
-      "id": food.id,
-    }, headers: {
+    return http.delete('$_apiURL/users/favoriteFoods/${food.id}', headers: {
       "authorization": "Beare $_accessToken",
     }).then((response) {
       if (response.statusCode == 200) {
@@ -305,5 +313,11 @@ class Api {
 
       return Future.error(jsonDecode(response.body));
     });
+  }
+
+  Future removeFromFavoriteRestaurants(Restaurant restaurant) async {
+    await _refreshTokens();
+
+    return http.post('$_apiURL/users/favoriteRestaurant');
   }
 }
