@@ -37,6 +37,8 @@ class _SearchPageState extends State<SearchPage> {
     super.initState();
 
     filters = widget.filters;
+
+    if (widget.type != 'all') _initSearch();
   }
 
   void _onChanged(String value) {
@@ -54,7 +56,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Future _initSearch() async {
-    if (_searchValue == '') {
+    if (widget.type == 'all' && _searchValue == '') {
       _timer?.cancel();
       return;
     }
@@ -101,7 +103,7 @@ class _SearchPageState extends State<SearchPage> {
               child: SingleChildScrollView(
                 padding: EdgeInsets.only(top: 90),
                 physics: BouncingScrollPhysics(),
-                child: _searchValue.length == 0
+                child: _searchValue.length == 0 && widget.type == 'all'
                     ? Center(
                         child: Text(
                           AppLocalizations.of(context)
@@ -130,18 +132,33 @@ class _SearchPageState extends State<SearchPage> {
                             ..._searchResults.map((SearchResult e) {
                               if (e.type.toString() ==
                                   'SearchResultType.restaurant')
-                                return RestaurantCard(
-                                  restaurant: Restaurant.fromJson(e.content),
+                                return Padding(
+                                  padding: const EdgeInsets.only(
+                                    bottom: 10,
+                                  ),
+                                  child: RestaurantCard(
+                                    restaurant: Restaurant.fromJson(e.content),
+                                  ),
                                 );
                               else if (e.type.toString() ==
                                   'SearchResultType.food')
-                                return FoodCard(
-                                  food: Food.fromJson(e.content),
+                                return Padding(
+                                  padding: const EdgeInsets.only(
+                                    bottom: 10,
+                                  ),
+                                  child: FoodCard(
+                                    food: Food.fromJson(e.content),
+                                  ),
                                 );
                               else if (e.type.toString() ==
                                   'SearchResultType.menu')
-                                return MenuCard(
-                                  menu: Menu.fromJson(e.content),
+                                return Padding(
+                                  padding: const EdgeInsets.only(
+                                    bottom: 10,
+                                  ),
+                                  child: MenuCard(
+                                    menu: Menu.fromJson(e.content),
+                                  ),
                                 );
 
                               return null;
