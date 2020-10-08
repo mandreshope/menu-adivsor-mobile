@@ -9,33 +9,58 @@ class DataContext extends ChangeNotifier {
   List<Restaurant> popularRestaurants = [];
   bool loadingNearestRestaurants = false;
 
+  List<FoodCategory> foodCategories = [];
+  bool loadingFoodCategories = false;
+
+  List<Food> onSiteFoods = [];
+  bool loadingOnSiteFoods = false;
+
   List<Food> foods = [];
   bool loadingFoods = false;
 
   final Api _api = Api.instance;
 
   DataContext() {
+    _fetchFoodCategories();
     _fetchPopularRestaurants();
     _fetchPopularFoods();
+    _fetchOnSiteFoods();
   }
 
   Future refresh() async {
+    loadingFoodCategories = true;
     loadingPopularFoods = true;
     loadingNearestRestaurants = true;
+    loadingOnSiteFoods = true;
     notifyListeners();
+
+    await _fetchFoodCategories();
 
     await _fetchPopularFoods();
-    loadingPopularFoods = false;
-    notifyListeners();
 
     await _fetchPopularRestaurants();
-    loadingNearestRestaurants = false;
+  }
+
+  _fetchFoodCategories() async {
+    loadingFoodCategories = true;
     notifyListeners();
+    try {
+      foodCategories = await _api.getFoodCategories();
+    } catch (error) {
+      print(
+        "Error while fetching food categories",
+      );
+      print(error);
+    } finally {
+      loadingFoodCategories = false;
+      notifyListeners();
+    }
   }
 
   _fetchPopularRestaurants() async {
     loadingNearestRestaurants = true;
     notifyListeners();
+
     try {
       popularRestaurants = await _api.getRestaurants(
         filters: {
@@ -56,6 +81,7 @@ class DataContext extends ChangeNotifier {
   _fetchPopularFoods() async {
     loadingPopularFoods = true;
     notifyListeners();
+
     try {
       popularFoods = await _api.getFoods(
         filters: {
@@ -64,10 +90,29 @@ class DataContext extends ChangeNotifier {
       );
     } catch (error) {
       print(error);
+    } finally {
+      loadingPopularFoods = false;
+      notifyListeners();
     }
-    loadingPopularFoods = false;
+  }
+
+  _fetchOnSiteFoods() async {
+    loadingOnSiteFoods = true;
     notifyListeners();
-    return;
+
+    try {
+      onSiteFoods = await _api.getFoods(
+        filters: {
+          "searchCategory": "onsite",
+        },
+      );
+    } catch (error) {
+      print("Error while fetching on site foods");
+      print(error);
+    } finally {
+      loadingOnSiteFoods = false;
+      notifyListeners();
+    }
   }
 
   fetchFoods(Map<String, dynamic> filters) async {
