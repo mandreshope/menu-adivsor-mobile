@@ -20,37 +20,6 @@ import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:provider/provider.dart';
 
-const foodCategories = [
-  {
-    'image': 'assets/images/foodCategory-dietetic.svg',
-    'name': 'Diétetiques',
-  },
-  {
-    'image': 'assets/images/foodCategory-dietetic.svg',
-    'name': 'Diétetiques',
-  },
-  {
-    'image': 'assets/images/foodCategory-dietetic.svg',
-    'name': 'Diétetiques',
-  },
-  {
-    'image': 'assets/images/foodCategory-dietetic.svg',
-    'name': 'Diétetiques',
-  },
-  {
-    'image': 'assets/images/foodCategory-dietetic.svg',
-    'name': 'Diétetiques',
-  },
-  {
-    'image': 'assets/images/foodCategory-dietetic.svg',
-    'name': 'Diétetiques',
-  },
-  {
-    'image': 'assets/images/foodCategory-dietetic.svg',
-    'name': 'Diétetiques',
-  },
-];
-
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -238,25 +207,66 @@ class _HomePageState extends State<HomePage> {
           SectionTitle(
             AppLocalizations.of(context).translate("categories"),
           ),
-          SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.only(
-              left: 10,
-              right: 10,
-              bottom: 10,
-            ),
-            child: Row(
-              children: [
-                for (var category in foodCategories)
-                  CategoryCard(
-                    image: category['image'],
-                    name: category['name'],
-                    onPressed: () {},
+          Consumer<DataContext>(builder: (_, dataContext, __) {
+            var foodCategories = dataContext.foodCategories;
+            var loading = dataContext.loadingFoodCategories;
+
+            if (loading)
+              return Container(
+                height: 200,
+                child: Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      CRIMSON,
+                    ),
                   ),
-              ],
-            ),
-          ),
+                ),
+              );
+
+            if (foodCategories.length == 0)
+              return Container(
+                height: 200,
+                child: Center(
+                  child: Text(
+                    AppLocalizations.of(context).translate('no_food_category'),
+                    style: TextStyle(
+                      fontSize: 22,
+                    ),
+                  ),
+                ),
+              );
+
+            return SingleChildScrollView(
+              physics: BouncingScrollPhysics(),
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.only(
+                left: 10,
+                right: 10,
+                bottom: 10,
+              ),
+              child: Row(
+                children: [
+                  for (var category in foodCategories)
+                    CategoryCard(
+                      imageURL: category.imageURL,
+                      name: category.name,
+                      onPressed: () {
+                        RouteUtil.goTo(
+                          context: context,
+                          child: SearchPage(
+                            type: 'food',
+                            filters: {
+                              'foodCategory': category.name,
+                            },
+                          ),
+                          routeName: searchRoute,
+                        );
+                      },
+                    ),
+                ],
+              ),
+            );
+          }),
         ],
       ),
     );
