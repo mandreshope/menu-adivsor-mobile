@@ -69,6 +69,8 @@ class _RestaurantPageState extends State<RestaurantPage>
       return;
     }
 
+    if (!mounted) return;
+
     setState(() {
       loading = true;
     });
