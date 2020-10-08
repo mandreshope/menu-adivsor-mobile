@@ -12,9 +12,11 @@ import 'package:menu_advisor/src/utils/AppLocalization.dart';
 
 class SearchPage extends StatefulWidget {
   final String type;
+  final Map<String, dynamic> filters;
 
   SearchPage({
     this.type = 'all',
+    this.filters = const {},
   });
 
   @override
@@ -28,7 +30,14 @@ class _SearchPageState extends State<SearchPage> {
   List<SearchResult> _searchResults = [];
   Api _api = Api.instance;
   Timer _timer;
-  Map<String, dynamic> filters = Map();
+  Map<String, dynamic> filters;
+
+  @override
+  void initState() {
+    super.initState();
+
+    filters = widget.filters;
+  }
 
   void _onChanged(String value) {
     setState(() {
