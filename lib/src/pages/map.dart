@@ -154,7 +154,7 @@ class _MapPageState extends State<MapPage> {
                     layers: [
                       TileLayerOptions(
                         urlTemplate:
-                            'https://api.mapbox.com/styles/v1/darijavan/cjowev4ke3ir62rpllqkopob5/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZGFyaWphdmFuIiwiYSI6ImNqb3diNXZ0eDBxMjkzdW9kc2F3aHh6M2EifQ.gTXds1mQoGDFQ5bhIeYvqA',
+                            'https://api.mapbox.com/styles/v1/darijavan/ckfxkqvo50c4819lbsvgqph38/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZGFyaWphdmFuIiwiYSI6ImNqb3diNXZ0eDBxMjkzdW9kc2F3aHh6M2EifQ.gTXds1mQoGDFQ5bhIeYvqA',
                         subdomains: ['a', 'b', 'c'],
                       ),
                       MarkerLayerOptions(
@@ -316,8 +316,15 @@ class _MapPageState extends State<MapPage> {
                                                       IconButton(
                                                         padding:
                                                             EdgeInsets.zero,
-                                                        icon: Icon(Icons
-                                                            .remove_red_eye_outlined),
+                                                        icon: Icon(
+                                                          Icons
+                                                              .remove_red_eye_outlined,
+                                                        ),
+                                                        constraints:
+                                                            BoxConstraints(
+                                                          maxHeight: 26,
+                                                          maxWidth: 26,
+                                                        ),
                                                         onPressed: () {
                                                           _mapController.move(
                                                             LatLng(
