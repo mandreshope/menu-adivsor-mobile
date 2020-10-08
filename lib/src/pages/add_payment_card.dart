@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
+import 'package:menu_advisor/src/utils/input_formatters.dart';
 import 'package:provider/provider.dart';
 
 class AddPaymentCardPage extends StatefulWidget {
@@ -48,6 +49,7 @@ class _AddPaymentCardPageState extends State<AddPaymentCardPage> {
         resizeToAvoidBottomInset: false,
         body: Form(
           key: _formKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
           child: Container(
             width: double.infinity,
             child: Column(
@@ -91,6 +93,7 @@ class _AddPaymentCardPageState extends State<AddPaymentCardPage> {
                           labelText: AppLocalizations.of(context)
                               .translate("card_number_placeholder"),
                         ),
+                        validator: _required,
                         onFieldSubmitted: (_) {
                           _cardNumberFocus.unfocus();
                           FocusScope.of(context)
@@ -117,10 +120,9 @@ class _AddPaymentCardPageState extends State<AddPaymentCardPage> {
                                     .translate("expiration_date_placeholder"),
                               ),
                               inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                  RegExp(r'[0-9]{2}\/[0-9]{2}'),
-                                ),
+                                ExpiryDateInputFormatter(),
                               ],
+                              validator: _required,
                               onFieldSubmitted: (_) {
                                 _expirationDateFocus.unfocus();
                                 FocusScope.of(context).requestFocus(_cvcFocus);
@@ -145,6 +147,7 @@ class _AddPaymentCardPageState extends State<AddPaymentCardPage> {
                               inputFormatters: [
                                 LengthLimitingTextInputFormatter(3)
                               ],
+                              validator: _required,
                               onFieldSubmitted: (_) {
                                 _cvcFocus.unfocus();
                                 FocusScope.of(context)
@@ -166,6 +169,7 @@ class _AddPaymentCardPageState extends State<AddPaymentCardPage> {
                           labelText: AppLocalizations.of(context)
                               .translate("zip_code_placeholder"),
                         ),
+                        validator: _required,
                         onFieldSubmitted: (_) {
                           _zipCodeFocus.unfocus();
                           _submitForm();
