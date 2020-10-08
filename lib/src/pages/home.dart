@@ -90,9 +90,10 @@ class _HomePageState extends State<HomePage> {
                         ),
                         child: Column(
                           children: [
-                            _renderCategories(),
+                            _renderFoodCategories(),
                             _renderPopularFoods(),
                             _renderPopularRestaurants(),
+                            _renderOnSiteFoods(),
                           ],
                         ),
                       ),
@@ -195,7 +196,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _renderCategories() {
+  Widget _renderFoodCategories() {
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(
@@ -256,7 +257,7 @@ class _HomePageState extends State<HomePage> {
                           child: SearchPage(
                             type: 'food',
                             filters: {
-                              'foodCategory': category.name,
+                              'category': category.id,
                             },
                           ),
                           routeName: searchRoute,
@@ -371,6 +372,9 @@ class _HomePageState extends State<HomePage> {
   Widget _renderPopularRestaurants() {
     return Container(
       width: double.infinity,
+      margin: const EdgeInsets.only(
+        bottom: 30,
+      ),
       child: Column(
         children: [
           Row(
@@ -458,6 +462,103 @@ class _HomePageState extends State<HomePage> {
               ),
             );
           }),
+        ],
+      ),
+    );
+  }
+
+  Widget _renderOnSiteFoods() {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(
+        bottom: 30,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SectionTitle(
+                AppLocalizations.of(context).translate("on_site_foods"),
+              ),
+              Container(
+                margin: const EdgeInsets.only(
+                  right: 30,
+                ),
+                child: GestureDetector(
+                  onTap: () {
+                    RouteUtil.goTo(
+                      context: context,
+                      child: SearchPage(
+                        type: 'food',
+                      ),
+                      routeName: searchRoute,
+                    );
+                  },
+                  child: Text(
+                    AppLocalizations.of(context).translate("see_all"),
+                    style: Theme.of(context).textTheme.caption,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Consumer<DataContext>(
+            builder: (_, dataContext, __) {
+              var foods = dataContext.popularFoods;
+              var loading = dataContext.loadingPopularFoods;
+
+              if (loading)
+                return Container(
+                  height: 200,
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        CRIMSON,
+                      ),
+                    ),
+                  ),
+                );
+
+              if (foods.length == 0)
+                return Container(
+                  height: 200,
+                  child: Center(
+                    child: Text(
+                      AppLocalizations.of(context).translate('no_food'),
+                      style: TextStyle(
+                        fontSize: 22,
+                      ),
+                    ),
+                  ),
+                );
+
+              return SingleChildScrollView(
+                physics: BouncingScrollPhysics(),
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.only(
+                  left: 20,
+                  right: 20,
+                  bottom: 10,
+                ),
+                child: Row(
+                  children: [
+                    for (var food in foods)
+                      FadeAnimation(
+                        1,
+                        FoodCard(
+                          food: food,
+                          imageTag: 'onSitefoodImage${food.id}',
+                        ),
+                      ),
+                  ],
+                ),
+              );
+            },
+          ),
         ],
       ),
     );
