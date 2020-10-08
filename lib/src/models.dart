@@ -2,15 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/types.dart';
 
 class FoodCategory {
+  final String id;
   final String name;
   final String imageURL;
 
   const FoodCategory({
+    @required this.id,
     @required this.name,
     @required this.imageURL,
   });
 
   factory FoodCategory.fromJson(Map<String, dynamic> json) => FoodCategory(
+        id: json['_id'],
         name: json['name'],
         imageURL: json['imageURL'],
       );
