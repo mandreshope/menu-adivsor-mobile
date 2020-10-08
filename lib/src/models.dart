@@ -3,13 +3,16 @@ import 'package:menu_advisor/src/types.dart';
 
 class FoodCategory {
   final String name;
+  final String imageURL;
 
   const FoodCategory({
     @required this.name,
+    @required this.imageURL,
   });
 
   factory FoodCategory.fromJson(Map<String, dynamic> json) => FoodCategory(
         name: json['name'],
+        imageURL: json['imageURL'],
       );
 
   Map<String, dynamic> toJson() => {
