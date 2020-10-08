@@ -38,10 +38,10 @@ class CategoryCard extends StatelessWidget {
           elevation: 4.0,
           color: Colors.white,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(20),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(5.0),
             child: Column(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -62,9 +62,13 @@ class CategoryCard extends StatelessWidget {
                           height: 40,
                           color: DARK_BLUE,
                         )
-                      : FadeInImage.assetNetwork(
-                          placeholder: 'assets/images/loading.gif',
-                          image: imageURL,
+                      : ClipRRect(
+                          borderRadius: BorderRadius.circular(40),
+                          child: FadeInImage.assetNetwork(
+                            placeholder: 'assets/images/loading.gif',
+                            image: imageURL,
+                            height: 40,
+                          ),
                         ),
                 ),
                 SizedBox(
@@ -93,6 +97,7 @@ class CategoryCard extends StatelessWidget {
                       color: Colors.white,
                     ),
                   ),
+                  onTap: onPressed,
                 ),
               ],
             ),
@@ -105,18 +110,22 @@ class CategoryCard extends StatelessWidget {
 
 class FoodCard extends StatelessWidget {
   final Food food;
+  final bool minified;
+  final String imageTag;
 
   const FoodCard({
     Key key,
     @required this.food,
+    this.minified = false,
+    this.imageTag,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 300,
+      width: minified ? 340 : 300,
       child: AspectRatio(
-        aspectRatio: 1.5,
+        aspectRatio: minified ? 2.5 : 1.5,
         child: Card(
           elevation: 4.0,
           color: Colors.white,
@@ -132,6 +141,7 @@ class FoodCard extends StatelessWidget {
                   context: context,
                   child: FoodPage(
                     food: food,
+                    imageTag: imageTag,
                   ),
                   routeName: foodRoute,
                 );
@@ -256,7 +266,7 @@ class FoodCard extends StatelessWidget {
                     top: 0,
                     bottom: 0,
                     child: Hero(
-                      tag: 'foodImage${food.id}',
+                      tag: imageTag ?? 'foodImage${food.id}',
                       child: food.imageURL != null
                           ? FadeInImage.assetNetwork(
                               image: food.imageURL,

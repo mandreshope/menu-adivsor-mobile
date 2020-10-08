@@ -15,9 +15,11 @@ import 'package:provider/provider.dart';
 
 class FoodPage extends StatefulWidget {
   final Food food;
+  final String imageTag;
 
   FoodPage({
     this.food,
+    this.imageTag,
   });
 
   @override
@@ -291,7 +293,8 @@ class _FoodPageState extends State<FoodPage> {
                             child: Container(
                               child: Center(
                                 child: Hero(
-                                  tag: 'foodImage${widget.food.id}',
+                                  tag: widget.imageTag ??
+                                      'foodImage${widget.food.id}',
                                   child: widget.food.imageURL != null
                                       ? Image.network(
                                           widget.food.imageURL,
@@ -314,7 +317,7 @@ class _FoodPageState extends State<FoodPage> {
                   );
                 },
                 child: Hero(
-                  tag: 'foodImage${widget.food.id}',
+                  tag: widget.imageTag ?? 'foodImage${widget.food.id}',
                   child: widget.food.imageURL != null
                       ? Image.network(
                           widget.food.imageURL,
