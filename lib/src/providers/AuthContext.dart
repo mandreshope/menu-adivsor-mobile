@@ -76,6 +76,30 @@ class AuthContext extends ChangeNotifier {
             (registrationToken) => registrationToken,
           );
 
+  Future<bool> addFavoriteFood(Food food) async {
+    if (_currentUser.favoriteFoods
+            .firstWhere((element) => element.id == food.id, orElse: null) !=
+        null) return false;
+
+    await _api.addToFavoriteFood(food);
+    _currentUser.favoriteFoods.add(food);
+    notifyListeners();
+    return true;
+  }
+
+  Future<bool> removeFavoriteFood(Restaurant restaurant) async {
+    if (_currentUser.favoriteRestaurants.firstWhere(
+            (element) => element.id == restaurant.id,
+            orElse: null) !=
+        null) return false;
+
+    await _api.removeFromFavoriteRestaurants(restaurant);
+  }
+
+  Future<bool> addFavoriteRestaurant(Restaurant restaurant) {}
+
+  Future<bool> removeFavoriteRestaurant(Restaurant restaurant) {}
+
   Future resendConfirmationCode() => _api.resendConfirmationCode();
 
   Future validateAccount({String registrationToken, int code}) =>
