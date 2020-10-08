@@ -14,7 +14,7 @@ import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:provider/provider.dart';
 
 class CategoryCard extends StatelessWidget {
-  final String image;
+  final String imageURL;
 
   final String name;
 
@@ -22,7 +22,7 @@ class CategoryCard extends StatelessWidget {
 
   const CategoryCard({
     Key key,
-    @required this.image,
+    @required this.imageURL,
     @required this.name,
     @required this.onPressed,
   }) : super(key: key);
@@ -56,11 +56,16 @@ class CategoryCard extends StatelessWidget {
                       width: 2,
                     ),
                   ),
-                  child: SvgPicture.asset(
-                    image,
-                    height: 40,
-                    color: DARK_BLUE,
-                  ),
+                  child: imageURL == null
+                      ? SvgPicture.asset(
+                          'assets/images/foodCategory-dietetic.svg',
+                          height: 40,
+                          color: DARK_BLUE,
+                        )
+                      : FadeInImage.assetNetwork(
+                          placeholder: 'assets/images/loading.gif',
+                          image: imageURL,
+                        ),
                 ),
                 SizedBox(
                   height: 10,
