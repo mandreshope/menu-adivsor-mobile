@@ -533,9 +533,33 @@ class BagItem extends StatelessWidget {
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25.0),
-              child: Text('$count'),
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.grey[200],
+              ),
+              padding: const EdgeInsets.all(15.0),
+              child: Text(
+                '$count',
+                style: TextStyle(
+                  color: CRIMSON,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            IconButton(
+              icon: Icon(
+                Icons.edit,
+                color: Colors.teal,
+              ),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  child: AddToBagDialog(
+                    food: food,
+                  ),
+                );
+              },
             ),
             CircleButton(
               backgroundColor: CRIMSON,
