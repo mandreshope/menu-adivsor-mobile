@@ -44,4 +44,20 @@ class BagContext extends ChangeNotifier {
     _itemCount--;
     notifyListeners();
   }
+
+  void setCount(Food food, int itemCount) {
+    _items.updateAll((key, value) {
+      if (key.id == food.id) return itemCount;
+      return value;
+    });
+    notifyListeners();
+  }
+
+  int getCount(Food food) {
+    int count = 0;
+    _items.forEach((key, value) {
+      if (key.id == food.id) count = value;
+    });
+    return count;
+  }
 }
