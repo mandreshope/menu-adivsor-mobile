@@ -26,6 +26,7 @@ class RestaurantPage extends StatefulWidget {
 class _RestaurantPageState extends State<RestaurantPage>
     with SingleTickerProviderStateMixin {
   bool isInFavorite = false;
+  bool showFavoriteButton = true;
   bool loading = false;
   TabController _controller;
 
@@ -54,13 +55,15 @@ class _RestaurantPageState extends State<RestaurantPage>
     _controller = TabController(
       vsync: this,
       initialIndex: 0,
-      length: 3,
+      length: 2,
     );
 
     AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
-    if (authContext.currentUser.favoriteRestaurants
-            .indexWhere((element) => element.id == widget.restaurant.id) >
-        1) isInFavorite = true;
+    if (authContext.currentUser == null) showFavoriteButton = false;
+    if (authContext.currentUser != null &&
+        authContext.currentUser.favoriteRestaurants
+                ?.indexWhere((element) => element.id == widget.restaurant.id) >
+            1) isInFavorite = true;
   }
 
   Future _initSearch() async {
@@ -126,12 +129,6 @@ class _RestaurantPageState extends State<RestaurantPage>
                 controller: _controller,
                 tabs: [
                   Tab(
-                    text: AppLocalizations.of(context).translate('description'),
-                    icon: FaIcon(
-                      FontAwesomeIcons.infoCircle,
-                    ),
-                  ),
-                  Tab(
                     text: AppLocalizations.of(context).translate('menus'),
                     icon: FaIcon(
                       FontAwesomeIcons.hamburger,
@@ -150,13 +147,14 @@ class _RestaurantPageState extends State<RestaurantPage>
                 return;
               },
               actions: [
-                IconButton(
-                  onPressed: _toggleFavorite,
-                  icon: Icon(
-                    isInFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: Colors.white,
+                if (showFavoriteButton)
+                  IconButton(
+                    onPressed: _toggleFavorite,
+                    icon: Icon(
+                      isInFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
               ],
               flexibleSpace: FlexibleSpaceBar(
                 background: Image.network(
@@ -176,85 +174,6 @@ class _RestaurantPageState extends State<RestaurantPage>
                 controller: _controller,
                 physics: BouncingScrollPhysics(),
                 children: [
-                  Column(
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          top: 40,
-                          left: 40,
-                          right: 40,
-                          bottom: 20,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              AppLocalizations.of(context)
-                                  .translate('description'),
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 22,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 12,
-                            ),
-                            Text(
-                              widget.restaurant.description.length > 0
-                                  ? widget.restaurant.description
-                                  : AppLocalizations.of(context)
-                                      .translate('no_description'),
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Color(0xff6D6D6D),
-                              ),
-                            ),
-                            SizedBox(
-                              height: 30,
-                            ),
-                            Text(
-                              AppLocalizations.of(context)
-                                  .translate('our_foods'),
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 22,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 12,
-                            ),
-                            widget.restaurant.foods.length > 0
-                                ? Wrap(
-                                    children: widget.restaurant.menus
-                                        .map(
-                                          (e) => Card(
-                                            elevation: 4.0,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                            ),
-                                            child: Padding(
-                                              padding: const EdgeInsets.all(10),
-                                            ),
-                                          ),
-                                        )
-                                        .toList(),
-                                  )
-                                : Text(
-                                    AppLocalizations.of(context)
-                                        .translate('no_food'),
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Color(0xff6D6D6D),
-                                    ),
-                                  ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
                   widget.restaurant.menus.length > 0
                       ? Column(
                           mainAxisSize: MainAxisSize.max,
