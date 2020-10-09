@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
@@ -250,6 +251,140 @@ class BagItem extends StatelessWidget {
                   bagContext.removeItem(food);
                 }
               },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AddToBagDialog extends StatefulWidget {
+  final Food food;
+
+  const AddToBagDialog({
+    Key key,
+    this.food,
+  }) : super(key: key);
+
+  @override
+  _AddToBagDialogState createState() => _AddToBagDialogState();
+}
+
+class _AddToBagDialogState extends State<AddToBagDialog> {
+  int itemCount = 1;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Container(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(
+                top: 25.0,
+                left: 25.0,
+                right: 25.0,
+              ),
+              child: Text(
+                AppLocalizations.of(context).translate('add_to_cart'),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25.0),
+              child: Text(
+                AppLocalizations.of(context).translate('item_count'),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25.0),
+              child: Row(
+                children: [
+                  CircleButton(
+                    backgroundColor: Colors.transparent,
+                    border: Border.all(
+                      width: 1,
+                      color: Colors.grey,
+                    ),
+                    child: FaIcon(
+                      FontAwesomeIcons.minus,
+                      color: Colors.black,
+                    ),
+                    onPressed: itemCount > 1
+                        ? () {
+                            setState(() {
+                              itemCount--;
+                            });
+                          }
+                        : null,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Text(
+                      itemCount.toString(),
+                    ),
+                  ),
+                  CircleButton(
+                    backgroundColor: Colors.transparent,
+                    border: Border.all(
+                      width: 1,
+                      color: Colors.grey,
+                    ),
+                    child: FaIcon(
+                      FontAwesomeIcons.plus,
+                      color: Colors.black,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        itemCount++;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  right: 10.0,
+                  bottom: 10.0,
+                ),
+                child: RaisedButton(
+                  color: CRIMSON,
+                  child: Text(
+                    AppLocalizations.of(context).translate('add'),
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  onPressed: () {
+                    BagContext bagContext =
+                        Provider.of<BagContext>(context, listen: false);
+
+                    bagContext.addItem(widget.food, itemCount);
+                    Navigator.of(context).pop(true);
+                  },
+                ),
+              ),
             ),
           ],
         ),
