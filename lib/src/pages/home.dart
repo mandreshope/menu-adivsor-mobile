@@ -251,21 +251,24 @@ class _HomePageState extends State<HomePage> {
               child: Row(
                 children: [
                   for (var category in foodCategories)
-                    CategoryCard(
-                      imageURL: category.imageURL,
-                      name: category.name,
-                      onPressed: () {
-                        RouteUtil.goTo(
-                          context: context,
-                          child: SearchPage(
-                            type: 'food',
-                            filters: {
-                              'category': category.id,
-                            },
-                          ),
-                          routeName: searchRoute,
-                        );
-                      },
+                    FadeAnimation(
+                      1,
+                      CategoryCard(
+                        imageURL: category.imageURL,
+                        name: category.name,
+                        onPressed: () {
+                          RouteUtil.goTo(
+                            context: context,
+                            child: SearchPage(
+                              type: 'food',
+                              filters: {
+                                'category': category.id,
+                              },
+                            ),
+                            routeName: searchRoute,
+                          );
+                        },
+                      ),
                     ),
                 ],
               ),
