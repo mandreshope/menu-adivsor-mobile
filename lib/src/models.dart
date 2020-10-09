@@ -135,7 +135,6 @@ class User {
   final String photoURL;
   final String address;
   final String email;
-  final Location location;
   final List<Restaurant> favoriteRestaurants;
   final List<Food> favoriteFoods;
   final List<PaymentCard> paymentCards;
@@ -177,7 +176,6 @@ class User {
     this.phoneNumber,
     this.photoURL,
     this.address,
-    this.location,
     this.favoriteRestaurants = const [],
     this.favoriteFoods = const [],
     this.paymentCards = const [],
