@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
@@ -466,6 +467,102 @@ class RestaurantCard extends StatelessWidget {
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class BagItem extends StatelessWidget {
+  final Food food;
+  final int count;
+
+  BagItem({
+    Key key,
+    @required this.food,
+    @required this.count,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 2.0,
+      margin: const EdgeInsets.all(10.0),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            food.imageURL != null
+                ? CircleAvatar(
+                    backgroundImage: NetworkImage(
+                      food.imageURL,
+                    ),
+                    onBackgroundImageError: (_, __) {},
+                    backgroundColor: Colors.grey,
+                    maxRadius: 20,
+                  )
+                : Icon(
+                    Icons.fastfood,
+                  ),
+            SizedBox(
+              width: 10,
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    food.name,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    '${food.price.amount / 100}€',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25.0),
+              child: Text('$count'),
+            ),
+            CircleButton(
+              backgroundColor: CRIMSON,
+              child: Icon(
+                Icons.delete,
+                color: Colors.white,
+              ),
+              onPressed: () async {
+                var result = await showDialog(
+                  context: context,
+                  child: ConfirmationDialog(
+                    title: AppLocalizations.of(context)
+                        .translate('remove_item_confirmation_title'),
+                    content: AppLocalizations.of(context)
+                        .translate('remove_item_confirmation_content'),
+                  ),
+                );
+
+                if (result is bool && result) {
+                  BagContext bagContext =
+                      Provider.of<BagContext>(context, listen: false);
+
+                  bagContext.removeItem(food);
+                }
+              },
+            ),
+          ],
         ),
       ),
     );
