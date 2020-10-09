@@ -58,8 +58,15 @@ class _OrderPageState extends State<OrderPage> {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(
-                        AppLocalizations.of(context).translate('all_items'),
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Text(
+                          AppLocalizations.of(context).translate('all_items'),
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                       ...list,
                     ],
