@@ -58,50 +58,53 @@ class _HomePageState extends State<HomePage> {
       },
       child: ScaffoldWithBottomMenu(
         body: SafeArea(
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              Positioned(
-                top: MediaQuery.of(context).size.height / 2 - 60,
-                left: 0,
-                child: SvgPicture.asset(
-                  'assets/images/wave-background-yellow.svg',
-                  width: 250,
-                ),
-              ),
-              RefreshIndicator(
-                onRefresh: () async {
-                  DataContext dataContext =
-                      Provider.of<DataContext>(context, listen: false);
-
-                  return dataContext.refresh();
-                },
-                child: SingleChildScrollView(
-                  physics: BouncingScrollPhysics(),
-                  scrollDirection: Axis.vertical,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _renderHeader(),
-                      Transform.translate(
-                        offset: Offset(
-                          0,
-                          -130,
-                        ),
-                        child: Column(
-                          children: [
-                            _renderFoodCategories(),
-                            _renderPopularFoods(),
-                            _renderPopularRestaurants(),
-                            _renderOnSiteFoods(),
-                          ],
-                        ),
-                      ),
-                    ],
+          child: FadeAnimation(
+            0.3,
+            Stack(
+              fit: StackFit.expand,
+              children: [
+                Positioned(
+                  top: MediaQuery.of(context).size.height / 2 - 60,
+                  left: 0,
+                  child: SvgPicture.asset(
+                    'assets/images/wave-background-yellow.svg',
+                    width: 250,
                   ),
                 ),
-              ),
-            ],
+                RefreshIndicator(
+                  onRefresh: () async {
+                    DataContext dataContext =
+                        Provider.of<DataContext>(context, listen: false);
+
+                    return dataContext.refresh();
+                  },
+                  child: SingleChildScrollView(
+                    physics: BouncingScrollPhysics(),
+                    scrollDirection: Axis.vertical,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _renderHeader(),
+                        Transform.translate(
+                          offset: Offset(
+                            0,
+                            -130,
+                          ),
+                          child: Column(
+                            children: [
+                              _renderFoodCategories(),
+                              _renderPopularFoods(),
+                              _renderPopularRestaurants(),
+                              _renderOnSiteFoods(),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
