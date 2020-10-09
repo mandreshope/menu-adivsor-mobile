@@ -87,5 +87,7 @@
   "validation_successfull": "Validation successfull",
   "validation_error": "Incorrect validation code",
   "under_construction": "Under construction...",
-  "field_must_not_be_blank": "The field must not be blank"
+  "field_must_not_be_blank": "The field must not be blank",
+  "all_items": "All items",
+  "your_informations": "Your informations"
 }
