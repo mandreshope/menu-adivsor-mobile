@@ -16,3 +16,5 @@ const String foodRoute = 'food';
 const String restaurantRoute = 'restaurant';
 const String paymentCardListRoute = 'paymentCardList';
 const String addPaymentCardRoute = 'addPaymentCard';
+const String paymentMethodRoute = 'paymentMethodRoute';
+const String userDetailsRoute = 'userDetails';
