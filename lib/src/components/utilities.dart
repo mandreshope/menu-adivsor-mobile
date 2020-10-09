@@ -48,63 +48,6 @@ class ScaffoldWithBottomMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, Widget> menuButtons = {
-      homeRoute: IconButton(
-        icon: FaIcon(
-          FontAwesomeIcons.home,
-          color: Colors.white,
-        ),
-        onPressed: () {
-          RouteUtil.goTo(
-            routeName: homeRoute,
-            context: context,
-            child: HomePage(),
-            method: RoutingMethod.atTop,
-          );
-        },
-      ),
-      profileRoute: IconButton(
-        icon: FaIcon(
-          FontAwesomeIcons.user,
-          color: Colors.white,
-        ),
-        onPressed: () async {
-          AuthContext authContext =
-              Provider.of<AuthContext>(context, listen: false);
-
-          SettingContext settingContext =
-              Provider.of<SettingContext>(context, listen: false);
-          await settingContext.initialized;
-
-          if (authContext.currentUser != null)
-            RouteUtil.goTo(
-              routeName: profileRoute,
-              context: context,
-              child: ProfilePage(),
-            );
-          else
-            RouteUtil.goTo(
-              context: context,
-              child: LoginPage(),
-              routeName: loginRoute,
-            );
-        },
-      ),
-      qrRoute: IconButton(
-        icon: FaIcon(
-          FontAwesomeIcons.qrcode,
-          color: Colors.white,
-        ),
-        onPressed: () {
-          RouteUtil.goTo(
-            context: context,
-            child: QRCodeScanPage(),
-            routeName: qrRoute,
-          );
-        },
-      ),
-    };
-
     return Scaffold(
       appBar: appBar,
       backgroundColor: BACKGROUND_COLOR,
@@ -113,41 +56,22 @@ class ScaffoldWithBottomMenu extends StatelessWidget {
       floatingActionButton: Container(
         width: 65,
         height: 65,
-        child: LayoutBuilder(
-          builder: (buildContext, _) {
-            String currentRoute = ModalRoute.of(context).settings.name;
-            IconData iconData;
-
-            switch (currentRoute) {
-              case homeRoute:
-                iconData = FontAwesomeIcons.home;
-                break;
-
-              case profileRoute:
-                iconData = FontAwesomeIcons.user;
-                break;
-
-              case qrRoute:
-                iconData = FontAwesomeIcons.qrcode;
-                break;
-
-              default:
-                iconData = FontAwesomeIcons.home;
-                break;
-            }
-
-            return FittedBox(
-              child: FloatingActionButton(
-                backgroundColor: CRIMSON,
-                onPressed: () {},
-                tooltip: ModalRoute.of(context).settings.name,
-                child: FaIcon(
-                  iconData,
-                ),
-                elevation: 2.0,
-              ),
-            );
-          },
+        child: FittedBox(
+          child: FloatingActionButton(
+            backgroundColor: CRIMSON,
+            onPressed: () {
+              RouteUtil.goTo(
+                context: context,
+                child: QRCodeScanPage(),
+                routeName: qrRoute,
+              );
+            },
+            tooltip: ModalRoute.of(context).settings.name,
+            child: FaIcon(
+              FontAwesomeIcons.qrcode,
+            ),
+            elevation: 2.0,
+          ),
         ),
       ),
       bottomNavigationBar: BottomAppBar(
@@ -162,11 +86,19 @@ class ScaffoldWithBottomMenu extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
-                child: Builder(
-                  builder: (context) {
-                    if (ModalRoute.of(context).settings.name == qrRoute)
-                      return menuButtons[homeRoute];
-                    return menuButtons[qrRoute];
+                child: IconButton(
+                  icon: FaIcon(
+                    FontAwesomeIcons.home,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    if (ModalRoute.of(context).settings.name != homeRoute)
+                      RouteUtil.goTo(
+                        routeName: homeRoute,
+                        context: context,
+                        child: HomePage(),
+                        method: RoutingMethod.atTop,
+                      );
                   },
                 ),
               ),
@@ -202,11 +134,31 @@ class ScaffoldWithBottomMenu extends StatelessWidget {
                 ),
               ),
               Expanded(
-                child: Builder(
-                  builder: (context) {
-                    if (ModalRoute.of(context).settings.name == profileRoute)
-                      return menuButtons[homeRoute];
-                    return menuButtons[profileRoute];
+                child: IconButton(
+                  icon: FaIcon(
+                    FontAwesomeIcons.user,
+                    color: Colors.white,
+                  ),
+                  onPressed: () async {
+                    AuthContext authContext =
+                        Provider.of<AuthContext>(context, listen: false);
+
+                    SettingContext settingContext =
+                        Provider.of<SettingContext>(context, listen: false);
+                    await settingContext.initialized;
+
+                    if (authContext.currentUser != null)
+                      RouteUtil.goTo(
+                        routeName: profileRoute,
+                        context: context,
+                        child: ProfilePage(),
+                      );
+                    else
+                      RouteUtil.goTo(
+                        context: context,
+                        child: LoginPage(),
+                        routeName: loginRoute,
+                      );
                   },
                 ),
               ),
