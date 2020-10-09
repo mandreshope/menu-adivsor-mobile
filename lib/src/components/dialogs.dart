@@ -128,32 +128,31 @@ class BagModal extends StatelessWidget {
               ),
             ),
           ),
-          FlatButton(
-            onPressed: () {
-              BagContext bagContext =
-                  Provider.of<BagContext>(context, listen: false);
-
-              if (bagContext.itemCount == 0)
-                Fluttertoast.showToast(
-                  msg: AppLocalizations.of(context).translate('empty_cart'),
-                );
-              else
-                RouteUtil.goTo(
-                  context: context,
-                  child: OrderPage(),
-                  routeName: orderRoute,
-                );
-            },
-            padding: const EdgeInsets.all(
-              20.0,
-            ),
-            color: Colors.teal,
-            child: Text(
-              AppLocalizations.of(context).translate("order"),
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+          Consumer<BagContext>(
+            builder: (_, bagContext, __) => FlatButton(
+              onPressed: () {
+                if (bagContext.itemCount == 0)
+                  Fluttertoast.showToast(
+                    msg: AppLocalizations.of(context).translate('empty_cart'),
+                  );
+                else
+                  RouteUtil.goTo(
+                    context: context,
+                    child: OrderPage(),
+                    routeName: orderRoute,
+                  );
+              },
+              padding: const EdgeInsets.all(
+                20.0,
+              ),
+              color: Colors.teal,
+              child: Text(
+                AppLocalizations.of(context).translate("order"),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
