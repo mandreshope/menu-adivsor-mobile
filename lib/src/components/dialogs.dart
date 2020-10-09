@@ -182,6 +182,10 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
   @override
   void initState() {
     super.initState();
+
+    BagContext bagContext = Provider.of<BagContext>(context, listen: false);
+    if (bagContext.contains(widget.food))
+      itemCount = bagContext.getCount(widget.food);
   }
 
   @override
@@ -191,107 +195,114 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
-      child: Container(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(
-                top: 25.0,
-                left: 25.0,
-                right: 25.0,
-              ),
-              child: Text(
-                AppLocalizations.of(context).translate('add_to_cart'),
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+      child: Consumer<BagContext>(
+        builder: (_, bagContext, __) => Container(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(
+                  top: 25.0,
+                  left: 25.0,
+                  right: 25.0,
+                ),
+                child: Text(
+                  bagContext.contains(widget.food)
+                      ? AppLocalizations.of(context).translate('edit')
+                      : AppLocalizations.of(context).translate('add_to_cart'),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25.0),
-              child: Text(
-                AppLocalizations.of(context).translate('item_count'),
+              SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                child: Text(
+                  AppLocalizations.of(context).translate('item_count'),
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25.0),
-              child: Row(
-                children: [
-                  CircleButton(
-                    backgroundColor: Colors.transparent,
-                    border: Border.all(
-                      width: 1,
-                      color: Colors.grey,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                child: Row(
+                  children: [
+                    CircleButton(
+                      backgroundColor: Colors.transparent,
+                      border: Border.all(
+                        width: 1,
+                        color: Colors.grey,
+                      ),
+                      child: FaIcon(
+                        FontAwesomeIcons.minus,
+                        color: Colors.black,
+                      ),
+                      onPressed: itemCount > 1
+                          ? () {
+                              setState(() {
+                                itemCount--;
+                              });
+                            }
+                          : null,
                     ),
-                    child: FaIcon(
-                      FontAwesomeIcons.minus,
-                      color: Colors.black,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Text(
+                        itemCount.toString(),
+                      ),
                     ),
-                    onPressed: itemCount > 1
-                        ? () {
-                            setState(() {
-                              itemCount--;
-                            });
-                          }
-                        : null,
+                    CircleButton(
+                      backgroundColor: Colors.transparent,
+                      border: Border.all(
+                        width: 1,
+                        color: Colors.grey,
+                      ),
+                      child: FaIcon(
+                        FontAwesomeIcons.plus,
+                        color: Colors.black,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          itemCount++;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    right: 10.0,
+                    bottom: 10.0,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: RaisedButton(
+                    color: CRIMSON,
                     child: Text(
-                      itemCount.toString(),
-                    ),
-                  ),
-                  CircleButton(
-                    backgroundColor: Colors.transparent,
-                    border: Border.all(
-                      width: 1,
-                      color: Colors.grey,
-                    ),
-                    child: FaIcon(
-                      FontAwesomeIcons.plus,
-                      color: Colors.black,
+                      bagContext.contains(widget.food)
+                          ? AppLocalizations.of(context).translate('edit')
+                          : AppLocalizations.of(context).translate('add'),
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     onPressed: () {
-                      setState(() {
-                        itemCount++;
-                      });
+                      if (bagContext.contains(widget.food))
+                        bagContext.setCount(widget.food, itemCount);
+                      else
+                        bagContext.addItem(widget.food, itemCount);
+
+                      Navigator.of(context).pop(true);
                     },
                   ),
-                ],
-              ),
-            ),
-            Align(
-              alignment: Alignment.centerRight,
-              child: Padding(
-                padding: const EdgeInsets.only(
-                  right: 10.0,
-                  bottom: 10.0,
-                ),
-                child: RaisedButton(
-                  color: CRIMSON,
-                  child: Text(
-                    AppLocalizations.of(context).translate('add'),
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  onPressed: () {
-                    BagContext bagContext =
-                        Provider.of<BagContext>(context, listen: false);
-
-                    bagContext.addItem(widget.food, itemCount);
-                    Navigator.of(context).pop(true);
-                  },
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
