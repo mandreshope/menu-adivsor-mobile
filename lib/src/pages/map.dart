@@ -162,8 +162,8 @@ class _MapPageState extends State<MapPage> {
                           ..._nearesRestaurants
                               .map(
                                 (restaurant) => Marker(
-                                  width: 30,
-                                  height: 30,
+                                  width: 60,
+                                  height: 60,
                                   point: LatLng(
                                     restaurant.content['location']
                                         ['coordinates'][0],
@@ -171,9 +171,24 @@ class _MapPageState extends State<MapPage> {
                                         ['coordinates'][1],
                                   ),
                                   builder: (BuildContext context) => Container(
-                                    child: FaIcon(
-                                      FontAwesomeIcons.utensils,
-                                      color: Colors.white,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          restaurant.content['name'],
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        FaIcon(
+                                          FontAwesomeIcons.utensils,
+                                          color: Colors.white,
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
