@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:menu_advisor/src/components/utilities.dart';
-import 'package:menu_advisor/src/pages/login.dart';
+import 'package:menu_advisor/src/pages/home.dart';
 import 'package:menu_advisor/src/pages/payment_card_list.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
@@ -52,8 +52,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
                   RouteUtil.goTo(
                     context: context,
-                    child: LoginPage(),
-                    routeName: loginRoute,
+                    child: HomePage(),
+                    routeName: homeRoute,
                     method: RoutingMethod.atTop,
                   );
                 },
