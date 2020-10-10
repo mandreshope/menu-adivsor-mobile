@@ -60,4 +60,10 @@ class BagContext extends ChangeNotifier {
     });
     return count;
   }
+
+  void clear() {
+    _items.clear();
+    _itemCount = 0;
+    notifyListeners();
+  }
 }
