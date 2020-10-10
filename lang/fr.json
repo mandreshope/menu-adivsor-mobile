@@ -89,5 +89,9 @@
   "under_construction": "En cours de construction...",
   "field_must_not_be_blank": "Ce champ ne doit pas être vide",
   "all_items": "Toutes les articles",
-  "your_informations": "Vos informations"
+  "your_informations": "Vos informations",
+  "edit": "Modifier",
+  "you": "Vous",
+  "your_name": "Votre nom",
+  "validate": "Valider"
 }
