@@ -59,7 +59,6 @@ class PaymentCard {
   final int cardNumber;
   final DateTime expirationDate;
   final int securityCode;
-  final String address;
   final String owner;
   final String zipCode;
 
@@ -67,7 +66,6 @@ class PaymentCard {
     @required this.cardNumber,
     @required this.expirationDate,
     @required this.securityCode,
-    @required this.address,
     @required this.owner,
     @required this.zipCode,
   });
@@ -77,7 +75,6 @@ class PaymentCard {
         expirationDate:
             DateTime.fromMillisecondsSinceEpoch(data['expirationDate']),
         securityCode: data['securityCode'],
-        address: data['address'],
         owner: data['owner'],
         zipCode: data['zipCode'],
       );
@@ -86,7 +83,6 @@ class PaymentCard {
         'cardNumber': cardNumber,
         'expirationDate': expirationDate.millisecondsSinceEpoch,
         'securityCode': securityCode,
-        'address': address,
         'owner': owner,
         'zipCode': zipCode,
       };
