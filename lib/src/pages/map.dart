@@ -27,7 +27,7 @@ class _MapPageState extends State<MapPage> {
   String _searchValue = '';
   Timer _updateLocationInterval;
   Timer _timer;
-  List<SearchResult> _nearesRestaurants = [];
+  List<SearchResult> _nearestRestaurants = [];
   bool _loading = false;
   Api _api = Api.instance;
 
@@ -90,7 +90,7 @@ class _MapPageState extends State<MapPage> {
         _loading = true;
       });
       try {
-        _nearesRestaurants = await _api.search(
+        _nearestRestaurants = await _api.search(
           _searchValue,
           type: 'restaurant',
         );
@@ -111,7 +111,7 @@ class _MapPageState extends State<MapPage> {
         type: 'restaurant',
       );
       setState(() {
-        _nearesRestaurants = results;
+        _nearestRestaurants = results;
       });
     } catch (error) {
       print(error.toString());
@@ -159,10 +159,10 @@ class _MapPageState extends State<MapPage> {
                       ),
                       MarkerLayerOptions(
                         markers: [
-                          ..._nearesRestaurants
+                          ..._nearestRestaurants
                               .map(
                                 (restaurant) => Marker(
-                                  width: 60,
+                                  width: 80,
                                   height: 60,
                                   point: LatLng(
                                     restaurant.content['location']
@@ -195,16 +195,34 @@ class _MapPageState extends State<MapPage> {
                               )
                               .toList(),
                           Marker(
+                            width: 100,
+                            height: 60,
                             point: LatLng(
                               _currentPosition.latitude,
                               _currentPosition.longitude,
                             ),
                             anchorPos: AnchorPos.align(AnchorAlign.top),
                             builder: (BuildContext context) => Container(
-                              child: Icon(
-                                Icons.location_on,
-                                color: CRIMSON,
-                                size: 30,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    AppLocalizations.of(context)
+                                        .translate('you'),
+                                    style: TextStyle(
+                                      color: CRIMSON,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Icon(
+                                    Icons.location_on,
+                                    color: CRIMSON,
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -283,10 +301,10 @@ class _MapPageState extends State<MapPage> {
                         ),
                       )
                     : SingleChildScrollView(
-                        child: _nearesRestaurants.isNotEmpty
+                        child: _nearestRestaurants.isNotEmpty
                             ? Column(
                                 children: [
-                                  ..._nearesRestaurants
+                                  ..._nearestRestaurants
                                       .map(
                                         (e) => Builder(
                                           builder: (_) {
