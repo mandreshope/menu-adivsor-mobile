@@ -28,16 +28,19 @@ class FoodPage extends StatefulWidget {
 
 class _FoodPageState extends State<FoodPage> {
   bool isInFavorite = false;
+  bool showFavorite = true;
 
   @override
   void initState() {
     super.initState();
 
     AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
-    isInFavorite = authContext.currentUser.favoriteFoods.firstWhere(
-            (element) => element.id == widget.food.id,
-            orElse: () => null) !=
-        null;
+    if (authContext.currentUser == null) showFavorite = false;
+    isInFavorite = authContext.currentUser != null &&
+        authContext.currentUser.favoriteFoods.firstWhere(
+                (element) => element.id == widget.food.id,
+                orElse: () => null) !=
+            null;
   }
 
   @override
@@ -186,26 +189,30 @@ class _FoodPageState extends State<FoodPage> {
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      FloatingActionButton(
-                        onPressed: () {
-                          setState(() {
-                            isInFavorite = !isInFavorite;
-                          });
-                          Fluttertoast.showToast(
-                            msg: AppLocalizations.of(context).translate(
-                              isInFavorite
-                                  ? 'added_to_favorite'
-                                  : 'removed_from_favorite',
-                            ),
-                          );
-                        },
-                        child: Icon(
-                          isInFavorite ? Icons.favorite : Icons.favorite_border,
+                      if (showFavorite) ...[
+                        FloatingActionButton(
+                          onPressed: () {
+                            setState(() {
+                              isInFavorite = !isInFavorite;
+                            });
+                            Fluttertoast.showToast(
+                              msg: AppLocalizations.of(context).translate(
+                                isInFavorite
+                                    ? 'added_to_favorite'
+                                    : 'removed_from_favorite',
+                              ),
+                            );
+                          },
+                          child: Icon(
+                            isInFavorite
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                      ],
                       Expanded(
                         child: Consumer<BagContext>(
                           builder: (_, bagContext, __) => RaisedButton(
