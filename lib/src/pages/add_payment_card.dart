@@ -1,12 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
+import 'package:menu_advisor/src/constants/validators.dart';
+import 'package:menu_advisor/src/pages/home.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
+import 'package:menu_advisor/src/providers/BagContext.dart';
+import 'package:menu_advisor/src/routes/routes.dart';
+import 'package:menu_advisor/src/services/stripe.dart';
+import 'package:menu_advisor/src/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/input_formatters.dart';
+import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:provider/provider.dart';
 
 class AddPaymentCardPage extends StatefulWidget {
+  final bool anonymous;
+
+  AddPaymentCardPage({
+    Key key,
+    this.anonymous,
+  }) : super(key: key);
+
   @override
   _AddPaymentCardPageState createState() => _AddPaymentCardPageState();
 }
@@ -25,6 +40,8 @@ class _AddPaymentCardPageState extends State<AddPaymentCardPage> {
   FocusNode _zipCodeFocus = FocusNode();
 
   GlobalKey<FormState> _formKey = GlobalKey();
+
+  bool _onProgress = false;
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +92,7 @@ class _AddPaymentCardPageState extends State<AddPaymentCardPage> {
                           labelText: AppLocalizations.of(context)
                               .translate("owner_name_placeholder"),
                         ),
-                        validator: _required,
+                        validator: Validators.required(context),
                         onFieldSubmitted: (_) {
                           _ownerNameFocus.unfocus();
                           FocusScope.of(context).requestFocus(_cardNumberFocus);
@@ -93,7 +110,7 @@ class _AddPaymentCardPageState extends State<AddPaymentCardPage> {
                           labelText: AppLocalizations.of(context)
                               .translate("card_number_placeholder"),
                         ),
-                        validator: _required,
+                        validator: Validators.required(context),
                         onFieldSubmitted: (_) {
                           _cardNumberFocus.unfocus();
                           FocusScope.of(context)
@@ -122,7 +139,7 @@ class _AddPaymentCardPageState extends State<AddPaymentCardPage> {
                               inputFormatters: [
                                 ExpiryDateInputFormatter(),
                               ],
-                              validator: _required,
+                              validator: Validators.required(context),
                               onFieldSubmitted: (_) {
                                 _expirationDateFocus.unfocus();
                                 FocusScope.of(context).requestFocus(_cvcFocus);
@@ -147,7 +164,7 @@ class _AddPaymentCardPageState extends State<AddPaymentCardPage> {
                               inputFormatters: [
                                 LengthLimitingTextInputFormatter(3)
                               ],
-                              validator: _required,
+                              validator: Validators.required(context),
                               onFieldSubmitted: (_) {
                                 _cvcFocus.unfocus();
                                 FocusScope.of(context)
@@ -169,7 +186,7 @@ class _AddPaymentCardPageState extends State<AddPaymentCardPage> {
                           labelText: AppLocalizations.of(context)
                               .translate("zip_code_placeholder"),
                         ),
-                        validator: _required,
+                        validator: Validators.required(context),
                         onFieldSubmitted: (_) {
                           _zipCodeFocus.unfocus();
                           _submitForm();
@@ -194,21 +211,37 @@ class _AddPaymentCardPageState extends State<AddPaymentCardPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.save_rounded,
-                          color: Colors.white,
-                        ),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Text(
-                          AppLocalizations.of(context).translate('save'),
-                          style: TextStyle(
+                        if (_onProgress)
+                          SizedBox(
+                            height: 22,
+                            child: FittedBox(
+                              child: CircularProgressIndicator(
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            ),
+                          )
+                        else ...[
+                          Icon(
+                            widget.anonymous ? Icons.check : Icons.save_rounded,
                             color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 22,
                           ),
-                        ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Text(
+                            widget.anonymous
+                                ? AppLocalizations.of(context)
+                                    .translate('validate')
+                                : AppLocalizations.of(context)
+                                    .translate('save'),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 22,
+                            ),
+                          ),
+                        ]
                       ],
                     ),
                   ),
@@ -221,19 +254,51 @@ class _AddPaymentCardPageState extends State<AddPaymentCardPage> {
     );
   }
 
-  String _required(String value) {
-    if (value.isEmpty)
-      return AppLocalizations.of(context).translate('field_must_not_be_blank');
-
-    return null;
-  }
-
-  _submitForm() {
+  _submitForm() async {
     if (_formKey.currentState.validate()) {
-      AuthContext authContext =
-          Provider.of<AuthContext>(context, listen: false);
+      if (widget.anonymous) {
+        StripeService.init();
 
-      try {} catch (error) {}
+        BagContext bagContext = Provider.of<BagContext>(context, listen: false);
+
+        setState(() {
+          _onProgress = true;
+        });
+        var response = await StripeService.payViaExistingCard(
+          amount: (bagContext.totalPrice * 100).round().toString(),
+          currency: 'eur',
+          card: PaymentCard(
+            cardNumber: int.parse(_cardNumberController.value.text),
+            expirationDate: DateTime.utc(
+              int.parse(_expirationDateController.value.text.split('/')[1]),
+              int.parse(_expirationDateController.value.text.split('/')[0]),
+            ),
+            securityCode: int.parse(_cvcController.value.text),
+            owner: _ownerNameController.value.text,
+            zipCode: _zipCodeController.value.text,
+          ),
+        );
+        setState(() {
+          _onProgress = false;
+        });
+        if (response.success) {
+          bagContext.clear();
+
+          RouteUtil.goTo(
+            context: context,
+            child: HomePage(),
+            routeName: homeRoute,
+            method: RoutingMethod.atTop,
+          );
+        } else {
+          Fluttertoast.showToast(msg: response.message);
+        }
+      } else {
+        AuthContext authContext =
+            Provider.of<AuthContext>(context, listen: false);
+
+        try {} catch (error) {}
+      }
     }
   }
 }
