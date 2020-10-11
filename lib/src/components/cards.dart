@@ -9,6 +9,7 @@ import 'package:menu_advisor/src/pages/food.dart';
 import 'package:menu_advisor/src/pages/restaurant.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
+import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
@@ -50,13 +51,13 @@ class CategoryCard extends StatelessWidget {
               children: [
                 Container(
                   padding: const EdgeInsets.all(10.0),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: DARK_BLUE,
-                      width: 2,
-                    ),
-                  ),
+                  // decoration: BoxDecoration(
+                  //   shape: BoxShape.circle,
+                  //   border: Border.all(
+                  //     color: DARK_BLUE,
+                  //     width: 2,
+                  //   ),
+                  // ),
                   child: imageURL == null
                       ? SvgPicture.asset(
                           'assets/images/foodCategory-dietetic.svg',
@@ -173,7 +174,8 @@ class FoodCard extends StatelessWidget {
                               mainAxisSize: MainAxisSize.max,
                               children: [
                                 Text(
-                                  food.name,
+                                  food.name[Provider.of<SettingContext>(context)
+                                      .languageCode],
                                   style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
@@ -517,7 +519,8 @@ class BagItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    food.name,
+                    food.name[
+                        Provider.of<SettingContext>(context).languageCode],
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
