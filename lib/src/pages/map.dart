@@ -10,11 +10,13 @@ import 'package:latlong/latlong.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/restaurant.dart';
+import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:provider/provider.dart';
 
 class MapPage extends StatefulWidget {
   @override
@@ -93,6 +95,10 @@ class _MapPageState extends State<MapPage> {
       try {
         _nearestRestaurants = await _api.search(
           _searchValue,
+          Provider.of<SettingContext>(
+            context,
+            listen: false,
+          ).languageCode,
           type: 'restaurant',
         );
       } catch (error) {} finally {
@@ -110,6 +116,10 @@ class _MapPageState extends State<MapPage> {
     try {
       var results = await _api.search(
         _searchValue,
+        Provider.of<SettingContext>(
+          context,
+          listen: false,
+        ).languageCode,
         type: 'restaurant',
       );
       setState(() {
@@ -322,7 +332,7 @@ class _MapPageState extends State<MapPage> {
                                                   RouteUtil.goTo(
                                                     context: context,
                                                     child: RestaurantPage(
-                                                      restaurant: restaurant,
+                                                      restaurant: restaurant.id,
                                                     ),
                                                     routeName: restaurantRoute,
                                                   );

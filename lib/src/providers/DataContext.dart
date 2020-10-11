@@ -41,32 +41,34 @@ class DataContext extends ChangeNotifier {
 
   final Api _api = Api.instance;
 
-  DataContext() {
-    _fetchFoodCategories();
+  DataContext(String lang) {
+    _fetchFoodCategories(lang);
     _fetchPopularRestaurants();
-    _fetchPopularFoods();
-    _fetchOnSiteFoods();
+    _fetchPopularFoods(lang);
+    _fetchOnSiteFoods(lang);
   }
 
-  Future refresh() async {
+  Future refresh(String lang) async {
     loadingFoodCategories = true;
     loadingPopularFoods = true;
     loadingNearestRestaurants = true;
     loadingOnSiteFoods = true;
     notifyListeners();
 
-    await _fetchFoodCategories();
+    await _fetchFoodCategories(lang);
 
-    await _fetchPopularFoods();
+    await _fetchPopularFoods(lang);
 
     await _fetchPopularRestaurants();
+
+    await _fetchOnSiteFoods(lang);
   }
 
-  _fetchFoodCategories() async {
+  _fetchFoodCategories(String lang) async {
     loadingFoodCategories = true;
     notifyListeners();
     try {
-      foodCategories = await _api.getFoodCategories();
+      foodCategories = await _api.getFoodCategories(lang);
     } catch (error) {
       print(
         "Error while fetching food categories",
@@ -99,12 +101,13 @@ class DataContext extends ChangeNotifier {
     }
   }
 
-  _fetchPopularFoods() async {
+  _fetchPopularFoods(String lang) async {
     loadingPopularFoods = true;
     notifyListeners();
 
     try {
       popularFoods = await _api.getFoods(
+        lang,
         filters: {
           "searchCategory": "popular",
         },
@@ -117,12 +120,13 @@ class DataContext extends ChangeNotifier {
     }
   }
 
-  _fetchOnSiteFoods() async {
+  _fetchOnSiteFoods(String lang) async {
     loadingOnSiteFoods = true;
     notifyListeners();
 
     try {
       onSiteFoods = await _api.getFoods(
+        lang,
         filters: {
           "searchCategory": "onsite",
         },
@@ -136,12 +140,12 @@ class DataContext extends ChangeNotifier {
     }
   }
 
-  fetchFoods(Map<String, dynamic> filters) async {
+  fetchFoods(String lang, Map<String, dynamic> filters) async {
     loadingFoods = true;
     notifyListeners();
 
     try {
-      foods = await _api.getFoods(filters: filters);
+      foods = await _api.getFoods(lang, filters: filters);
     } catch (error) {
       print(
         'Error while fetching foods...',

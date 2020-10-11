@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/restaurant.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
-import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
+import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:provider/provider.dart';
@@ -17,10 +15,12 @@ import 'package:provider/provider.dart';
 class FoodPage extends StatefulWidget {
   final Food food;
   final String imageTag;
+  final String restaurantName;
 
   FoodPage({
     this.food,
     this.imageTag,
+    this.restaurantName,
   });
 
   @override
@@ -30,10 +30,18 @@ class FoodPage extends StatefulWidget {
 class _FoodPageState extends State<FoodPage> {
   bool isInFavorite = false;
   bool showFavorite = true;
+  Api api = Api.instance;
+  bool loading = true;
+  String restaurantName;
 
   @override
   void initState() {
     super.initState();
+
+    api.getRestaurant(id: widget.food.restaurant).then((res) {
+      restaurantName = res.name;
+      loading = false;
+    });
 
     AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
     if (authContext.currentUser == null) showFavorite = false;
@@ -73,8 +81,7 @@ class _FoodPageState extends State<FoodPage> {
                     right: 100.0,
                   ),
                   child: Text(
-                    widget.food.name[
-                        Provider.of<SettingContext>(context).languageCode],
+                    widget.food.name,
                     style: TextStyle(
                       fontFamily: 'Soft Elegance',
                       fontSize: 50,
@@ -126,7 +133,7 @@ class _FoodPageState extends State<FoodPage> {
                             );
                         },
                         child: Text(
-                          widget.food.restaurant?.name ?? 'Aucun nom',
+                          restaurantName ?? 'Aucun nom',
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
@@ -287,9 +294,7 @@ class _FoodPageState extends State<FoodPage> {
                               color: Colors.black,
                             ),
                             title: Text(
-                              widget.food.name[
-                                  Provider.of<SettingContext>(context)
-                                      .languageCode],
+                              widget.food.name,
                               style: TextStyle(
                                 color: Colors.black,
                               ),

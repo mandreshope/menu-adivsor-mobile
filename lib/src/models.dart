@@ -26,13 +26,14 @@ class FoodCategory {
 
 class Food {
   final String id;
-  final Map<String, dynamic> name;
+  final String name;
   final FoodCategory category;
   final double ratings;
   final Price price;
   final String imageURL;
-  final Restaurant restaurant;
+  final String restaurant;
   final String description;
+  final String type;
 
   Food({
     @required this.id,
@@ -43,6 +44,7 @@ class Food {
     this.ratings = 0,
     this.imageURL,
     this.description,
+    this.type,
   });
 
   factory Food.fromJson(Map<String, dynamic> json) => Food(
@@ -54,10 +56,9 @@ class Food {
                 json['category'] is Map<String, dynamic>
             ? FoodCategory.fromJson(json['category'])
             : null,
-        restaurant: json.containsKey('restaurant') && json['restaurant'] != null
-            ? Restaurant.fromJson(json['restaurant'])
-            : null,
+        restaurant: json['restaurant'],
         price: Price.fromJson(json['price']),
+        type: json['type'],
       );
 
   Map<String, dynamic> toJson() => {
@@ -97,7 +98,7 @@ class Restaurant {
   final String description;
   final List<Menu> menus;
   final List<Food> foods;
-  final List<String> foodTypes;
+  final List<dynamic> foodTypes;
 
   Restaurant({
     @required this.id,
@@ -123,12 +124,12 @@ class Restaurant {
         address: json['address'] ?? '',
         description: json['description'] ?? '',
         menus: (json['menus'] is List<Map<String, dynamic>>)
-            ? json['menus'].map((e) => Menu.fromJson(e))
+            ? json['menus'].map((e) => Menu.fromJson(e)).toList()
             : [],
-        foods: (json['foods'] is List<Map<String, dynamic>>)
-            ? json['foods'].map((e) => Food.fromJson(e))
+        foods: (json['foods'] is List<Map>)
+            ? json['foods'].map((e) => Food.fromJson(e)).toList()
             : [],
-        foodTypes: (json['foodTypes'] is List<String>) ? json['foodTypes'] : [],
+        foodTypes: json['foodTypes'] ?? [],
       );
 }
 

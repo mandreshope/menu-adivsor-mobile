@@ -30,7 +30,7 @@ class _MyAppState extends State<MyApp> {
           lazy: false,
         ),
         ChangeNotifierProvider(
-          create: (_) => DataContext(),
+          create: (_) => DataContext('fr'),
         )
       ],
       child: Consumer<SettingContext>(

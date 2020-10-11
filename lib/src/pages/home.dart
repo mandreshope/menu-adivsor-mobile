@@ -77,7 +77,10 @@ class _HomePageState extends State<HomePage> {
                     DataContext dataContext =
                         Provider.of<DataContext>(context, listen: false);
 
-                    return dataContext.refresh();
+                    return dataContext.refresh(
+                      Provider.of<SettingContext>(context, listen: false)
+                          .languageCode,
+                    );
                   },
                   child: SingleChildScrollView(
                     physics: BouncingScrollPhysics(),

@@ -4,11 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/components/cards.dart';
+import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
+import 'package:provider/provider.dart';
 
 class SearchPage extends StatefulWidget {
   final String type;
@@ -26,19 +29,20 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   String _searchValue = '';
   bool _loading = false;
-  bool isSettingExpanded = false;
   List<SearchResult> _searchResults = [];
   Api _api = Api.instance;
   Timer _timer;
-  Map<String, dynamic> filters;
+  Map<String, dynamic> filters = Map();
+  String type;
 
   @override
   void initState() {
     super.initState();
 
-    filters = widget.filters;
+    filters.addAll(widget.filters);
+    type = widget.type;
 
-    if (widget.type != 'all') _initSearch();
+    if (type != 'all') _initSearch();
   }
 
   void _onChanged(String value) {
@@ -56,7 +60,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Future _initSearch() async {
-    if (widget.type == 'all' && _searchValue == '') {
+    if (type == 'all' && _searchValue == '') {
       _timer?.cancel();
       return;
     }
@@ -67,7 +71,11 @@ class _SearchPageState extends State<SearchPage> {
     try {
       var results = await _api.search(
         _searchValue,
-        type: widget.type,
+        Provider.of<SettingContext>(
+          context,
+          listen: false,
+        ).languageCode,
+        type: type,
         filters: filters,
       );
       setState(() {
@@ -103,7 +111,7 @@ class _SearchPageState extends State<SearchPage> {
               child: SingleChildScrollView(
                 padding: EdgeInsets.only(top: 90),
                 physics: BouncingScrollPhysics(),
-                child: _searchValue.length == 0 && widget.type == 'all'
+                child: _searchValue.length == 0 && type == 'all'
                     ? Center(
                         child: Text(
                           AppLocalizations.of(context)
@@ -129,40 +137,42 @@ class _SearchPageState extends State<SearchPage> {
                                       .translate('no_result'),
                                 ),
                               ),
-                            ..._searchResults.map((SearchResult e) {
-                              if (e.type.toString() ==
-                                  'SearchResultType.restaurant')
-                                return Padding(
-                                  padding: const EdgeInsets.only(
-                                    bottom: 10,
-                                  ),
-                                  child: RestaurantCard(
-                                    restaurant: Restaurant.fromJson(e.content),
-                                  ),
-                                );
-                              else if (e.type.toString() ==
-                                  'SearchResultType.food')
-                                return Padding(
-                                  padding: const EdgeInsets.only(
-                                    bottom: 10,
-                                  ),
-                                  child: FoodCard(
-                                    food: Food.fromJson(e.content),
-                                  ),
-                                );
-                              else if (e.type.toString() ==
-                                  'SearchResultType.menu')
-                                return Padding(
-                                  padding: const EdgeInsets.only(
-                                    bottom: 10,
-                                  ),
-                                  child: MenuCard(
-                                    menu: Menu.fromJson(e.content),
-                                  ),
-                                );
+                            if (!_loading)
+                              ..._searchResults.map((SearchResult e) {
+                                if (e.type.toString() ==
+                                    'SearchResultType.restaurant')
+                                  return Padding(
+                                    padding: const EdgeInsets.only(
+                                      bottom: 10,
+                                    ),
+                                    child: RestaurantCard(
+                                      restaurant:
+                                          Restaurant.fromJson(e.content),
+                                    ),
+                                  );
+                                else if (e.type.toString() ==
+                                    'SearchResultType.food')
+                                  return Padding(
+                                    padding: const EdgeInsets.only(
+                                      bottom: 10,
+                                    ),
+                                    child: FoodCard(
+                                      food: Food.fromJson(e.content),
+                                    ),
+                                  );
+                                else if (e.type.toString() ==
+                                    'SearchResultType.menu')
+                                  return Padding(
+                                    padding: const EdgeInsets.only(
+                                      bottom: 10,
+                                    ),
+                                    child: MenuCard(
+                                      menu: Menu.fromJson(e.content),
+                                    ),
+                                  );
 
-                              return null;
-                            }).toList(),
+                                return null;
+                              }).toList(),
                           ],
                         ),
                       ),
@@ -172,20 +182,13 @@ class _SearchPageState extends State<SearchPage> {
               top: 20,
               left: 20,
               right: 20,
-              child: AnimatedContainer(
-                duration: Duration(milliseconds: 100),
-                constraints: BoxConstraints(
-                  maxHeight: isSettingExpanded ? 200 : 50,
-                ),
+              child: Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20,
-                  vertical: 15,
                 ),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(.8),
-                  borderRadius: isSettingExpanded
-                      ? BorderRadius.circular(10)
-                      : BorderRadius.circular(50),
+                  borderRadius: BorderRadius.circular(50),
                   boxShadow: [
                     BoxShadow(
                       blurRadius: 10,
@@ -196,6 +199,7 @@ class _SearchPageState extends State<SearchPage> {
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     FaIcon(
                       FontAwesomeIcons.search,
@@ -209,6 +213,32 @@ class _SearchPageState extends State<SearchPage> {
                               .translate("find_something"),
                         ),
                         onChanged: _onChanged,
+                      ),
+                    ),
+                    FittedBox(
+                      fit: BoxFit.contain,
+                      child: IconButton(
+                        onPressed: () async {
+                          var result = await showDialog<Map<String, dynamic>>(
+                            context: context,
+                            builder: (_) => SearchSettingDialog(
+                              languageCode: Provider.of<SettingContext>(context)
+                                  .languageCode,
+                              filters: filters,
+                              type: type,
+                            ),
+                          );
+                          if (result != null && result['filters'] is Map) {
+                            setState(() {
+                              filters = result['filters'];
+                              type = result['type'];
+                            });
+                            _initSearch();
+                          }
+                        },
+                        icon: FaIcon(
+                          FontAwesomeIcons.slidersH,
+                        ),
                       ),
                     ),
                   ],

@@ -98,12 +98,13 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
       setState(() {
         loading = true;
       });
-      Restaurant restaurant =
-          await Api.instance.getRestaurant(id: scanData.split('/').last);
+      String restaurantId = scanData.split('/').last;
 
       RouteUtil.goTo(
         context: context,
-        child: RestaurantPage(restaurant: restaurant),
+        child: RestaurantPage(
+          restaurant: restaurantId,
+        ),
         routeName: restaurantRoute,
         method: RoutingMethod.replaceLast,
       );

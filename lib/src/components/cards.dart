@@ -11,6 +11,7 @@ import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
+import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:provider/provider.dart';
@@ -110,7 +111,7 @@ class CategoryCard extends StatelessWidget {
   }
 }
 
-class FoodCard extends StatelessWidget {
+class FoodCard extends StatefulWidget {
   final Food food;
   final bool minified;
   final String imageTag;
@@ -123,11 +124,35 @@ class FoodCard extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  _FoodCardState createState() => _FoodCardState();
+}
+
+class _FoodCardState extends State<FoodCard> {
+  bool loadingRestaurantName = true;
+  String restaurantName;
+  Api api = Api.instance;
+
+  @override
+  void initState() {
+    super.initState();
+
+    api.getRestaurantName(id: widget.food.restaurant).then((res) {
+      setState(() {
+        restaurantName = res.replaceAll('"', '');
+        loadingRestaurantName = false;
+      });
+    }).catchError((error) {
+      restaurantName =
+          AppLocalizations.of(context).translate('no_associated_restaurant');
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
-      width: minified ? 340 : 300,
+      width: widget.minified ? 340 : 300,
       child: AspectRatio(
-        aspectRatio: minified ? 2.5 : 1.5,
+        aspectRatio: widget.minified ? 2.5 : 1.5,
         child: Card(
           elevation: 4.0,
           color: Colors.white,
@@ -142,8 +167,9 @@ class FoodCard extends StatelessWidget {
                 RouteUtil.goTo(
                   context: context,
                   child: FoodPage(
-                    food: food,
-                    imageTag: imageTag,
+                    food: widget.food,
+                    imageTag: widget.imageTag,
+                    restaurantName: restaurantName,
                   ),
                   routeName: foodRoute,
                 );
@@ -174,25 +200,37 @@ class FoodCard extends StatelessWidget {
                               mainAxisSize: MainAxisSize.max,
                               children: [
                                 Text(
-                                  food.name[Provider.of<SettingContext>(context)
-                                      .languageCode],
+                                  widget.food.name,
                                   style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 SizedBox(height: 5),
-                                Text(
-                                  food.restaurant?.name ??
-                                      AppLocalizations.of(context).translate(
-                                          'no_associated_restaurant'),
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                  ),
-                                ),
+                                loadingRestaurantName
+                                    ? SizedBox(
+                                        height: 10,
+                                        child: FittedBox(
+                                          child: CircularProgressIndicator(
+                                            valueColor:
+                                                AlwaysStoppedAnimation<Color>(
+                                              CRIMSON,
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    : Text(
+                                        restaurantName ??
+                                            AppLocalizations.of(context)
+                                                .translate(
+                                                    'no_associated_restaurant'),
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                        ),
+                                      ),
                                 SizedBox(height: 5),
                                 Text(
-                                  "${food.price.amount / 100}€",
+                                  "${widget.food.price.amount / 100}€",
                                   style: TextStyle(
                                     fontSize: 21,
                                     color: Colors.yellow[700],
@@ -222,14 +260,14 @@ class FoodCard extends StatelessWidget {
                                   ),
                                   padding: const EdgeInsets.all(5.0),
                                   child: FaIcon(
-                                    bagContext.contains(food)
+                                    bagContext.contains(widget.food)
                                         ? FontAwesomeIcons.minus
                                         : FontAwesomeIcons.plus,
                                     size: 10,
                                   ),
                                 ),
                                 onPressed: () async {
-                                  if (bagContext.contains(food)) {
+                                  if (bagContext.contains(widget.food)) {
                                     var result = await showDialog(
                                       context: context,
                                       builder: (_) => ConfirmationDialog(
@@ -243,13 +281,13 @@ class FoodCard extends StatelessWidget {
                                     );
 
                                     if (result is bool && result) {
-                                      bagContext.removeItem(food);
+                                      bagContext.removeItem(widget.food);
                                     }
                                   } else
                                     showDialog(
                                       context: context,
                                       builder: (_) => AddToBagDialog(
-                                        food: food,
+                                        food: widget.food,
                                       ),
                                     );
                                 },
@@ -269,10 +307,10 @@ class FoodCard extends StatelessWidget {
                     top: 0,
                     bottom: 0,
                     child: Hero(
-                      tag: imageTag ?? 'foodImage${food.id}',
-                      child: food.imageURL != null
+                      tag: widget.imageTag ?? 'foodImage${widget.food.id}',
+                      child: widget.food.imageURL != null
                           ? FadeInImage.assetNetwork(
-                              image: food.imageURL,
+                              image: widget.food.imageURL,
                               placeholder: 'assets/images/loading.gif',
                               width: 100,
                             )
@@ -391,7 +429,7 @@ class RestaurantCard extends StatelessWidget {
                 RouteUtil.goTo(
                   context: context,
                   child: RestaurantPage(
-                    restaurant: restaurant,
+                    restaurant: restaurant.id,
                   ),
                   routeName: restaurantRoute,
                 );
@@ -523,8 +561,7 @@ class BagItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    food.name[
-                        Provider.of<SettingContext>(context).languageCode],
+                    food.name,
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,

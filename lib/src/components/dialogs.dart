@@ -8,6 +8,7 @@ import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/order.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
+import 'package:menu_advisor/src/providers/DataContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
@@ -310,16 +311,11 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
   }
 }
 
-class LanguageDialog extends StatefulWidget {
+class LanguageDialog extends StatelessWidget {
   final String lang;
 
   LanguageDialog({this.lang});
 
-  @override
-  _LanguageDialogState createState() => _LanguageDialogState();
-}
-
-class _LanguageDialogState extends State<LanguageDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -337,21 +333,370 @@ class _LanguageDialogState extends State<LanguageDialog> {
                 fontSize: 20,
               ),
             ),
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Container(
+                  alignment: Alignment.center,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 0,
+                        ),
+                        decoration: BoxDecoration(
+                          color: lang == 'fr'
+                              ? Colors.grey[400].withOpacity(.4)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: IconButton(
+                          icon:
+                              SvgPicture.asset('assets/images/france-flag.svg'),
+                          onPressed: () =>
+                              Navigator.of(context).pop<String>('fr'),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 0,
+                        ),
+                        decoration: BoxDecoration(
+                          color: lang == 'en'
+                              ? Colors.grey[400].withOpacity(.4)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: IconButton(
+                          icon: SvgPicture.asset('assets/images/usa-flag.svg'),
+                          onPressed: () =>
+                              Navigator.of(context).pop<String>('en'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SearchSettingDialog extends StatefulWidget {
+  final String languageCode;
+  final Map<String, dynamic> filters;
+  final String type;
+  final bool inRestaurant;
+
+  SearchSettingDialog({
+    Key key,
+    @required this.languageCode,
+    @required this.filters,
+    @required this.type,
+    this.inRestaurant = false,
+  }) : super(key: key);
+
+  @override
+  _SearchSettingDialogState createState() => _SearchSettingDialogState();
+}
+
+class _SearchSettingDialogState extends State<SearchSettingDialog> {
+  Map<String, dynamic> filters = Map();
+  String type;
+
+  @override
+  void initState() {
+    super.initState();
+
+    type = widget.type;
+    filters.addAll(widget.filters);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      child: Container(
+        padding: const EdgeInsets.only(
+          left: 10,
+          right: 10,
+          top: 25,
+          bottom: 10,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              AppLocalizations.of(context).translate('search_type'),
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              child: Center(
+              physics: BouncingScrollPhysics(),
+              child: Row(
+                children: [
+                  if (widget.inRestaurant) ...[
+                    'all',
+                    'food',
+                  ] else ...[
+                    'all',
+                    'restaurant',
+                    'food',
+                  ]
+                ]
+                    .map(
+                      (e) => Theme(
+                        data: ThemeData(
+                          brightness:
+                              type == e ? Brightness.dark : Brightness.light,
+                          cardColor: type == e ? CRIMSON : Colors.white,
+                        ),
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(50),
+                            onTap: () {
+                              setState(() {
+                                type = e;
+                              });
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(10),
+                              child: Text(
+                                AppLocalizations.of(context).translate(e),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
+            ),
+            if (type != 'restaurant') ...[
+              SizedBox(
+                height: 15,
+              ),
+              Text(
+                AppLocalizations.of(context).translate('categories'),
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                physics: BouncingScrollPhysics(),
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    IconButton(
-                      icon: SvgPicture.asset('assets/images/france-flag.svg'),
-                      onPressed: () => Navigator.of(context).pop<String>('fr'),
+                    Theme(
+                      data: ThemeData(
+                        brightness: !filters.containsKey('category')
+                            ? Brightness.dark
+                            : Brightness.light,
+                        cardColor: !filters.containsKey('category')
+                            ? CRIMSON
+                            : Colors.white,
+                      ),
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(50),
+                          onTap: () {
+                            setState(() {
+                              filters.remove('category');
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(10),
+                            child: Text(
+                              'Tous',
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-                    IconButton(
-                      icon: SvgPicture.asset('assets/images/usa-flag.svg'),
-                      onPressed: () => Navigator.of(context).pop<String>('en'),
-                    ),
+                    ...Provider.of<DataContext>(context)
+                        .foodCategories
+                        .map(
+                          (e) => Theme(
+                            data: ThemeData(
+                              brightness: filters.containsKey('category') &&
+                                      filters['category'] == e.id
+                                  ? Brightness.dark
+                                  : Brightness.light,
+                              cardColor: filters.containsKey('category') &&
+                                      filters['category'] == e.id
+                                  ? CRIMSON
+                                  : Colors.white,
+                            ),
+                            child: Card(
+                              color: filters.containsKey('category') &&
+                                      filters['category'] == e.id
+                                  ? CRIMSON
+                                  : Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(50),
+                                onTap: () {
+                                  setState(() {
+                                    filters['category'] = e.id;
+                                  });
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Text(
+                                    e.name[widget.languageCode],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
                   ],
+                ),
+              ),
+            ],
+            if (type != 'restaurant') ...[
+              SizedBox(
+                height: 15,
+              ),
+              Text(
+                AppLocalizations.of(context).translate('attributes'),
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                physics: BouncingScrollPhysics(),
+                child: Row(
+                  children: [
+                    Theme(
+                      data: ThemeData(
+                        brightness: !filters.containsKey('attributes')
+                            ? Brightness.dark
+                            : Brightness.light,
+                        cardColor: !filters.containsKey('attributes')
+                            ? CRIMSON
+                            : Colors.white,
+                      ),
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(50),
+                          onTap: () {
+                            setState(() {
+                              filters.remove('attributes');
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(10),
+                            child: Text(
+                              'Tous',
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    ...Provider.of<DataContext>(context)
+                        .attributes
+                        .map(
+                          (e) => Theme(
+                            data: ThemeData(
+                              brightness: filters.containsKey('attributes') &&
+                                      filters['attributes'] == e['tag']
+                                  ? Brightness.dark
+                                  : Brightness.light,
+                              cardColor: filters.containsKey('attributes') &&
+                                      filters['attributes'] == e['tag']
+                                  ? CRIMSON
+                                  : Colors.white,
+                            ),
+                            child: Card(
+                              color: filters.containsKey('attributes') &&
+                                      filters['attributes'] == e['tag']
+                                  ? CRIMSON
+                                  : Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(50),
+                                onTap: () {
+                                  setState(() {
+                                    filters['attributes'] = e['tag'];
+                                  });
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Image.asset(
+                                        e['image'],
+                                        height: 18,
+                                      ),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text(
+                                        e[widget.languageCode],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ],
+                ),
+              ),
+            ],
+            SizedBox(
+              height: 20,
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: RaisedButton(
+                onPressed: () => Navigator.of(context).pop(
+                  {
+                    'filters': filters,
+                    'type': type,
+                  },
+                ),
+                child: Text(
+                  AppLocalizations.of(context).translate('confirm'),
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
