@@ -93,5 +93,13 @@
   "edit": "Edit",
   "you": "You",
   "your_name": "Your name",
-  "validate": "Validate"
+  "validate": "Validate",
+  "a_la_carte": "A la carte",
+  "wines": "Wines",
+  "drinks": "Drinks",
+  "total_to_pay": "Total to be paid",
+  "command_type": "Order type",
+  "delivery": "Delivery",
+  "on_site": "On site",
+  "takeaway": "Takeaway"
 }
