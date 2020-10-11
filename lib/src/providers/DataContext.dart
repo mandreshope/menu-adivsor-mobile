@@ -18,6 +18,27 @@ class DataContext extends ChangeNotifier {
   List<Food> foods = [];
   bool loadingFoods = false;
 
+  List<Map<String, String>> attributes = [
+    {
+      'tag': 'allergen_egg',
+      'fr': 'Oeufs',
+      'en': 'Eggs',
+      'image': 'assets/images/allergen_egg.png',
+    },
+    {
+      'tag': 'allergen_gluten',
+      'fr': 'Gluten',
+      'en': 'Gluten',
+      'image': 'assets/images/allergen_gluten.png',
+    },
+    {
+      'tag': 'allergen_crustacean',
+      'fr': 'Crustacé',
+      'en': 'Crustacean',
+      'image': 'assets/images/allergen_crustacean.png',
+    },
+  ];
+
   final Api _api = Api.instance;
 
   DataContext() {
