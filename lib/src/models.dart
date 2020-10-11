@@ -93,6 +93,7 @@ class Restaurant {
   final String imageURL;
   final String type;
   final Location location;
+  final String address;
   final String description;
   final List<Menu> menus;
   final List<Food> foods;
@@ -104,6 +105,7 @@ class Restaurant {
     this.type = 'common_restaurant',
     this.imageURL,
     @required this.location,
+    this.address = '',
     this.description = '',
     this.menus = const [],
     this.foods = const [],
@@ -118,6 +120,7 @@ class Restaurant {
         location: Location.fromJson(
           json['location'],
         ),
+        address: json['address'] ?? '',
         description: json['description'] ?? '',
         menus: (json['menus'] is List<Map<String, dynamic>>)
             ? json['menus'].map((e) => Menu.fromJson(e))
