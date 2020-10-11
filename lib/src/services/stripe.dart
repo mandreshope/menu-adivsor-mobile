@@ -42,16 +42,6 @@ class StripeService {
     }
   }
 
-  static payNative({String currency, String amount}) async {
-    var paymentMethod = await StripePayment.paymentRequestWithNativePay(
-      androidPayOptions: AndroidPayPaymentRequest(
-        currencyCode: currency,
-        totalPrice: amount,
-      ),
-      applePayOptions: null,
-    );
-  }
-
   static Future<StripeTransactionResponse> payViaExistingCard({
     String amount,
     String currency,
@@ -80,10 +70,14 @@ class StripeService {
       );
       if (response.status == 'succeeded') {
         return new StripeTransactionResponse(
-            message: 'Transaction successful', success: true);
+          message: 'Transaction successful',
+          success: true,
+        );
       } else {
         return new StripeTransactionResponse(
-            message: 'Transaction failed', success: false);
+          message: 'Transaction failed',
+          success: false,
+        );
       }
     } on PlatformException catch (err) {
       return _getPlatformExceptionErrorResult(err);
