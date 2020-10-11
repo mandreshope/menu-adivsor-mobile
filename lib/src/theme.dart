@@ -26,9 +26,15 @@ final ThemeData theme = ThemeData(
       ),
     ),
   ),
+  appBarTheme: AppBarTheme(
+    centerTitle: true,
+  ),
   inputDecorationTheme: InputDecorationTheme(
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),
+    ),
+    errorStyle: TextStyle(
+      fontSize: 14,
     ),
   ),
   scaffoldBackgroundColor: BACKGROUND_COLOR,

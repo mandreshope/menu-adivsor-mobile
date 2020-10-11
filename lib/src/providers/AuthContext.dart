@@ -8,30 +8,39 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AuthContext extends ChangeNotifier {
   User _currentUser;
   Api _api = Api.instance;
+  Future initialized;
 
   set currentUser(User user) {
     _currentUser = user;
-    SharedPreferences.getInstance().then((sharedPrefs) {
-      sharedPrefs.setString('currentUser', json.encode(user.toJson()));
-    });
+    notifyListeners();
+    if (user != null)
+      SharedPreferences.getInstance().then((sharedPrefs) {
+        sharedPrefs.setString('currentUser', json.encode(user.toJson()));
+      });
+    else
+      SharedPreferences.getInstance().then((sharedPrefs) {
+        sharedPrefs.remove('currentUser');
+      });
   }
 
   User get currentUser => _currentUser;
 
   AuthContext() {
-    _loadUser();
+    initialized = _loadUser();
   }
 
-  _loadUser() async {
+  Future _loadUser() async {
     final sharedPrefs = await SharedPreferences.getInstance();
 
     if (sharedPrefs.containsKey('currentUser') &&
         sharedPrefs.getString('currentUser') != null) {
-      Map<String, String> jsonMap =
-          json.decode(sharedPrefs.getString('currentUser'));
+      Map<String, dynamic> jsonMap =
+          jsonDecode(sharedPrefs.getString('currentUser'));
 
       currentUser = User.fromJson(jsonMap);
     }
+
+    return;
   }
 
   Future<bool> login(String email, String password) => _api
@@ -39,7 +48,7 @@ class AuthContext extends ChangeNotifier {
         email,
         password,
       )
-          .then((User user) {
+          .then<bool>((User user) {
         currentUser = user;
         notifyListeners();
         return true;
@@ -47,22 +56,55 @@ class AuthContext extends ChangeNotifier {
         return Future.error(error['body']);
       });
 
-  Future<bool> signup({
+  Future<bool> logout() async {
+    currentUser = null;
+    return await _api.logout();
+  }
+
+  Future<String> signup({
     String email,
     String phoneNumber,
     String password,
   }) =>
       _api
           .register(
-        email: email,
-        phoneNumber: phoneNumber,
-        password: password,
-      )
-          .then((User user) {
-        currentUser = user;
-        notifyListeners();
-        return true;
-      }).catchError((error) {
-        return Future.error(error['body']);
-      });
+            email: email,
+            phoneNumber: phoneNumber,
+            password: password,
+          )
+          .then<String>(
+            (registrationToken) => registrationToken,
+          );
+
+  Future<bool> addFavoriteFood(Food food) async {
+    if (_currentUser.favoriteFoods
+            .firstWhere((element) => element.id == food.id, orElse: null) !=
+        null) return false;
+
+    await _api.addToFavoriteFood(food);
+    _currentUser.favoriteFoods.add(food);
+    notifyListeners();
+    return true;
+  }
+
+  Future<bool> removeFavoriteFood(Restaurant restaurant) async {
+    if (_currentUser.favoriteRestaurants.firstWhere(
+            (element) => element.id == restaurant.id,
+            orElse: null) !=
+        null) return false;
+
+    await _api.removeFromFavoriteRestaurants(restaurant);
+  }
+
+  Future<bool> addFavoriteRestaurant(Restaurant restaurant) {}
+
+  Future<bool> removeFavoriteRestaurant(Restaurant restaurant) {}
+
+  Future resendConfirmationCode() => _api.resendConfirmationCode();
+
+  Future validateAccount({String registrationToken, int code}) =>
+      _api.validateAccount(
+        registrationToken: registrationToken,
+        code: code,
+      );
 }

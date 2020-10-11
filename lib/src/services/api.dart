@@ -2,20 +2,60 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/types.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Api {
-  final String _apiURL = 'https://menu-advisor.herokuapp.com/api';
-  String _token;
+  final String _apiURL = 'https://menu-advisor.herokuapp.com';
+  String _accessToken;
+  String _refreshToken;
 
-  set token(String token) {
-    _token = token;
+  set accessToken(String accessToken) {
+    _accessToken = accessToken;
     SharedPreferences.getInstance().then((sharedPrefs) {
-      sharedPrefs.setString('token', token);
+      sharedPrefs.setString('access_token', accessToken);
     });
   }
 
-  String get token => _token;
+  set refreshToken(String refreshToken) {
+    _refreshToken = refreshToken;
+    SharedPreferences.getInstance().then((sharedPrefs) {
+      sharedPrefs.setString('refresh_token', refreshToken);
+    });
+  }
+
+  Future resendConfirmationCode({String registrationToken}) {
+    if (registrationToken == null)
+      return Future.error(Exception('No registration token provided'));
+
+    return http.post(
+      '$_apiURL/users/resend-confirmation-code',
+      body: {
+        'token': registrationToken,
+      },
+    );
+  }
+
+  Future validateAccount({String registrationToken, int code}) {
+    if (registrationToken == null || code == null)
+      return Future.error(
+        Exception('Registration token or confirmation code not provided'),
+      );
+
+    return http.post(
+      '$_apiURL/users/confirm-account',
+      body: {
+        'token': registrationToken,
+        'code': code.toString(),
+      },
+    ).then((response) async {
+      if (response.statusCode == 200) return;
+
+      return Future.error(jsonDecode(response.body));
+    });
+  }
+
+  String get accessToken => _accessToken;
 
   Api._privateConstructor() {
     _checkExistingTokenCache();
@@ -23,12 +63,51 @@ class Api {
 
   _checkExistingTokenCache() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (prefs.containsKey('token')) _token = prefs.getString('token');
+    if (prefs.containsKey('access_token') &&
+        prefs.containsKey('refresh_token')) {
+      _accessToken = prefs.getString('access_token');
+      _refreshToken = prefs.getString('refresh_token');
+      await _refreshTokens();
+    }
+  }
+
+  Future _refreshTokens() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    var newTokens = await _checkToken();
+    if (newTokens.length > 0) {
+      _accessToken = newTokens[0];
+      _refreshToken = newTokens[1];
+
+      prefs.setString('access_token', _accessToken);
+      prefs.setString('refresh_token', _refreshToken);
+    }
+
+    return;
+  }
+
+  Future<List<String>> _checkToken() {
+    return http
+        .get(
+            '$_apiURL/check-token?access_token=$_accessToken&refresh_token=$_refreshToken')
+        .then<List<String>>((response) {
+      if (response.statusCode == 200) {
+        var result = jsonDecode(response.body);
+
+        if (result is Map<String, dynamic> && result.containsKey('validity')) {
+          if (result['validity'] == 'valid')
+            return [];
+          else
+            return [result['access_token'], result['refresh_token']];
+        }
+      }
+      return [];
+    });
   }
 
   static Api _instance;
 
-  static get instance => _instance ?? Api._privateConstructor();
+  static Api get instance => _instance ?? Api._privateConstructor();
 
   Future<User> login(String email, String password) {
     return http.post(
@@ -37,21 +116,28 @@ class Api {
         'email': email,
         'password': password,
       },
-    ).then((response) {
+    ).then<User>((response) {
       if (response.statusCode == 200) {
-        Map<String, dynamic> data = json.decode(response.body);
-        token = data['access_token'];
+        Map<String, dynamic> data = jsonDecode(response.body);
+        accessToken = data['access_token'];
         User user = User.fromJson(data['user']);
         return user;
       }
       return Future.error({
         'status': response.statusCode,
-        'body': json.decode(response.body),
+        'body': jsonDecode(response.body),
       });
     });
   }
 
-  Future<User> register({
+  Future<bool> logout() async {
+    SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
+
+    return await sharedPrefs.remove('access_token') &&
+        await sharedPrefs.remove('refresh_token');
+  }
+
+  Future<String> register({
     String email,
     String phoneNumber,
     String password,
@@ -63,16 +149,14 @@ class Api {
         'password': password,
         'phoneNumber': phoneNumber,
       },
-    ).then((response) {
+    ).then<String>((response) {
       if (response.statusCode == 200) {
-        Map<String, dynamic> data = json.decode(response.body);
-        User user = User.fromJson(data['newUser']);
-        return user;
+        Map<String, dynamic> data = jsonDecode(response.body);
+        String registrationToken = data['token'];
+        return registrationToken;
       }
-      return Future.error({
-        'status': response.statusCode,
-        'body': json.decode(response.body),
-      });
+
+      return Future.error(jsonDecode(response.body));
     });
   }
 
@@ -92,37 +176,30 @@ class Api {
       }
     }
 
-    return http.get(
-      '$_apiURL/restaurants$query',
-      headers: {
-        "authorization": "Bearer $_token",
-      },
-    ).then((response) {
+    return http
+        .get('$_apiURL/restaurants$query')
+        .then<List<Restaurant>>((response) {
       if (response.statusCode == 200) {
-        dynamic list = json.decode(response.body);
-        if (list is List && list.length == 0) return [];
-
+        List<dynamic> list = jsonDecode(response.body);
         return list.map((data) => Restaurant.fromJson(data)).toList();
       }
 
-      return Future.error(json.decode(response.body));
-    }).catchError((error) {
-      return Future.error(error);
+      return Future.error(jsonDecode(response.body));
     });
   }
 
-  Future<List<Food>> getFoods({
-    Map<String, String> filters,
+  Future<List<Food>> getFoods(
+    String lang, {
+    Map<String, dynamic> filters,
   }) {
-    String query = '';
+    String query = '?lang=$lang';
     if (filters != null) {
       List<String> keys = filters.keys.toList();
       if (keys.length > 0) {
-        query = '?';
         for (int i = 0; i < keys.length; i++) {
+          query += '&';
           final key = keys[i];
           query += '$key=${filters[key]}';
-          if (i < keys.length - 1) query += '&';
         }
       }
     }
@@ -130,47 +207,134 @@ class Api {
     return http.get(
       '$_apiURL/foods$query',
       headers: {
-        "authorization": "Bearer $_token",
+        "authorization": "Bearer $_accessToken",
       },
-    ).then((response) {
+    ).then<List<Food>>((response) {
       if (response.statusCode == 200) {
-        List<Map<String, dynamic>> list = json.decode(response.body);
+        List<dynamic> list = jsonDecode(response.body);
         return list.map((data) => Food.fromJson(data)).toList();
       }
 
-      return Future.error(json.decode(response.body));
-    }).catchError((error) {
-      return Future.error(error);
+      return Future.error(jsonDecode(response.body));
     });
   }
 
-  Future<bool> addToFavoriteFood(Food food) {
-    return http.post('$_apiURL/users/favoriteFood/add', body: {
+  Future<List<FoodCategory>> getFoodCategories(
+    String lang,
+  ) =>
+      http
+          .get('$_apiURL/foodCategories?lang=$lang')
+          .then<List<FoodCategory>>((response) {
+        if (response.statusCode == 200) {
+          List<dynamic> list = jsonDecode(response.body);
+          return list.map((data) => FoodCategory.fromJson(data)).toList();
+        }
+
+        return Future.error(jsonDecode(response.body));
+      });
+
+  Future<Food> getFood({
+    String id,
+  }) =>
+      http.get(
+        '$_apiURL/foods/$id',
+        headers: {
+          "authorization": "Bearer $_accessToken",
+        },
+      ).then<Food>((response) {
+        if (response.statusCode == 200)
+          return Food.fromJson(jsonDecode(response.body));
+
+        return Future.error(jsonDecode(response.body));
+      });
+
+  Future<Restaurant> getRestaurant({
+    String id,
+  }) =>
+      http.get(
+        '$_apiURL/restaurants/$id',
+        headers: {
+          "authorization": "Bearer $_accessToken",
+        },
+      ).then<Restaurant>((response) {
+        if (response.statusCode == 200)
+          return Restaurant.fromJson(jsonDecode(response.body));
+
+        return Future.error(jsonDecode(response.body));
+      });
+
+  Future<bool> addToFavoriteFood(Food food) async {
+    await _refreshTokens();
+
+    return http.post('$_apiURL/users/favoriteFoods', body: {
       "id": food.id,
     }, headers: {
-      "authorization": "Bearer $_token",
+      "authorization": "Bearer $_accessToken",
     }).then((response) {
       if (response.statusCode == 200) {
         return true;
       }
       return false;
-    }).catchError((error) {
-      return Future.error(error);
     });
   }
 
-  Future removeFromFavoriteFood(Food food) {
-    return http.post('$_apiURL/users/favoriteFood/delete', body: {
-      "id": food.id,
-    }, headers: {
-      "authorization": "Beare $_token",
+  Future removeFromFavoriteFood(Food food) async {
+    await _refreshTokens();
+
+    return http.delete('$_apiURL/users/favoriteFoods/${food.id}', headers: {
+      "authorization": "Beare $_accessToken",
     }).then((response) {
       if (response.statusCode == 200) {
         return true;
       }
       return false;
-    }).catchError((error) {
-      return Future.error(error);
     });
   }
+
+  Future<List<SearchResult>> search(
+    String query,
+    String lang, {
+    String type,
+    Map<String, dynamic> filters,
+  }) {
+    String searchQuery = '?lang=$lang&q=$query';
+    if (type is String) searchQuery += '&type=$type';
+    if (filters != null && filters.length > 0) {
+      var filterQuery = 'filter={';
+      var entries = filters.entries.toList();
+      for (int i = 0; i < entries.length; i++) {
+        MapEntry<String, dynamic> entry = entries[i];
+        String key = entry.key, value = entry.value;
+        filterQuery += '"$key": "$value"${i < entries.length - 1 ? ',' : ''}';
+      }
+      filterQuery += '}';
+      searchQuery += '&$filterQuery';
+    }
+
+    return http
+        .get('$_apiURL/search$searchQuery')
+        .then<List<SearchResult>>((response) {
+      if (response.statusCode == 200) {
+        List<dynamic> results = jsonDecode(response.body);
+        return results.map((e) => SearchResult.fromJson(e)).toList();
+      }
+
+      return Future.error(jsonDecode(response.body));
+    });
+  }
+
+  Future removeFromFavoriteRestaurants(Restaurant restaurant) async {
+    await _refreshTokens();
+
+    return http.post('$_apiURL/users/favoriteRestaurant');
+  }
+
+  Future<String> getRestaurantName({String id}) =>
+      http.get('$_apiURL/restaurants/$id/name').then<String>((response) {
+        if (response.statusCode == 200) {
+          return response.body;
+        }
+
+        return Future.error(jsonDecode(response.body));
+      });
 }

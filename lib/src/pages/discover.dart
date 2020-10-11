@@ -14,7 +14,15 @@ class _DiscoverPageState extends State<DiscoverPage> {
         title: Text(
           AppLocalizations.of(context).translate('discover'),
         ),
-        centerTitle: true,
+      ),
+      body: Center(
+        child: Text(
+          "En cours de construction...",
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.w200,
+          ),
+        ),
       ),
     );
   }

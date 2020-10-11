@@ -2,15 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/types.dart';
 
 class FoodCategory {
-  final String name;
+  final String id;
+  final Map<String, dynamic> name;
+  final String imageURL;
 
   const FoodCategory({
+    @required this.id,
     @required this.name,
+    @required this.imageURL,
   });
 
   factory FoodCategory.fromJson(Map<String, dynamic> json) => FoodCategory(
+        id: json['_id'],
         name: json['name'],
+        imageURL: json['imageURL'],
       );
+
+  Map<String, dynamic> toJson() => {
+        "name": name,
+        "imageURL": imageURL,
+      };
 }
 
 class Food {
@@ -18,10 +29,12 @@ class Food {
   final String name;
   final FoodCategory category;
   final double ratings;
-  final double price;
+  final Price price;
   final String imageURL;
-  final Restaurant restaurant;
+  final String restaurant;
   final String description;
+  final String type;
+  final List<String> attributes;
 
   Food({
     @required this.id,
@@ -32,14 +45,50 @@ class Food {
     this.ratings = 0,
     this.imageURL,
     this.description,
+    this.type,
+    this.attributes,
   });
 
   factory Food.fromJson(Map<String, dynamic> json) => Food(
-        id: json['id'],
+        id: json['_id'],
         name: json['name'],
-        category: FoodCategory.fromJson(json['category']),
-        restaurant: Restaurant.fromJson(json['restaurant']),
-        price: json['price'],
+        imageURL: json['imageURL'],
+        category: json.containsKey('category') &&
+                json['category'] != null &&
+                json['category'] is Map<String, dynamic>
+            ? FoodCategory.fromJson(json['category'])
+            : null,
+        restaurant: json['restaurant'],
+        price: Price.fromJson(json['price']),
+        type: json['type'],
+        attributes:
+            (json['attributes'] as List).map((e) => e.toString()).toList(),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
+        "category": category.toJson(),
+      };
+}
+
+class Menu {
+  final String imageURL;
+  final Map<String, dynamic> name;
+  final List<Food> foods;
+
+  Menu({
+    @required this.name,
+    this.foods,
+    this.imageURL,
+  });
+
+  factory Menu.fromJson(Map<String, dynamic> json) => Menu(
+        name: json['name'],
+        imageURL: json['imageURL'],
+        foods: json['foods'] is List<Map<String, dynamic>>
+            ? json['foods']?.map((data) => Food.fromJson(data))?.toList() ?? []
+            : [],
       );
 }
 
@@ -49,6 +98,11 @@ class Restaurant {
   final String imageURL;
   final String type;
   final Location location;
+  final String address;
+  final String description;
+  final List<Menu> menus;
+  final List<Food> foods;
+  final List<dynamic> foodTypes;
 
   Restaurant({
     @required this.id,
@@ -56,31 +110,30 @@ class Restaurant {
     this.type = 'common_restaurant',
     this.imageURL,
     @required this.location,
+    this.address = '',
+    this.description = '',
+    this.menus = const [],
+    this.foods = const [],
+    this.foodTypes = const [],
   });
 
   factory Restaurant.fromJson(Map<String, dynamic> json) => Restaurant(
-        id: json['id'],
+        id: json['_id'],
         name: json['name'],
         type: json['type'],
-        location: Location(
-          type: 'point',
-          coordinates: json['location'] ?? [0, 0],
+        imageURL: json['imageURL'],
+        location: Location.fromJson(
+          json['location'],
         ),
-      );
-}
-
-class UserName {
-  final String first;
-  final String last;
-
-  const UserName({
-    this.first,
-    this.last,
-  });
-
-  factory UserName.fromJson(Map<String, dynamic> json) => UserName(
-        first: json['first'],
-        last: json['last'],
+        address: json['address'] ?? '',
+        description: json['description'] ?? '',
+        menus: (json['menus'] is List<Map<String, dynamic>>)
+            ? json['menus'].map((e) => Menu.fromJson(e)).toList()
+            : [],
+        foods: (json['foods'] is List<Map>)
+            ? json['foods'].map((e) => Food.fromJson(e)).toList()
+            : [],
+        foodTypes: json['foodTypes'] ?? [],
       );
 }
 
@@ -91,14 +144,37 @@ class User {
   final String photoURL;
   final String address;
   final String email;
-  final Location location;
+  final List<Restaurant> favoriteRestaurants;
+  final List<Food> favoriteFoods;
+  final List<PaymentCard> paymentCards;
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'],
+      id: json['_id'],
       email: json['email'],
       photoURL: json['photoURL'],
       name: UserName.fromJson(json['name']),
+      favoriteRestaurants:
+          json['favoriteRestaurants'] is List<Map<String, dynamic>>
+              ? json['favoriteRestaurants']
+                      ?.map((data) => Restaurant.fromJson(data))
+                      ?.toList() ??
+                  []
+              : [],
+      favoriteFoods: json['favoriteFoods'] is List<Map<String, dynamic>>
+          ? json['favoriteFoods']
+                  ?.map((data) => Food.fromJson(data))
+                  ?.toList() ??
+              []
+          : [],
+      paymentCards: json['paymentCards'] is List<Map<String, dynamic>>
+          ? json['paymentCards']
+                  ?.map(
+                    (data) => PaymentCard.fromJson(data),
+                  )
+                  ?.toList() ??
+              []
+          : [],
     );
   }
 
@@ -109,11 +185,17 @@ class User {
     this.phoneNumber,
     this.photoURL,
     this.address,
-    this.location,
+    this.favoriteRestaurants = const [],
+    this.favoriteFoods = const [],
+    this.paymentCards = const [],
   });
 
   Map<String, dynamic> toJson() => {
+        'id': id,
         'email': email,
         'phoneNumber': phoneNumber,
+        'photoURL': photoURL,
+        'address': address,
+        'name': name.toJson()
       };
 }

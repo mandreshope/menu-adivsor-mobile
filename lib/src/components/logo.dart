@@ -23,42 +23,21 @@ class MenuAdvisorTextLogo extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          "Menu".toUpperCase(),
+          "Menu",
           style: TextStyle(
             fontSize: fontSize * 0.9,
             color: color,
-            fontFamily: "Soft Elegance",
+            fontFamily: "Cool Sans",
           ),
         ),
-        RichText(
-          text: TextSpan(children: [
-            TextSpan(
-              text: "Advis",
-              style: TextStyle(
-                fontSize: fontSize * 1.30,
-                color: color,
-                fontFamily: "Golden Ranger",
-              ),
-            ),
-            WidgetSpan(
-              child: Padding(
-                padding: const EdgeInsets.only(right: 3.0),
-                child: Image.asset(
-                  "assets/images/round.png",
-                  height: fontSize * 0.7,
-                ),
-              ),
-            ),
-            TextSpan(
-              text: "r",
-              style: TextStyle(
-                fontSize: fontSize * 1.30,
-                color: color,
-                fontFamily: "Golden Ranger",
-              ),
-            ),
-          ]),
-        )
+        Text(
+          "Advisor",
+          style: TextStyle(
+            fontSize: fontSize * 1.30,
+            color: color,
+            fontFamily: "Golden Ranger",
+          ),
+        ),
       ],
     );
   }

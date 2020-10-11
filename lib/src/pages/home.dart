@@ -1,51 +1,27 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:menu_advisor/src/animations/FadeAnimation.dart';
 import 'package:menu_advisor/src/components/backgrounds.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/components/logo.dart';
 import 'package:menu_advisor/src/components/utilities.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
-import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/discover.dart';
 import 'package:menu_advisor/src/pages/search.dart';
 import 'package:menu_advisor/src/providers/DataContext.dart';
+import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
+import 'package:menu_advisor/src/services/stripe.dart';
 import 'package:menu_advisor/src/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:provider/provider.dart';
-
-const foodCategories = [
-  {
-    'image': 'assets/images/foodCategory-dietetic.svg',
-    'name': 'Diétetiques',
-  },
-  {
-    'image': 'assets/images/foodCategory-dietetic.svg',
-    'name': 'Diétetiques',
-  },
-  {
-    'image': 'assets/images/foodCategory-dietetic.svg',
-    'name': 'Diétetiques',
-  },
-  {
-    'image': 'assets/images/foodCategory-dietetic.svg',
-    'name': 'Diétetiques',
-  },
-  {
-    'image': 'assets/images/foodCategory-dietetic.svg',
-    'name': 'Diétetiques',
-  },
-  {
-    'image': 'assets/images/foodCategory-dietetic.svg',
-    'name': 'Diétetiques',
-  },
-  {
-    'image': 'assets/images/foodCategory-dietetic.svg',
-    'name': 'Diétetiques',
-  },
-];
 
 class HomePage extends StatefulWidget {
   @override
@@ -53,46 +29,97 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  bool backButtonAlreadyPressed = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    StripeService.init();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ScaffoldWithBottomMenu(
-      body: SafeArea(
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            RefreshIndicator(
-              onRefresh: () async {
-                DataContext dataContext =
-                    Provider.of<DataContext>(context, listen: false);
-
-                await dataContext.refresh();
-                return;
-              },
-              child: SingleChildScrollView(
-                physics: BouncingScrollPhysics(),
-                scrollDirection: Axis.vertical,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _renderHeader(),
-                    Transform.translate(
-                      offset: Offset(
-                        0,
-                        -130,
-                      ),
-                      child: Column(
-                        children: [
-                          _renderCategories(),
-                          _renderPopularFoods(),
-                          _renderPopularRestaurants(),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+    return WillPopScope(
+      onWillPop: () async {
+        if (!backButtonAlreadyPressed) {
+          backButtonAlreadyPressed = true;
+          Timer(
+            Duration(
+              seconds: 1,
             ),
-          ],
+            () {
+              backButtonAlreadyPressed = false;
+            },
+          );
+          Fluttertoast.showToast(
+            msg: AppLocalizations.of(context).translate('before_exit_message'),
+          );
+          return false;
+        }
+        return true;
+      },
+      child: ScaffoldWithBottomMenu(
+        body: SafeArea(
+          child: FadeAnimation(
+            0.3,
+            Stack(
+              fit: StackFit.expand,
+              children: [
+                Positioned(
+                  top: MediaQuery.of(context).size.height / 2 - 60,
+                  left: 0,
+                  child: SvgPicture.asset(
+                    'assets/images/wave-background-yellow.svg',
+                    width: 250,
+                  ),
+                ),
+                RefreshIndicator(
+                  onRefresh: () async {
+                    DataContext dataContext =
+                        Provider.of<DataContext>(context, listen: false);
+
+                    Position position = await getCurrentPosition();
+
+                    Location location = Location(
+                      type: 'Point',
+                      coordinates: [position.longitude, position.latitude],
+                    );
+
+                    return dataContext.refresh(
+                      Provider.of<SettingContext>(context, listen: false)
+                          .languageCode,
+                      location,
+                    );
+                  },
+                  child: SingleChildScrollView(
+                    physics: BouncingScrollPhysics(),
+                    scrollDirection: Axis.vertical,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _renderHeader(),
+                        Transform.translate(
+                          offset: Offset(
+                            0,
+                            -130,
+                          ),
+                          child: Column(
+                            children: [
+                              _renderFoodCategories(),
+                              _renderPopularFoods(),
+                              _renderPopularRestaurants(),
+                              _renderOnSiteFoods(),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -186,7 +213,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _renderCategories() {
+  Widget _renderFoodCategories() {
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(
@@ -198,25 +225,70 @@ class _HomePageState extends State<HomePage> {
           SectionTitle(
             AppLocalizations.of(context).translate("categories"),
           ),
-          SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.only(
-              left: 10,
-              right: 10,
-              bottom: 10,
-            ),
-            child: Row(
-              children: [
-                for (var category in foodCategories)
-                  CategoryCard(
-                    image: category['image'],
-                    name: category['name'],
-                    onPressed: () {},
+          Consumer<DataContext>(builder: (_, dataContext, __) {
+            var foodCategories = dataContext.foodCategories;
+            var loading = dataContext.loadingFoodCategories;
+
+            if (loading)
+              return Container(
+                height: 200,
+                child: Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      CRIMSON,
+                    ),
                   ),
-              ],
-            ),
-          ),
+                ),
+              );
+
+            if (foodCategories.length == 0)
+              return Container(
+                height: 200,
+                child: Center(
+                  child: Text(
+                    AppLocalizations.of(context).translate('no_food_category'),
+                    style: TextStyle(
+                      fontSize: 22,
+                    ),
+                  ),
+                ),
+              );
+
+            return SingleChildScrollView(
+              physics: BouncingScrollPhysics(),
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.only(
+                left: 10,
+                right: 10,
+                bottom: 10,
+              ),
+              child: Row(
+                children: [
+                  for (var category in foodCategories)
+                    FadeAnimation(
+                      1,
+                      CategoryCard(
+                        imageURL: category.imageURL,
+                        name: category.name[
+                            Provider.of<SettingContext>(context).languageCode],
+                        onPressed: () {
+                          RouteUtil.goTo(
+                            context: context,
+                            child: SearchPage(
+                              type: 'food',
+                              filters: {
+                                'category': category.id,
+                              },
+                            ),
+                            routeName: searchRoute,
+                          );
+                        },
+                      ),
+                    ),
+                ],
+              ),
+            );
+          }),
         ],
       ),
     );
@@ -247,7 +319,9 @@ class _HomePageState extends State<HomePage> {
                   onTap: () {
                     RouteUtil.goTo(
                       context: context,
-                      child: SearchPage(),
+                      child: SearchPage(
+                        type: 'food',
+                      ),
                       routeName: searchRoute,
                     );
                   },
@@ -300,9 +374,12 @@ class _HomePageState extends State<HomePage> {
                 child: Row(
                   children: [
                     for (var food in foods)
-                      FoodCard(
-                        food: food,
-                      ),
+                      FadeAnimation(
+                        1,
+                        FoodCard(
+                          food: food,
+                        ),
+                      )
                   ],
                 ),
               );
@@ -316,6 +393,9 @@ class _HomePageState extends State<HomePage> {
   Widget _renderPopularRestaurants() {
     return Container(
       width: double.infinity,
+      margin: const EdgeInsets.only(
+        bottom: 30,
+      ),
       child: Column(
         children: [
           Row(
@@ -332,10 +412,16 @@ class _HomePageState extends State<HomePage> {
                 ),
                 child: GestureDetector(
                   onTap: () {
-                    print("Populaires");
+                    RouteUtil.goTo(
+                      context: context,
+                      child: SearchPage(
+                        type: 'restaurant',
+                      ),
+                      routeName: searchRoute,
+                    );
                   },
                   child: Text(
-                    "Voir tout",
+                    AppLocalizations.of(context).translate('see_all'),
                     style: Theme.of(context).textTheme.caption,
                   ),
                 ),
@@ -343,8 +429,8 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
           Consumer<DataContext>(builder: (_, dataContext, __) {
-            var restaurants = dataContext.popularRestaurants;
-            var loading = dataContext.loadingPopularRestaurants;
+            var restaurants = dataContext.nearestRestaurants;
+            var loading = dataContext.loadingNearestRestaurants;
 
             if (loading)
               return Container(
@@ -371,7 +457,7 @@ class _HomePageState extends State<HomePage> {
                       style: TextStyle(
                         fontSize: 22,
                       ),
-                    )
+                    ),
                   ],
                 ),
               );
@@ -387,13 +473,113 @@ class _HomePageState extends State<HomePage> {
               child: Row(
                 children: [
                   for (var restaurant in restaurants)
-                    RestaurantCard(
-                      restaurant: restaurant,
+                    FadeAnimation(
+                      1.0,
+                      RestaurantCard(
+                        restaurant: restaurant,
+                      ),
                     ),
                 ],
               ),
             );
           }),
+        ],
+      ),
+    );
+  }
+
+  Widget _renderOnSiteFoods() {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(
+        bottom: 30,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SectionTitle(
+                AppLocalizations.of(context).translate("on_site_foods"),
+              ),
+              Container(
+                margin: const EdgeInsets.only(
+                  right: 30,
+                ),
+                child: GestureDetector(
+                  onTap: () {
+                    RouteUtil.goTo(
+                      context: context,
+                      child: SearchPage(
+                        type: 'food',
+                      ),
+                      routeName: searchRoute,
+                    );
+                  },
+                  child: Text(
+                    AppLocalizations.of(context).translate("see_all"),
+                    style: Theme.of(context).textTheme.caption,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Consumer<DataContext>(
+            builder: (_, dataContext, __) {
+              var foods = dataContext.onSiteFoods;
+              var loading = dataContext.loadingOnSiteFoods;
+
+              if (loading)
+                return Container(
+                  height: 200,
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        CRIMSON,
+                      ),
+                    ),
+                  ),
+                );
+
+              if (foods.length == 0)
+                return Container(
+                  height: 200,
+                  child: Center(
+                    child: Text(
+                      AppLocalizations.of(context).translate('no_food'),
+                      style: TextStyle(
+                        fontSize: 22,
+                      ),
+                    ),
+                  ),
+                );
+
+              return SingleChildScrollView(
+                physics: BouncingScrollPhysics(),
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.only(
+                  left: 20,
+                  right: 20,
+                  bottom: 10,
+                ),
+                child: Row(
+                  children: [
+                    for (var food in foods)
+                      FadeAnimation(
+                        1,
+                        FoodCard(
+                          food: food,
+                          imageTag: 'onSitefoodImage${food.id}',
+                        ),
+                      ),
+                  ],
+                ),
+              );
+            },
+          ),
         ],
       ),
     );
