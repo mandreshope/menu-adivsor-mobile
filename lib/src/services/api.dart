@@ -188,14 +188,15 @@ class Api {
     });
   }
 
-  Future<List<Food>> getFoods({
+  Future<List<Food>> getFoods(
+    String lang, {
     Map<String, String> filters,
   }) {
-    String query = '';
+    String query = '?lang=$lang';
     if (filters != null) {
       List<String> keys = filters.keys.toList();
       if (keys.length > 0) {
-        query = '?';
+        query += '&';
         for (int i = 0; i < keys.length; i++) {
           final key = keys[i];
           query += '$key=${filters[key]}';
@@ -219,8 +220,12 @@ class Api {
     });
   }
 
-  Future<List<FoodCategory>> getFoodCategories() =>
-      http.get('$_apiURL/foodCategories').then<List<FoodCategory>>((response) {
+  Future<List<FoodCategory>> getFoodCategories(
+    String lang,
+  ) =>
+      http
+          .get('$_apiURL/foodCategories?lang=$lang')
+          .then<List<FoodCategory>>((response) {
         if (response.statusCode == 200) {
           List<dynamic> list = jsonDecode(response.body);
           return list.map((data) => FoodCategory.fromJson(data)).toList();
@@ -297,9 +302,12 @@ class Api {
     if (type is String) searchQuery += '&type=$type';
     if (filters != null && filters.length > 0) {
       var filterQuery = 'filter={';
-      filters.forEach((key, value) {
-        filterQuery += '$key: $value,';
-      });
+      var entries = filters.entries.toList();
+      for (int i = 0; i < entries.length; i++) {
+        MapEntry<String, dynamic> entry = entries[i];
+        String key = entry.key, value = entry.value;
+        filterQuery += '"$key": "$value"${i < entries.length - 1 ? ',' : ''}';
+      }
       filterQuery += '}';
       searchQuery += '&$filterQuery';
     }
@@ -321,4 +329,13 @@ class Api {
 
     return http.post('$_apiURL/users/favoriteRestaurant');
   }
+
+  Future<String> getRestaurantName({String id}) =>
+      http.get('$_apiURL/restaurants/$id/name').then<String>((response) {
+        if (response.statusCode == 200) {
+          return response.body;
+        }
+
+        return Future.error(jsonDecode(response.body));
+      });
 }
