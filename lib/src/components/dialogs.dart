@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
@@ -303,6 +304,58 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class LanguageDialog extends StatefulWidget {
+  final String lang;
+
+  LanguageDialog({this.lang});
+
+  @override
+  _LanguageDialogState createState() => _LanguageDialogState();
+}
+
+class _LanguageDialogState extends State<LanguageDialog> {
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      child: Container(
+        padding: const EdgeInsets.all(15),
+        height: 100,
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              AppLocalizations.of(context).translate('language'),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 20,
+              ),
+            ),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Center(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: SvgPicture.asset('assets/images/france-flag.svg'),
+                      onPressed: () => Navigator.of(context).pop<String>('fr'),
+                    ),
+                    IconButton(
+                      icon: SvgPicture.asset('assets/images/usa-flag.svg'),
+                      onPressed: () => Navigator.of(context).pop<String>('en'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
