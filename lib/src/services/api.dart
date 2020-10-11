@@ -288,11 +288,12 @@ class Api {
   }
 
   Future<List<SearchResult>> search(
-    String query, {
+    String query,
+    String lang, {
     String type,
     Map<String, dynamic> filters,
   }) {
-    String searchQuery = '?q=$query';
+    String searchQuery = '?lang=$lang&q=$query';
     if (type is String) searchQuery += '&type=$type';
     if (filters != null && filters.length > 0) {
       var filterQuery = 'filter={';
