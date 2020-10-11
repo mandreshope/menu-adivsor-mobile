@@ -4,6 +4,15 @@ import 'package:menu_advisor/src/models.dart';
 class BagContext extends ChangeNotifier {
   Map<Food, int> _items = Map();
   int _itemCount = 0;
+  bool pricelessItems = false;
+  String _commandType = 'delivery';
+
+  String get commandType => _commandType;
+
+  void set commandType(String value) {
+    _commandType = value;
+    notifyListeners();
+  }
 
   bool addItem(Food item, number) {
     _itemCount++;
