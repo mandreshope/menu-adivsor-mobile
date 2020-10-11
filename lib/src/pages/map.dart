@@ -86,18 +86,20 @@ class _MapPageState extends State<MapPage> {
   Future _initSearch() async {
     if (_searchValue == '') {
       _timer?.cancel();
-      setState(() {
-        _loading = true;
-      });
+      if (mounted)
+        setState(() {
+          _loading = true;
+        });
       try {
         _nearestRestaurants = await _api.search(
           _searchValue,
           type: 'restaurant',
         );
       } catch (error) {} finally {
-        setState(() {
-          _loading = false;
-        });
+        if (mounted)
+          setState(() {
+            _loading = false;
+          });
       }
       return;
     }
