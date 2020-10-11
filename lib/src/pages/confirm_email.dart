@@ -29,9 +29,6 @@ class _ConfirmEmailPageState extends State<ConfirmEmailPage>
   List<FocusNode> _codeFocus = [
     for (var i = 0; i < 4; i++) FocusNode(),
   ];
-  List<TextEditingController> _controllers = [
-    for (var i = 0; i < 4; i++) TextEditingController()
-  ];
   List<int> digits = [0, 0, 0, 0];
   AnimationController controller;
 
@@ -172,16 +169,6 @@ class _ConfirmEmailPageState extends State<ConfirmEmailPage>
 
   _submitForm() async {
     int code = int.parse(digits.join(''));
-    print('Provided code: $code');
-
-    // if (_controllers.firstWhere(
-    //       (controller) => controller.value.text == '',
-    //       orElse: () => null,
-    //     ) !=
-    //     null)
-    //   return Fluttertoast.showToast(
-    //     msg: AppLocalizations.of(context).translate('please_fill_in_digits'),
-    //   );
 
     AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
 
