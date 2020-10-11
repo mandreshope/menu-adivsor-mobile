@@ -14,6 +14,7 @@ import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/pages/discover.dart';
 import 'package:menu_advisor/src/pages/search.dart';
 import 'package:menu_advisor/src/providers/DataContext.dart';
+import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/stripe.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
@@ -255,7 +256,8 @@ class _HomePageState extends State<HomePage> {
                       1,
                       CategoryCard(
                         imageURL: category.imageURL,
-                        name: category.name,
+                        name: category.name[
+                            Provider.of<SettingContext>(context).languageCode],
                         onPressed: () {
                           RouteUtil.goTo(
                             context: context,

@@ -8,6 +8,7 @@ import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/restaurant.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
+import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
@@ -72,7 +73,8 @@ class _FoodPageState extends State<FoodPage> {
                     right: 100.0,
                   ),
                   child: Text(
-                    widget.food.name,
+                    widget.food.name[
+                        Provider.of<SettingContext>(context).languageCode],
                     style: TextStyle(
                       fontFamily: 'Soft Elegance',
                       fontSize: 50,
@@ -285,7 +287,9 @@ class _FoodPageState extends State<FoodPage> {
                               color: Colors.black,
                             ),
                             title: Text(
-                              widget.food.name,
+                              widget.food.name[
+                                  Provider.of<SettingContext>(context)
+                                      .languageCode],
                               style: TextStyle(
                                 color: Colors.black,
                               ),
