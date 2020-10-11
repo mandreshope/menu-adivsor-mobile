@@ -91,7 +91,7 @@ class DataContext extends ChangeNotifier {
       nearestRestaurants = await _api.getRestaurants(
         filters: {
           "searchCategory": "nearest",
-          "location": location.toJson().toString(),
+          "location": location,
         },
       );
     } catch (error) {

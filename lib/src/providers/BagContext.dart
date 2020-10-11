@@ -59,6 +59,7 @@ class BagContext extends ChangeNotifier {
   void removeItem(Food food) {
     _items.removeWhere((key, _) => key.id == food.id);
     _itemCount--;
+    if (_itemCount == 0) pricelessItems = false;
     notifyListeners();
   }
 
