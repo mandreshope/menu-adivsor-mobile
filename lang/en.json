@@ -107,5 +107,6 @@
   "food": "Food",
   "menu": "Menu",
   "attributes": "Attributes",
-  "search_type": "Search type"
+  "search_type": "Search type",
+  "no_drink": "No drinks"
 }

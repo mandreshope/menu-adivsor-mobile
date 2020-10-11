@@ -107,5 +107,6 @@
   "food": "Nourriture",
   "menu": "Menu",
   "attributes": "Attributs",
-  "search_type": "Type de recherche"
+  "search_type": "Type de recherche",
+  "no_drink": "Aucune boisson"
 }
