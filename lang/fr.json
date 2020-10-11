@@ -101,5 +101,11 @@
   "command_type": "Type de commande",
   "delivery": "Livraison",
   "on_site": "Sur place",
-  "takeaway": "A emporter"
+  "takeaway": "A emporter",
+  "all": "Tous",
+  "restaurant": "Restaurant",
+  "food": "Nourriture",
+  "menu": "Menu",
+  "attributes": "Attributs",
+  "search_type": "Type de recherche"
 }

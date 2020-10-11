@@ -101,5 +101,11 @@
   "command_type": "Order type",
   "delivery": "Delivery",
   "on_site": "On site",
-  "takeaway": "Takeaway"
+  "takeaway": "Takeaway",
+  "all": "All",
+  "restaurant": "Restaurant",
+  "food": "Food",
+  "menu": "Menu",
+  "attributes": "Attributes",
+  "search_type": "Search type"
 }
