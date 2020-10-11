@@ -154,100 +154,104 @@ class _OrderPageState extends State<OrderPage> {
                                     ),
                                   ),
                                 ),
-                                Theme(
-                                  data: ThemeData(
-                                    cardColor:
-                                        bagContext.commandType == 'on_site'
-                                            ? CRIMSON
-                                            : Colors.white,
-                                    brightness:
-                                        bagContext.commandType == 'on_site'
-                                            ? Brightness.dark
-                                            : Brightness.light,
-                                  ),
-                                  child: Card(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
+                                if (!bagContext.pricelessItems) ...[
+                                  Theme(
+                                    data: ThemeData(
+                                      cardColor:
+                                          bagContext.commandType == 'on_site'
+                                              ? CRIMSON
+                                              : Colors.white,
+                                      brightness:
+                                          bagContext.commandType == 'on_site'
+                                              ? Brightness.dark
+                                              : Brightness.light,
                                     ),
-                                    child: InkWell(
-                                      borderRadius: BorderRadius.circular(20),
-                                      onTap: () =>
-                                          bagContext.commandType = 'on_site',
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 10,
-                                          vertical: 20,
-                                        ),
-                                        width:
-                                            MediaQuery.of(context).size.width /
-                                                4,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              AppLocalizations.of(context)
-                                                  .translate('on_site'),
-                                            ),
-                                            SizedBox(
-                                              height: 10,
-                                            ),
-                                            FaIcon(
-                                              FontAwesomeIcons.streetView,
-                                            ),
-                                          ],
+                                    child: Card(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: InkWell(
+                                        borderRadius: BorderRadius.circular(20),
+                                        onTap: () =>
+                                            bagContext.commandType = 'on_site',
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 20,
+                                          ),
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              4,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                AppLocalizations.of(context)
+                                                    .translate('on_site'),
+                                              ),
+                                              SizedBox(
+                                                height: 10,
+                                              ),
+                                              FaIcon(
+                                                FontAwesomeIcons.streetView,
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                Theme(
-                                  data: ThemeData(
-                                    cardColor:
-                                        bagContext.commandType == 'takeaway'
-                                            ? CRIMSON
-                                            : Colors.white,
-                                    brightness:
-                                        bagContext.commandType == 'takeaway'
-                                            ? Brightness.dark
-                                            : Brightness.light,
-                                  ),
-                                  child: Card(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
+                                  Theme(
+                                    data: ThemeData(
+                                      cardColor:
+                                          bagContext.commandType == 'takeaway'
+                                              ? CRIMSON
+                                              : Colors.white,
+                                      brightness:
+                                          bagContext.commandType == 'takeaway'
+                                              ? Brightness.dark
+                                              : Brightness.light,
                                     ),
-                                    child: InkWell(
-                                      borderRadius: BorderRadius.circular(20),
-                                      onTap: () =>
-                                          bagContext.commandType = 'takeaway',
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 10,
-                                          vertical: 20,
-                                        ),
-                                        width:
-                                            MediaQuery.of(context).size.width /
-                                                4,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              AppLocalizations.of(context)
-                                                  .translate('takeaway'),
-                                            ),
-                                            SizedBox(
-                                              height: 10,
-                                            ),
-                                            FaIcon(
-                                              FontAwesomeIcons.briefcase,
-                                            ),
-                                          ],
+                                    child: Card(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: InkWell(
+                                        borderRadius: BorderRadius.circular(20),
+                                        onTap: () =>
+                                            bagContext.commandType = 'takeaway',
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 20,
+                                          ),
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              4,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                AppLocalizations.of(context)
+                                                    .translate('takeaway'),
+                                              ),
+                                              SizedBox(
+                                                height: 10,
+                                              ),
+                                              FaIcon(
+                                                FontAwesomeIcons.briefcase,
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
+                                ],
                               ],
                             ),
                           ],
