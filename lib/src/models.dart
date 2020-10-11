@@ -98,6 +98,7 @@ class Restaurant {
   final String description;
   final List<Menu> menus;
   final List<Food> foods;
+  final List<String> foodTypes;
 
   Restaurant({
     @required this.id,
@@ -108,6 +109,7 @@ class Restaurant {
     this.description = '',
     this.menus = const [],
     this.foods = const [],
+    this.foodTypes = const [],
   });
 
   factory Restaurant.fromJson(Map<String, dynamic> json) => Restaurant(
@@ -125,6 +127,7 @@ class Restaurant {
         foods: (json['foods'] is List<Map<String, dynamic>>)
             ? json['foods'].map((e) => Food.fromJson(e))
             : [],
+        foodTypes: json['foodTypes'] ?? [],
       );
 }
 
