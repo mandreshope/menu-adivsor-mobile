@@ -583,13 +583,14 @@ class BagItem extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Text(
-                    '${food.price.amount / 100}€',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.grey[600],
+                  if (food.price.amount != null)
+                    Text(
+                      '${food.price.amount / 100}€',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey[600],
+                      ),
                     ),
-                  ),
                 ],
               ),
             ),
