@@ -3,7 +3,7 @@ import 'package:menu_advisor/src/types.dart';
 
 class FoodCategory {
   final String id;
-  final String name;
+  final Map<String, dynamic> name;
   final String imageURL;
 
   const FoodCategory({
@@ -20,12 +20,13 @@ class FoodCategory {
 
   Map<String, dynamic> toJson() => {
         "name": name,
+        "imageURL": imageURL,
       };
 }
 
 class Food {
   final String id;
-  final String name;
+  final Map<String, dynamic> name;
   final FoodCategory category;
   final double ratings;
   final Price price;
@@ -68,21 +69,18 @@ class Food {
 
 class Menu {
   final String imageURL;
-  final String name;
-  final List<String> allergens;
+  final Map<String, dynamic> name;
   final List<Food> foods;
 
   Menu({
     @required this.name,
     this.foods,
     this.imageURL,
-    this.allergens = const [],
   });
 
   factory Menu.fromJson(Map<String, dynamic> json) => Menu(
         name: json['name'],
         imageURL: json['imageURL'],
-        allergens: json['allergens'] ?? [],
         foods: json['foods'] is List<Map<String, dynamic>>
             ? json['foods']?.map((data) => Food.fromJson(data))?.toList() ?? []
             : [],
@@ -127,7 +125,7 @@ class Restaurant {
         foods: (json['foods'] is List<Map<String, dynamic>>)
             ? json['foods'].map((e) => Food.fromJson(e))
             : [],
-        foodTypes: json['foodTypes'] ?? [],
+        foodTypes: (json['foodTypes'] is List<String>) ? json['foodTypes'] : [],
       );
 }
 
