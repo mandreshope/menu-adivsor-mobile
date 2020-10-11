@@ -1,12 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/services/api.dart';
+import 'package:menu_advisor/src/types.dart';
 
 class DataContext extends ChangeNotifier {
   List<Food> popularFoods = [];
   bool loadingPopularFoods = false;
 
-  List<Restaurant> popularRestaurants = [];
+  List<Restaurant> nearestRestaurants = [];
   bool loadingNearestRestaurants = false;
 
   List<FoodCategory> foodCategories = [];
@@ -41,14 +44,14 @@ class DataContext extends ChangeNotifier {
 
   final Api _api = Api.instance;
 
-  DataContext(String lang) {
+  DataContext(String lang, Location location) {
     _fetchFoodCategories(lang);
-    _fetchPopularRestaurants();
+    _fetchNearestRestaurants(location);
     _fetchPopularFoods(lang);
     _fetchOnSiteFoods(lang);
   }
 
-  Future refresh(String lang) async {
+  Future refresh(String lang, Location location) async {
     loadingFoodCategories = true;
     loadingPopularFoods = true;
     loadingNearestRestaurants = true;
@@ -59,7 +62,7 @@ class DataContext extends ChangeNotifier {
 
     await _fetchPopularFoods(lang);
 
-    await _fetchPopularRestaurants();
+    await _fetchNearestRestaurants(location);
 
     await _fetchOnSiteFoods(lang);
   }
@@ -80,14 +83,15 @@ class DataContext extends ChangeNotifier {
     }
   }
 
-  _fetchPopularRestaurants() async {
+  _fetchNearestRestaurants(Location location) async {
     loadingNearestRestaurants = true;
     notifyListeners();
 
     try {
-      popularRestaurants = await _api.getRestaurants(
+      nearestRestaurants = await _api.getRestaurants(
         filters: {
-          "searchCategory": "popular",
+          "searchCategory": "nearest",
+          "location": location.toJson().toString(),
         },
       );
     } catch (error) {
@@ -110,6 +114,7 @@ class DataContext extends ChangeNotifier {
         lang,
         filters: {
           "searchCategory": "popular",
+          "limit": 5,
         },
       );
     } catch (error) {
@@ -129,6 +134,7 @@ class DataContext extends ChangeNotifier {
         lang,
         filters: {
           "searchCategory": "onsite",
+          "limit": 5,
         },
       );
     } catch (error) {

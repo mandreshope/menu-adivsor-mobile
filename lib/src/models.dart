@@ -34,6 +34,7 @@ class Food {
   final String restaurant;
   final String description;
   final String type;
+  final List<String> attributes;
 
   Food({
     @required this.id,
@@ -45,6 +46,7 @@ class Food {
     this.imageURL,
     this.description,
     this.type,
+    this.attributes,
   });
 
   factory Food.fromJson(Map<String, dynamic> json) => Food(
@@ -59,6 +61,8 @@ class Food {
         restaurant: json['restaurant'],
         price: Price.fromJson(json['price']),
         type: json['type'],
+        attributes:
+            (json['attributes'] as List).map((e) => e.toString()).toList(),
       );
 
   Map<String, dynamic> toJson() => {

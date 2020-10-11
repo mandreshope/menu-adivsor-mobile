@@ -190,17 +190,16 @@ class Api {
 
   Future<List<Food>> getFoods(
     String lang, {
-    Map<String, String> filters,
+    Map<String, dynamic> filters,
   }) {
     String query = '?lang=$lang';
     if (filters != null) {
       List<String> keys = filters.keys.toList();
       if (keys.length > 0) {
-        query += '&';
         for (int i = 0; i < keys.length; i++) {
+          query += '&';
           final key = keys[i];
           query += '$key=${filters[key]}';
-          if (i < keys.length - 1) query += '&';
         }
       }
     }

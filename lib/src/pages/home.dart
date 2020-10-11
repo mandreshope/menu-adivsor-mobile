@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:menu_advisor/src/animations/FadeAnimation.dart';
 import 'package:menu_advisor/src/components/backgrounds.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
@@ -17,6 +18,7 @@ import 'package:menu_advisor/src/providers/DataContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/stripe.dart';
+import 'package:menu_advisor/src/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:provider/provider.dart';
@@ -77,9 +79,17 @@ class _HomePageState extends State<HomePage> {
                     DataContext dataContext =
                         Provider.of<DataContext>(context, listen: false);
 
+                    Position position = await getCurrentPosition();
+
+                    Location location = Location(
+                      type: 'Point',
+                      coordinates: [position.longitude, position.latitude],
+                    );
+
                     return dataContext.refresh(
                       Provider.of<SettingContext>(context, listen: false)
                           .languageCode,
+                      location,
                     );
                   },
                   child: SingleChildScrollView(
@@ -419,7 +429,7 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
           Consumer<DataContext>(builder: (_, dataContext, __) {
-            var restaurants = dataContext.popularRestaurants;
+            var restaurants = dataContext.nearestRestaurants;
             var loading = dataContext.loadingNearestRestaurants;
 
             if (loading)
@@ -519,8 +529,8 @@ class _HomePageState extends State<HomePage> {
           ),
           Consumer<DataContext>(
             builder: (_, dataContext, __) {
-              var foods = dataContext.popularFoods;
-              var loading = dataContext.loadingPopularFoods;
+              var foods = dataContext.onSiteFoods;
+              var loading = dataContext.loadingOnSiteFoods;
 
               if (loading)
                 return Container(

@@ -15,14 +15,21 @@ class BagContext extends ChangeNotifier {
   }
 
   bool addItem(Food item, number) {
-    _itemCount++;
-    _items.update(
-      item,
-      (value) => number,
-      ifAbsent: () => number,
-    );
-    notifyListeners();
-    return true;
+    if (_itemCount == 0 ||
+        (pricelessItems && item.price == null) ||
+        (!pricelessItems && item.price != null)) {
+      _itemCount++;
+      _items.update(
+        item,
+        (value) => number,
+        ifAbsent: () => number,
+      );
+      pricelessItems = item.price == null;
+      notifyListeners();
+      return true;
+    }
+
+    return false;
   }
 
   Map<Food, int> get items => _items;
@@ -33,7 +40,8 @@ class BagContext extends ChangeNotifier {
     double totalPrice = 0;
 
     _items.forEach((food, count) {
-      totalPrice += food.price.amount / 100 * count;
+      if (food.price != null && food.price.amount != null)
+        totalPrice += food.price.amount / 100 * count;
     });
 
     return totalPrice;

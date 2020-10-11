@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
@@ -228,14 +229,17 @@ class _FoodCardState extends State<FoodCard> {
                                           fontSize: 16,
                                         ),
                                       ),
-                                SizedBox(height: 5),
-                                Text(
-                                  "${widget.food.price.amount / 100}€",
-                                  style: TextStyle(
-                                    fontSize: 21,
-                                    color: Colors.yellow[700],
+                                if (widget.food.price != null &&
+                                    widget.food.price.amount != null) ...[
+                                  SizedBox(height: 5),
+                                  Text(
+                                    "${widget.food.price.amount / 100}€",
+                                    style: TextStyle(
+                                      fontSize: 21,
+                                      color: Colors.yellow[700],
+                                    ),
                                   ),
-                                ),
+                                ]
                               ],
                             ),
                           ),
@@ -266,31 +270,43 @@ class _FoodCardState extends State<FoodCard> {
                                     size: 10,
                                   ),
                                 ),
-                                onPressed: () async {
-                                  if (bagContext.contains(widget.food)) {
-                                    var result = await showDialog(
-                                      context: context,
-                                      builder: (_) => ConfirmationDialog(
-                                        title: AppLocalizations.of(context)
-                                            .translate(
-                                                'confirm_remove_from_cart_title'),
-                                        content: AppLocalizations.of(context)
-                                            .translate(
-                                                'confirm_remove_from_cart_content'),
-                                      ),
-                                    );
+                                onPressed: (bagContext.itemCount == 0) ||
+                                        (bagContext.pricelessItems &&
+                                            widget.food.price.amount == null) ||
+                                        (!bagContext.pricelessItems &&
+                                            widget.food.price.amount != null)
+                                    ? () async {
+                                        if (bagContext.contains(widget.food)) {
+                                          var result = await showDialog(
+                                            context: context,
+                                            builder: (_) => ConfirmationDialog(
+                                              title: AppLocalizations.of(
+                                                      context)
+                                                  .translate(
+                                                      'confirm_remove_from_cart_title'),
+                                              content: AppLocalizations.of(
+                                                      context)
+                                                  .translate(
+                                                      'confirm_remove_from_cart_content'),
+                                            ),
+                                          );
 
-                                    if (result is bool && result) {
-                                      bagContext.removeItem(widget.food);
-                                    }
-                                  } else
-                                    showDialog(
-                                      context: context,
-                                      builder: (_) => AddToBagDialog(
-                                        food: widget.food,
-                                      ),
-                                    );
-                                },
+                                          if (result is bool && result) {
+                                            bagContext.removeItem(widget.food);
+                                          }
+                                        } else
+                                          showDialog(
+                                            context: context,
+                                            builder: (_) => AddToBagDialog(
+                                              food: widget.food,
+                                            ),
+                                          );
+                                      }
+                                    : () {
+                                        Fluttertoast.showToast(
+                                            msg:
+                                                'Vous ne pouvez pas à la fois commander des articles sans prix et avec prix');
+                                      },
                               ),
                             ),
                             SizedBox(
