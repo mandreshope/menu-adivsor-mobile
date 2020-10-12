@@ -108,5 +108,6 @@
   "menu": "Menu",
   "attributes": "Attributes",
   "search_type": "Search type",
-  "no_drink": "No drinks"
+  "no_drink": "No drinks",
+  "geolocation_denied": "Geolocalization denied"s
 }

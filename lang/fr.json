@@ -7,7 +7,7 @@
   "discover": "Découvrir",
   "order": "Passer ma commande",
   "in_cart": "Dans le panier",
-  "popular_restaurants": "Restaurants d'à côté",
+  "nearest_restaurants": "Restaurants d'à côté",
   "before_exit_message": "Appuyez encore pour quitter",
   "mail_address_placeholder": "Votre adresse mail",
   "password_placeholder": "Votre mot de passe",
@@ -108,5 +108,6 @@
   "menu": "Menu",
   "attributes": "Attributs",
   "search_type": "Type de recherche",
-  "no_drink": "Aucune boisson"
+  "no_drink": "Aucune boisson",
+  "geolocation_denied": "Geolocalisation non permise"
 }
