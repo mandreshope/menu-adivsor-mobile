@@ -44,13 +44,6 @@ class DataContext extends ChangeNotifier {
 
   final Api _api = Api.instance;
 
-  DataContext(String lang, Location location) {
-    _fetchFoodCategories(lang);
-    _fetchNearestRestaurants(location);
-    _fetchPopularFoods(lang);
-    _fetchOnSiteFoods(lang);
-  }
-
   Future refresh(String lang, Location location) async {
     loadingFoodCategories = true;
     loadingPopularFoods = true;
