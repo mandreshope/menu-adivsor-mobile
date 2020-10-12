@@ -7,6 +7,7 @@ import 'package:menu_advisor/src/animations/FadeAnimation.dart';
 import 'package:menu_advisor/src/components/inputs.dart';
 import 'package:menu_advisor/src/components/logo.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/pages/forgot_password.dart';
 import 'package:menu_advisor/src/pages/home.dart';
 import 'package:menu_advisor/src/pages/signup.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
@@ -157,6 +158,23 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                       ),
                       SizedBox(height: 10),
+                      TextButton(
+                        child: Text(
+                          AppLocalizations.of(context)
+                              .translate("forgotten_password"),
+                          style: TextStyle(
+                            color: CRIMSON,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                        onPressed: () {
+                          RouteUtil.goTo(
+                            context: context,
+                            child: ForgotPasswordPage(),
+                            routeName: forgotPasswordRoute,
+                          );
+                        },
+                      ),
                       FlatButton(
                         child: Text(
                           AppLocalizations.of(context)
