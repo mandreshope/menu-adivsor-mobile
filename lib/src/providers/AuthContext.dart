@@ -66,15 +66,11 @@ class AuthContext extends ChangeNotifier {
     String phoneNumber,
     String password,
   }) =>
-      _api
-          .register(
-            email: email,
-            phoneNumber: phoneNumber,
-            password: password,
-          )
-          .then<String>(
-            (registrationToken) => registrationToken,
-          );
+      _api.register(
+        email: email,
+        phoneNumber: phoneNumber,
+        password: password,
+      );
 
   Future<bool> addFavoriteFood(Food food) async {
     if (_currentUser.favoriteFoods
@@ -96,15 +92,31 @@ class AuthContext extends ChangeNotifier {
     await _api.removeFromFavoriteRestaurants(restaurant);
   }
 
+  Future<String> resetPassword(String email) => _api.resetPassword(email);
+
   Future<bool> addFavoriteRestaurant(Restaurant restaurant) {}
 
   Future<bool> removeFavoriteRestaurant(Restaurant restaurant) {}
 
   Future resendConfirmationCode() => _api.resendConfirmationCode();
 
-  Future validateAccount({String registrationToken, int code}) =>
+  Future validateAccount({
+    String registrationToken,
+    int code,
+  }) =>
       _api.validateAccount(
         registrationToken: registrationToken,
         code: code,
+      );
+
+  Future<bool> confirmResetPassword({
+    String token,
+    int code,
+    String password,
+  }) =>
+      _api.confirmResetPassword(
+        token: token,
+        code: code,
+        password: password,
       );
 }

@@ -19,3 +19,4 @@ const String addPaymentCardRoute = 'addPaymentCard';
 const String paymentMethodRoute = 'paymentMethodRoute';
 const String userDetailsRoute = 'userDetails';
 const String forgotPasswordRoute = 'forgotPassword';
+const String newPasswordRoute = 'newPasswordRoute';

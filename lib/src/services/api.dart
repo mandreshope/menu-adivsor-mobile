@@ -337,4 +337,31 @@ class Api {
 
         return Future.error(jsonDecode(response.body));
       });
+
+  Future<String> resetPassword(String email) =>
+      http.post('$_apiURL/users/reset-password', body: {
+        'email': email,
+      }).then<String>((response) {
+        if (response.statusCode == 200) {
+          Map<String, dynamic> data = jsonDecode(response.body);
+          return data['token'];
+        }
+
+        return Future.error(jsonDecode(response.body));
+      });
+
+  Future<bool> confirmResetPassword({
+    String token,
+    int code,
+    String password,
+  }) =>
+      http.post('$_apiURL/users/confirm-reset-password', body: {
+        'token': token,
+        'code': code,
+        'password': password,
+      }).then<bool>((response) {
+        if (response.statusCode == 200) return true;
+
+        return false;
+      });
 }
