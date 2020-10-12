@@ -166,7 +166,7 @@ class _MapPageState extends State<MapPage> {
                     layers: [
                       TileLayerOptions(
                         urlTemplate:
-                            'https://api.mapbox.com/styles/v1/darijavan/ckg166zb92vee19ofp67tzmm8/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZGFyaWphdmFuIiwiYSI6ImNqb3diNXZ0eDBxMjkzdW9kc2F3aHh6M2EifQ.gTXds1mQoGDFQ5bhIeYvqA',
+                            'https://api.mapbox.com/styles/v1/darijavan/ckg69xpmk4eft19qhv1dhpe9k/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZGFyaWphdmFuIiwiYSI6ImNqb3diNXZ0eDBxMjkzdW9kc2F3aHh6M2EifQ.gTXds1mQoGDFQ5bhIeYvqA',
                         subdomains: ['a', 'b', 'c'],
                       ),
                       MarkerLayerOptions(
