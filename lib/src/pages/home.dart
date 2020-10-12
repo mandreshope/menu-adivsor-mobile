@@ -30,99 +30,172 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool backButtonAlreadyPressed = false;
+  bool loading = true;
+  bool geolocationDenied = false;
+  Location currentLocation;
 
   @override
   void initState() {
     super.initState();
 
     StripeService.init();
+
+    checkPermission().then((LocationPermission permission) async {
+      if (permission == LocationPermission.deniedForever) {
+        setState(() {
+          geolocationDenied = true;
+          loading = false;
+        });
+      } else if (permission == LocationPermission.denied) {
+        await requestPermission();
+        Position currentPosition = await getCurrentPosition();
+        setState(() {
+          currentLocation = Location(
+            type: "Point",
+            coordinates: [currentPosition.longitude, currentPosition.latitude],
+          );
+          loading = false;
+        });
+        String lang = Provider.of<SettingContext>(
+          context,
+          listen: false,
+        ).languageCode;
+        Provider.of<DataContext>(
+          context,
+          listen: false,
+        ).refresh(
+          lang,
+          currentLocation,
+        );
+      } else {
+        Position currentPosition = await getCurrentPosition();
+        setState(() {
+          currentLocation = Location(
+            type: "Point",
+            coordinates: [currentPosition.longitude, currentPosition.latitude],
+          );
+          loading = false;
+        });
+        String lang = Provider.of<SettingContext>(
+          context,
+          listen: false,
+        ).languageCode;
+        Provider.of<DataContext>(context, listen: false).refresh(
+          lang,
+          currentLocation,
+        );
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        if (!backButtonAlreadyPressed) {
-          backButtonAlreadyPressed = true;
-          Timer(
-            Duration(
-              seconds: 1,
+    return loading
+        ? Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
+              ),
             ),
-            () {
-              backButtonAlreadyPressed = false;
-            },
-          );
-          Fluttertoast.showToast(
-            msg: AppLocalizations.of(context).translate('before_exit_message'),
-          );
-          return false;
-        }
-        return true;
-      },
-      child: ScaffoldWithBottomMenu(
-        body: SafeArea(
-          child: FadeAnimation(
-            0.3,
-            Stack(
-              fit: StackFit.expand,
-              children: [
-                Positioned(
-                  top: MediaQuery.of(context).size.height / 2 - 60,
-                  left: 0,
-                  child: SvgPicture.asset(
-                    'assets/images/wave-background-yellow.svg',
-                    width: 250,
+          )
+        : geolocationDenied
+            ? Scaffold(
+                body: Center(
+                  child: Text(
+                    AppLocalizations.of(context)
+                        .translate('geolocation_denied'),
                   ),
                 ),
-                RefreshIndicator(
-                  onRefresh: () async {
-                    DataContext dataContext =
-                        Provider.of<DataContext>(context, listen: false);
-
-                    Position position = await getCurrentPosition();
-
-                    Location location = Location(
-                      type: 'Point',
-                      coordinates: [position.longitude, position.latitude],
+              )
+            : WillPopScope(
+                onWillPop: () async {
+                  if (!backButtonAlreadyPressed) {
+                    backButtonAlreadyPressed = true;
+                    Timer(
+                      Duration(
+                        seconds: 1,
+                      ),
+                      () {
+                        backButtonAlreadyPressed = false;
+                      },
                     );
-
-                    return dataContext.refresh(
-                      Provider.of<SettingContext>(context, listen: false)
-                          .languageCode,
-                      location,
+                    Fluttertoast.showToast(
+                      msg: AppLocalizations.of(context)
+                          .translate('before_exit_message'),
                     );
-                  },
-                  child: SingleChildScrollView(
-                    physics: BouncingScrollPhysics(),
-                    scrollDirection: Axis.vertical,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _renderHeader(),
-                        Transform.translate(
-                          offset: Offset(
-                            0,
-                            -130,
+                    return false;
+                  }
+                  return true;
+                },
+                child: ScaffoldWithBottomMenu(
+                  body: SafeArea(
+                    child: FadeAnimation(
+                      0.3,
+                      Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          Positioned(
+                            top: MediaQuery.of(context).size.height / 2 - 60,
+                            left: 0,
+                            child: SvgPicture.asset(
+                              'assets/images/wave-background-yellow.svg',
+                              width: 250,
+                            ),
                           ),
-                          child: Column(
-                            children: [
-                              _renderFoodCategories(),
-                              _renderPopularFoods(),
-                              _renderPopularRestaurants(),
-                              _renderOnSiteFoods(),
-                            ],
+                          RefreshIndicator(
+                            onRefresh: () async {
+                              DataContext dataContext =
+                                  Provider.of<DataContext>(context,
+                                      listen: false);
+
+                              Position position = await getCurrentPosition();
+
+                              Location location = Location(
+                                type: 'Point',
+                                coordinates: [
+                                  position.longitude,
+                                  position.latitude
+                                ],
+                              );
+
+                              return dataContext.refresh(
+                                Provider.of<SettingContext>(context,
+                                        listen: false)
+                                    .languageCode,
+                                location,
+                              );
+                            },
+                            child: SingleChildScrollView(
+                              physics: BouncingScrollPhysics(),
+                              scrollDirection: Axis.vertical,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _renderHeader(),
+                                  Transform.translate(
+                                    offset: Offset(
+                                      0,
+                                      -130,
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        _renderFoodCategories(),
+                                        _renderPopularFoods(),
+                                        _renderNearestRestaurants(),
+                                        _renderOnSiteFoods(),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
+              );
   }
 
   Widget _renderHeader() {
@@ -298,7 +371,7 @@ class _HomePageState extends State<HomePage> {
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(
-        bottom: 30,
+        bottom: 40,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -390,11 +463,11 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _renderPopularRestaurants() {
+  Widget _renderNearestRestaurants() {
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(
-        bottom: 30,
+        bottom: 40,
       ),
       child: Column(
         children: [
@@ -404,7 +477,7 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SectionTitle(
-                AppLocalizations.of(context).translate("popular_restaurants"),
+                AppLocalizations.of(context).translate("nearest_restaurants"),
               ),
               Container(
                 margin: const EdgeInsets.only(
