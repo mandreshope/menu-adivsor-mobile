@@ -10,6 +10,7 @@ class PasswordField extends StatefulWidget {
   final void Function(String) onFieldSubmitted;
   final bool obscureText;
   final TextInputAction textInputAction;
+  final String Function(String) validator;
 
   PasswordField({
     Key key,
@@ -21,6 +22,7 @@ class PasswordField extends StatefulWidget {
     this.keyboardType,
     this.obscureText = false,
     this.textInputAction = TextInputAction.next,
+    this.validator,
   }) : super(key: key);
 
   @override
@@ -52,13 +54,12 @@ class _PasswordFieldState extends State<PasswordField> {
             obscureText = !obscureText;
           }),
           icon: FaIcon(
-            obscureText
-                ? FontAwesomeIcons.eye
-                : FontAwesomeIcons.eyeSlash,
+            obscureText ? FontAwesomeIcons.eye : FontAwesomeIcons.eyeSlash,
           ),
         ),
       ),
       onFieldSubmitted: widget.onFieldSubmitted,
+      validator: widget.validator,
     );
   }
 }
