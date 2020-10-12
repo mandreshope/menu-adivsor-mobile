@@ -109,5 +109,7 @@
   "attributes": "Attributes",
   "search_type": "Search type",
   "no_drink": "No drinks",
-  "geolocation_denied": "Geolocalization denied"s
+  "geolocation_denied": "Geolocalization denied",
+  "forgotten_password": "Forgot password?",
+  "forgot_password": "Forgot password"
 }
