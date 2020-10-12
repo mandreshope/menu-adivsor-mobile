@@ -18,6 +18,11 @@ class Location {
         "type": type,
         "coordinates": coordinates.toString(),
       };
+
+  @override
+  String toString() {
+    return '{"type": "$type", "coordinates": ${coordinates.toString()}}';
+  }
 }
 
 class Price {
