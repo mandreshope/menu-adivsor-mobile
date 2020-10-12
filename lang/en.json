@@ -11,6 +11,7 @@
   "before_exit_message": "Tap one more time to exit",
   "mail_address_placeholder": "Your mail address",
   "password_placeholder": "Your password",
+  "new_password": "New password",
   "confirm_password_placeholder": "Confirm password",
   "login_button": "Sign in",
   "next": "Next",
@@ -20,6 +21,7 @@
   "center_camera": "Please center you camera on the QR code",
   "see_all": "See all",
   "invalid_email_or_password": "Invalid email or password",
+  "invalid_email": "Invalid email",
   "blank_email_or_password": "Blank email or password",
   "add_phone_number": "Add your phone number",
   "enter_code": "Enter the 4 digits code sent to email address *",
@@ -111,5 +113,6 @@
   "no_drink": "No drinks",
   "geolocation_denied": "Geolocalization denied",
   "forgotten_password": "Forgot password?",
-  "forgot_password": "Forgot password"
+  "forgot_password": "Forgot password",
+  "invalid_code": "Invalid code"
 }

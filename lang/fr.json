@@ -11,6 +11,7 @@
   "before_exit_message": "Appuyez encore pour quitter",
   "mail_address_placeholder": "Votre adresse mail",
   "password_placeholder": "Votre mot de passe",
+  "new_password": "Nouvelle mot de passe",
   "confirm_password_placeholder": "Confirmer votre mot de passe",
   "login_button": "Connexion",
   "next": "Suivant",
@@ -20,6 +21,7 @@
   "center_camera": "Veuillez centrer votre appareil sur le code QR",
   "see_all": "Voir tout",
   "invalid_email_or_password": "Email ou mot de passe invalide",
+  "invalid_email": "Email invalide",
   "blank_email_or_password": "Email ou mot de passe vide",
   "add_phone_number": "Ajouter votre numéro de téléphone",
   "enter_code": "Saisissez le code à 4 chiffres envoyée à l'adresse mail *",
@@ -111,5 +113,6 @@
   "no_drink": "Aucune boisson",
   "geolocation_denied": "Geolocalisation non permise",
   "forgotten_password": "Mot de passe oublié?",
-  "forgot_password": "Mot de passe oublié"
+  "forgot_password": "Mot de passe oublié",
+  "invalid_code": "Code invalide"
 }
