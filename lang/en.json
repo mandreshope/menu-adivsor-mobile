@@ -115,5 +115,7 @@
   "forgotten_password": "Forgot password?",
   "forgot_password": "Forgot password",
   "invalid_code": "Invalid code",
-  "success": "Success"
+  "success": "Success",
+  "password": "Password",
+  "change_password": "Change password"
 }

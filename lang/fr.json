@@ -1,5 +1,5 @@
 {
-  "welcome": "Bienvenu",
+  "welcome": "Bienvenue",
   "home": "Accueil",
   "categories": "Catégories",
   "populars": "Populaires",
@@ -115,5 +115,7 @@
   "forgotten_password": "Mot de passe oublié?",
   "forgot_password": "Mot de passe oublié",
   "invalid_code": "Code invalide",
-  "success": "Succès"
+  "success": "Succès",
+  "password": "Mot de passe",
+  "change_password": "Changer le mot de passe"
 }
