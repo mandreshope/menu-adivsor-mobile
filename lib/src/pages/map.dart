@@ -178,9 +178,9 @@ class _MapPageState extends State<MapPage> {
                                   height: 60,
                                   point: LatLng(
                                     restaurant.content['location']
-                                        ['coordinates'][0],
-                                    restaurant.content['location']
                                         ['coordinates'][1],
+                                    restaurant.content['location']
+                                        ['coordinates'][0],
                                   ),
                                   builder: (BuildContext context) => Container(
                                     child: Column(
@@ -189,16 +189,12 @@ class _MapPageState extends State<MapPage> {
                                       children: [
                                         Text(
                                           restaurant.content['name'],
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                          ),
                                         ),
                                         SizedBox(
                                           height: 5,
                                         ),
                                         FaIcon(
                                           FontAwesomeIcons.utensils,
-                                          color: Colors.white,
                                         ),
                                       ],
                                     ),
