@@ -528,7 +528,8 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      AppLocalizations.of(context).translate('no_restaurant') ??
+                      AppLocalizations.of(context)
+                              .translate('no_restaurant_near') ??
                           "Aucun restaurant trouvé",
                       style: TextStyle(
                         fontSize: 22,
