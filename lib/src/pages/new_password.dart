@@ -225,12 +225,21 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
           Provider.of<AuthContext>(context, listen: false);
 
       try {
+        setState(() {
+          loading = true;
+        });
         var result = await authContext.confirmResetPassword(
           code: code,
           token: widget.token,
           password: newPassword,
         );
+        setState(() {
+          loading = false;
+        });
         if (result) {
+          Fluttertoast.showToast(
+            msg: AppLocalizations.of(context).translate('success'),
+          );
           RouteUtil.goTo(
             context: context,
             child: LoginPage(),
@@ -243,14 +252,12 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
           );
         }
       } catch (error) {
-        print(error);
-        Fluttertoast.showToast(
-          msg: AppLocalizations.of(context).translate('connection_error'),
-        );
-      } finally {
         setState(() {
           loading = false;
         });
+        Fluttertoast.showToast(
+          msg: AppLocalizations.of(context).translate('connection_error'),
+        );
       }
     }
   }
