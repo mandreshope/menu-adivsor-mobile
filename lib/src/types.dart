@@ -75,7 +75,7 @@ class PaymentCard {
     @required this.zipCode,
   });
 
-  static fromJson(Map<String, dynamic> data) => PaymentCard(
+  factory PaymentCard.fromJson(Map<String, dynamic> data) => PaymentCard(
         cardNumber: data['cardNumber'],
         expirationDate:
             DateTime.fromMillisecondsSinceEpoch(data['expirationDate']),
