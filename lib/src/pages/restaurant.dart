@@ -12,6 +12,7 @@ import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
+import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:provider/provider.dart';
 
 class RestaurantPage extends StatefulWidget {
@@ -64,26 +65,30 @@ class _RestaurantPageState extends State<RestaurantPage>
       length: 3,
     );
 
-    api.getRestaurant(id: widget.restaurant).then((res) {
-      setState(() {
-        restaurant = res;
-        loading = false;
-        drinks = restaurant.foods
-                .where((element) => element.type == 'drink')
-                .toList() ??
-            [];
-
-        foodType = restaurant.foodTypes.first['name'];
-      });
-
+    api
+        .getRestaurant(
+      id: widget.restaurant,
+      lang: Provider.of<SettingContext>(
+        context,
+        listen: false,
+      ).languageCode,
+    )
+        .then((res) {
       filters['restaurant'] = restaurant.id;
       AuthContext authContext =
           Provider.of<AuthContext>(context, listen: false);
+
       if (authContext.currentUser == null) showFavoriteButton = false;
       if (authContext.currentUser != null &&
           authContext.currentUser.favoriteRestaurants
-                  ?.indexWhere((element) => element.id == restaurant.id) >
+                  .indexWhere((element) => element == restaurant.id) >
               1) isInFavorite = true;
+    }).catchError((error) {
+      print(error);
+      Fluttertoast.showToast(
+        msg: 'Erreur lors du chargement...',
+      );
+      RouteUtil.goBack(context: context);
     });
   }
 
@@ -160,36 +165,41 @@ class _RestaurantPageState extends State<RestaurantPage>
         }
         return true;
       },
-      child: Scaffold(
-        floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            showModalBottomSheet(
-              context: context,
-              builder: (_) => BagModal(),
-              backgroundColor: Colors.transparent,
-            );
-          },
-          child: FaIcon(
-            FontAwesomeIcons.shoppingBag,
-            color: Colors.white,
+      child: Localizations.override(
+        context: context,
+        locale: Locale(_lang),
+        child: Scaffold(
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.miniEndFloat,
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                builder: (_) => BagModal(),
+                backgroundColor: Colors.transparent,
+              );
+            },
+            child: FaIcon(
+              FontAwesomeIcons.shoppingBag,
+              color: Colors.white,
+            ),
           ),
-        ),
-        appBar: _isSearching
-            ? AppBar(
-                title: Text(restaurant.name),
-              )
-            : null,
-        body: SafeArea(
-          child: loading
-              ? Center(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
-                  ),
+          appBar: _isSearching
+              ? AppBar(
+                  title: Text(restaurant.name),
                 )
-              : _isSearching
-                  ? _renderSearchView()
-                  : _renderMainScreen(),
+              : null,
+          body: SafeArea(
+            child: loading
+                ? Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
+                    ),
+                  )
+                : _isSearching
+                    ? _renderSearchView()
+                    : _renderMainScreen(),
+          ),
         ),
       ),
     );
@@ -315,6 +325,7 @@ class _RestaurantPageState extends State<RestaurantPage>
                                 bottom: 10,
                               ),
                               child: MenuCard(
+                                lang: _lang,
                                 menu: Menu.fromJson(e.content),
                               ),
                             );
@@ -575,37 +586,7 @@ class _RestaurantPageState extends State<RestaurantPage>
                   ),
                 ],
               ),
-              restaurant.menus.length > 0
-                  ? Column(
-                      children: restaurant.menus
-                          .map(
-                            (e) => Card(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Container(
-                                padding: const EdgeInsets.all(10),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                    )
-                  : Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.warning,
-                          size: 40,
-                        ),
-                        Text(
-                          AppLocalizations.of(context).translate('no_menu'),
-                          style: TextStyle(
-                            fontSize: 22,
-                          ),
-                        ),
-                      ],
-                    ),
+              _renderMenus(),
               drinks.length > 0
                   ? Column(
                       children: drinks
@@ -692,69 +673,123 @@ class _RestaurantPageState extends State<RestaurantPage>
     );
   }
 
-  Widget _renderFoodListOfType(String foodType) {
-    var foods = foodType != 'all'
-        ? restaurant.foods.where((food) => food.type == foodType).toList() ?? []
-        : restaurant.foods;
+  Widget _renderMenus() {
+    return FutureBuilder<List<Menu>>(
+      future: api.getMenus(_lang, restaurant.id),
+      builder: (_, snapshot) {
+        if (!snapshot.hasData)
+          return CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
+          );
 
-    return foods.length > 0
-        ? SingleChildScrollView(
-            child: Column(
-              children: foods
-                  .map(
-                    (e) => Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            AspectRatio(
-                              aspectRatio: 1,
-                              child: Container(
-                                width: MediaQuery.of(context).size.width / 8,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  image: DecorationImage(
-                                    image: NetworkImage(
-                                      e.imageURL,
+        var menus = snapshot.data;
+        return menus.length > 0
+            ? Column(
+                children: menus
+                    .map(
+                      (e) => MenuCard(
+                        menu: e,
+                        lang: _lang,
+                      ),
+                    )
+                    .toList(),
+              )
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.warning,
+                    size: 40,
+                  ),
+                  Text(
+                    AppLocalizations.of(context).translate('no_menu'),
+                    style: TextStyle(
+                      fontSize: 22,
+                    ),
+                  ),
+                ],
+              );
+      },
+    );
+  }
+
+  Widget _renderFoodListOfType(String foodType) {
+    return FutureBuilder<List<Food>>(
+      future: api.getFoods(_lang, filters: {
+        'restaurant': widget.restaurant,
+        'type': foodType,
+      }),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData)
+          return CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
+          );
+
+        var foods = snapshot.data;
+
+        return foods.length > 0
+            ? SingleChildScrollView(
+                child: Column(
+                  children: foods
+                      .map(
+                        (e) => Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                AspectRatio(
+                                  aspectRatio: 1,
+                                  child: Container(
+                                    width:
+                                        MediaQuery.of(context).size.width / 8,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      image: DecorationImage(
+                                        image: NetworkImage(
+                                          e.imageURL,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
+                                SizedBox(
+                                  width: 5.0,
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                  ),
+                                ),
+                              ],
                             ),
-                            SizedBox(
-                              width: 5.0,
-                            ),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
-                  )
-                  .toList(),
-            ),
-          )
-        : Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.warning,
-                size: 40,
-              ),
-              Text(
-                AppLocalizations.of(context).translate('no_food'),
-                style: TextStyle(
-                  fontSize: 22,
+                      )
+                      .toList(),
                 ),
-              ),
-            ],
-          );
+              )
+            : Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.warning,
+                    size: 40,
+                  ),
+                  Text(
+                    AppLocalizations.of(context).translate('no_food'),
+                    style: TextStyle(
+                      fontSize: 22,
+                    ),
+                  ),
+                ],
+              );
+      },
+    );
   }
 }

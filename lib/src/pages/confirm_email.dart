@@ -42,8 +42,6 @@ class _ConfirmEmailPageState extends State<ConfirmEmailPage>
         seconds: 30,
       ),
     );
-
-    Animation<int> animation = Tween(begin: 0, end: 30).animate(controller);
   }
 
   @override

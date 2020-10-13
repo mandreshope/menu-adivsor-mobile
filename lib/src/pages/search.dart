@@ -167,6 +167,8 @@ class _SearchPageState extends State<SearchPage> {
                                       bottom: 10,
                                     ),
                                     child: MenuCard(
+                                      lang: Provider.of<SettingContext>(context)
+                                          .languageCode,
                                       menu: Menu.fromJson(e.content),
                                     ),
                                   );

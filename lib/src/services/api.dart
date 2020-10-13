@@ -415,4 +415,15 @@ class Api {
         return Future.error(jsonDecode(response.body));
     });
   }
+
+  Future<List<Menu>> getMenus(String lang, String id) => http
+          .get('$_apiURL/restaurants/$id/menus?lang=$lang')
+          .then<List<Menu>>((response) {
+        if (response.statusCode == 200) {
+          List<dynamic> datas = jsonDecode(response.body);
+          return datas.map<Menu>((e) => Menu.fromJson(e)).toList();
+        }
+
+        return Future.error(jsonDecode(response.body));
+      });
 }

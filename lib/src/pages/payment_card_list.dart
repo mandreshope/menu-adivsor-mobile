@@ -83,7 +83,13 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
         onPressed: () async {
           RouteUtil.goTo(
             context: context,
-            child: AddPaymentCardPage(),
+            child: PaymentCardDetailsPage(
+              isPaymentStep: Provider.of<AuthContext>(
+                    context,
+                    listen: false,
+                  ).currentUser ==
+                  null,
+            ),
             routeName: addPaymentCardRoute,
           );
         },

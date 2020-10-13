@@ -47,8 +47,9 @@ class _FoodPageState extends State<FoodPage> {
     if (authContext.currentUser == null) showFavorite = false;
     isInFavorite = authContext.currentUser != null &&
         authContext.currentUser.favoriteFoods.firstWhere(
-                (element) => element.id == widget.food.id,
-                orElse: () => null) !=
+              (element) => element == widget.food.id,
+              orElse: () => null,
+            ) !=
             null;
   }
 

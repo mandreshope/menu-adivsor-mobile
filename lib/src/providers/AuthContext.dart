@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/services/api.dart';
+import 'package:menu_advisor/src/types.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthContext extends ChangeNotifier {
@@ -72,37 +73,44 @@ class AuthContext extends ChangeNotifier {
         password: password,
       );
 
-  addToFavoriteFoods(Food food) async {
-    if (_currentUser.favoriteFoods
-            .firstWhere((element) => element.id == food.id, orElse: null) !=
-        null) return false;
-
+  Future addToFavoriteFoods(Food food) async {
     await _api.addToFavoriteFood(food);
-    _currentUser.favoriteFoods.add(food);
+    _currentUser.favoriteFoods.add(food.id);
     notifyListeners();
+    return;
   }
 
-  removeFromFavoriteFoods(Food food) async {
+  Future removeFromFavoriteFoods(Food food) async {
     await _api.removeFromFavoriteFoods(food);
-    currentUser = await _api.getMe();
+    currentUser.favoriteFoods.removeWhere((e) => e == food.id);
     notifyListeners();
+    return;
   }
 
-  addToFavoriteRestaurants(Restaurant restaurant) async {
+  Future addToFavoriteRestaurants(Restaurant restaurant) async {
     await _api.addToFavoriteRestaurants(restaurant);
-    currentUser = await _api.getMe();
+    currentUser.favoriteRestaurants.add(restaurant.id);
     notifyListeners();
+    return;
   }
 
-  removeFromFavoriteRestaurants(Restaurant restaurant) async {
+  Future removeFromFavoriteRestaurants(Restaurant restaurant) async {
     await _api.removeFromFavoriteRestaurants(restaurant);
-    currentUser = await _api.getMe();
+    currentUser.favoriteRestaurants.removeWhere((e) => e == restaurant.id);
     notifyListeners();
+    return;
   }
 
   resendConfirmationCode() => _api.resendConfirmationCode();
 
   Future<String> resetPassword(String email) => _api.resetPassword(email);
+
+  Future addPaymentCard(PaymentCard paymentCard) async {
+    await _api.addPaymentCard(paymentCard);
+    currentUser.paymentCards.add(paymentCard);
+    notifyListeners();
+    return;
+  }
 
   Future validateAccount({
     String registrationToken,

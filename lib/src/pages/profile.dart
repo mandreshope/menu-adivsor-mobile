@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:menu_advisor/src/components/utilities.dart';
+import 'package:menu_advisor/src/pages/change_password.dart';
 import 'package:menu_advisor/src/pages/login.dart';
 import 'package:menu_advisor/src/pages/payment_card_list.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
@@ -63,31 +64,56 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ],
           ),
-          body: Column(
-            children: [
-              Container(
-                height: 250,
-                child: Center(
-                  child: CircleAvatar(
-                    radius: 60,
-                    backgroundColor: Colors.white,
-                    child: Consumer<AuthContext>(
-                      builder: (_, authContext, __) =>
-                          authContext.currentUser?.photoURL == null ?? true
-                              ? Icon(
-                                  Icons.person,
-                                  color: Colors.black,
-                                  size: 50,
-                                )
-                              : Image.asset(
-                                  authContext.currentUser.photoURL,
-                                ),
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                Container(
+                  height: 250,
+                  child: Consumer<AuthContext>(
+                    builder: (_, authContext, __) => Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                          radius: 60,
+                          backgroundColor: Colors.white,
+                          child:
+                              authContext.currentUser?.photoURL == null ?? true
+                                  ? Icon(
+                                      Icons.person,
+                                      color: Colors.black,
+                                      size: 50,
+                                    )
+                                  : Image.asset(
+                                      authContext.currentUser.photoURL,
+                                    ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          authContext.currentUser.email,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          authContext.currentUser.name.first.length != 0
+                              ? authContext.currentUser.name.first
+                              : 'Aucun prénom',
+                        ),
+                        Text(
+                          authContext.currentUser.name.last.length != 0
+                              ? authContext.currentUser.name.last
+                              : 'Aucun nom',
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              ),
-              Expanded(
-                child: Container(
+                Container(
                   width: double.infinity,
                   color: Colors.white,
                   padding: const EdgeInsets.all(30),
@@ -114,8 +140,10 @@ class _ProfilePageState extends State<ProfilePage> {
                         value: isSystemSetting ? 'system' : languageCode,
                         onChanged: (String languageCode) {
                           SettingContext settingContext =
-                              Provider.of<SettingContext>(context,
-                                  listen: false);
+                              Provider.of<SettingContext>(
+                            context,
+                            listen: false,
+                          );
 
                           settingContext.languageCode = languageCode;
                         },
@@ -137,6 +165,42 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ),
                         ],
+                      ),
+                      SizedBox(
+                        height: 30,
+                      ),
+                      Text(
+                        AppLocalizations.of(context).translate("password"),
+                        style: Theme.of(context).textTheme.headline6,
+                      ),
+                      SizedBox(
+                        height: 30,
+                      ),
+                      RaisedButton(
+                        onPressed: () {
+                          RouteUtil.goTo(
+                            context: context,
+                            child: ChangePasswordPage(),
+                            routeName: changePasswordRoute,
+                          );
+                        },
+                        color: Colors.teal,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(40),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 15,
+                        ),
+                        child: Text(
+                          AppLocalizations.of(context)
+                              .translate('change_password'),
+                          style: GoogleFonts.raleway(
+                            textStyle: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                            ),
+                          ),
+                        ),
                       ),
                       SizedBox(
                         height: 30,
@@ -177,8 +241,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     ],
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },

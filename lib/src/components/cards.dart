@@ -374,56 +374,77 @@ class _FoodCardState extends State<FoodCard> {
 
 class MenuCard extends StatelessWidget {
   final Menu menu;
+  final String lang;
 
   const MenuCard({
     Key key,
     @required this.menu,
+    @required this.lang,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 5,
-      child: Padding(
-        padding: const EdgeInsets.all(5.0),
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            AspectRatio(
-              aspectRatio: 1,
-              child: Container(
-                width: MediaQuery.of(context).size.width / 8,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  image: DecorationImage(
-                    image: NetworkImage(
-                      menu.imageURL,
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      elevation: 4.0,
+      child: AspectRatio(
+        aspectRatio: 5,
+        child: Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              FadeInImage.assetNetwork(
+                placeholder: 'assets/images/loading.gif',
+                image: menu.imageURL,
+                imageErrorBuilder: (_, __, ___) => Icon(Icons.food_bank),
+              ),
+              SizedBox(width: 5.0),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      menu.name[lang],
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
+                    Text(
+                      menu.description[lang],
+                      style: TextStyle(
+                        fontSize: 18,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-            SizedBox(width: 5.0),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class RestaurantCard extends StatelessWidget {
+class RestaurantCard extends StatefulWidget {
   final Restaurant restaurant;
 
   const RestaurantCard({
     Key key,
     @required this.restaurant,
   }) : super(key: key);
+
+  @override
+  _RestaurantCardState createState() => _RestaurantCardState();
+}
+
+class _RestaurantCardState extends State<RestaurantCard> {
+  bool switchingFavorite = false;
 
   @override
   Widget build(BuildContext context) {
@@ -444,7 +465,7 @@ class RestaurantCard extends StatelessWidget {
                 RouteUtil.goTo(
                   context: context,
                   child: RestaurantPage(
-                    restaurant: restaurant.id,
+                    restaurant: widget.restaurant.id,
                   ),
                   routeName: restaurantRoute,
                 );
@@ -469,7 +490,7 @@ class RestaurantCard extends StatelessWidget {
                                 mainAxisSize: MainAxisSize.max,
                                 children: [
                                   Text(
-                                    restaurant.name,
+                                    widget.restaurant.name,
                                     style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
@@ -478,7 +499,7 @@ class RestaurantCard extends StatelessWidget {
                                   SizedBox(height: 5),
                                   Text(
                                     AppLocalizations.of(context)
-                                        .translate(restaurant.type),
+                                        .translate(widget.restaurant.type),
                                     style: TextStyle(
                                       fontSize: 16,
                                     ),
@@ -492,23 +513,54 @@ class RestaurantCard extends StatelessWidget {
                             Align(
                               alignment: Alignment.bottomRight,
                               child: Consumer<AuthContext>(
-                                builder: (_, authContext, __) => IconButton(
-                                  icon: Icon(
-                                    authContext.currentUser?.favoriteRestaurants
-                                                    ?.firstWhere(
-                                                  (element) =>
-                                                      element.id ==
-                                                      restaurant.id,
-                                                  orElse: () => null,
-                                                ) !=
-                                                null ??
-                                            false
-                                        ? Icons.favorite
-                                        : Icons.favorite_border,
-                                    color: CRIMSON,
+                                builder: (_, authContext, __) => SizedBox(
+                                  height: 50,
+                                  child: FittedBox(
+                                    child: switchingFavorite
+                                        ? Padding(
+                                            padding: const EdgeInsets.all(30),
+                                            child: CircularProgressIndicator(
+                                              valueColor:
+                                                  AlwaysStoppedAnimation<Color>(
+                                                CRIMSON,
+                                              ),
+                                            ),
+                                          )
+                                        : IconButton(
+                                            icon: Icon(
+                                              authContext.currentUser
+                                                          ?.favoriteRestaurants
+                                                          ?.contains(widget
+                                                              .restaurant.id) ??
+                                                      false
+                                                  ? Icons.favorite
+                                                  : Icons.favorite_border,
+                                              color: CRIMSON,
+                                            ),
+                                            onPressed: () async {
+                                              setState(() {
+                                                switchingFavorite = true;
+                                              });
+                                              if (authContext.currentUser
+                                                      ?.favoriteRestaurants
+                                                      ?.contains(widget
+                                                          .restaurant.id) ??
+                                                  false)
+                                                await authContext
+                                                    .removeFromFavoriteRestaurants(
+                                                  widget.restaurant,
+                                                );
+                                              else
+                                                await authContext
+                                                    .addToFavoriteRestaurants(
+                                                  widget.restaurant,
+                                                );
+                                              setState(() {
+                                                switchingFavorite = false;
+                                              });
+                                            },
+                                          ),
                                   ),
-                                  onPressed: () => authContext
-                                      .addFavoriteRestaurant(restaurant),
                                 ),
                               ),
                             ),
@@ -516,7 +568,7 @@ class RestaurantCard extends StatelessWidget {
                       ),
                     ),
                     FadeInImage.assetNetwork(
-                      image: restaurant.imageURL,
+                      image: widget.restaurant.imageURL,
                       placeholder: 'assets/images/loading.gif',
                       width: 120,
                       fit: BoxFit.cover,

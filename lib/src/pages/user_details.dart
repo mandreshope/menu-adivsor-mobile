@@ -134,8 +134,8 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
     if (formState.validate())
       RouteUtil.goTo(
         context: context,
-        child: AddPaymentCardPage(
-          anonymous: true,
+        child: PaymentCardDetailsPage(
+          isPaymentStep: true,
         ),
         routeName: addPaymentCardRoute,
       );

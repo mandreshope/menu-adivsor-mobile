@@ -75,20 +75,26 @@ class Food {
 class Menu {
   final String imageURL;
   final Map<String, dynamic> name;
+  final Map<String, dynamic> description;
   final List<Food> foods;
 
   Menu({
     @required this.name,
     this.foods,
     this.imageURL,
+    this.description,
   });
 
   factory Menu.fromJson(Map<String, dynamic> json) => Menu(
         name: json['name'],
         imageURL: json['imageURL'],
-        foods: json['foods'] is List<Map<String, dynamic>>
-            ? json['foods']?.map((data) => Food.fromJson(data))?.toList() ?? []
+        foods: json['foods'] is List
+            ? json['foods']
+                    ?.map<Food>((data) => Food.fromJson(data))
+                    ?.toList() ??
+                []
             : [],
+        description: json['description'],
       );
 }
 
@@ -100,8 +106,8 @@ class Restaurant {
   final Location location;
   final String address;
   final String description;
-  final List<Menu> menus;
-  final List<Food> foods;
+  final List<String> menus;
+  final List<String> foods;
   final List<dynamic> foodTypes;
 
   Restaurant({
@@ -127,12 +133,8 @@ class Restaurant {
         ),
         address: json['address'] ?? '',
         description: json['description'] ?? '',
-        menus: (json['menus'] is List<Map<String, dynamic>>)
-            ? json['menus'].map((e) => Menu.fromJson(e)).toList()
-            : [],
-        foods: (json['foods'] is List<Map>)
-            ? json['foods'].map((e) => Food.fromJson(e)).toList()
-            : [],
+        menus: json['menus'],
+        foods: json['foods'],
         foodTypes: json['foodTypes'] ?? [],
       );
 }
@@ -144,8 +146,8 @@ class User {
   final String photoURL;
   final String address;
   final String email;
-  final List<Restaurant> favoriteRestaurants;
-  final List<Food> favoriteFoods;
+  final List<String> favoriteRestaurants;
+  final List<String> favoriteFoods;
   final List<PaymentCard> paymentCards;
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -154,22 +156,11 @@ class User {
       email: json['email'],
       photoURL: json['photoURL'],
       name: UserName.fromJson(json['name']),
-      favoriteRestaurants:
-          json['favoriteRestaurants'] is List<Map<String, dynamic>>
-              ? json['favoriteRestaurants']
-                      ?.map((data) => Restaurant.fromJson(data))
-                      ?.toList() ??
-                  []
-              : [],
-      favoriteFoods: json['favoriteFoods'] is List<Map<String, dynamic>>
-          ? json['favoriteFoods']
-                  ?.map((data) => Food.fromJson(data))
-                  ?.toList() ??
-              []
-          : [],
-      paymentCards: json['paymentCards'] is List<Map<String, dynamic>>
+      favoriteRestaurants: json['favoriteRestaurants'],
+      favoriteFoods: json['favoriteFoods'],
+      paymentCards: json['paymentCards'] is List
           ? json['paymentCards']
-                  ?.map(
+                  ?.map<PaymentCard>(
                     (data) => PaymentCard.fromJson(data),
                   )
                   ?.toList() ??

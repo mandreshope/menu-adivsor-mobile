@@ -14,19 +14,19 @@ import 'package:menu_advisor/src/utils/input_formatters.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:provider/provider.dart';
 
-class AddPaymentCardPage extends StatefulWidget {
-  final bool anonymous;
+class PaymentCardDetailsPage extends StatefulWidget {
+  final bool isPaymentStep;
 
-  AddPaymentCardPage({
+  PaymentCardDetailsPage({
     Key key,
-    this.anonymous,
+    this.isPaymentStep,
   }) : super(key: key);
 
   @override
-  _AddPaymentCardPageState createState() => _AddPaymentCardPageState();
+  _PaymentCardDetailsPageState createState() => _PaymentCardDetailsPageState();
 }
 
-class _AddPaymentCardPageState extends State<AddPaymentCardPage> {
+class _PaymentCardDetailsPageState extends State<PaymentCardDetailsPage> {
   TextEditingController _ownerNameController = TextEditingController();
   TextEditingController _cardNumberController = TextEditingController();
   TextEditingController _expirationDateController = TextEditingController();
@@ -223,14 +223,16 @@ class _AddPaymentCardPageState extends State<AddPaymentCardPage> {
                           )
                         else ...[
                           Icon(
-                            widget.anonymous ? Icons.check : Icons.save_rounded,
+                            widget.isPaymentStep
+                                ? Icons.check
+                                : Icons.save_rounded,
                             color: Colors.white,
                           ),
                           SizedBox(
                             width: 5,
                           ),
                           Text(
-                            widget.anonymous
+                            widget.isPaymentStep
                                 ? AppLocalizations.of(context)
                                     .translate('validate')
                                 : AppLocalizations.of(context)
@@ -256,7 +258,7 @@ class _AddPaymentCardPageState extends State<AddPaymentCardPage> {
 
   _submitForm() async {
     if (_formKey.currentState.validate()) {
-      if (widget.anonymous) {
+      if (widget.isPaymentStep) {
         StripeService.init();
 
         BagContext bagContext = Provider.of<BagContext>(context, listen: false);
@@ -297,7 +299,20 @@ class _AddPaymentCardPageState extends State<AddPaymentCardPage> {
         AuthContext authContext =
             Provider.of<AuthContext>(context, listen: false);
 
-        try {} catch (error) {}
+        try {
+          await authContext.addPaymentCard(
+            PaymentCard(
+              cardNumber: int.parse(_cardNumberController.value.text),
+              expirationDate: DateTime.utc(
+                int.parse(_expirationDateController.value.text.split('/')[1]),
+                int.parse(_expirationDateController.value.text.split('/')[0]),
+              ),
+              securityCode: int.parse(_cvcController.value.text),
+              owner: _ownerNameController.value.text,
+              zipCode: _zipCodeController.value.text,
+            ),
+          );
+        } catch (error) {}
       }
     }
   }

@@ -9,7 +9,7 @@ class BagContext extends ChangeNotifier {
 
   String get commandType => _commandType;
 
-  void set commandType(String value) {
+  set commandType(String value) {
     _commandType = value;
     notifyListeners();
   }
