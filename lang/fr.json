@@ -120,5 +120,9 @@
   "password": "Mot de passe",
   "change_password": "Changer le mot de passe",
   "enter_old_password_placeholder": "Entrer votre ancien mot de passe",
-  "enter_new_password_placeholder": "Entrer votre nouveau mot de passe"
+  "enter_new_password_placeholder": "Entrer votre nouveau mot de passe",
+  "invalid_password": "Mot de passe invalide",
+  "add_payment_card_error": "Erreur lors de l'ajout de la carte",
+  "confirm_remove_payment_card_title": "Supprimer la carte?",
+  "confirm_remove_payment_card_content": "Voulez-vous vraiment supprimer cette carte?"
 }

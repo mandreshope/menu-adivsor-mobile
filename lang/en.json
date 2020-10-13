@@ -120,5 +120,9 @@
   "password": "Password",
   "change_password": "Change password",
   "enter_old_password_placeholder": "Enter your old password",
-  "enter_new_password_placeholder": "Entrer your new password"
+  "enter_new_password_placeholder": "Entrer your new password",
+  "invalid_password": "Invalid password",
+  "add_payment_card_error": "Error while adding payment card details",
+  "confirm_remove_payment_card_title": "Remove card?",
+  "confirm_remove_payment_card_content": "Do you really want to remove this card?"
 }
