@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/animations/FadeAnimation.dart';
 import 'package:menu_advisor/src/components/logo.dart';
+import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/pages/home.dart';
 import 'package:menu_advisor/src/pages/login.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
@@ -21,6 +22,7 @@ class Splash extends StatefulWidget {
 
 class _SplashState extends State<Splash> {
   double _opacity = 0;
+  bool loadingUser = false;
 
   @override
   void initState() {
@@ -43,7 +45,14 @@ class _SplashState extends State<Splash> {
         final AuthContext authContext =
             Provider.of<AuthContext>(context, listen: false);
 
+        // Loading user
+        setState(() {
+          loadingUser = true;
+        });
         await authContext.initialized;
+        setState(() {
+          loadingUser = false;
+        });
 
         if (authContext.currentUser != null)
           RouteUtil.goTo(
@@ -100,11 +109,23 @@ class _SplashState extends State<Splash> {
             opacity: _opacity,
             duration: Duration(milliseconds: 200),
             child: Container(
+              width: double.infinity,
               color: Colors.white,
-              child: Center(
-                child: MenuAdvisorLogo(
-                  size: 2 * MediaQuery.of(context).size.width / 5,
-                ),
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  MenuAdvisorLogo(
+                    size: 2 * MediaQuery.of(context).size.width / 5,
+                  ),
+                  AnimatedOpacity(
+                    opacity: loadingUser ? 1 : 0,
+                    duration: Duration(milliseconds: 200),
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
