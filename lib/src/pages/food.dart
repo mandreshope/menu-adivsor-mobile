@@ -6,6 +6,7 @@ import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/restaurant.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
+import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
@@ -38,9 +39,23 @@ class _FoodPageState extends State<FoodPage> {
   void initState() {
     super.initState();
 
-    api.getRestaurant(id: widget.food.restaurant).then((res) {
-      restaurantName = res.name;
-      loading = false;
+    api
+        .getRestaurant(
+      id: widget.food.restaurant,
+      lang: Provider.of<SettingContext>(
+        context,
+        listen: false,
+      ).languageCode,
+    )
+        .then((res) {
+      setState(() {
+        restaurantName = res.name;
+        loading = false;
+      });
+    }).catchError((error) {
+      Fluttertoast.showToast(
+        msg: AppLocalizations.of(context).translate('connection_error'),
+      );
     });
 
     AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
@@ -108,14 +123,18 @@ class _FoodPageState extends State<FoodPage> {
                     ),
                   ),
                 ],
-                SizedBox(height: 20),
+                SizedBox(
+                  height: 20,
+                ),
                 Padding(
                   padding: const EdgeInsets.only(
                     left: 20.0,
                     right: 100.0,
                   ),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: loading
+                        ? CrossAxisAlignment.center
+                        : CrossAxisAlignment.start,
                     children: [
                       Text(
                         AppLocalizations.of(context).translate('product_of'),
@@ -125,26 +144,36 @@ class _FoodPageState extends State<FoodPage> {
                         ),
                       ),
                       SizedBox(height: 5),
-                      GestureDetector(
-                        onTap: () {
-                          if (widget.food.restaurant != null)
-                            RouteUtil.goTo(
-                              context: context,
-                              child: RestaurantPage(
-                                restaurant: widget.food.restaurant,
+                      !loading
+                          ? GestureDetector(
+                              onTap: () {
+                                if (widget.food.restaurant != null)
+                                  RouteUtil.goTo(
+                                    context: context,
+                                    child: RestaurantPage(
+                                      restaurant: widget.food.restaurant,
+                                    ),
+                                    routeName: restaurantRoute,
+                                  );
+                              },
+                              child: Text(
+                                restaurantName ?? 'Aucun nom',
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  decoration: TextDecoration.underline,
+                                ),
                               ),
-                              routeName: restaurantRoute,
-                            );
-                        },
-                        child: Text(
-                          restaurantName ?? 'Aucun nom',
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ),
+                            )
+                          : SizedBox(
+                              height: 22,
+                              child: FittedBox(
+                                child: CircularProgressIndicator(
+                                  valueColor:
+                                      AlwaysStoppedAnimation<Color>(CRIMSON),
+                                ),
+                              ),
+                            ),
                     ],
                   ),
                 ),
