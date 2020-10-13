@@ -33,6 +33,7 @@ class _RestaurantPageState extends State<RestaurantPage>
   bool showFavoriteButton = true;
   bool searchLoading = false;
   bool loading = true;
+  bool switchingFavorite = false;
   TabController controller;
   int activeTabIndex = 0;
 
@@ -74,15 +75,17 @@ class _RestaurantPageState extends State<RestaurantPage>
       ).languageCode,
     )
         .then((res) {
+      restaurant = res;
       filters['restaurant'] = restaurant.id;
+      loading = false;
       AuthContext authContext =
           Provider.of<AuthContext>(context, listen: false);
 
       if (authContext.currentUser == null) showFavoriteButton = false;
       if (authContext.currentUser != null &&
-          authContext.currentUser.favoriteRestaurants
-                  .indexWhere((element) => element == restaurant.id) >
-              1) isInFavorite = true;
+          authContext.currentUser.favoriteRestaurants.contains(restaurant.id))
+        isInFavorite = true;
+      setState(() {});
     }).catchError((error) {
       print(error);
       Fluttertoast.showToast(
@@ -142,15 +145,32 @@ class _RestaurantPageState extends State<RestaurantPage>
     }
   }
 
-  _toggleFavorite() {
-    Fluttertoast.showToast(
+  _toggleFavorite() async {
+    if (switchingFavorite) return;
+
+    AuthContext authContext = Provider.of<AuthContext>(
+      context,
+      listen: false,
+    );
+
+    setState(() {
+      switchingFavorite = true;
+    });
+    if (isInFavorite)
+      await authContext.removeFromFavoriteRestaurants(restaurant);
+    else
+      await authContext.addToFavoriteRestaurants(restaurant);
+
+    await Fluttertoast.showToast(
       msg: AppLocalizations.of(context).translate(
         !isInFavorite ? 'added_to_favorite' : 'removed_from_favorite',
       ),
     );
-    setState(() {
-      isInFavorite = !isInFavorite;
-    });
+    if (mounted)
+      setState(() {
+        isInFavorite = !isInFavorite;
+        switchingFavorite = false;
+      });
   }
 
   @override
@@ -474,13 +494,28 @@ class _RestaurantPageState extends State<RestaurantPage>
           ),
           actions: [
             if (showFavoriteButton)
-              IconButton(
-                onPressed: _toggleFavorite,
-                icon: Icon(
-                  isInFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: Colors.white,
-                ),
-              ),
+              switchingFavorite
+                  ? Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Center(
+                        child: SizedBox(
+                          height: 14,
+                          child: FittedBox(
+                            child: CircularProgressIndicator(
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(CRIMSON),
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  : IconButton(
+                      onPressed: _toggleFavorite,
+                      icon: Icon(
+                        isInFavorite ? Icons.favorite : Icons.favorite_border,
+                        color: isInFavorite ? CRIMSON : Colors.white,
+                      ),
+                    ),
             IconButton(
               onPressed: () {
                 setState(() {
@@ -678,8 +713,10 @@ class _RestaurantPageState extends State<RestaurantPage>
       future: api.getMenus(_lang, restaurant.id),
       builder: (_, snapshot) {
         if (!snapshot.hasData)
-          return CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
+          return Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
+            ),
           );
 
         var menus = snapshot.data;
@@ -722,8 +759,10 @@ class _RestaurantPageState extends State<RestaurantPage>
       }),
       builder: (context, snapshot) {
         if (!snapshot.hasData)
-          return CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
+          return Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
+            ),
           );
 
         var foods = snapshot.data;
