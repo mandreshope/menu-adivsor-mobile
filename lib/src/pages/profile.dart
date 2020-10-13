@@ -5,6 +5,7 @@ import 'package:menu_advisor/src/components/utilities.dart';
 import 'package:menu_advisor/src/pages/change_password.dart';
 import 'package:menu_advisor/src/pages/login.dart';
 import 'package:menu_advisor/src/pages/payment_card_list.dart';
+import 'package:menu_advisor/src/pages/profile_edit.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
@@ -70,44 +71,90 @@ class _ProfilePageState extends State<ProfilePage> {
                 Container(
                   height: 250,
                   child: Consumer<AuthContext>(
-                    builder: (_, authContext, __) => Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    builder: (_, authContext, __) => Stack(
+                      fit: StackFit.expand,
                       children: [
-                        CircleAvatar(
-                          radius: 60,
-                          backgroundColor: Colors.white,
-                          child:
-                              authContext.currentUser?.photoURL == null ?? true
-                                  ? Icon(
-                                      Icons.person,
-                                      color: Colors.black,
-                                      size: 50,
-                                    )
-                                  : Image.asset(
-                                      authContext.currentUser.photoURL,
-                                    ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircleAvatar(
+                              radius: 60,
+                              backgroundColor: Colors.white,
+                              child:
+                                  authContext.currentUser?.photoURL == null ??
+                                          true
+                                      ? Icon(
+                                          Icons.person,
+                                          color: Colors.black,
+                                          size: 50,
+                                        )
+                                      : Image.asset(
+                                          authContext.currentUser.photoURL,
+                                        ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              authContext.currentUser.email,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              authContext.currentUser.name.first.length != 0
+                                  ? authContext.currentUser.name.first
+                                  : AppLocalizations.of(context)
+                                      .translate('no_firstname'),
+                            ),
+                            Text(
+                              authContext.currentUser.name.last.length != 0
+                                  ? authContext.currentUser.name.last
+                                  : AppLocalizations.of(context)
+                                      .translate('no_lastname'),
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.location_on_sharp,
+                                ),
+                                Text(
+                                  authContext.currentUser.address ??
+                                      AppLocalizations.of(context)
+                                          .translate('no_address'),
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            )
+                          ],
                         ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Text(
-                          authContext.currentUser.email,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
+                        Positioned(
+                          right: 10,
+                          bottom: 10,
+                          child: FloatingActionButton(
+                            heroTag: 'edit',
+                            mini: true,
+                            onPressed: () {
+                              RouteUtil.goTo(
+                                context: context,
+                                child: ProfileEditPage(),
+                                routeName: profileEditRoute,
+                              );
+                            },
+                            child: Icon(
+                              Icons.edit_outlined,
+                            ),
                           ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Text(
-                          authContext.currentUser.name.first.length != 0
-                              ? authContext.currentUser.name.first
-                              : 'Aucun prénom',
-                        ),
-                        Text(
-                          authContext.currentUser.name.last.length != 0
-                              ? authContext.currentUser.name.last
-                              : 'Aucun nom',
                         ),
                       ],
                     ),
