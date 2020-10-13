@@ -10,6 +10,13 @@ class Api {
   String _accessToken;
   String _refreshToken;
 
+  Future init(String accessToken, String refreshToken) async {
+    accessToken = accessToken;
+    refreshToken = refreshToken;
+
+    await _refreshTokens();
+  }
+
   set accessToken(String accessToken) {
     _accessToken = accessToken;
     SharedPreferences.getInstance().then((sharedPrefs) {
