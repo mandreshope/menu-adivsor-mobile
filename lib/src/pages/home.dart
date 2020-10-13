@@ -145,8 +145,10 @@ class _HomePageState extends State<HomePage> {
                           RefreshIndicator(
                             onRefresh: () async {
                               DataContext dataContext =
-                                  Provider.of<DataContext>(context,
-                                      listen: false);
+                                  Provider.of<DataContext>(
+                                context,
+                                listen: false,
+                              );
 
                               Position position = await getCurrentPosition();
 
@@ -159,9 +161,10 @@ class _HomePageState extends State<HomePage> {
                               );
 
                               return dataContext.refresh(
-                                Provider.of<SettingContext>(context,
-                                        listen: false)
-                                    .languageCode,
+                                Provider.of<SettingContext>(
+                                  context,
+                                  listen: false,
+                                ).languageCode,
                                 location,
                               );
                             },
