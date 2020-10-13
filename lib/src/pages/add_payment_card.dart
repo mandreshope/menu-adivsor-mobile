@@ -300,6 +300,9 @@ class _PaymentCardDetailsPageState extends State<PaymentCardDetailsPage> {
             Provider.of<AuthContext>(context, listen: false);
 
         try {
+          setState(() {
+            _onProgress = true;
+          });
           await authContext.addPaymentCard(
             PaymentCard(
               cardNumber: int.parse(_cardNumberController.value.text),
@@ -312,7 +315,19 @@ class _PaymentCardDetailsPageState extends State<PaymentCardDetailsPage> {
               zipCode: _zipCodeController.value.text,
             ),
           );
-        } catch (error) {}
+          setState(() {
+            _onProgress = false;
+          });
+          RouteUtil.goBack(context: context);
+        } catch (error) {
+          setState(() {
+            _onProgress = false;
+          });
+          Fluttertoast.showToast(
+            msg: AppLocalizations.of(context)
+                .translate('add_payment_card_error'),
+          );
+        }
       }
     }
   }
