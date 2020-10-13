@@ -14,14 +14,12 @@ class AuthContext extends ChangeNotifier {
   set currentUser(User user) {
     _currentUser = user;
     notifyListeners();
-    if (user != null)
-      SharedPreferences.getInstance().then((sharedPrefs) {
-        sharedPrefs.setString('currentUser', json.encode(user.toJson()));
+    if (_currentUser == null) {
+      SharedPreferences.getInstance().then((prefs) {
+        prefs.remove('access_token');
+        prefs.remove('refresh_token');
       });
-    else
-      SharedPreferences.getInstance().then((sharedPrefs) {
-        sharedPrefs.remove('currentUser');
-      });
+    }
   }
 
   User get currentUser => _currentUser;
@@ -33,12 +31,12 @@ class AuthContext extends ChangeNotifier {
   Future _loadUser() async {
     final sharedPrefs = await SharedPreferences.getInstance();
 
-    if (sharedPrefs.containsKey('currentUser') &&
-        sharedPrefs.getString('currentUser') != null) {
-      Map<String, dynamic> jsonMap =
-          jsonDecode(sharedPrefs.getString('currentUser'));
-
-      currentUser = User.fromJson(jsonMap);
+    if (sharedPrefs.containsKey('access_token') &&
+        sharedPrefs.containsKey('refresh_token')) {
+      String accessToken = sharedPrefs.getString('access_token');
+      String refreshToken = sharedPrefs.getString('refresh_token');
+      _api.init(accessToken, refreshToken);
+      currentUser = await _api.getMe();
     }
 
     return;
