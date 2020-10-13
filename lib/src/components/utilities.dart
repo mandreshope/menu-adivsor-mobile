@@ -92,13 +92,15 @@ class ScaffoldWithBottomMenu extends StatelessWidget {
                     color: Colors.white,
                   ),
                   onPressed: () {
-                    if (ModalRoute.of(context).settings.name != homeRoute)
-                      RouteUtil.goTo(
-                        routeName: homeRoute,
-                        context: context,
-                        child: HomePage(),
-                        method: RoutingMethod.atTop,
-                      );
+                    if (ModalRoute.of(context).settings.name == homeRoute)
+                      return;
+
+                    RouteUtil.goTo(
+                      routeName: homeRoute,
+                      context: context,
+                      child: HomePage(),
+                      method: RoutingMethod.atTop,
+                    );
                   },
                 ),
               ),
@@ -140,6 +142,9 @@ class ScaffoldWithBottomMenu extends StatelessWidget {
                     color: Colors.white,
                   ),
                   onPressed: () async {
+                    if (ModalRoute.of(context).settings.name == profileRoute)
+                      return;
+
                     AuthContext authContext =
                         Provider.of<AuthContext>(context, listen: false);
 
