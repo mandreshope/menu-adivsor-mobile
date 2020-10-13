@@ -120,6 +120,7 @@ class Api {
       if (response.statusCode == 200) {
         Map<String, dynamic> data = jsonDecode(response.body);
         accessToken = data['access_token'];
+        refreshToken = data['refresh_token'];
         User user = User.fromJson(data['user']);
         return user;
       }
@@ -207,7 +208,7 @@ class Api {
     return http.get(
       '$_apiURL/foods$query',
       headers: {
-        "Authorization": "Bearer $_accessToken",
+        "authorization": "Bearer $_accessToken",
       },
     ).then<List<Food>>((response) {
       if (response.statusCode == 200) {
@@ -239,7 +240,7 @@ class Api {
       http.get(
         '$_apiURL/foods/$id',
         headers: {
-          "Authorization": "Bearer $_accessToken",
+          "authorization": "Bearer $_accessToken",
         },
       ).then<Food>((response) {
         if (response.statusCode == 200)
@@ -250,11 +251,12 @@ class Api {
 
   Future<Restaurant> getRestaurant({
     String id,
+    String lang,
   }) =>
       http.get(
-        '$_apiURL/restaurants/$id',
+        '$_apiURL/restaurants/$id?lang=$lang',
         headers: {
-          "Authorization": "Bearer $_accessToken",
+          "authorization": "Bearer $_accessToken",
         },
       ).then<Restaurant>((response) {
         if (response.statusCode == 200)
@@ -269,7 +271,7 @@ class Api {
     return http.post('$_apiURL/users/favoriteFoods', body: {
       "id": food.id,
     }, headers: {
-      "Authorization": "Bearer $_accessToken",
+      "authorization": "Bearer $_accessToken",
     }).then((response) {
       if (response.statusCode == 200) return true;
 
@@ -281,7 +283,7 @@ class Api {
     await _refreshTokens();
 
     return http.delete('$_apiURL/users/favoriteFoods/${food.id}', headers: {
-      "Authorization": "Bearer $_accessToken",
+      "authorization": "Bearer $_accessToken",
     }).then((response) {
       if (response.statusCode == 200) {
         return true;
@@ -296,7 +298,7 @@ class Api {
     return http.post('$_apiURL/users/favoriteRestaurants', body: {
       "id": restaurant.id,
     }, headers: {
-      "Authorization": "Bearer $_accessToken",
+      "authorization": "Bearer $_accessToken",
     }).then((response) {
       if (response.statusCode == 200) return true;
 
@@ -309,7 +311,7 @@ class Api {
 
     return http.delete('$_apiURL/users/favoriteRestaurants/${restaurant.id}',
         headers: {
-          "Authorization": "Bearer $_accessToken",
+          "authorization": "Bearer $_accessToken",
         }).then((response) {
       if (response.statusCode == 200) {
         return true;
@@ -390,9 +392,27 @@ class Api {
     await _refreshTokens();
 
     return http.get('$_apiURL/users/me', headers: {
-      'Authorization': 'Bearer $_accessToken',
+      'authorization': 'Bearer $_accessToken',
     }).then<User>(
-      (response) => User.fromJson(jsonDecode(response.body)),
+      (response) {
+        if (response.statusCode == 200)
+          return User.fromJson(jsonDecode(response.body));
+
+        return Future.error(jsonDecode(response.body));
+      },
     );
+  }
+
+  Future addPaymentCard(PaymentCard paymentCard) async {
+    await _refreshTokens();
+
+    return http.post('$_apiURL/users/paymentCards',
+        body: paymentCard.toJson(),
+        headers: {
+          'authorization': 'Bearer $_accessToken',
+        }).then((response) {
+      if (response.statusCode != 200)
+        return Future.error(jsonDecode(response.body));
+    });
   }
 }
