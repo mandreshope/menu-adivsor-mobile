@@ -129,4 +129,7 @@ class AuthContext extends ChangeNotifier {
         code: code,
         password: password,
       );
+
+  Future updatePassword(String oldPassword, String newPassword) =>
+      _api.updatePassword(oldPassword, newPassword);
 }
