@@ -124,5 +124,8 @@
   "invalid_password": "Invalid password",
   "add_payment_card_error": "Error while adding payment card details",
   "confirm_remove_payment_card_title": "Remove card?",
-  "confirm_remove_payment_card_content": "Do you really want to remove this card?"
+  "confirm_remove_payment_card_content": "Do you really want to remove this card?",
+  "no_address": "Aucune adresse",
+  "no_firstname": "Aucun prénom",
+  "no_lastname": "Aucun nom"
 }

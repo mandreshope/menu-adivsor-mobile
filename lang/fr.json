@@ -124,5 +124,8 @@
   "invalid_password": "Mot de passe invalide",
   "add_payment_card_error": "Erreur lors de l'ajout de la carte",
   "confirm_remove_payment_card_title": "Supprimer la carte?",
-  "confirm_remove_payment_card_content": "Voulez-vous vraiment supprimer cette carte?"
+  "confirm_remove_payment_card_content": "Voulez-vous vraiment supprimer cette carte?",
+  "no_address": "Aucune adresse",
+  "no_firstname": "Aucun prénom",
+  "no_lastname": "Aucun nom"
 }
