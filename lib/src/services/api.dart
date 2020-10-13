@@ -207,7 +207,7 @@ class Api {
     return http.get(
       '$_apiURL/foods$query',
       headers: {
-        "authorization": "Bearer $_accessToken",
+        "Authorization": "Bearer $_accessToken",
       },
     ).then<List<Food>>((response) {
       if (response.statusCode == 200) {
@@ -239,7 +239,7 @@ class Api {
       http.get(
         '$_apiURL/foods/$id',
         headers: {
-          "authorization": "Bearer $_accessToken",
+          "Authorization": "Bearer $_accessToken",
         },
       ).then<Food>((response) {
         if (response.statusCode == 200)
@@ -254,7 +254,7 @@ class Api {
       http.get(
         '$_apiURL/restaurants/$id',
         headers: {
-          "authorization": "Bearer $_accessToken",
+          "Authorization": "Bearer $_accessToken",
         },
       ).then<Restaurant>((response) {
         if (response.statusCode == 200)
@@ -269,7 +269,19 @@ class Api {
     return http.post('$_apiURL/users/favoriteFoods', body: {
       "id": food.id,
     }, headers: {
-      "authorization": "Bearer $_accessToken",
+      "Authorization": "Bearer $_accessToken",
+    }).then((response) {
+      if (response.statusCode == 200) return true;
+
+      return false;
+    });
+  }
+
+  Future removeFromFavoriteFoods(Food food) async {
+    await _refreshTokens();
+
+    return http.delete('$_apiURL/users/favoriteFoods/${food.id}', headers: {
+      "Authorization": "Bearer $_accessToken",
     }).then((response) {
       if (response.statusCode == 200) {
         return true;
@@ -278,12 +290,27 @@ class Api {
     });
   }
 
-  Future removeFromFavoriteFood(Food food) async {
+  Future<bool> addToFavoriteRestaurants(Restaurant restaurant) async {
     await _refreshTokens();
 
-    return http.delete('$_apiURL/users/favoriteFoods/${food.id}', headers: {
-      "authorization": "Beare $_accessToken",
+    return http.post('$_apiURL/users/favoriteRestaurants', body: {
+      "id": restaurant.id,
+    }, headers: {
+      "Authorization": "Bearer $_accessToken",
     }).then((response) {
+      if (response.statusCode == 200) return true;
+
+      return false;
+    });
+  }
+
+  Future removeFromFavoriteRestaurants(Restaurant restaurant) async {
+    await _refreshTokens();
+
+    return http.delete('$_apiURL/users/favoriteRestaurants/${restaurant.id}',
+        headers: {
+          "Authorization": "Bearer $_accessToken",
+        }).then((response) {
       if (response.statusCode == 200) {
         return true;
       }
@@ -323,12 +350,6 @@ class Api {
     });
   }
 
-  Future removeFromFavoriteRestaurants(Restaurant restaurant) async {
-    await _refreshTokens();
-
-    return http.post('$_apiURL/users/favoriteRestaurant');
-  }
-
   Future<String> getRestaurantName({String id}) =>
       http.get('$_apiURL/restaurants/$id/name').then<String>((response) {
         if (response.statusCode == 200) {
@@ -357,11 +378,21 @@ class Api {
   }) =>
       http.post('$_apiURL/users/confirm-reset-password', body: {
         'token': token,
-        'code': code,
+        'code': code.toString(),
         'password': password,
       }).then<bool>((response) {
         if (response.statusCode == 200) return true;
 
         return false;
       });
+
+  Future<User> getMe() async {
+    await _refreshTokens();
+
+    return http.get('$_apiURL/users/me', headers: {
+      'Authorization': 'Bearer $_accessToken',
+    }).then<User>(
+      (response) => User.fromJson(jsonDecode(response.body)),
+    );
+  }
 }
