@@ -41,6 +41,7 @@
   "add_to_cart": "Add to my cart",
   "remove_from_cart": "Remove from cart",
   "no_restaurant": "No restaurant found",
+  "no_restaurant_near": "No near restaurant",
   "no_food": "No food found",
   "no_food_category": "No food category found",
   "no_item_in_cart": "No item in cart",
@@ -117,5 +118,7 @@
   "invalid_code": "Invalid code",
   "success": "Success",
   "password": "Password",
-  "change_password": "Change password"
+  "change_password": "Change password",
+  "enter_old_password_placeholder": "Enter your old password",
+  "enter_new_password_placeholder": "Entrer your new password"
 }
