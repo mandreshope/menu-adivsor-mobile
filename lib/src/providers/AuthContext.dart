@@ -72,7 +72,7 @@ class AuthContext extends ChangeNotifier {
         password: password,
       );
 
-  Future<bool> addFavoriteFood(Food food) async {
+  addToFavoriteFoods(Food food) async {
     if (_currentUser.favoriteFoods
             .firstWhere((element) => element.id == food.id, orElse: null) !=
         null) return false;
@@ -80,25 +80,29 @@ class AuthContext extends ChangeNotifier {
     await _api.addToFavoriteFood(food);
     _currentUser.favoriteFoods.add(food);
     notifyListeners();
-    return true;
   }
 
-  Future<bool> removeFavoriteFood(Restaurant restaurant) async {
-    if (_currentUser.favoriteRestaurants.firstWhere(
-            (element) => element.id == restaurant.id,
-            orElse: null) !=
-        null) return false;
+  removeFromFavoriteFoods(Food food) async {
+    await _api.removeFromFavoriteFoods(food);
+    currentUser = await _api.getMe();
+    notifyListeners();
+  }
 
+  addToFavoriteRestaurants(Restaurant restaurant) async {
+    await _api.addToFavoriteRestaurants(restaurant);
+    currentUser = await _api.getMe();
+    notifyListeners();
+  }
+
+  removeFromFavoriteRestaurants(Restaurant restaurant) async {
     await _api.removeFromFavoriteRestaurants(restaurant);
+    currentUser = await _api.getMe();
+    notifyListeners();
   }
+
+  resendConfirmationCode() => _api.resendConfirmationCode();
 
   Future<String> resetPassword(String email) => _api.resetPassword(email);
-
-  Future<bool> addFavoriteRestaurant(Restaurant restaurant) {}
-
-  Future<bool> removeFavoriteRestaurant(Restaurant restaurant) {}
-
-  Future resendConfirmationCode() => _api.resendConfirmationCode();
 
   Future validateAccount({
     String registrationToken,
