@@ -21,3 +21,4 @@ const String userDetailsRoute = 'userDetails';
 const String forgotPasswordRoute = 'forgotPassword';
 const String newPasswordRoute = 'newPassword';
 const String changePasswordRoute = 'changePassword';
+const String profileEditRoute = 'profileEdit';
