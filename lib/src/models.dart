@@ -133,8 +133,8 @@ class Restaurant {
         ),
         address: json['address'] ?? '',
         description: json['description'] ?? '',
-        menus: json['menus'],
-        foods: json['foods'],
+        menus: (json['menus'] as List).map<String>((e) => e).toList(),
+        foods: (json['foods'] as List).map<String>((e) => e).toList(),
         foodTypes: json['foodTypes'] ?? [],
       );
 }
@@ -156,8 +156,10 @@ class User {
       email: json['email'],
       photoURL: json['photoURL'],
       name: UserName.fromJson(json['name']),
-      favoriteRestaurants: json['favoriteRestaurants'],
-      favoriteFoods: json['favoriteFoods'],
+      favoriteRestaurants:
+          (json['favoriteRestaurants'] as List).map<String>((e) => e).toList(),
+      favoriteFoods:
+          (json['favoriteFoods'] as List).map<String>((e) => e).toList(),
       paymentCards: json['paymentCards'] is List
           ? json['paymentCards']
                   ?.map<PaymentCard>(
