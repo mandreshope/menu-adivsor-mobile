@@ -114,5 +114,6 @@
   "geolocation_denied": "Geolocalisation non permise",
   "forgotten_password": "Mot de passe oublié?",
   "forgot_password": "Mot de passe oublié",
-  "invalid_code": "Code invalide"
+  "invalid_code": "Code invalide",
+  "success": "Succès"
 }
