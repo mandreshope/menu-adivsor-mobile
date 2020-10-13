@@ -414,7 +414,8 @@ class Api {
     await _refreshTokens();
 
     return http.post('$_apiURL/users/paymentCards',
-        body: paymentCard.toJson(),
+        body: paymentCard.toJson().map<String, String>(
+            (key, value) => MapEntry(key, value.toString())),
         headers: {
           'authorization': 'Bearer $_accessToken',
         }).then((response) {
@@ -432,5 +433,16 @@ class Api {
         }
 
         return Future.error(jsonDecode(response.body));
+      });
+
+  Future updatePassword(String oldPassword, String newPassword) =>
+      http.post('$_apiURL/users/update-password', body: {
+        'oldPassword': oldPassword,
+        'newPassword': newPassword,
+      }, headers: {
+        'authorization': 'Bearer $_accessToken',
+      }).then((response) {
+        if (response.statusCode != 200)
+          return Future.error(jsonDecode(response.body));
       });
 }
