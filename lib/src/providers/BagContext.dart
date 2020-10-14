@@ -4,27 +4,24 @@ import 'package:menu_advisor/src/models.dart';
 class BagContext extends ChangeNotifier {
   Map<Food, int> _items = Map();
   int _itemCount = 0;
-  bool pricelessItems = false;
-  String _commandType = 'delivery';
 
-  String get commandType => _commandType;
-
-  set commandType(String value) {
-    _commandType = value;
-    notifyListeners();
+  bool get pricelessItems {
+    return _items.keys.length > 0 &&
+        _items.keys.any(
+          (element) => element.price == null || element.price.amount == null,
+        );
   }
 
   bool addItem(Food item, number) {
     if (_itemCount == 0 ||
-        (pricelessItems && item.price == null) ||
-        (!pricelessItems && item.price != null)) {
+        (pricelessItems && (item.price == null || item.price.amount == null)) ||
+        (!pricelessItems && item.price != null && item.price.amount != null)) {
       _itemCount++;
       _items.update(
         item,
         (value) => number,
         ifAbsent: () => number,
       );
-      pricelessItems = item.price == null;
       notifyListeners();
       return true;
     }
@@ -59,7 +56,6 @@ class BagContext extends ChangeNotifier {
   void removeItem(Food food) {
     _items.removeWhere((key, _) => key.id == food.id);
     _itemCount--;
-    if (_itemCount == 0) pricelessItems = false;
     notifyListeners();
   }
 
