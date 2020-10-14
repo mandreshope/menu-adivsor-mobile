@@ -27,8 +27,7 @@ class RestaurantPage extends StatefulWidget {
   _RestaurantPageState createState() => _RestaurantPageState();
 }
 
-class _RestaurantPageState extends State<RestaurantPage>
-    with SingleTickerProviderStateMixin {
+class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProviderStateMixin {
   bool isInFavorite = false;
   bool showFavoriteButton = true;
   bool searchLoading = false;
@@ -52,6 +51,9 @@ class _RestaurantPageState extends State<RestaurantPage>
 
   String foodType;
 
+  bool loadingFoods = true;
+  Map<String, List<Food>> foods = Map();
+
   Restaurant restaurant;
 
   @override
@@ -74,18 +76,47 @@ class _RestaurantPageState extends State<RestaurantPage>
         listen: false,
       ).languageCode,
     )
-        .then((res) {
+        .then((res) async {
       restaurant = res;
-      filters['restaurant'] = restaurant.id;
-      loading = false;
-      AuthContext authContext =
-          Provider.of<AuthContext>(context, listen: false);
+      AuthContext authContext = Provider.of<AuthContext>(
+        context,
+        listen: false,
+      );
 
       if (authContext.currentUser == null) showFavoriteButton = false;
-      if (authContext.currentUser != null &&
-          authContext.currentUser.favoriteRestaurants.contains(restaurant.id))
-        isInFavorite = true;
-      setState(() {});
+      if (authContext.currentUser != null && authContext.currentUser.favoriteRestaurants.contains(restaurant.id)) isInFavorite = true;
+
+      drinks = await api.getFoods(
+        Provider.of<SettingContext>(
+          context,
+          listen: false,
+        ).languageCode,
+        filters: {
+          'type': 'drink',
+        },
+      );
+      setState(() {
+        filters['restaurant'] = restaurant.id;
+        loading = false;
+        foodType = restaurant.foodTypes.first['tag'];
+      });
+
+      for (int i = 0; i < restaurant.foodTypes.length; i++) {
+        var element = restaurant.foodTypes[i]['tag'];
+        foods[element] = await api.getFoods(
+          Provider.of<SettingContext>(
+            context,
+            listen: false,
+          ).languageCode,
+          filters: {
+            'restaurant': widget.restaurant,
+            'type': element,
+          },
+        );
+      }
+      setState(() {
+        loadingFoods = false;
+      });
     }).catchError((error) {
       print(error);
       Fluttertoast.showToast(
@@ -126,6 +157,7 @@ class _RestaurantPageState extends State<RestaurantPage>
       var results = await api.search(
         searchValue,
         _lang,
+        type: type,
         filters: {
           'restaurant': restaurant.id,
         },
@@ -189,8 +221,7 @@ class _RestaurantPageState extends State<RestaurantPage>
         context: context,
         locale: Locale(_lang),
         child: Scaffold(
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.miniEndFloat,
+          floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
           floatingActionButton: FloatingActionButton(
             onPressed: () {
               showModalBottomSheet(
@@ -296,8 +327,7 @@ class _RestaurantPageState extends State<RestaurantPage>
             child: searchValue.length == 0
                 ? Center(
                     child: Text(
-                      AppLocalizations.of(context)
-                          .translate('start_by_typing_your_research'),
+                      AppLocalizations.of(context).translate('start_by_typing_your_research'),
                     ),
                   )
                 : Container(
@@ -308,20 +338,17 @@ class _RestaurantPageState extends State<RestaurantPage>
                         if (searchLoading)
                           Center(
                             child: CircularProgressIndicator(
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(CRIMSON),
+                              valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
                             ),
                           ),
                         if (!searchLoading && searchResults.length == 0)
                           Center(
                             child: Text(
-                              AppLocalizations.of(context)
-                                  .translate('no_result'),
+                              AppLocalizations.of(context).translate('no_result'),
                             ),
                           ),
                         ...searchResults.map((SearchResult e) {
-                          if (e.type.toString() ==
-                              'SearchResultType.restaurant')
+                          if (e.type.toString() == 'SearchResultType.restaurant')
                             return Padding(
                               padding: const EdgeInsets.only(
                                 bottom: 10,
@@ -388,8 +415,7 @@ class _RestaurantPageState extends State<RestaurantPage>
                 Expanded(
                   child: TextFormField(
                     decoration: InputDecoration.collapsed(
-                      hintText: AppLocalizations.of(context)
-                          .translate("find_something"),
+                      hintText: AppLocalizations.of(context).translate("find_something"),
                     ),
                     onChanged: _onChanged,
                   ),
@@ -401,8 +427,7 @@ class _RestaurantPageState extends State<RestaurantPage>
                       var result = await showDialog<Map<String, dynamic>>(
                         context: context,
                         builder: (_) => SearchSettingDialog(
-                          languageCode:
-                              Provider.of<SettingContext>(context).languageCode,
+                          languageCode: Provider.of<SettingContext>(context).languageCode,
                           inRestaurant: true,
                           filters: filters,
                           type: type,
@@ -502,8 +527,7 @@ class _RestaurantPageState extends State<RestaurantPage>
                           height: 14,
                           child: FittedBox(
                             child: CircularProgressIndicator(
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(CRIMSON),
+                              valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
                             ),
                           ),
                         ),
@@ -561,146 +585,9 @@ class _RestaurantPageState extends State<RestaurantPage>
             controller: controller,
             physics: BouncingScrollPhysics(),
             children: [
-              Stack(
-                fit: StackFit.expand,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.only(
-                      top: 50,
-                      left: 20,
-                      right: 20,
-                    ),
-                    decoration: BoxDecoration(
-                      color: BACKGROUND_COLOR,
-                      border: Border(
-                        top: BorderSide(
-                          color: Colors.grey[400],
-                          style: BorderStyle.solid,
-                          width: 1,
-                        ),
-                      ),
-                    ),
-                    child: _renderFoodListOfType(foodType),
-                  ),
-                  Positioned(
-                    top: 10,
-                    left: 0,
-                    right: 0,
-                    child: Container(
-                      height: 41,
-                      width: double.infinity,
-                      alignment: Alignment.center,
-                      child: ListView(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        children: [
-                          if (restaurant.foodTypes.length > 0)
-                            for (int i = 0;
-                                i < restaurant.foodTypes.length;
-                                i++) ...[
-                              tab(
-                                index: i,
-                                text: restaurant.foodTypes[i][
-                                    Provider.of<SettingContext>(context)
-                                        .languageCode],
-                              ),
-                              if (i < restaurant.foodTypes.length - 1)
-                                SizedBox(
-                                  width: 5,
-                                ),
-                            ]
-                          else
-                            tab(
-                              index: 0,
-                              text:
-                                  AppLocalizations.of(context).translate('all'),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              _renderALaCarte(),
               _renderMenus(),
-              drinks.length > 0
-                  ? Column(
-                      children: drinks
-                          .map(
-                            (food) => Card(
-                              elevation: 2.0,
-                              margin: const EdgeInsets.all(10.0),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Container(
-                                padding: const EdgeInsets.all(10),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    food.imageURL != null
-                                        ? CircleAvatar(
-                                            backgroundImage: NetworkImage(
-                                              food.imageURL,
-                                            ),
-                                            onBackgroundImageError: (_, __) {},
-                                            backgroundColor: Colors.grey,
-                                            maxRadius: 20,
-                                          )
-                                        : Icon(
-                                            Icons.fastfood,
-                                          ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            food.name,
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          if (food.price != null)
-                                            Text(
-                                              '${food.price.amount / 100}€',
-                                              style: TextStyle(
-                                                fontSize: 18,
-                                                color: Colors.grey[600],
-                                              ),
-                                            ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                    )
-                  : Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.warning,
-                          size: 40,
-                        ),
-                        Text(
-                          AppLocalizations.of(context).translate('no_drink'),
-                          style: TextStyle(
-                            fontSize: 22,
-                          ),
-                        ),
-                      ],
-                    ),
+              _renderDrinks(),
             ],
           ),
         ),
@@ -708,9 +595,161 @@ class _RestaurantPageState extends State<RestaurantPage>
     );
   }
 
+  Widget _renderALaCarte() {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Container(
+          margin: const EdgeInsets.only(
+            top: 50,
+            left: 20,
+            right: 20,
+          ),
+          decoration: BoxDecoration(
+            color: BACKGROUND_COLOR,
+            border: Border(
+              top: BorderSide(
+                color: Colors.grey[400],
+                style: BorderStyle.solid,
+                width: 1,
+              ),
+            ),
+          ),
+          child: loadingFoods
+              ? Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
+                  ),
+                )
+              : _renderFoodListOfType(foodType),
+        ),
+        Positioned(
+          top: 10,
+          left: 0,
+          right: 0,
+          child: Container(
+            height: 41,
+            width: double.infinity,
+            alignment: Alignment.center,
+            child: ListView(
+              shrinkWrap: true,
+              scrollDirection: Axis.horizontal,
+              children: [
+                if (restaurant.foodTypes.length > 0)
+                  for (int i = 0; i < restaurant.foodTypes.length; i++) ...[
+                    tab(
+                      index: i,
+                      text: restaurant.foodTypes[i][Provider.of<SettingContext>(context).languageCode],
+                    ),
+                    if (i < restaurant.foodTypes.length - 1)
+                      SizedBox(
+                        width: 5,
+                      ),
+                  ]
+                else
+                  tab(
+                    index: 0,
+                    text: AppLocalizations.of(context).translate('all'),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _renderDrinks() {
+    return drinks.length > 0
+        ? SingleChildScrollView(
+            padding: const EdgeInsets.all(
+              20,
+            ),
+            child: Column(
+              children: drinks
+                  .map(
+                    (food) => Card(
+                      elevation: 2.0,
+                      margin: const EdgeInsets.all(10.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            food.imageURL != null
+                                ? CircleAvatar(
+                                    backgroundImage: NetworkImage(
+                                      food.imageURL,
+                                    ),
+                                    onBackgroundImageError: (_, __) {},
+                                    backgroundColor: Colors.grey,
+                                    maxRadius: 20,
+                                  )
+                                : Icon(
+                                    Icons.fastfood,
+                                  ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    food.name,
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  if (food.price != null)
+                                    Text(
+                                      '${food.price.amount / 100}€',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.grey[600],
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
+          )
+        : Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.warning,
+                size: 40,
+              ),
+              Text(
+                AppLocalizations.of(context).translate('no_drink'),
+                style: TextStyle(
+                  fontSize: 22,
+                ),
+              ),
+            ],
+          );
+  }
+
   Widget _renderMenus() {
     return FutureBuilder<List<Menu>>(
-      future: api.getMenus(_lang, restaurant.id),
+      future: api.getMenus(
+        _lang,
+        restaurant.id,
+      ),
       builder: (_, snapshot) {
         if (!snapshot.hasData)
           return Center(
@@ -721,15 +760,20 @@ class _RestaurantPageState extends State<RestaurantPage>
 
         var menus = snapshot.data;
         return menus.length > 0
-            ? Column(
-                children: menus
-                    .map(
-                      (e) => MenuCard(
-                        menu: e,
-                        lang: _lang,
-                      ),
-                    )
-                    .toList(),
+            ? SingleChildScrollView(
+                padding: const EdgeInsets.all(
+                  20,
+                ),
+                child: Column(
+                  children: menus
+                      .map(
+                        (e) => MenuCard(
+                          menu: e,
+                          lang: _lang,
+                        ),
+                      )
+                      .toList(),
+                ),
               )
             : Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -752,83 +796,37 @@ class _RestaurantPageState extends State<RestaurantPage>
   }
 
   Widget _renderFoodListOfType(String foodType) {
-    return FutureBuilder<List<Food>>(
-      future: api.getFoods(_lang, filters: {
-        'restaurant': widget.restaurant,
-        'type': foodType,
-      }),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData)
-          return Center(
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
+    return foods[foodType].length > 0
+        ? SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(
+              vertical: 10,
             ),
-          );
-
-        var foods = snapshot.data;
-
-        return foods.length > 0
-            ? SingleChildScrollView(
-                child: Column(
-                  children: foods
-                      .map(
-                        (e) => Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.max,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                AspectRatio(
-                                  aspectRatio: 1,
-                                  child: Container(
-                                    width:
-                                        MediaQuery.of(context).size.width / 8,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      image: DecorationImage(
-                                        image: NetworkImage(
-                                          e.imageURL,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 5.0,
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      )
-                      .toList(),
-                ),
-              )
-            : Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.warning,
-                    size: 40,
-                  ),
-                  Text(
-                    AppLocalizations.of(context).translate('no_food'),
-                    style: TextStyle(
-                      fontSize: 22,
+            child: Column(
+              children: foods[foodType]
+                  .map(
+                    (food) => RestaurantFoodCard(
+                      food: food,
                     ),
-                  ),
-                ],
-              );
-      },
-    );
+                  )
+                  .toList(),
+            ),
+          )
+        : Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.warning,
+                size: 40,
+              ),
+              Text(
+                AppLocalizations.of(context).translate('no_food'),
+                style: TextStyle(
+                  fontSize: 22,
+                ),
+              ),
+            ],
+          );
   }
 }
