@@ -60,39 +60,6 @@ class UserName {
       };
 }
 
-class PaymentCard {
-  final int cardNumber;
-  final DateTime expirationDate;
-  final int securityCode;
-  final String owner;
-  final String zipCode;
-
-  PaymentCard({
-    @required this.cardNumber,
-    @required this.expirationDate,
-    @required this.securityCode,
-    @required this.owner,
-    @required this.zipCode,
-  });
-
-  factory PaymentCard.fromJson(Map<String, dynamic> data) => PaymentCard(
-        cardNumber: data['cardNumber'],
-        expirationDate:
-            DateTime.fromMillisecondsSinceEpoch(data['expirationDate']),
-        securityCode: data['securityCode'],
-        owner: data['owner'],
-        zipCode: data['zipCode'],
-      );
-
-  Map<String, dynamic> toJson() => {
-        'cardNumber': cardNumber,
-        'expirationDate': expirationDate.millisecondsSinceEpoch,
-        'securityCode': securityCode,
-        'owner': owner,
-        'zipCode': zipCode,
-      };
-}
-
 enum SearchResultType { food, menu, restaurant }
 
 class SearchResult {

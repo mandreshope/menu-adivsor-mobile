@@ -149,27 +149,30 @@ class User {
   final List<String> favoriteRestaurants;
   final List<String> favoriteFoods;
   final List<PaymentCard> paymentCards;
+  final List<Command> commands;
 
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      id: json['_id'],
-      email: json['email'],
-      photoURL: json['photoURL'],
-      name: UserName.fromJson(json['name']),
-      favoriteRestaurants:
-          (json['favoriteRestaurants'] as List).map<String>((e) => e).toList(),
-      favoriteFoods:
-          (json['favoriteFoods'] as List).map<String>((e) => e).toList(),
-      paymentCards: json['paymentCards'] is List
-          ? json['paymentCards']
-                  ?.map<PaymentCard>(
-                    (data) => PaymentCard.fromJson(data),
-                  )
-                  ?.toList() ??
-              []
-          : [],
-    );
-  }
+  factory User.fromJson(Map<String, dynamic> json) => User(
+        id: json['_id'],
+        email: json['email'],
+        photoURL: json['photoURL'],
+        name: UserName.fromJson(json['name']),
+        favoriteRestaurants: (json['favoriteRestaurants'] as List)
+            .map<String>((e) => e)
+            .toList(),
+        favoriteFoods:
+            (json['favoriteFoods'] as List).map<String>((e) => e).toList(),
+        paymentCards: json['paymentCards'] is List
+            ? json['paymentCards']
+                    ?.map<PaymentCard>(
+                      (data) => PaymentCard.fromJson(data),
+                    )
+                    ?.toList() ??
+                []
+            : [],
+        commands: (json['commands'] as List)
+            .map<Command>((e) => Command.fromJson(e))
+            .toList(),
+      );
 
   User({
     this.id,
@@ -181,6 +184,7 @@ class User {
     this.favoriteRestaurants = const [],
     this.favoriteFoods = const [],
     this.paymentCards = const [],
+    this.commands,
   });
 
   Map<String, dynamic> toJson() => {
@@ -190,5 +194,71 @@ class User {
         'photoURL': photoURL,
         'address': address,
         'name': name.toJson()
+      };
+}
+
+class Command {
+  final String relatedUser;
+  final String commandType;
+  final int totalPrice;
+  final bool validated;
+  final List<Food> items;
+  final DateTime createdAt;
+
+  Command({
+    this.relatedUser,
+    this.commandType,
+    this.totalPrice,
+    this.validated,
+    this.items,
+    this.createdAt,
+  });
+
+  factory Command.fromJson(Map<String, dynamic> json) => Command(
+        relatedUser: json['relatedUser'],
+        commandType: json['commandType'],
+        totalPrice: json['totalPrice'],
+        validated: json['validated'],
+        items:
+            (json['items'] as List).map<Food>((e) => Food.fromJson(e)).toList(),
+        createdAt: json['createdAt'] != null
+            ? DateTime.fromMillisecondsSinceEpoch(json['createdAt'])
+            : null,
+      );
+}
+
+class PaymentCard {
+  final String id;
+  final int cardNumber;
+  final DateTime expirationDate;
+  final int securityCode;
+  final String owner;
+  final String zipCode;
+
+  PaymentCard({
+    this.id,
+    @required this.cardNumber,
+    @required this.expirationDate,
+    @required this.securityCode,
+    @required this.owner,
+    @required this.zipCode,
+  });
+
+  factory PaymentCard.fromJson(Map<String, dynamic> data) => PaymentCard(
+        id: data['id'],
+        cardNumber: data['cardNumber'],
+        expirationDate:
+            DateTime.fromMillisecondsSinceEpoch(data['expirationDate']),
+        securityCode: data['securityCode'],
+        owner: data['owner'],
+        zipCode: data['zipCode'],
+      );
+
+  Map<String, dynamic> toJson() => {
+        'cardNumber': cardNumber,
+        'expirationDate': expirationDate.millisecondsSinceEpoch,
+        'securityCode': securityCode,
+        'owner': owner,
+        'zipCode': zipCode,
       };
 }
