@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/animations/FadeAnimation.dart';
 import 'package:menu_advisor/src/components/logo.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
@@ -8,6 +9,7 @@ import 'package:menu_advisor/src/pages/home.dart';
 import 'package:menu_advisor/src/pages/login.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
+import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:provider/provider.dart';
 
@@ -42,14 +44,29 @@ class _SplashState extends State<Splash> {
         seconds: 4,
       ),
       () async {
-        final AuthContext authContext =
-            Provider.of<AuthContext>(context, listen: false);
+        final AuthContext authContext = Provider.of<AuthContext>(
+          context,
+          listen: false,
+        );
 
         // Loading user
         setState(() {
           loadingUser = true;
         });
-        await authContext.initialized;
+        try {
+          await authContext.initialized;
+        } catch (error) {
+          Fluttertoast.showToast(
+            msg: AppLocalizations.of(context).translate('session_expired'),
+          );
+          await authContext.logout();
+          RouteUtil.goTo(
+            context: context,
+            child: LoginPage(),
+            routeName: loginRoute,
+            method: RoutingMethod.atTop,
+          );
+        }
         setState(() {
           loadingUser = false;
         });
@@ -117,6 +134,9 @@ class _SplashState extends State<Splash> {
                 children: [
                   MenuAdvisorLogo(
                     size: 2 * MediaQuery.of(context).size.width / 5,
+                  ),
+                  SizedBox(
+                    height: 20,
                   ),
                   AnimatedOpacity(
                     opacity: loadingUser ? 1 : 0,
