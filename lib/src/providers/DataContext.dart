@@ -24,19 +24,22 @@ class DataContext extends ChangeNotifier {
       'tag': 'allergen_egg',
       'fr': 'Oeufs',
       'en': 'Eggs',
-      'image': 'assets/images/allergen_egg.png',
+      'imageURL':
+          'https://www.menu-touch.fr/resto/webmenu/v1.0/images/allergens/allergen_egg.png',
     },
     {
       'tag': 'allergen_gluten',
       'fr': 'Gluten',
       'en': 'Gluten',
-      'image': 'assets/images/allergen_gluten.png',
+      'imageURL':
+          'https://www.menu-touch.fr/resto/webmenu/v1.0/images/allergens/allergen_gluten.png',
     },
     {
       'tag': 'allergen_crustacean',
       'fr': 'Crustacé',
       'en': 'Crustacean',
-      'image': 'assets/images/allergen_crustacean.png',
+      'imageURL':
+          'https://www.menu-touch.fr/resto/webmenu/v1.0/images/allergens/allergen_crustacean.png',
     },
   ];
 
