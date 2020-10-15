@@ -119,8 +119,7 @@ class BagModal extends StatelessWidget {
                   if (bagContext.itemCount == 0)
                     return Center(
                       child: Text(
-                        AppLocalizations.of(context)
-                            .translate('no_item_in_cart'),
+                        AppLocalizations.of(context).translate('no_item_in_cart'),
                       ),
                     );
 
@@ -186,8 +185,7 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
     super.initState();
 
     BagContext bagContext = Provider.of<BagContext>(context, listen: false);
-    if (bagContext.contains(widget.food))
-      itemCount = bagContext.getCount(widget.food);
+    if (bagContext.contains(widget.food)) itemCount = bagContext.getCount(widget.food);
   }
 
   @override
@@ -210,9 +208,7 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
                   right: 25.0,
                 ),
                 child: Text(
-                  bagContext.contains(widget.food)
-                      ? AppLocalizations.of(context).translate('edit')
-                      : AppLocalizations.of(context).translate('add_to_cart'),
+                  bagContext.contains(widget.food) ? AppLocalizations.of(context).translate('edit') : AppLocalizations.of(context).translate('add_to_cart'),
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -283,9 +279,7 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
                   child: RaisedButton(
                     color: CRIMSON,
                     child: Text(
-                      bagContext.contains(widget.food)
-                          ? AppLocalizations.of(context).translate('edit')
-                          : AppLocalizations.of(context).translate('add'),
+                      bagContext.contains(widget.food) ? AppLocalizations.of(context).translate('edit') : AppLocalizations.of(context).translate('add'),
                       style: TextStyle(
                         fontSize: 18,
                         color: Colors.white,
@@ -347,16 +341,12 @@ class LanguageDialog extends StatelessWidget {
                           vertical: 0,
                         ),
                         decoration: BoxDecoration(
-                          color: lang == 'fr'
-                              ? Colors.grey[400].withOpacity(.4)
-                              : Colors.transparent,
+                          color: lang == 'fr' ? Colors.grey[400].withOpacity(.4) : Colors.transparent,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: IconButton(
-                          icon:
-                              SvgPicture.asset('assets/images/france-flag.svg'),
-                          onPressed: () =>
-                              Navigator.of(context).pop<String>('fr'),
+                          icon: SvgPicture.asset('assets/images/france-flag.svg'),
+                          onPressed: () => Navigator.of(context).pop<String>('fr'),
                         ),
                       ),
                       Container(
@@ -365,15 +355,12 @@ class LanguageDialog extends StatelessWidget {
                           vertical: 0,
                         ),
                         decoration: BoxDecoration(
-                          color: lang == 'en'
-                              ? Colors.grey[400].withOpacity(.4)
-                              : Colors.transparent,
+                          color: lang == 'en' ? Colors.grey[400].withOpacity(.4) : Colors.transparent,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: IconButton(
                           icon: SvgPicture.asset('assets/images/usa-flag.svg'),
-                          onPressed: () =>
-                              Navigator.of(context).pop<String>('en'),
+                          onPressed: () => Navigator.of(context).pop<String>('en'),
                         ),
                       ),
                     ],
@@ -458,8 +445,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                     .map(
                       (e) => Theme(
                         data: ThemeData(
-                          brightness:
-                              type == e ? Brightness.dark : Brightness.light,
+                          brightness: type == e ? Brightness.dark : Brightness.light,
                           cardColor: type == e ? CRIMSON : Colors.white,
                         ),
                         child: Card(
@@ -507,12 +493,8 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                   children: [
                     Theme(
                       data: ThemeData(
-                        brightness: !filters.containsKey('category')
-                            ? Brightness.dark
-                            : Brightness.light,
-                        cardColor: !filters.containsKey('category')
-                            ? CRIMSON
-                            : Colors.white,
+                        brightness: !filters.containsKey('category') ? Brightness.dark : Brightness.light,
+                        cardColor: !filters.containsKey('category') ? CRIMSON : Colors.white,
                       ),
                       child: Card(
                         shape: RoundedRectangleBorder(
@@ -539,20 +521,11 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                         .map(
                           (e) => Theme(
                             data: ThemeData(
-                              brightness: filters.containsKey('category') &&
-                                      filters['category'] == e.id
-                                  ? Brightness.dark
-                                  : Brightness.light,
-                              cardColor: filters.containsKey('category') &&
-                                      filters['category'] == e.id
-                                  ? CRIMSON
-                                  : Colors.white,
+                              brightness: filters.containsKey('category') && filters['category'] == e.id ? Brightness.dark : Brightness.light,
+                              cardColor: filters.containsKey('category') && filters['category'] == e.id ? CRIMSON : Colors.white,
                             ),
                             child: Card(
-                              color: filters.containsKey('category') &&
-                                      filters['category'] == e.id
-                                  ? CRIMSON
-                                  : Colors.white,
+                              color: filters.containsKey('category') && filters['category'] == e.id ? CRIMSON : Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(50),
                               ),
@@ -596,12 +569,8 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                   children: [
                     Theme(
                       data: ThemeData(
-                        brightness: !filters.containsKey('attributes')
-                            ? Brightness.dark
-                            : Brightness.light,
-                        cardColor: !filters.containsKey('attributes')
-                            ? CRIMSON
-                            : Colors.white,
+                        brightness: !filters.containsKey('attributes') ? Brightness.dark : Brightness.light,
+                        cardColor: !filters.containsKey('attributes') ? CRIMSON : Colors.white,
                       ),
                       child: Card(
                         shape: RoundedRectangleBorder(
@@ -628,20 +597,11 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                         .map(
                           (e) => Theme(
                             data: ThemeData(
-                              brightness: filters.containsKey('attributes') &&
-                                      filters['attributes'] == e['tag']
-                                  ? Brightness.dark
-                                  : Brightness.light,
-                              cardColor: filters.containsKey('attributes') &&
-                                      filters['attributes'] == e['tag']
-                                  ? CRIMSON
-                                  : Colors.white,
+                              brightness: filters.containsKey('attributes') && filters['attributes'] == e['tag'] ? Brightness.dark : Brightness.light,
+                              cardColor: filters.containsKey('attributes') && filters['attributes'] == e['tag'] ? CRIMSON : Colors.white,
                             ),
                             child: Card(
-                              color: filters.containsKey('attributes') &&
-                                      filters['attributes'] == e['tag']
-                                  ? CRIMSON
-                                  : Colors.white,
+                              color: filters.containsKey('attributes') && filters['attributes'] == e['tag'] ? CRIMSON : Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(50),
                               ),
@@ -655,11 +615,10 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                                 child: Container(
                                   padding: const EdgeInsets.all(10),
                                   child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
                                       Image.asset(
-                                        e['image'],
+                                        e['imageURL'],
                                         height: 18,
                                       ),
                                       SizedBox(
