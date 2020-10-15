@@ -102,8 +102,7 @@ class _HomePageState extends State<HomePage> {
             ? Scaffold(
                 body: Center(
                   child: Text(
-                    AppLocalizations.of(context)
-                        .translate('geolocation_denied'),
+                    AppLocalizations.of(context).translate('geolocation_denied'),
                   ),
                 ),
               )
@@ -120,8 +119,7 @@ class _HomePageState extends State<HomePage> {
                       },
                     );
                     Fluttertoast.showToast(
-                      msg: AppLocalizations.of(context)
-                          .translate('before_exit_message'),
+                      msg: AppLocalizations.of(context).translate('before_exit_message'),
                     );
                     return false;
                   }
@@ -144,29 +142,32 @@ class _HomePageState extends State<HomePage> {
                           ),
                           RefreshIndicator(
                             onRefresh: () async {
-                              DataContext dataContext =
-                                  Provider.of<DataContext>(
-                                context,
-                                listen: false,
-                              );
-
-                              Position position = await getCurrentPosition();
-
-                              Location location = Location(
-                                type: 'Point',
-                                coordinates: [
-                                  position.longitude,
-                                  position.latitude
-                                ],
-                              );
-
-                              return dataContext.refresh(
-                                Provider.of<SettingContext>(
+                              try {
+                                DataContext dataContext = Provider.of<DataContext>(
                                   context,
                                   listen: false,
-                                ).languageCode,
-                                location,
-                              );
+                                );
+
+                                Position position = await getCurrentPosition();
+
+                                Location location = Location(
+                                  type: 'Point',
+                                  coordinates: [position.longitude, position.latitude],
+                                );
+
+                                return dataContext.refresh(
+                                  Provider.of<SettingContext>(
+                                    context,
+                                    listen: false,
+                                  ).languageCode,
+                                  location,
+                                );
+                              } catch (error) {
+                                print(error);
+                                Fluttertoast.showToast(
+                                  msg: AppLocalizations.of(context).translate('gelocation_issue'),
+                                );
+                              }
                             },
                             child: SingleChildScrollView(
                               physics: BouncingScrollPhysics(),
@@ -345,8 +346,7 @@ class _HomePageState extends State<HomePage> {
                       1,
                       CategoryCard(
                         imageURL: category.imageURL,
-                        name: category.name[
-                            Provider.of<SettingContext>(context).languageCode],
+                        name: category.name[Provider.of<SettingContext>(context).languageCode],
                         onPressed: () {
                           RouteUtil.goTo(
                             context: context,
@@ -528,9 +528,7 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      AppLocalizations.of(context)
-                              .translate('no_restaurant_near') ??
-                          "Aucun restaurant trouvé",
+                      AppLocalizations.of(context).translate('no_restaurant_near') ?? "Aucun restaurant trouvé",
                       style: TextStyle(
                         fontSize: 22,
                       ),
