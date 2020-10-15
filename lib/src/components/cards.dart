@@ -380,27 +380,38 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
             expanded = true;
           });
         else {
-          BagContext bagContext = Provider.of<BagContext>(context);
+          BagContext bagContext = Provider.of<BagContext>(
+            context,
+            listen: false,
+          );
+          if ((bagContext.itemCount == 0) ||
+              (bagContext.contains(widget.food)) ||
+              (bagContext.pricelessItems && widget.food.price.amount == null) ||
+              (!bagContext.pricelessItems && widget.food.price.amount != null)) {
+            if (bagContext.contains(widget.food)) {
+              var result = await showDialog(
+                context: context,
+                builder: (_) => ConfirmationDialog(
+                  title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
+                  content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
+                ),
+              );
 
-          if (bagContext.contains(widget.food)) {
-            var result = await showDialog(
-              context: context,
-              builder: (_) => ConfirmationDialog(
-                title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
-                content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
-              ),
+              if (result is bool && result) {
+                bagContext.removeItem(widget.food);
+              }
+            } else
+              showDialog(
+                context: context,
+                builder: (_) => AddToBagDialog(
+                  food: widget.food,
+                ),
+              );
+          } else {
+            Fluttertoast.showToast(
+              msg: AppLocalizations.of(context).translate('priceless_and_not_priceless_not_allowed'),
             );
-
-            if (result is bool && result) {
-              bagContext.removeItem(widget.food);
-            }
-          } else
-            showDialog(
-              context: context,
-              builder: (_) => AddToBagDialog(
-                food: widget.food,
-              ),
-            );
+          }
         }
       },
       child: Card(
@@ -506,6 +517,81 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                 ),
               ),
               Text('${widget.food.price.amount / 100}€'),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class DrinkCard extends StatefulWidget {
+  final Food food;
+
+  const DrinkCard({
+    Key key,
+    this.food,
+  }) : super(key: key);
+
+  @override
+  _DrinkCardState createState() => _DrinkCardState();
+}
+
+class _DrinkCardState extends State<DrinkCard> {
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {},
+      child: Card(
+        elevation: 2.0,
+        margin: const EdgeInsets.all(10.0),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              widget.food.imageURL != null
+                  ? CircleAvatar(
+                      backgroundImage: NetworkImage(
+                        widget.food.imageURL,
+                      ),
+                      onBackgroundImageError: (_, __) {},
+                      backgroundColor: Colors.grey,
+                      maxRadius: 20,
+                    )
+                  : Icon(
+                      Icons.fastfood,
+                    ),
+              SizedBox(
+                width: 10,
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      widget.food.name,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    if (widget.food.price != null)
+                      Text(
+                        '${widget.food.price.amount / 100}€',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
