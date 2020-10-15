@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
-import 'package:menu_advisor/src/pages/payment_method.dart';
+import 'package:menu_advisor/src/pages/delivery_details.dart';
 import 'package:menu_advisor/src/pages/user_details.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
+import 'package:menu_advisor/src/providers/CommandContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
@@ -78,188 +80,176 @@ class _OrderPageState extends State<OrderPage> {
               ),
             ),
           ),
-          Consumer<BagContext>(
-            builder: (_, bagContext, __) => !bagContext.pricelessItems
-                ? Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10.0,
-                          vertical: 20,
+          Consumer2<BagContext, CommandContext>(
+            builder: (_, bagContext, commandContext, __) => Padding(
+              padding: const EdgeInsets.all(10),
+              child: Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10.0,
+                    vertical: 20,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context).translate('command_type'),
+                        style: TextStyle(
+                          fontSize: 16,
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Text(
-                              AppLocalizations.of(context)
-                                  .translate('command_type'),
-                              style: TextStyle(
-                                fontSize: 16,
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          if (!bagContext.pricelessItems)
+                            Theme(
+                              data: ThemeData(
+                                cardColor:
+                                    commandContext.commandType == 'delivery'
+                                        ? CRIMSON
+                                        : Colors.white,
+                                brightness:
+                                    commandContext.commandType == 'delivery'
+                                        ? Brightness.dark
+                                        : Brightness.light,
                               ),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Theme(
-                                  data: ThemeData(
-                                    cardColor:
-                                        bagContext.commandType == 'delivery'
-                                            ? CRIMSON
-                                            : Colors.white,
-                                    brightness:
-                                        bagContext.commandType == 'delivery'
-                                            ? Brightness.dark
-                                            : Brightness.light,
-                                  ),
-                                  child: Card(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
+                              child: Card(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(20),
+                                  onTap: () =>
+                                      commandContext.commandType = 'delivery',
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 20,
                                     ),
-                                    child: InkWell(
-                                      borderRadius: BorderRadius.circular(20),
-                                      onTap: () =>
-                                          bagContext.commandType = 'delivery',
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 10,
-                                          vertical: 20,
+                                    width:
+                                        MediaQuery.of(context).size.width / 4,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          AppLocalizations.of(context)
+                                              .translate('delivery'),
                                         ),
-                                        width:
-                                            MediaQuery.of(context).size.width /
-                                                4,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              AppLocalizations.of(context)
-                                                  .translate('delivery'),
-                                            ),
-                                            SizedBox(
-                                              height: 10,
-                                            ),
-                                            FaIcon(
-                                              FontAwesomeIcons.houseUser,
-                                            ),
-                                          ],
+                                        SizedBox(
+                                          height: 10,
                                         ),
-                                      ),
+                                        FaIcon(
+                                          FontAwesomeIcons.houseUser,
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
-                                if (!bagContext.pricelessItems) ...[
-                                  Theme(
-                                    data: ThemeData(
-                                      cardColor:
-                                          bagContext.commandType == 'on_site'
-                                              ? CRIMSON
-                                              : Colors.white,
-                                      brightness:
-                                          bagContext.commandType == 'on_site'
-                                              ? Brightness.dark
-                                              : Brightness.light,
-                                    ),
-                                    child: Card(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      child: InkWell(
-                                        borderRadius: BorderRadius.circular(20),
-                                        onTap: () =>
-                                            bagContext.commandType = 'on_site',
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 10,
-                                            vertical: 20,
-                                          ),
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width /
-                                              4,
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                AppLocalizations.of(context)
-                                                    .translate('on_site'),
-                                              ),
-                                              SizedBox(
-                                                height: 10,
-                                              ),
-                                              FaIcon(
-                                                FontAwesomeIcons.streetView,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Theme(
-                                    data: ThemeData(
-                                      cardColor:
-                                          bagContext.commandType == 'takeaway'
-                                              ? CRIMSON
-                                              : Colors.white,
-                                      brightness:
-                                          bagContext.commandType == 'takeaway'
-                                              ? Brightness.dark
-                                              : Brightness.light,
-                                    ),
-                                    child: Card(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      child: InkWell(
-                                        borderRadius: BorderRadius.circular(20),
-                                        onTap: () =>
-                                            bagContext.commandType = 'takeaway',
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 10,
-                                            vertical: 20,
-                                          ),
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width /
-                                              4,
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                AppLocalizations.of(context)
-                                                    .translate('takeaway'),
-                                              ),
-                                              SizedBox(
-                                                height: 10,
-                                              ),
-                                              FaIcon(
-                                                FontAwesomeIcons.briefcase,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ],
+                              ),
                             ),
-                          ],
-                        ),
+                          Theme(
+                            data: ThemeData(
+                              cardColor: commandContext.commandType == 'on_site'
+                                  ? CRIMSON
+                                  : Colors.white,
+                              brightness:
+                                  commandContext.commandType == 'on_site'
+                                      ? Brightness.dark
+                                      : Brightness.light,
+                            ),
+                            child: Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(20),
+                                onTap: () =>
+                                    commandContext.commandType = 'on_site',
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 20,
+                                  ),
+                                  width: MediaQuery.of(context).size.width / 4,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        AppLocalizations.of(context)
+                                            .translate('on_site'),
+                                      ),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      FaIcon(
+                                        FontAwesomeIcons.streetView,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Theme(
+                            data: ThemeData(
+                              cardColor:
+                                  commandContext.commandType == 'takeaway'
+                                      ? CRIMSON
+                                      : Colors.white,
+                              brightness:
+                                  commandContext.commandType == 'takeaway'
+                                      ? Brightness.dark
+                                      : Brightness.light,
+                            ),
+                            child: Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(20),
+                                onTap: () =>
+                                    commandContext.commandType = 'takeaway',
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 20,
+                                  ),
+                                  width: MediaQuery.of(context).size.width / 4,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        AppLocalizations.of(context)
+                                            .translate('takeaway'),
+                                      ),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      FaIcon(
+                                        FontAwesomeIcons.briefcase,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  )
-                : null,
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ),
           Consumer<BagContext>(
             builder: (_, bagContext, __) => Padding(
@@ -295,22 +285,35 @@ class _OrderPageState extends State<OrderPage> {
                 AuthContext authContext =
                     Provider.of<AuthContext>(context, listen: false);
 
+                CommandContext commandContext =
+                    Provider.of<CommandContext>(context, listen: false);
+
                 if (authContext.currentUser == null) {
                   RouteUtil.goTo(
                     context: context,
                     child: UserDetailsPage(),
                     routeName: userDetailsRoute,
                   );
-                } else {
+                } else if (commandContext.commandType == 'delivery') {
                   RouteUtil.goTo(
                     context: context,
-                    child: PaymentMethodPage(),
-                    routeName: paymentMethodRoute,
+                    child: DeliveryDetailsPage(),
+                    routeName: deliveryDetailsRoute,
+                  );
+                } else if (commandContext.commandType == 'on_site' ||
+                    commandContext.commandType == 'takeaway') {
+                } else {
+                  Fluttertoast.showToast(
+                    msg:
+                        'Veuillez sélection un type de commande avant de continuer',
                   );
                 }
               },
               padding: const EdgeInsets.all(
                 20.0,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
               ),
               color: Colors.teal,
               child: Text(
