@@ -18,8 +18,7 @@ class StripeTransactionResponse {
 class StripeService {
   static String _apiBase = 'https://api.stripe.com/v1';
   static String _paymentApiUrl = '$_apiBase/payment_intents';
-  static String _secret =
-      'sk_test_51HVB0bBBj0M16v6HbP4C8zdA8nHnbYL6A2Tfp1rv0XQlB7WEShTgjNanGRhJmIZSjj9GI2hpQDDEWsNa8VyNzx6900Oboe33bG';
+  static String _secret = 'sk_test_51HVB0bBBj0M16v6HbP4C8zdA8nHnbYL6A2Tfp1rv0XQlB7WEShTgjNanGRhJmIZSjj9GI2hpQDDEWsNa8VyNzx6900Oboe33bG';
   static Map<String, String> _headers = {
     'Authorization': 'Bearer $_secret',
     'Content-type': 'application/x-www-form-urlencoded',
@@ -32,8 +31,7 @@ class StripeService {
     if (!initialized) {
       StripePayment.setOptions(
         StripeOptions(
-          publishableKey:
-              'pk_test_51HVB0bBBj0M16v6H7XMi6OeecfyebnUynW3gQ4N6DhPQ5ynDZOEfoLPmZh8RSgTf1XoA7VnsFGEooySSfuhdHYWu00YJQCvxbS',
+          publishableKey: 'pk_test_51HVB0bBBj0M16v6H7XMi6OeecfyebnUynW3gQ4N6DhPQ5ynDZOEfoLPmZh8RSgTf1XoA7VnsFGEooySSfuhdHYWu00YJQCvxbS',
           merchantId: 'Test',
           androidPayMode: 'test',
         ),
@@ -53,8 +51,8 @@ class StripeService {
           card: CreditCard(
             number: card.cardNumber.toString(),
             cvc: card.securityCode.toString(),
-            expMonth: card.expirationDate.month,
-            expYear: card.expirationDate.year,
+            expMonth: int.parse(card.expiryMonth),
+            expYear: int.parse(card.expiryYear),
           ),
         ),
       );
@@ -101,13 +99,12 @@ class StripeService {
     );
   }
 
-  static Future<Map<String, dynamic>> _createPaymentIntent(
-      {String amount, String currency}) async {
+  static Future<Map<String, dynamic>> _createPaymentIntent({String amount, String currency}) async {
     try {
       Map<String, dynamic> body = {
         'amount': amount,
         'currency': currency,
-        'payment_method_types[]': 'card'
+        'payment_method_types[]': 'card',
       };
       var response = await http.post(
         _paymentApiUrl,
