@@ -19,8 +19,12 @@ class BagContext extends ChangeNotifier {
         );
   }
 
+  bool hasSameOriginAsInBag(Food item) => item.restaurant == currentOrigin.id;
+
+  bool hasSamePricingAsInBag(Food item) => (pricelessItems && (item.price == null || item.price.amount == null)) || (!pricelessItems && item.price != null && item.price.amount != null);
+
   bool addItem(Food item, number) {
-    if (itemCount == 0 || (pricelessItems && (item.price == null || item.price.amount == null)) || (!pricelessItems && item.price != null && item.price.amount != null)) {
+    if (itemCount == 0 || (hasSamePricingAsInBag(item) && hasSameOriginAsInBag(item))) {
       _items.update(
         item,
         (value) => number,
@@ -58,6 +62,7 @@ class BagContext extends ChangeNotifier {
 
   void removeItem(Food food) {
     _items.removeWhere((key, _) => key.id == food.id);
+    if (_items.length == 0) currentOrigin = null;
     notifyListeners();
   }
 
