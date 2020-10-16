@@ -9,8 +9,10 @@ import 'package:menu_advisor/src/components/logo.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/pages/forgot_password.dart';
 import 'package:menu_advisor/src/pages/home.dart';
+import 'package:menu_advisor/src/pages/order.dart';
 import 'package:menu_advisor/src/pages/signup.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
+import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
@@ -109,8 +111,7 @@ class _LoginPageState extends State<LoginPage> {
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.next,
                         decoration: InputDecoration(
-                          labelText: AppLocalizations.of(context)
-                              .translate("mail_address_placeholder"),
+                          labelText: AppLocalizations.of(context).translate("mail_address_placeholder"),
                         ),
                         onFieldSubmitted: (_) {
                           _emailFocus.unfocus();
@@ -124,8 +125,7 @@ class _LoginPageState extends State<LoginPage> {
                         keyboardType: TextInputType.text,
                         obscureText: true,
                         textInputAction: TextInputAction.done,
-                        labelText: AppLocalizations.of(context)
-                            .translate("password_placeholder"),
+                        labelText: AppLocalizations.of(context).translate("password_placeholder"),
                         onFieldSubmitted: (_) => _submitForm(),
                       ),
                       SizedBox(height: 40),
@@ -149,8 +149,7 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               )
                             : Text(
-                                AppLocalizations.of(context)
-                                    .translate("login_button"),
+                                AppLocalizations.of(context).translate("login_button"),
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 20,
@@ -160,8 +159,7 @@ class _LoginPageState extends State<LoginPage> {
                       SizedBox(height: 10),
                       TextButton(
                         child: Text(
-                          AppLocalizations.of(context)
-                              .translate("forgotten_password"),
+                          AppLocalizations.of(context).translate("forgotten_password"),
                           style: TextStyle(
                             color: CRIMSON,
                             decoration: TextDecoration.underline,
@@ -177,8 +175,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       FlatButton(
                         child: Text(
-                          AppLocalizations.of(context)
-                              .translate("skip_for_now"),
+                          AppLocalizations.of(context).translate("skip_for_now"),
                         ),
                         onPressed: () {
                           RouteUtil.goTo(
@@ -226,8 +223,7 @@ class _LoginPageState extends State<LoginPage> {
                         );
                       },
                       child: Text(
-                        AppLocalizations.of(context)
-                            .translate("create_account"),
+                        AppLocalizations.of(context).translate("create_account"),
                         style: TextStyle(
                           decoration: TextDecoration.underline,
                           fontWeight: FontWeight.bold,
@@ -248,8 +244,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   _submitForm() async {
-    final String email = _emailController.value.text,
-        password = _passwordController.value.text;
+    final String email = _emailController.value.text, password = _passwordController.value.text;
 
     if (email.isEmpty || password.isEmpty) {
       Fluttertoast.showToast(
@@ -264,20 +259,39 @@ class _LoginPageState extends State<LoginPage> {
       loading = true;
     });
 
-    AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
+    AuthContext authContext = Provider.of<AuthContext>(
+      context,
+      listen: false,
+    );
+    BagContext bagContext = Provider.of<BagContext>(
+      context,
+      listen: false,
+    );
+
     try {
-      final result = await authContext.login(email, password);
-      if (result)
-        RouteUtil.goTo(
-          context: context,
-          child: HomePage(),
-          routeName: homeRoute,
-        );
+      final result = await authContext.login(
+        email,
+        password,
+      );
+      if (result) {
+        if (bagContext.itemCount > 0)
+          RouteUtil.goTo(
+            context: context,
+            child: OrderPage(),
+            routeName: orderRoute,
+            method: RoutingMethod.replaceLast,
+          );
+        else
+          RouteUtil.goTo(
+            context: context,
+            child: HomePage(),
+            routeName: homeRoute,
+          );
+      }
     } catch (error) {
       print(error);
       Fluttertoast.showToast(
-        msg:
-            AppLocalizations.of(context).translate("invalid_email_or_password"),
+        msg: AppLocalizations.of(context).translate("invalid_email_or_password"),
         backgroundColor: CRIMSON,
         textColor: Colors.white,
       );

@@ -19,7 +19,7 @@ class BagContext extends ChangeNotifier {
         );
   }
 
-  bool hasSameOriginAsInBag(Food item) => item.restaurant == currentOrigin.id;
+  bool hasSameOriginAsInBag(Food item) => currentOrigin == null || item.restaurant == currentOrigin.id;
 
   bool hasSamePricingAsInBag(Food item) => (pricelessItems && (item.price == null || item.price.amount == null)) || (!pricelessItems && item.price != null && item.price.amount != null);
 

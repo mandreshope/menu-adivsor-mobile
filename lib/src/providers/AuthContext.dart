@@ -28,8 +28,7 @@ class AuthContext extends ChangeNotifier {
   Future _loadUser() async {
     final sharedPrefs = await SharedPreferences.getInstance();
 
-    if (sharedPrefs.containsKey('access_token') &&
-        sharedPrefs.containsKey('refresh_token')) {
+    if (sharedPrefs.containsKey('access_token') && sharedPrefs.containsKey('refresh_token')) {
       String accessToken = sharedPrefs.getString('access_token');
       String refreshToken = sharedPrefs.getString('refresh_token');
       _api.init(accessToken, refreshToken);
@@ -127,15 +126,18 @@ class AuthContext extends ChangeNotifier {
         password: password,
       );
 
-  Future updatePassword(String oldPassword, String newPassword) =>
-      _api.updatePassword(oldPassword, newPassword);
+  Future updatePassword(String oldPassword, String newPassword) => _api.updatePassword(oldPassword, newPassword);
 
-  Future removePaymentCard(PaymentCard creditCard) =>
-      _api.removePaymentCard(creditCard);
+  Future removePaymentCard(PaymentCard creditCard) async {
+    await _api.removePaymentCard(creditCard);
+    currentUser = await _api.getMe();
+  }
 
   Future updateUserProfile(Map<String, dynamic> data) async {
-    await _api.updateUserProfile(data);
+    await _api.updateUserProfile(
+      currentUser.id,
+      data,
+    );
     currentUser = await _api.getMe();
-    notifyListeners();
   }
 }

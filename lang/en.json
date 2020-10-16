@@ -7,7 +7,7 @@
   "discover": "Discover",
   "order": "Take my order",
   "in_cart": "In my cart",
-  "popular_restaurants": "Nearest restaurants",
+  "nearest_restaurants": "Nearest restaurants",
   "before_exit_message": "Tap one more time to exit",
   "mail_address_placeholder": "Your mail address",
   "password_placeholder": "Your password",
@@ -148,5 +148,6 @@
   "no_favorite_restaurant": "No favorite restaurant",
   "session_expired": "Session expired",
   "priceless_and_not_priceless_not_allowed": "You cannot order priceless items and items with price at the same time",
+  "from_different_origin_not_allowed": "You cannot order items from different restaurants at the same time",
   "no_attribute": "No attribute"
 }

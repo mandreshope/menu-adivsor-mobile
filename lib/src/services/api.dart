@@ -466,16 +466,17 @@ class Api {
     );
   }
 
-  Future updateUserProfile(Map<String, dynamic> data) async {
+  Future updateUserProfile(String id, Map<String, dynamic> data) async {
     await _refreshTokens();
 
     return http
         .put(
-      '$_apiURL/users',
+      '$_apiURL/users/$id',
       headers: {
         'authorization': 'Bearer $_accessToken',
+        'Content-Type': 'application/json',
       },
-      body: data,
+      body: jsonEncode(data),
     )
         .then(
       (response) {

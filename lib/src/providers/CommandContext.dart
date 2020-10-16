@@ -35,7 +35,7 @@ class CommandContext extends ChangeNotifier {
     notifyListeners();
   }
 
-  get deliveryDate => _deliveryDate;
+  DateTime get deliveryDate => _deliveryDate;
 
   set deliveryTime(TimeOfDay deliveryTime) {
     _deliveryTime = deliveryTime;

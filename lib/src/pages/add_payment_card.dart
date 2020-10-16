@@ -251,8 +251,8 @@ class _PaymentCardDetailsPageState extends State<PaymentCardDetailsPage> {
           currency: 'eur',
           card: PaymentCard(
             cardNumber: _cardNumberController.value.text,
-            expiryMonth: _expirationDateController.value.text.split('/')[1],
-            expiryYear: _expirationDateController.value.text.split('/')[0],
+            expiryMonth: _expirationDateController.value.text.split('/')[0],
+            expiryYear: _expirationDateController.value.text.split('/')[1],
             securityCode: _cvcController.value.text,
             owner: _ownerNameController.value.text,
             zipCode: _zipCodeController.value.text,
@@ -283,8 +283,8 @@ class _PaymentCardDetailsPageState extends State<PaymentCardDetailsPage> {
           await authContext.addPaymentCard(
             PaymentCard(
               cardNumber: _cardNumberController.value.text,
-              expiryMonth: _expirationDateController.value.text.split('/')[1],
-              expiryYear: _expirationDateController.value.text.split('/')[0],
+              expiryMonth: _expirationDateController.value.text.split('/')[0],
+              expiryYear: _expirationDateController.value.text.split('/')[1],
               securityCode: _cvcController.value.text,
               owner: _ownerNameController.value.text,
               zipCode: _zipCodeController.value.text,

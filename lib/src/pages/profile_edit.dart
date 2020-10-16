@@ -32,12 +32,9 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
       listen: false,
     );
 
-    lastnameController =
-        TextEditingController(text: authContext.currentUser.name?.last ?? '');
-    firstnameController =
-        TextEditingController(text: authContext.currentUser.name?.first ?? '');
-    addressController =
-        TextEditingController(text: authContext.currentUser.address ?? '');
+    lastnameController = TextEditingController(text: authContext.currentUser.name?.last ?? '');
+    firstnameController = TextEditingController(text: authContext.currentUser.name?.first ?? '');
+    addressController = TextEditingController(text: authContext.currentUser.address ?? '');
   }
 
   @override
@@ -61,8 +58,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                 keyboardType: TextInputType.name,
                 textInputAction: TextInputAction.next,
                 decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)
-                      .translate("lastname_placeholder"),
+                  labelText: AppLocalizations.of(context).translate("lastname_placeholder"),
                 ),
                 onChanged: (_) {
                   _updateChangedState();
@@ -81,8 +77,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                 keyboardType: TextInputType.name,
                 textInputAction: TextInputAction.next,
                 decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)
-                      .translate("firstname_placeholder"),
+                  labelText: AppLocalizations.of(context).translate("firstname_placeholder"),
                 ),
                 onChanged: (_) {
                   _updateChangedState();
@@ -101,8 +96,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                 keyboardType: TextInputType.name,
                 textInputAction: TextInputAction.next,
                 decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)
-                      .translate("address_placeholder"),
+                  labelText: AppLocalizations.of(context).translate("address_placeholder"),
                 ),
                 onChanged: (_) {
                   _updateChangedState();
@@ -158,13 +152,14 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
         inProgress = true;
       });
 
-      String firstname = firstnameController.value.text,
-          lastname = lastnameController.value.text,
-          address = addressController.value.text;
+      String firstname = firstnameController.value.text, lastname = lastnameController.value.text, address = addressController.value.text;
 
       try {
         await authContext.updateUserProfile({
-          'name': '{"first": "$firstname", "last": "$lastname"}',
+          'name': {
+            'first': firstname,
+            'last': lastname,
+          },
           'address': address,
         });
         setState(() {
@@ -189,9 +184,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
       context,
       listen: false,
     );
-    String firstname = firstnameController.value.text,
-        lastname = lastnameController.value.text,
-        address = addressController.value.text;
+    String firstname = firstnameController.value.text, lastname = lastnameController.value.text, address = addressController.value.text;
 
     User user = authContext.currentUser;
 
@@ -199,9 +192,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
       setState(() {
         changed = true;
       });
-    else if ((user.name.first == firstname &&
-        user.name.last == lastname &&
-        user.address == address))
+    else if ((user.name.first == firstname && user.name.last == lastname && user.address == address))
       setState(() {
         changed = false;
       });

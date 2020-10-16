@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/pages/delivery_details.dart';
+import 'package:menu_advisor/src/pages/login.dart';
 import 'package:menu_advisor/src/pages/user_details.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
@@ -55,8 +56,7 @@ class _OrderPageState extends State<OrderPage> {
                   if (bagContext.itemCount == 0)
                     return Center(
                       child: Text(
-                        AppLocalizations.of(context)
-                            .translate('no_item_in_cart'),
+                        AppLocalizations.of(context).translate('no_item_in_cart'),
                       ),
                     );
 
@@ -110,14 +110,8 @@ class _OrderPageState extends State<OrderPage> {
                           if (!bagContext.pricelessItems)
                             Theme(
                               data: ThemeData(
-                                cardColor:
-                                    commandContext.commandType == 'delivery'
-                                        ? CRIMSON
-                                        : Colors.white,
-                                brightness:
-                                    commandContext.commandType == 'delivery'
-                                        ? Brightness.dark
-                                        : Brightness.light,
+                                cardColor: commandContext.commandType == 'delivery' ? CRIMSON : Colors.white,
+                                brightness: commandContext.commandType == 'delivery' ? Brightness.dark : Brightness.light,
                               ),
                               child: Card(
                                 shape: RoundedRectangleBorder(
@@ -125,22 +119,18 @@ class _OrderPageState extends State<OrderPage> {
                                 ),
                                 child: InkWell(
                                   borderRadius: BorderRadius.circular(20),
-                                  onTap: () =>
-                                      commandContext.commandType = 'delivery',
+                                  onTap: () => commandContext.commandType = 'delivery',
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 10,
                                       vertical: 20,
                                     ),
-                                    width:
-                                        MediaQuery.of(context).size.width / 4,
+                                    width: MediaQuery.of(context).size.width / 4,
                                     child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
                                         Text(
-                                          AppLocalizations.of(context)
-                                              .translate('delivery'),
+                                          AppLocalizations.of(context).translate('delivery'),
                                         ),
                                         SizedBox(
                                           height: 10,
@@ -156,13 +146,8 @@ class _OrderPageState extends State<OrderPage> {
                             ),
                           Theme(
                             data: ThemeData(
-                              cardColor: commandContext.commandType == 'on_site'
-                                  ? CRIMSON
-                                  : Colors.white,
-                              brightness:
-                                  commandContext.commandType == 'on_site'
-                                      ? Brightness.dark
-                                      : Brightness.light,
+                              cardColor: commandContext.commandType == 'on_site' ? CRIMSON : Colors.white,
+                              brightness: commandContext.commandType == 'on_site' ? Brightness.dark : Brightness.light,
                             ),
                             child: Card(
                               shape: RoundedRectangleBorder(
@@ -170,8 +155,7 @@ class _OrderPageState extends State<OrderPage> {
                               ),
                               child: InkWell(
                                 borderRadius: BorderRadius.circular(20),
-                                onTap: () =>
-                                    commandContext.commandType = 'on_site',
+                                onTap: () => commandContext.commandType = 'on_site',
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 10,
@@ -179,12 +163,10 @@ class _OrderPageState extends State<OrderPage> {
                                   ),
                                   width: MediaQuery.of(context).size.width / 4,
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
                                       Text(
-                                        AppLocalizations.of(context)
-                                            .translate('on_site'),
+                                        AppLocalizations.of(context).translate('on_site'),
                                       ),
                                       SizedBox(
                                         height: 10,
@@ -200,14 +182,8 @@ class _OrderPageState extends State<OrderPage> {
                           ),
                           Theme(
                             data: ThemeData(
-                              cardColor:
-                                  commandContext.commandType == 'takeaway'
-                                      ? CRIMSON
-                                      : Colors.white,
-                              brightness:
-                                  commandContext.commandType == 'takeaway'
-                                      ? Brightness.dark
-                                      : Brightness.light,
+                              cardColor: commandContext.commandType == 'takeaway' ? CRIMSON : Colors.white,
+                              brightness: commandContext.commandType == 'takeaway' ? Brightness.dark : Brightness.light,
                             ),
                             child: Card(
                               shape: RoundedRectangleBorder(
@@ -215,8 +191,7 @@ class _OrderPageState extends State<OrderPage> {
                               ),
                               child: InkWell(
                                 borderRadius: BorderRadius.circular(20),
-                                onTap: () =>
-                                    commandContext.commandType = 'takeaway',
+                                onTap: () => commandContext.commandType = 'takeaway',
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 10,
@@ -224,12 +199,10 @@ class _OrderPageState extends State<OrderPage> {
                                   ),
                                   width: MediaQuery.of(context).size.width / 4,
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
                                       Text(
-                                        AppLocalizations.of(context)
-                                            .translate('takeaway'),
+                                        AppLocalizations.of(context).translate('takeaway'),
                                       ),
                                       SizedBox(
                                         height: 10,
@@ -282,30 +255,39 @@ class _OrderPageState extends State<OrderPage> {
             padding: const EdgeInsets.all(20),
             child: FlatButton(
               onPressed: () {
-                AuthContext authContext =
-                    Provider.of<AuthContext>(context, listen: false);
+                AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
 
-                CommandContext commandContext =
-                    Provider.of<CommandContext>(context, listen: false);
+                CommandContext commandContext = Provider.of<CommandContext>(context, listen: false);
 
                 if (authContext.currentUser == null) {
+                  if (commandContext.commandType != 'delivery')
+                    RouteUtil.goTo(
+                      context: context,
+                      child: UserDetailsPage(),
+                      routeName: userDetailsRoute,
+                    );
+                  else
+                    Fluttertoast.showToast(msg: 'Veuillez vous connecter pour pouvoir continuer');
                   RouteUtil.goTo(
                     context: context,
-                    child: UserDetailsPage(),
-                    routeName: userDetailsRoute,
+                    child: LoginPage(),
+                    routeName: loginRoute,
                   );
                 } else if (commandContext.commandType == 'delivery') {
                   RouteUtil.goTo(
                     context: context,
                     child: DeliveryDetailsPage(),
-                    routeName: deliveryDetailsRoute,
+                    routeName: loginRoute,
                   );
-                } else if (commandContext.commandType == 'on_site' ||
-                    commandContext.commandType == 'takeaway') {
+                } else if (commandContext.commandType == 'on_site' || commandContext.commandType == 'takeaway') {
+                  RouteUtil.goTo(
+                    context: context,
+                    child: UserDetailsPage(),
+                    routeName: userDetailsRoute,
+                  );
                 } else {
                   Fluttertoast.showToast(
-                    msg:
-                        'Veuillez sélection un type de commande avant de continuer',
+                    msg: 'Veuillez sélection un type de commande avant de continuer',
                   );
                 }
               },

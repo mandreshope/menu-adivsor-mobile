@@ -156,6 +156,7 @@ class User {
                     ?.toList() ??
                 []
             : [],
+        address: json['address'],
         commands: (json['commands'] as List).map<Command>((e) => Command.fromJson(e)).toList(),
       );
 
@@ -224,9 +225,9 @@ class PaymentCard {
   factory PaymentCard.fromJson(Map<String, dynamic> data) => PaymentCard(
         id: data['_id'],
         cardNumber: data['cardNumber'],
-        expiryMonth: data['expiryMonth'],
-        expiryYear: data['expiryYear'],
-        securityCode: data['securityCode'],
+        expiryMonth: data['expiryMonth'].toString(),
+        expiryYear: data['expiryYear'].toString(),
+        securityCode: data['securityCode'].toString(),
         owner: data['owner'],
         zipCode: data['zipCode'],
       );

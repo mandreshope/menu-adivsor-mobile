@@ -65,6 +65,27 @@ class RouteUtil {
     }
   }
 
+  static void goToAndRemoveUntil<T extends Object>({
+    @required BuildContext context,
+    @required Widget child,
+    @required String routeName,
+    @required bool Function(Route<T>) predicate,
+    PageTransitionType transitionType = PageTransitionType.fade,
+    Object arguments,
+  }) =>
+      Navigator.of(context).pushAndRemoveUntil<T>(
+        PageTransition(
+          duration: Duration(milliseconds: 500),
+          settings: RouteSettings(
+            name: routeName,
+            arguments: arguments,
+          ),
+          child: child,
+          type: transitionType,
+        ),
+        predicate,
+      );
+
   static void goBack({
     @required BuildContext context,
   }) {

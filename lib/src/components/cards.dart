@@ -540,59 +540,94 @@ class DrinkCard extends StatefulWidget {
 class _DrinkCardState extends State<DrinkCard> {
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {},
-      child: Card(
-        elevation: 2.0,
-        margin: const EdgeInsets.all(10.0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Container(
-          padding: const EdgeInsets.all(10),
-          child: Row(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              widget.food.imageURL != null
-                  ? CircleAvatar(
-                      backgroundImage: NetworkImage(
-                        widget.food.imageURL,
-                      ),
-                      onBackgroundImageError: (_, __) {},
-                      backgroundColor: Colors.grey,
-                      maxRadius: 20,
-                    )
-                  : Icon(
-                      Icons.fastfood,
-                    ),
-              SizedBox(
-                width: 10,
+    return Consumer<BagContext>(
+      builder: (_, bagContext, __) => InkWell(
+        onTap: () async {
+          if (bagContext.itemCount != 0) {
+            if (!bagContext.hasSamePricingAsInBag(widget.food))
+              return Fluttertoast.showToast(
+                msg: AppLocalizations.of(context).translate('priceless_and_not_priceless_not_allowed'),
+              );
+            if (!bagContext.hasSameOriginAsInBag(widget.food))
+              return Fluttertoast.showToast(
+                msg: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
+              );
+          }
+
+          if (bagContext.contains(widget.food)) {
+            var result = await showDialog(
+              context: context,
+              builder: (_) => ConfirmationDialog(
+                title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
+                content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
               ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      widget.food.name,
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+            );
+
+            if (result is bool && result) {
+              bagContext.removeItem(widget.food);
+            }
+          } else {
+            bool result = await showDialog<bool>(
+              context: context,
+              builder: (_) => AddToBagDialog(
+                food: widget.food,
+              ),
+            );
+            if (result is bool && result) {}
+          }
+        },
+        child: Card(
+          elevation: 2.0,
+          margin: const EdgeInsets.all(10.0),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                widget.food.imageURL != null
+                    ? CircleAvatar(
+                        backgroundImage: NetworkImage(
+                          widget.food.imageURL,
+                        ),
+                        onBackgroundImageError: (_, __) {},
+                        backgroundColor: Colors.grey,
+                        maxRadius: 20,
+                      )
+                    : Icon(
+                        Icons.fastfood,
                       ),
-                    ),
-                    if (widget.food.price != null)
+                SizedBox(
+                  width: 10,
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
                       Text(
-                        '${widget.food.price.amount / 100}€',
+                        widget.food.name,
                         style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.grey[600],
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                  ],
+                      if (widget.food.price != null)
+                        Text(
+                          '${widget.food.price.amount / 100}€',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

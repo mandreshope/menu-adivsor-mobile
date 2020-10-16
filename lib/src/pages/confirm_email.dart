@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/pages/login.dart';
+import 'package:menu_advisor/src/pages/order.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
+import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
@@ -23,8 +25,7 @@ class ConfirmEmailPage extends StatefulWidget {
   _ConfirmEmailPageState createState() => _ConfirmEmailPageState();
 }
 
-class _ConfirmEmailPageState extends State<ConfirmEmailPage>
-    with SingleTickerProviderStateMixin {
+class _ConfirmEmailPageState extends State<ConfirmEmailPage> with SingleTickerProviderStateMixin {
   bool loading = false;
   List<FocusNode> _codeFocus = [
     for (var i = 0; i < 4; i++) FocusNode(),
@@ -62,9 +63,7 @@ class _ConfirmEmailPageState extends State<ConfirmEmailPage>
                   bottom: 10.0,
                 ),
                 child: Text(
-                  AppLocalizations.of(context)
-                      .translate("enter_code")
-                      .replaceAll('*', widget.email),
+                  AppLocalizations.of(context).translate("enter_code").replaceAll('*', widget.email),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
@@ -101,14 +100,11 @@ class _ConfirmEmailPageState extends State<ConfirmEmailPage>
                           focusNode: _codeFocus[i],
                           autofocus: i == 0,
                           keyboardType: TextInputType.number,
-                          textInputAction: i < 3
-                              ? TextInputAction.next
-                              : TextInputAction.done,
+                          textInputAction: i < 3 ? TextInputAction.next : TextInputAction.done,
                           decoration: InputDecoration(),
                           textAlign: TextAlign.center,
                           inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                                new RegExp(r'^[0-9]$')),
+                            FilteringTextInputFormatter.allow(new RegExp(r'^[0-9]$')),
                           ],
                           onFieldSubmitted: (value) {
                             _codeFocus[i].unfocus();
@@ -117,8 +113,7 @@ class _ConfirmEmailPageState extends State<ConfirmEmailPage>
                               radix: 10,
                             );
                             if (i < 3) {
-                              FocusScope.of(context)
-                                  .requestFocus(_codeFocus[i + 1]);
+                              FocusScope.of(context).requestFocus(_codeFocus[i + 1]);
                             } else {
                               _submitForm();
                             }
@@ -168,7 +163,15 @@ class _ConfirmEmailPageState extends State<ConfirmEmailPage>
   _submitForm() async {
     int code = int.parse(digits.join(''));
 
-    AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
+    AuthContext authContext = Provider.of<AuthContext>(
+      context,
+      listen: false,
+    );
+
+    BagContext bagContext = Provider.of<BagContext>(
+      context,
+      listen: false,
+    );
 
     try {
       await authContext.validateAccount(
@@ -179,12 +182,21 @@ class _ConfirmEmailPageState extends State<ConfirmEmailPage>
       Fluttertoast.showToast(
         msg: AppLocalizations.of(context).translate('validation_successfull'),
       );
-      RouteUtil.goTo(
-        context: context,
-        child: LoginPage(),
-        routeName: loginRoute,
-        method: RoutingMethod.atTop,
-      );
+
+      if (bagContext.itemCount > 0)
+        RouteUtil.goToAndRemoveUntil(
+          context: context,
+          child: OrderPage(),
+          routeName: orderRoute,
+          predicate: (route) => route.settings.name == orderRoute,
+        );
+      else
+        RouteUtil.goTo(
+          context: context,
+          child: LoginPage(),
+          routeName: loginRoute,
+          method: RoutingMethod.atTop,
+        );
     } catch (error) {
       Fluttertoast.showToast(
         msg: AppLocalizations.of(context).translate('validation_error'),

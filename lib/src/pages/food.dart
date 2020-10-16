@@ -299,20 +299,20 @@ class _FoodPageState extends State<FoodPage> {
                   ),
                 ),
                 Spacer(),
-                Align(
-                  alignment: Alignment.center,
-                  child: FlatButton(
-                    onPressed: () {},
-                    child: Text(
-                      AppLocalizations.of(context).translate("your_feedback"),
-                      style: TextStyle(
-                        color: Colors.blue[300],
-                        fontSize: 20,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ),
-                ),
+                // Align(
+                //   alignment: Alignment.center,
+                //   child: FlatButton(
+                //     onPressed: () {},
+                //     child: Text(
+                //       AppLocalizations.of(context).translate("your_feedback"),
+                //       style: TextStyle(
+                //         color: Colors.blue[300],
+                //         fontSize: 20,
+                //         decoration: TextDecoration.underline,
+                //       ),
+                //     ),
+                //   ),
+                // ),
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 30,
@@ -376,32 +376,39 @@ class _FoodPageState extends State<FoodPage> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            onPressed:
-                                (bagContext.itemCount == 0) || (bagContext.pricelessItems && widget.food.price.amount == null) || (!bagContext.pricelessItems && widget.food.price.amount != null)
-                                    ? () async {
-                                        if (bagContext.contains(widget.food)) {
-                                          var result = await showDialog(
-                                            context: context,
-                                            builder: (_) => ConfirmationDialog(
-                                              title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
-                                              content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
-                                            ),
-                                          );
+                            onPressed: () async {
+                              if ((bagContext.itemCount == 0) || (bagContext.hasSamePricingAsInBag(widget.food) && bagContext.hasSameOriginAsInBag(widget.food))) {
+                                if (bagContext.contains(widget.food)) {
+                                  var result = await showDialog(
+                                    context: context,
+                                    builder: (_) => ConfirmationDialog(
+                                      title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
+                                      content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
+                                    ),
+                                  );
 
-                                          if (result is bool && result) {
-                                            bagContext.removeItem(widget.food);
-                                          }
-                                        } else {
-                                          bool result = await showDialog<bool>(
-                                            context: context,
-                                            builder: (_) => AddToBagDialog(
-                                              food: widget.food,
-                                            ),
-                                          );
-                                          if (result is bool && result) {}
-                                        }
-                                      }
-                                    : null,
+                                  if (result is bool && result) {
+                                    bagContext.removeItem(widget.food);
+                                  }
+                                } else {
+                                  bool result = await showDialog<bool>(
+                                    context: context,
+                                    builder: (_) => AddToBagDialog(
+                                      food: widget.food,
+                                    ),
+                                  );
+                                  if (result is bool && result) {}
+                                }
+                              } else if (!bagContext.hasSamePricingAsInBag(widget.food)) {
+                                Fluttertoast.showToast(
+                                  msg: AppLocalizations.of(context).translate('priceless_and_not_priceless_not_allowed'),
+                                );
+                              } else if (!bagContext.hasSameOriginAsInBag(widget.food)) {
+                                Fluttertoast.showToast(
+                                  msg: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
+                                );
+                              }
+                            },
                             child: Text(
                               bagContext.contains(widget.food) ? AppLocalizations.of(context).translate('remove_from_cart') : AppLocalizations.of(context).translate("add_to_cart"),
                               style: TextStyle(

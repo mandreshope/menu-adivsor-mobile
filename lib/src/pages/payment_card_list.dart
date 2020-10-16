@@ -10,6 +10,7 @@ import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/CommandContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
+import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/services/stripe.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
@@ -54,6 +55,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                         children: [
                           for (PaymentCard creditCard in user.paymentCards)
                             Material(
+                              color: Colors.transparent,
                               child: InkWell(
                                 onLongPress: () async {
                                   var result = await showDialog(
