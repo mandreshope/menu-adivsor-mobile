@@ -59,19 +59,14 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                   var result = await showDialog(
                                     context: context,
                                     builder: (_) => ConfirmationDialog(
-                                      title: AppLocalizations.of(context)
-                                          .translate(
-                                              'confirm_remove_payment_card_title'),
-                                      content: AppLocalizations.of(context)
-                                          .translate(
-                                              'confirm_remove_payment_card_content'),
+                                      title: AppLocalizations.of(context).translate('confirm_remove_payment_card_title'),
+                                      content: AppLocalizations.of(context).translate('confirm_remove_payment_card_content'),
                                     ),
                                   );
 
                                   if (result is bool && result) {
                                     // Remove card
-                                    await authContext
-                                        .removePaymentCard(creditCard);
+                                    await authContext.removePaymentCard(creditCard);
                                   }
                                 },
                                 onTap: widget.isPaymentStep
@@ -80,8 +75,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                           isPaying = true;
                                         });
                                         try {
-                                          await StripeService
-                                              .payViaExistingCard(
+                                          await StripeService.payViaExistingCard(
                                             amount: (Provider.of<BagContext>(
                                                       context,
                                                       listen: false,
@@ -129,8 +123,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                   showBackView: false,
                                   cvvCode: creditCard.securityCode.toString(),
                                   cardNumber: creditCard.cardNumber.toString(),
-                                  expiryDate:
-                                      '${(creditCard.expirationDate.month < 10 ? '0' : '') + creditCard.expirationDate.month.toString()}/${creditCard.expirationDate.year.toString()}',
+                                  expiryDate: '${creditCard.expiryMonth}/${creditCard.expiryYear}',
                                 ),
                               ),
                             ),
@@ -156,9 +149,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                               horizontal: 40.0,
                             ),
                             child: Text(
-                              AppLocalizations.of(context)
-                                  .translate('no_payment_card')
-                                  .replaceFirst('\$', '+'),
+                              AppLocalizations.of(context).translate('no_payment_card').replaceFirst('\$', '+'),
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 22,

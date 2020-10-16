@@ -53,16 +53,11 @@ class Food {
         id: json['_id'],
         name: json['name'],
         imageURL: json['imageURL'],
-        category: json.containsKey('category') &&
-                json['category'] != null &&
-                json['category'] is Map<String, dynamic>
-            ? FoodCategory.fromJson(json['category'])
-            : null,
+        category: json.containsKey('category') && json['category'] != null && json['category'] is Map<String, dynamic> ? FoodCategory.fromJson(json['category']) : null,
         restaurant: json['restaurant'],
         price: Price.fromJson(json['price']),
         type: json['type'],
-        attributes:
-            (json['attributes'] as List).map((e) => e.toString()).toList(),
+        attributes: (json['attributes'] as List).map((e) => e.toString()).toList(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -88,12 +83,7 @@ class Menu {
   factory Menu.fromJson(Map<String, dynamic> json) => Menu(
         name: json['name'],
         imageURL: json['imageURL'],
-        foods: json['foods'] is List
-            ? json['foods']
-                    ?.map<Food>((data) => Food.fromJson(data))
-                    ?.toList() ??
-                []
-            : [],
+        foods: json['foods'] is List ? json['foods']?.map<Food>((data) => Food.fromJson(data))?.toList() ?? [] : [],
         description: json['description'],
       );
 }
@@ -156,11 +146,8 @@ class User {
         email: json['email'],
         photoURL: json['photoURL'],
         name: UserName.fromJson(json['name']),
-        favoriteRestaurants: (json['favoriteRestaurants'] as List)
-            .map<String>((e) => e)
-            .toList(),
-        favoriteFoods:
-            (json['favoriteFoods'] as List).map<String>((e) => e).toList(),
+        favoriteRestaurants: (json['favoriteRestaurants'] as List).map<String>((e) => e).toList(),
+        favoriteFoods: (json['favoriteFoods'] as List).map<String>((e) => e).toList(),
         paymentCards: json['paymentCards'] is List
             ? json['paymentCards']
                     ?.map<PaymentCard>(
@@ -169,9 +156,7 @@ class User {
                     ?.toList() ??
                 []
             : [],
-        commands: (json['commands'] as List)
-            .map<Command>((e) => Command.fromJson(e))
-            .toList(),
+        commands: (json['commands'] as List).map<Command>((e) => Command.fromJson(e)).toList(),
       );
 
   User({
@@ -187,14 +172,7 @@ class User {
     this.commands,
   });
 
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'email': email,
-        'phoneNumber': phoneNumber,
-        'photoURL': photoURL,
-        'address': address,
-        'name': name.toJson()
-      };
+  Map<String, dynamic> toJson() => {'id': id, 'email': email, 'phoneNumber': phoneNumber, 'photoURL': photoURL, 'address': address, 'name': name.toJson()};
 }
 
 class Command {
@@ -219,36 +197,35 @@ class Command {
         commandType: json['commandType'],
         totalPrice: json['totalPrice'],
         validated: json['validated'],
-        items:
-            (json['items'] as List).map<Food>((e) => Food.fromJson(e)).toList(),
-        createdAt: json['createdAt'] != null
-            ? DateTime.fromMillisecondsSinceEpoch(json['createdAt'])
-            : null,
+        items: (json['items'] as List).map<Food>((e) => Food.fromJson(e)).toList(),
+        createdAt: json['createdAt'] != null ? DateTime.fromMillisecondsSinceEpoch(json['createdAt']) : null,
       );
 }
 
 class PaymentCard {
   final String id;
-  final int cardNumber;
-  final DateTime expirationDate;
-  final int securityCode;
+  final String cardNumber;
+  final String expiryMonth;
+  final String expiryYear;
+  final String securityCode;
   final String owner;
   final String zipCode;
 
   PaymentCard({
     this.id,
     @required this.cardNumber,
-    @required this.expirationDate,
+    @required this.expiryMonth,
+    @required this.expiryYear,
     @required this.securityCode,
     @required this.owner,
     @required this.zipCode,
   });
 
   factory PaymentCard.fromJson(Map<String, dynamic> data) => PaymentCard(
-        id: data['id'],
+        id: data['_id'],
         cardNumber: data['cardNumber'],
-        expirationDate:
-            DateTime.fromMillisecondsSinceEpoch(data['expirationDate']),
+        expiryMonth: data['expiryMonth'],
+        expiryYear: data['expiryYear'],
         securityCode: data['securityCode'],
         owner: data['owner'],
         zipCode: data['zipCode'],
@@ -256,7 +233,8 @@ class PaymentCard {
 
   Map<String, dynamic> toJson() => {
         'cardNumber': cardNumber,
-        'expirationDate': expirationDate.millisecondsSinceEpoch,
+        'expiryMonth': expiryMonth,
+        'expiryYear': expiryYear,
         'securityCode': securityCode,
         'owner': owner,
         'zipCode': zipCode,

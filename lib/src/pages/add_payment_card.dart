@@ -50,10 +50,8 @@ class _PaymentCardDetailsPageState extends State<PaymentCardDetailsPage> {
         return await showDialog<bool>(
           context: context,
           builder: (_) => ConfirmationDialog(
-            title: AppLocalizations.of(context)
-                .translate('abandon_change_dialog_title'),
-            content: AppLocalizations.of(context)
-                .translate('abandon_change_dialog_content'),
+            title: AppLocalizations.of(context).translate('abandon_change_dialog_title'),
+            content: AppLocalizations.of(context).translate('abandon_change_dialog_content'),
           ),
         );
       },
@@ -89,8 +87,7 @@ class _PaymentCardDetailsPageState extends State<PaymentCardDetailsPage> {
                         keyboardType: TextInputType.text,
                         textInputAction: TextInputAction.next,
                         decoration: InputDecoration(
-                          labelText: AppLocalizations.of(context)
-                              .translate("owner_name_placeholder"),
+                          labelText: AppLocalizations.of(context).translate("owner_name_placeholder"),
                         ),
                         validator: Validators.required(context),
                         onFieldSubmitted: (_) {
@@ -107,14 +104,12 @@ class _PaymentCardDetailsPageState extends State<PaymentCardDetailsPage> {
                         keyboardType: TextInputType.number,
                         textInputAction: TextInputAction.next,
                         decoration: InputDecoration(
-                          labelText: AppLocalizations.of(context)
-                              .translate("card_number_placeholder"),
+                          labelText: AppLocalizations.of(context).translate("card_number_placeholder"),
                         ),
                         validator: Validators.required(context),
                         onFieldSubmitted: (_) {
                           _cardNumberFocus.unfocus();
-                          FocusScope.of(context)
-                              .requestFocus(_expirationDateFocus);
+                          FocusScope.of(context).requestFocus(_expirationDateFocus);
                         },
                       ),
                       SizedBox(
@@ -131,10 +126,8 @@ class _PaymentCardDetailsPageState extends State<PaymentCardDetailsPage> {
                               keyboardType: TextInputType.number,
                               textInputAction: TextInputAction.next,
                               decoration: InputDecoration(
-                                labelText: AppLocalizations.of(context)
-                                    .translate("expiration_date_label"),
-                                hintText: AppLocalizations.of(context)
-                                    .translate("expiration_date_placeholder"),
+                                labelText: AppLocalizations.of(context).translate("expiration_date_label"),
+                                hintText: AppLocalizations.of(context).translate("expiration_date_placeholder"),
                               ),
                               inputFormatters: [
                                 ExpiryDateInputFormatter(),
@@ -157,18 +150,14 @@ class _PaymentCardDetailsPageState extends State<PaymentCardDetailsPage> {
                               keyboardType: TextInputType.number,
                               textInputAction: TextInputAction.next,
                               decoration: InputDecoration(
-                                labelText: AppLocalizations.of(context)
-                                    .translate("security_code_placeholder"),
+                                labelText: AppLocalizations.of(context).translate("security_code_placeholder"),
                                 hintText: "123",
                               ),
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(3)
-                              ],
+                              inputFormatters: [LengthLimitingTextInputFormatter(3)],
                               validator: Validators.required(context),
                               onFieldSubmitted: (_) {
                                 _cvcFocus.unfocus();
-                                FocusScope.of(context)
-                                    .requestFocus(_zipCodeFocus);
+                                FocusScope.of(context).requestFocus(_zipCodeFocus);
                               },
                             ),
                           ),
@@ -183,8 +172,7 @@ class _PaymentCardDetailsPageState extends State<PaymentCardDetailsPage> {
                         keyboardType: TextInputType.number,
                         textInputAction: TextInputAction.next,
                         decoration: InputDecoration(
-                          labelText: AppLocalizations.of(context)
-                              .translate("zip_code_placeholder"),
+                          labelText: AppLocalizations.of(context).translate("zip_code_placeholder"),
                         ),
                         validator: Validators.required(context),
                         onFieldSubmitted: (_) {
@@ -203,8 +191,7 @@ class _PaymentCardDetailsPageState extends State<PaymentCardDetailsPage> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 15, horizontal: 10),
+                    padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
                     onPressed: _submitForm,
                     child: Row(
                       mainAxisSize: MainAxisSize.max,
@@ -216,27 +203,20 @@ class _PaymentCardDetailsPageState extends State<PaymentCardDetailsPage> {
                             height: 22,
                             child: FittedBox(
                               child: CircularProgressIndicator(
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                               ),
                             ),
                           )
                         else ...[
                           Icon(
-                            widget.isPaymentStep
-                                ? Icons.check
-                                : Icons.save_rounded,
+                            widget.isPaymentStep ? Icons.check : Icons.save_rounded,
                             color: Colors.white,
                           ),
                           SizedBox(
                             width: 5,
                           ),
                           Text(
-                            widget.isPaymentStep
-                                ? AppLocalizations.of(context)
-                                    .translate('validate')
-                                : AppLocalizations.of(context)
-                                    .translate('save'),
+                            widget.isPaymentStep ? AppLocalizations.of(context).translate('validate') : AppLocalizations.of(context).translate('save'),
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -270,12 +250,10 @@ class _PaymentCardDetailsPageState extends State<PaymentCardDetailsPage> {
           amount: (bagContext.totalPrice * 100).round().toString(),
           currency: 'eur',
           card: PaymentCard(
-            cardNumber: int.parse(_cardNumberController.value.text),
-            expirationDate: DateTime.utc(
-              int.parse(_expirationDateController.value.text.split('/')[1]),
-              int.parse(_expirationDateController.value.text.split('/')[0]),
-            ),
-            securityCode: int.parse(_cvcController.value.text),
+            cardNumber: _cardNumberController.value.text,
+            expiryMonth: _expirationDateController.value.text.split('/')[1],
+            expiryYear: _expirationDateController.value.text.split('/')[0],
+            securityCode: _cvcController.value.text,
             owner: _ownerNameController.value.text,
             zipCode: _zipCodeController.value.text,
           ),
@@ -296,8 +274,7 @@ class _PaymentCardDetailsPageState extends State<PaymentCardDetailsPage> {
           Fluttertoast.showToast(msg: response.message);
         }
       } else {
-        AuthContext authContext =
-            Provider.of<AuthContext>(context, listen: false);
+        AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
 
         try {
           setState(() {
@@ -305,12 +282,10 @@ class _PaymentCardDetailsPageState extends State<PaymentCardDetailsPage> {
           });
           await authContext.addPaymentCard(
             PaymentCard(
-              cardNumber: int.parse(_cardNumberController.value.text),
-              expirationDate: DateTime.utc(
-                int.parse(_expirationDateController.value.text.split('/')[1]),
-                int.parse(_expirationDateController.value.text.split('/')[0]),
-              ),
-              securityCode: int.parse(_cvcController.value.text),
+              cardNumber: _cardNumberController.value.text,
+              expiryMonth: _expirationDateController.value.text.split('/')[1],
+              expiryYear: _expirationDateController.value.text.split('/')[0],
+              securityCode: _cvcController.value.text,
               owner: _ownerNameController.value.text,
               zipCode: _zipCodeController.value.text,
             ),
@@ -324,8 +299,7 @@ class _PaymentCardDetailsPageState extends State<PaymentCardDetailsPage> {
             _onProgress = false;
           });
           Fluttertoast.showToast(
-            msg: AppLocalizations.of(context)
-                .translate('add_payment_card_error'),
+            msg: AppLocalizations.of(context).translate('add_payment_card_error'),
           );
         }
       }
