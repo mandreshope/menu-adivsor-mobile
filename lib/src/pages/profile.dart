@@ -3,6 +3,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:menu_advisor/src/components/utilities.dart';
 import 'package:menu_advisor/src/pages/change_password.dart';
+import 'package:menu_advisor/src/pages/command_history.dart';
+import 'package:menu_advisor/src/pages/favorites.dart';
 import 'package:menu_advisor/src/pages/login.dart';
 import 'package:menu_advisor/src/pages/payment_card_list.dart';
 import 'package:menu_advisor/src/pages/profile_edit.dart';
@@ -221,7 +223,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         style: Theme.of(context).textTheme.headline6,
                       ),
                       SizedBox(
-                        height: 30,
+                        height: 20,
                       ),
                       RaisedButton(
                         onPressed: () {
@@ -231,7 +233,6 @@ class _ProfilePageState extends State<ProfilePage> {
                             routeName: changePasswordRoute,
                           );
                         },
-                        color: Colors.teal,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(40),
                         ),
@@ -258,7 +259,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         style: Theme.of(context).textTheme.headline6,
                       ),
                       SizedBox(
-                        height: 30,
+                        height: 20,
                       ),
                       RaisedButton(
                         onPressed: () {
@@ -277,6 +278,77 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: Text(
                           AppLocalizations.of(context)
                               .translate('manage_cards'),
+                          style: GoogleFonts.raleway(
+                            textStyle: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 30,
+                      ),
+                      Text(
+                        AppLocalizations.of(context).translate("favorites"),
+                        style: Theme.of(context).textTheme.headline6,
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      RaisedButton(
+                        onPressed: () {
+                          RouteUtil.goTo(
+                            context: context,
+                            child: FavoritesPage(),
+                            routeName: favoritesRoute,
+                          );
+                        },
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(40),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 15,
+                        ),
+                        child: Text(
+                          AppLocalizations.of(context)
+                              .translate('view_favorites'),
+                          style: GoogleFonts.raleway(
+                            textStyle: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 30,
+                      ),
+                      Text(
+                        AppLocalizations.of(context)
+                            .translate("command_history"),
+                        style: Theme.of(context).textTheme.headline6,
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      RaisedButton(
+                        onPressed: () {
+                          RouteUtil.goTo(
+                            context: context,
+                            child: CommandHistoryPage(),
+                            routeName: commandHistoryRoute,
+                          );
+                        },
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(40),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 15,
+                        ),
+                        child: Text(
+                          AppLocalizations.of(context)
+                              .translate('view_command_history'),
                           style: GoogleFonts.raleway(
                             textStyle: TextStyle(
                               color: Colors.white,

@@ -22,3 +22,6 @@ const String forgotPasswordRoute = 'forgotPassword';
 const String newPasswordRoute = 'newPassword';
 const String changePasswordRoute = 'changePassword';
 const String profileEditRoute = 'profileEdit';
+const String favoritesRoute = 'favorites';
+const String commandHistoryRoute = 'commandHistory';
+const String deliveryDetailsRoute = 'deliveryDetails';

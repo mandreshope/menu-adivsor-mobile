@@ -668,59 +668,8 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
             child: Column(
               children: drinks
                   .map(
-                    (food) => Card(
-                      elevation: 2.0,
-                      margin: const EdgeInsets.all(10.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            food.imageURL != null
-                                ? CircleAvatar(
-                                    backgroundImage: NetworkImage(
-                                      food.imageURL,
-                                    ),
-                                    onBackgroundImageError: (_, __) {},
-                                    backgroundColor: Colors.grey,
-                                    maxRadius: 20,
-                                  )
-                                : Icon(
-                                    Icons.fastfood,
-                                  ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    food.name,
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  if (food.price != null)
-                                    Text(
-                                      '${food.price.amount / 100}€',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        color: Colors.grey[600],
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                    (food) => DrinkCard(
+                      food: food,
                     ),
                   )
                   .toList(),

@@ -6,6 +6,7 @@ import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/restaurant.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
+import 'package:menu_advisor/src/providers/DataContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
@@ -34,6 +35,7 @@ class _FoodPageState extends State<FoodPage> {
   Api api = Api.instance;
   bool loading = true;
   String restaurantName;
+  bool switchingFavorite = false;
 
   @override
   void initState() {
@@ -48,6 +50,8 @@ class _FoodPageState extends State<FoodPage> {
       ).languageCode,
     )
         .then((res) {
+      if (!mounted) return;
+
       setState(() {
         restaurantName = res.name;
         loading = false;
@@ -106,8 +110,7 @@ class _FoodPageState extends State<FoodPage> {
                     ),
                   ),
                 ),
-                if (widget.food.price != null &&
-                    widget.food.price.amount != null) ...[
+                if (widget.food.price != null && widget.food.price.amount != null) ...[
                   SizedBox(height: 20),
                   Padding(
                     padding: const EdgeInsets.only(
@@ -132,9 +135,7 @@ class _FoodPageState extends State<FoodPage> {
                     right: 100.0,
                   ),
                   child: Column(
-                    crossAxisAlignment: loading
-                        ? CrossAxisAlignment.center
-                        : CrossAxisAlignment.start,
+                    crossAxisAlignment: loading ? CrossAxisAlignment.center : CrossAxisAlignment.start,
                     children: [
                       Text(
                         AppLocalizations.of(context).translate('product_of'),
@@ -169,8 +170,7 @@ class _FoodPageState extends State<FoodPage> {
                               height: 22,
                               child: FittedBox(
                                 child: CircularProgressIndicator(
-                                  valueColor:
-                                      AlwaysStoppedAnimation<Color>(CRIMSON),
+                                  valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
                                 ),
                               ),
                             ),
@@ -197,14 +197,104 @@ class _FoodPageState extends State<FoodPage> {
                         height: 5,
                       ),
                       Text(
-                        widget.food.description ??
-                            AppLocalizations.of(context)
-                                .translate('no_description'),
+                        widget.food.description ?? AppLocalizations.of(context).translate('no_description'),
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.normal,
                         ),
                       ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 30,
+                ),
+                Padding(
+                  padding: EdgeInsets.only(
+                    right: 3 * MediaQuery.of(context).size.width / 7,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 20.0,
+                        ),
+                        child: Text(
+                          'Attributs',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      widget.food.attributes.length > 0
+                          ? Consumer<DataContext>(
+                              builder: (_, dataContext, __) => Padding(
+                                padding: const EdgeInsets.only(
+                                  left: 5.0,
+                                ),
+                                child: Wrap(
+                                  spacing: 5,
+                                  children: widget.food.attributes
+                                      .map(
+                                        (e) => FittedBox(
+                                          child: Card(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(20),
+                                            ),
+                                            margin: EdgeInsets.zero,
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(8),
+                                              child: Builder(
+                                                builder: (_) {
+                                                  var attribute = dataContext.attributes.firstWhere(
+                                                    (element) => element['tag'] == e,
+                                                    orElse: null,
+                                                  );
+
+                                                  return Row(
+                                                    children: [
+                                                      if (attribute != null) ...[
+                                                        FadeInImage.assetNetwork(
+                                                          placeholder: 'assets/images/loading.gif',
+                                                          image: attribute['imageURL'],
+                                                          height: 14,
+                                                        ),
+                                                        SizedBox(
+                                                          width: 5,
+                                                        ),
+                                                      ],
+                                                      Text(
+                                                        attribute[Provider.of<SettingContext>(context).languageCode],
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                      .toList(),
+                                ),
+                              ),
+                            )
+                          : Padding(
+                              padding: const EdgeInsets.only(
+                                left: 20.0,
+                              ),
+                              child: Text(
+                                AppLocalizations.of(context).translate('no_attribute'),
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.normal,
+                                ),
+                              ),
+                            ),
                     ],
                   ),
                 ),
@@ -233,23 +323,46 @@ class _FoodPageState extends State<FoodPage> {
                     children: [
                       if (showFavorite) ...[
                         FloatingActionButton(
-                          onPressed: () {
-                            setState(() {
-                              isInFavorite = !isInFavorite;
-                            });
-                            Fluttertoast.showToast(
-                              msg: AppLocalizations.of(context).translate(
-                                isInFavorite
-                                    ? 'added_to_favorite'
-                                    : 'removed_from_favorite',
-                              ),
-                            );
-                          },
-                          child: Icon(
-                            isInFavorite
-                                ? Icons.favorite
-                                : Icons.favorite_border,
-                          ),
+                          onPressed: !switchingFavorite
+                              ? () async {
+                                  AuthContext authContext = Provider.of<AuthContext>(
+                                    context,
+                                    listen: false,
+                                  );
+
+                                  setState(() {
+                                    switchingFavorite = true;
+                                  });
+                                  if (!isInFavorite)
+                                    await authContext.addToFavoriteFoods(widget.food);
+                                  else
+                                    await authContext.removeFromFavoriteFoods(widget.food);
+                                  setState(() {
+                                    switchingFavorite = false;
+                                    isInFavorite = !isInFavorite;
+                                  });
+                                  Fluttertoast.showToast(
+                                    msg: AppLocalizations.of(context).translate(
+                                      isInFavorite ? 'added_to_favorite' : 'removed_from_favorite',
+                                    ),
+                                  );
+                                }
+                              : null,
+                          child: !switchingFavorite
+                              ? Icon(
+                                  isInFavorite ? Icons.favorite : Icons.favorite_border,
+                                )
+                              : SizedBox(
+                                  width: 15,
+                                  height: 15,
+                                  child: FittedBox(
+                                    child: CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
                         ),
                         SizedBox(
                           width: 10,
@@ -259,51 +372,38 @@ class _FoodPageState extends State<FoodPage> {
                         child: Consumer<BagContext>(
                           builder: (_, bagContext, __) => RaisedButton(
                             padding: EdgeInsets.all(20),
-                            color: bagContext.contains(widget.food)
-                                ? Colors.teal
-                                : CRIMSON,
+                            color: bagContext.contains(widget.food) ? Colors.teal : CRIMSON,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            onPressed: (bagContext.itemCount == 0) ||
-                                    (bagContext.pricelessItems &&
-                                        widget.food.price.amount == null) ||
-                                    (!bagContext.pricelessItems &&
-                                        widget.food.price.amount != null)
-                                ? () async {
-                                    if (bagContext.contains(widget.food)) {
-                                      var result = await showDialog(
-                                        context: context,
-                                        builder: (_) => ConfirmationDialog(
-                                          title: AppLocalizations.of(context)
-                                              .translate(
-                                                  'confirm_remove_from_cart_title'),
-                                          content: AppLocalizations.of(context)
-                                              .translate(
-                                                  'confirm_remove_from_cart_content'),
-                                        ),
-                                      );
+                            onPressed:
+                                (bagContext.itemCount == 0) || (bagContext.pricelessItems && widget.food.price.amount == null) || (!bagContext.pricelessItems && widget.food.price.amount != null)
+                                    ? () async {
+                                        if (bagContext.contains(widget.food)) {
+                                          var result = await showDialog(
+                                            context: context,
+                                            builder: (_) => ConfirmationDialog(
+                                              title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
+                                              content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
+                                            ),
+                                          );
 
-                                      if (result is bool && result) {
-                                        bagContext.removeItem(widget.food);
+                                          if (result is bool && result) {
+                                            bagContext.removeItem(widget.food);
+                                          }
+                                        } else {
+                                          bool result = await showDialog<bool>(
+                                            context: context,
+                                            builder: (_) => AddToBagDialog(
+                                              food: widget.food,
+                                            ),
+                                          );
+                                          if (result is bool && result) {}
+                                        }
                                       }
-                                    } else {
-                                      bool result = await showDialog<bool>(
-                                        context: context,
-                                        builder: (_) => AddToBagDialog(
-                                          food: widget.food,
-                                        ),
-                                      );
-                                      if (result is bool && result) {}
-                                    }
-                                  }
-                                : null,
+                                    : null,
                             child: Text(
-                              bagContext.contains(widget.food)
-                                  ? AppLocalizations.of(context)
-                                      .translate('remove_from_cart')
-                                  : AppLocalizations.of(context)
-                                      .translate("add_to_cart"),
+                              bagContext.contains(widget.food) ? AppLocalizations.of(context).translate('remove_from_cart') : AppLocalizations.of(context).translate("add_to_cart"),
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -348,15 +448,11 @@ class _FoodPageState extends State<FoodPage> {
                             child: Container(
                               child: Center(
                                 child: Hero(
-                                  tag: widget.imageTag ??
-                                      'foodImage${widget.food.id}',
+                                  tag: widget.imageTag ?? 'foodImage${widget.food.id}',
                                   child: widget.food.imageURL != null
                                       ? Image.network(
                                           widget.food.imageURL,
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width -
-                                              100,
+                                          width: MediaQuery.of(context).size.width - 100,
                                         )
                                       : Icon(
                                           Icons.fastfood,
@@ -376,7 +472,7 @@ class _FoodPageState extends State<FoodPage> {
                   child: widget.food.imageURL != null
                       ? Image.network(
                           widget.food.imageURL,
-                          width: 250,
+                          width: 4 * MediaQuery.of(context).size.width / 7,
                         )
                       : Icon(
                           Icons.fastfood,

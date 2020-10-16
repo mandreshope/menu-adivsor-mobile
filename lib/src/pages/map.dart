@@ -7,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong/latlong.dart';
+import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/restaurant.dart';
@@ -30,6 +31,7 @@ class _MapPageState extends State<MapPage> {
   Timer _updateLocationInterval;
   Timer _timer;
   List<SearchResult> _nearestRestaurants = [];
+  Map<String, dynamic> filters = Map();
   bool _loading = false;
   Api _api = Api.instance;
 
@@ -100,6 +102,7 @@ class _MapPageState extends State<MapPage> {
             listen: false,
           ).languageCode,
           type: 'restaurant',
+          filters: filters,
         );
       } catch (error) {} finally {
         if (mounted)
@@ -177,15 +180,12 @@ class _MapPageState extends State<MapPage> {
                                   width: 80,
                                   height: 60,
                                   point: LatLng(
-                                    restaurant.content['location']
-                                        ['coordinates'][1],
-                                    restaurant.content['location']
-                                        ['coordinates'][0],
+                                    restaurant.content['location']['coordinates'][1],
+                                    restaurant.content['location']['coordinates'][0],
                                   ),
                                   builder: (BuildContext context) => Container(
                                     child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
                                         Text(
                                           restaurant.content['name'],
@@ -215,8 +215,7 @@ class _MapPageState extends State<MapPage> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Text(
-                                    AppLocalizations.of(context)
-                                        .translate('you'),
+                                    AppLocalizations.of(context).translate('you'),
                                     style: TextStyle(
                                       color: CRIMSON,
                                       fontWeight: FontWeight.bold,
@@ -273,8 +272,31 @@ class _MapPageState extends State<MapPage> {
                       child: TextFormField(
                         onChanged: _onChanged,
                         decoration: InputDecoration.collapsed(
-                          hintText: AppLocalizations.of(context)
-                              .translate("find_restaurant"),
+                          hintText: AppLocalizations.of(context).translate("find_restaurant"),
+                        ),
+                      ),
+                    ),
+                    FittedBox(
+                      fit: BoxFit.contain,
+                      child: IconButton(
+                        onPressed: () async {
+                          var result = await showDialog<Map<String, dynamic>>(
+                            context: context,
+                            builder: (_) => SearchSettingDialog(
+                              languageCode: Provider.of<SettingContext>(context).languageCode,
+                              filters: filters,
+                              type: 'restaurant',
+                            ),
+                          );
+                          if (result != null && result['filters'] is Map) {
+                            setState(() {
+                              filters = result['filters'];
+                            });
+                            _initSearch();
+                          }
+                        },
+                        icon: FaIcon(
+                          FontAwesomeIcons.slidersH,
                         ),
                       ),
                     ),
@@ -316,14 +338,12 @@ class _MapPageState extends State<MapPage> {
                                       .map(
                                         (e) => Builder(
                                           builder: (_) {
-                                            final Restaurant restaurant =
-                                                Restaurant.fromJson(e.content);
+                                            final Restaurant restaurant = Restaurant.fromJson(e.content);
 
                                             return Card(
                                               elevation: 4.0,
                                               child: InkWell(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
+                                                borderRadius: BorderRadius.circular(10),
                                                 onTap: () {
                                                   RouteUtil.goTo(
                                                     context: context,
@@ -334,20 +354,14 @@ class _MapPageState extends State<MapPage> {
                                                   );
                                                 },
                                                 child: Container(
-                                                  padding:
-                                                      const EdgeInsets.all(10),
+                                                  padding: const EdgeInsets.all(10),
                                                   child: Row(
-                                                    mainAxisSize:
-                                                        MainAxisSize.max,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .center,
+                                                    mainAxisSize: MainAxisSize.max,
+                                                    crossAxisAlignment: CrossAxisAlignment.center,
                                                     children: [
                                                       FadeInImage.assetNetwork(
-                                                        image:
-                                                            restaurant.imageURL,
-                                                        placeholder:
-                                                            'assets/images/loading.gif',
+                                                        image: restaurant.imageURL,
+                                                        placeholder: 'assets/images/loading.gif',
                                                         height: 20,
                                                       ),
                                                       SizedBox(width: 20),
@@ -356,26 +370,19 @@ class _MapPageState extends State<MapPage> {
                                                       ),
                                                       Spacer(),
                                                       IconButton(
-                                                        padding:
-                                                            EdgeInsets.zero,
+                                                        padding: EdgeInsets.zero,
                                                         icon: Icon(
-                                                          Icons
-                                                              .remove_red_eye_outlined,
+                                                          Icons.remove_red_eye_outlined,
                                                         ),
-                                                        constraints:
-                                                            BoxConstraints(
+                                                        constraints: BoxConstraints(
                                                           maxHeight: 26,
                                                           maxWidth: 26,
                                                         ),
                                                         onPressed: () {
                                                           _mapController.move(
                                                             LatLng(
-                                                              restaurant
-                                                                  .location
-                                                                  .coordinates[0],
-                                                              restaurant
-                                                                  .location
-                                                                  .coordinates[1],
+                                                              restaurant.location.coordinates[0],
+                                                              restaurant.location.coordinates[1],
                                                             ),
                                                             15,
                                                           );
@@ -386,8 +393,7 @@ class _MapPageState extends State<MapPage> {
                                                 ),
                                               ),
                                               shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
+                                                borderRadius: BorderRadius.circular(10),
                                               ),
                                             );
                                           },
@@ -397,8 +403,7 @@ class _MapPageState extends State<MapPage> {
                                 ],
                               )
                             : Text(
-                                AppLocalizations.of(context)
-                                    .translate('no_result'),
+                                AppLocalizations.of(context).translate('no_result'),
                                 textAlign: TextAlign.center,
                               ),
                       ),

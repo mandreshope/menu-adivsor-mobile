@@ -3,7 +3,14 @@ import 'package:menu_advisor/src/models.dart';
 
 class BagContext extends ChangeNotifier {
   Map<Food, int> _items = Map();
-  int _itemCount = 0;
+  Restaurant _currentOrigin;
+
+  Restaurant get currentOrigin => _currentOrigin;
+
+  set currentOrigin(Restaurant currentOrigin) {
+    _currentOrigin = currentOrigin;
+    notifyListeners();
+  }
 
   bool get pricelessItems {
     return _items.keys.length > 0 &&
@@ -13,10 +20,7 @@ class BagContext extends ChangeNotifier {
   }
 
   bool addItem(Food item, number) {
-    if (_itemCount == 0 ||
-        (pricelessItems && (item.price == null || item.price.amount == null)) ||
-        (!pricelessItems && item.price != null && item.price.amount != null)) {
-      _itemCount++;
+    if (itemCount == 0 || (pricelessItems && (item.price == null || item.price.amount == null)) || (!pricelessItems && item.price != null && item.price.amount != null)) {
       _items.update(
         item,
         (value) => number,
@@ -31,21 +35,20 @@ class BagContext extends ChangeNotifier {
 
   Map<Food, int> get items => _items;
 
-  int get itemCount => _itemCount;
+  int get itemCount => _items.length;
 
   double get totalPrice {
     double totalPrice = 0;
 
     _items.forEach((food, count) {
-      if (food.price != null && food.price.amount != null)
-        totalPrice += food.price.amount / 100 * count;
+      if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100 * count;
     });
 
     return totalPrice;
   }
 
   bool contains(Food food) {
-    return _itemCount > 0 &&
+    return itemCount > 0 &&
         _items.keys.firstWhere(
               (element) => element.id == food.id,
               orElse: () => null,
@@ -55,7 +58,6 @@ class BagContext extends ChangeNotifier {
 
   void removeItem(Food food) {
     _items.removeWhere((key, _) => key.id == food.id);
-    _itemCount--;
     notifyListeners();
   }
 
@@ -77,7 +79,6 @@ class BagContext extends ChangeNotifier {
 
   void clear() {
     _items.clear();
-    _itemCount = 0;
     notifyListeners();
   }
 }

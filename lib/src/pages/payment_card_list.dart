@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_credit_card/credit_card_widget.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
+import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/add_payment_card.dart';
+import 'package:menu_advisor/src/pages/home.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
+import 'package:menu_advisor/src/providers/BagContext.dart';
+import 'package:menu_advisor/src/providers/CommandContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
-import 'package:menu_advisor/src/types.dart';
+import 'package:menu_advisor/src/services/stripe.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:provider/provider.dart';
@@ -22,6 +28,8 @@ class PaymentCardListPage extends StatefulWidget {
 }
 
 class _PaymentCardListPageState extends State<PaymentCardListPage> {
+  bool isPaying = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,83 +38,149 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
           AppLocalizations.of(context).translate('my_payment_cards'),
         ),
       ),
-      body: Consumer<AuthContext>(
-        builder: (_, authContext, __) {
-          var user = authContext.currentUser;
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Consumer<AuthContext>(
+            builder: (_, authContext, __) {
+              var user = authContext.currentUser;
 
-          return user.paymentCards.length > 0
-              ? SingleChildScrollView(
-                  physics: BouncingScrollPhysics(),
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      for (PaymentCard creditCard in user.paymentCards)
-                        Material(
-                          child: InkWell(
-                            onLongPress: () async {
-                              var result = await showDialog(
-                                context: context,
-                                builder: (_) => ConfirmationDialog(
-                                  title: AppLocalizations.of(context).translate(
-                                      'confirm_remove_payment_card_title'),
-                                  content: AppLocalizations.of(context)
-                                      .translate(
-                                          'confirm_remove_payment_card_content'),
+              return user.paymentCards.length > 0
+                  ? SingleChildScrollView(
+                      physics: BouncingScrollPhysics(),
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          for (PaymentCard creditCard in user.paymentCards)
+                            Material(
+                              child: InkWell(
+                                onLongPress: () async {
+                                  var result = await showDialog(
+                                    context: context,
+                                    builder: (_) => ConfirmationDialog(
+                                      title: AppLocalizations.of(context)
+                                          .translate(
+                                              'confirm_remove_payment_card_title'),
+                                      content: AppLocalizations.of(context)
+                                          .translate(
+                                              'confirm_remove_payment_card_content'),
+                                    ),
+                                  );
+
+                                  if (result is bool && result) {
+                                    // Remove card
+                                    await authContext
+                                        .removePaymentCard(creditCard);
+                                  }
+                                },
+                                onTap: widget.isPaymentStep
+                                    ? () async {
+                                        setState(() {
+                                          isPaying = true;
+                                        });
+                                        try {
+                                          await StripeService
+                                              .payViaExistingCard(
+                                            amount: (Provider.of<BagContext>(
+                                                      context,
+                                                      listen: false,
+                                                    ).totalPrice *
+                                                    100)
+                                                .floor()
+                                                .toString(),
+                                            card: creditCard,
+                                            currency: 'eur',
+                                          );
+                                          Fluttertoast.showToast(
+                                            msg: AppLocalizations.of(
+                                              context,
+                                            ).translate('success'),
+                                          );
+
+                                          Provider.of<BagContext>(
+                                            context,
+                                            listen: false,
+                                          ).clear();
+                                          Provider.of<CommandContext>(
+                                            context,
+                                            listen: false,
+                                          ).clear();
+
+                                          RouteUtil.goTo(
+                                            context: context,
+                                            child: HomePage(),
+                                            routeName: homeRoute,
+                                            method: RoutingMethod.atTop,
+                                          );
+                                        } catch (error) {
+                                          Fluttertoast.showToast(
+                                            msg: 'Carte invalide',
+                                          );
+                                        } finally {
+                                          setState(() {
+                                            isPaying = false;
+                                          });
+                                        }
+                                      }
+                                    : null,
+                                child: CreditCardWidget(
+                                  cardHolderName: creditCard.owner,
+                                  showBackView: false,
+                                  cvvCode: creditCard.securityCode.toString(),
+                                  cardNumber: creditCard.cardNumber.toString(),
+                                  expiryDate:
+                                      '${(creditCard.expirationDate.month < 10 ? '0' : '') + creditCard.expirationDate.month.toString()}/${creditCard.expirationDate.year.toString()}',
                                 ),
-                              );
-
-                              if (result is bool && result) {
-                                // Remove card
-                              }
-                            },
-                            onTap: widget.isPaymentStep ? () {} : null,
-                            child: CreditCardWidget(
-                              cardHolderName: creditCard.owner,
-                              showBackView: false,
-                              cvvCode: creditCard.securityCode.toString(),
-                              cardNumber: creditCard.cardNumber.toString(),
-                              expiryDate:
-                                  '${(creditCard.expirationDate.month < 10 ? '0' : '') + creditCard.expirationDate.month.toString()}/${creditCard.expirationDate.year.toString()}',
+                              ),
+                            ),
+                        ],
+                      ),
+                    )
+                  : Container(
+                      width: double.infinity,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.warning,
+                            size: 80,
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 40.0,
+                            ),
+                            child: Text(
+                              AppLocalizations.of(context)
+                                  .translate('no_payment_card')
+                                  .replaceFirst('\$', '+'),
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 22,
+                                letterSpacing: 1.2,
+                              ),
                             ),
                           ),
-                        ),
-                    ],
-                  ),
-                )
-              : Container(
-                  width: double.infinity,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.warning,
-                        size: 80,
+                        ],
                       ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 40.0,
-                        ),
-                        child: Text(
-                          AppLocalizations.of(context)
-                              .translate('no_payment_card')
-                              .replaceFirst('\$', '+'),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 22,
-                            letterSpacing: 1.2,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-        },
+                    );
+            },
+          ),
+          if (isPaying)
+            Container(
+              color: Colors.black45,
+              child: Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
+                ),
+              ),
+            )
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {

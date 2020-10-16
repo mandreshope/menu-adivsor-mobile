@@ -1,9 +1,6 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/services/api.dart';
-import 'package:menu_advisor/src/types.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthContext extends ChangeNotifier {
@@ -132,4 +129,13 @@ class AuthContext extends ChangeNotifier {
 
   Future updatePassword(String oldPassword, String newPassword) =>
       _api.updatePassword(oldPassword, newPassword);
+
+  Future removePaymentCard(PaymentCard creditCard) =>
+      _api.removePaymentCard(creditCard);
+
+  Future updateUserProfile(Map<String, dynamic> data) async {
+    await _api.updateUserProfile(data);
+    currentUser = await _api.getMe();
+    notifyListeners();
+  }
 }

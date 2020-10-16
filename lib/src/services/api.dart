@@ -158,7 +158,9 @@ class Api {
         return registrationToken;
       }
 
-      return Future.error(jsonDecode(response.body));
+      return Future.error(
+        jsonDecode(response.body),
+      );
     });
   }
 
@@ -184,7 +186,9 @@ class Api {
         return list.map((data) => Restaurant.fromJson(data)).toList();
       }
 
-      return Future.error(jsonDecode(response.body));
+      return Future.error(
+        jsonDecode(response.body),
+      );
     });
   }
 
@@ -215,7 +219,9 @@ class Api {
         return list.map((data) => Food.fromJson(data)).toList();
       }
 
-      return Future.error(jsonDecode(response.body));
+      return Future.error(
+        jsonDecode(response.body),
+      );
     });
   }
 
@@ -228,7 +234,9 @@ class Api {
           return list.map((data) => FoodCategory.fromJson(data)).toList();
         }
 
-        return Future.error(jsonDecode(response.body));
+        return Future.error(
+          jsonDecode(response.body),
+        );
       });
 
   Future<Food> getFood({
@@ -243,7 +251,9 @@ class Api {
       ).then<Food>((response) {
         if (response.statusCode == 200) return Food.fromJson(jsonDecode(response.body));
 
-        return Future.error(jsonDecode(response.body));
+        return Future.error(
+          jsonDecode(response.body),
+        );
       });
 
   Future<Restaurant> getRestaurant({
@@ -258,7 +268,9 @@ class Api {
       ).then<Restaurant>((response) {
         if (response.statusCode == 200) return Restaurant.fromJson(jsonDecode(response.body));
 
-        return Future.error(jsonDecode(response.body));
+        return Future.error(
+          jsonDecode(response.body),
+        );
       });
 
   Future<bool> addToFavoriteFood(Food food) async {
@@ -281,9 +293,8 @@ class Api {
     return http.delete('$_apiURL/users/favoriteFoods/${food.id}', headers: {
       "authorization": "Bearer $_accessToken",
     }).then((response) {
-      if (response.statusCode == 200) {
-        return true;
-      }
+      if (response.statusCode == 200) return true;
+
       return false;
     });
   }
@@ -334,7 +345,9 @@ class Api {
         return results.map((e) => SearchResult.fromJson(e)).toList();
       }
 
-      return Future.error(jsonDecode(response.body));
+      return Future.error(
+        jsonDecode(response.body),
+      );
     });
   }
 
@@ -343,7 +356,9 @@ class Api {
           return response.body;
         }
 
-        return Future.error(jsonDecode(response.body));
+        return Future.error(
+          jsonDecode(response.body),
+        );
       });
 
   Future<String> resetPassword(String email) => http.post('$_apiURL/users/reset-password', body: {
@@ -354,7 +369,9 @@ class Api {
           return data['token'];
         }
 
-        return Future.error(jsonDecode(response.body));
+        return Future.error(
+          jsonDecode(response.body),
+        );
       });
 
   Future<bool> confirmResetPassword({
@@ -381,7 +398,9 @@ class Api {
       (response) {
         if (response.statusCode == 200) return User.fromJson(jsonDecode(response.body));
 
-        return Future.error(jsonDecode(response.body));
+        return Future.error(
+          jsonDecode(response.body),
+        );
       },
     );
   }
@@ -391,19 +410,28 @@ class Api {
 
     return http.post('$_apiURL/users/paymentCards', body: paymentCard.toJson().map<String, String>((key, value) => MapEntry(key, value.toString())), headers: {
       'authorization': 'Bearer $_accessToken',
-    }).then((response) {
-      if (response.statusCode != 200) return Future.error(jsonDecode(response.body));
-    });
+    }).then(
+      (response) {
+        if (response.statusCode != 200)
+          return Future.error(
+            jsonDecode(response.body),
+          );
+      },
+    );
   }
 
-  Future<List<Menu>> getMenus(String lang, String id) => http.get('$_apiURL/restaurants/$id/menus?lang=$lang').then<List<Menu>>((response) {
-        if (response.statusCode == 200) {
-          List<dynamic> datas = jsonDecode(response.body);
-          return datas.map<Menu>((e) => Menu.fromJson(e)).toList();
-        }
+  Future<List<Menu>> getMenus(String lang, String id) => http.get('$_apiURL/restaurants/$id/menus?lang=$lang').then<List<Menu>>(
+        (response) {
+          if (response.statusCode == 200) {
+            List<dynamic> datas = jsonDecode(response.body);
+            return datas.map<Menu>((e) => Menu.fromJson(e)).toList();
+          }
 
-        return Future.error(jsonDecode(response.body));
-      });
+          return Future.error(
+            jsonDecode(response.body),
+          );
+        },
+      );
 
   Future updatePassword(String oldPassword, String newPassword) async {
     await _refreshTokens();
@@ -413,9 +441,14 @@ class Api {
       'newPassword': newPassword,
     }, headers: {
       'authorization': 'Bearer $_accessToken',
-    }).then((response) {
-      if (response.statusCode != 200) return Future.error(jsonDecode(response.body));
-    });
+    }).then(
+      (response) {
+        if (response.statusCode != 200)
+          return Future.error(
+            jsonDecode(response.body),
+          );
+      },
+    );
   }
 
   Future removePaymentCard(PaymentCard creditCard) async {
@@ -423,18 +456,34 @@ class Api {
 
     return http.delete('$_apiURL/users/paymentCards/${creditCard.id}', headers: {
       'authorization': 'Bearer $_accessToken',
-    });
+    }).then(
+      (response) {
+        if (response.statusCode != 200)
+          return Future.error(
+            jsonDecode(response.body),
+          );
+      },
+    );
   }
 
   Future updateUserProfile(Map<String, dynamic> data) async {
     await _refreshTokens();
 
-    return http.put(
+    return http
+        .put(
       '$_apiURL/users',
       headers: {
         'authorization': 'Bearer $_accessToken',
       },
       body: data,
+    )
+        .then(
+      (response) {
+        if (response.statusCode != 200)
+          return Future.error(
+            jsonDecode(response.body),
+          );
+      },
     );
   }
 }

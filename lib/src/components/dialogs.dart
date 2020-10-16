@@ -472,173 +472,169 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                     .toList(),
               ),
             ),
-            if (type != 'restaurant') ...[
-              SizedBox(
-                height: 15,
+            SizedBox(
+              height: 15,
+            ),
+            Text(
+              AppLocalizations.of(context).translate('categories'),
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
               ),
-              Text(
-                AppLocalizations.of(context).translate('categories'),
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                physics: BouncingScrollPhysics(),
-                child: Row(
-                  children: [
-                    Theme(
-                      data: ThemeData(
-                        brightness: !filters.containsKey('category') ? Brightness.dark : Brightness.light,
-                        cardColor: !filters.containsKey('category') ? CRIMSON : Colors.white,
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              physics: BouncingScrollPhysics(),
+              child: Row(
+                children: [
+                  Theme(
+                    data: ThemeData(
+                      brightness: !filters.containsKey('category') ? Brightness.dark : Brightness.light,
+                      cardColor: !filters.containsKey('category') ? CRIMSON : Colors.white,
+                    ),
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
                       ),
-                      child: Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(50),
-                          onTap: () {
-                            setState(() {
-                              filters.remove('category');
-                            });
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(10),
-                            child: Text(
-                              'Tous',
-                            ),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(50),
+                        onTap: () {
+                          setState(() {
+                            filters.remove('category');
+                          });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          child: Text(
+                            'Tous',
                           ),
                         ),
                       ),
                     ),
-                    ...Provider.of<DataContext>(context)
-                        .foodCategories
-                        .map(
-                          (e) => Theme(
-                            data: ThemeData(
-                              brightness: filters.containsKey('category') && filters['category'] == e.id ? Brightness.dark : Brightness.light,
-                              cardColor: filters.containsKey('category') && filters['category'] == e.id ? CRIMSON : Colors.white,
+                  ),
+                  ...Provider.of<DataContext>(context)
+                      .foodCategories
+                      .map(
+                        (e) => Theme(
+                          data: ThemeData(
+                            brightness: filters.containsKey('category') && filters['category'] == e.id ? Brightness.dark : Brightness.light,
+                            cardColor: filters.containsKey('category') && filters['category'] == e.id ? CRIMSON : Colors.white,
+                          ),
+                          child: Card(
+                            color: filters.containsKey('category') && filters['category'] == e.id ? CRIMSON : Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(50),
                             ),
-                            child: Card(
-                              color: filters.containsKey('category') && filters['category'] == e.id ? CRIMSON : Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(50),
-                              ),
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(50),
-                                onTap: () {
-                                  setState(() {
-                                    filters['category'] = e.id;
-                                  });
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.all(10),
-                                  child: Text(
-                                    e.name[widget.languageCode],
-                                  ),
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(50),
+                              onTap: () {
+                                setState(() {
+                                  filters['category'] = e.id;
+                                });
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(10),
+                                child: Text(
+                                  e.name[widget.languageCode],
                                 ),
                               ),
                             ),
                           ),
-                        )
-                        .toList(),
-                  ],
-                ),
-              ),
-            ],
-            if (type != 'restaurant') ...[
-              SizedBox(
-                height: 15,
-              ),
-              Text(
-                AppLocalizations.of(context).translate('attributes'),
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                physics: BouncingScrollPhysics(),
-                child: Row(
-                  children: [
-                    Theme(
-                      data: ThemeData(
-                        brightness: !filters.containsKey('attributes') ? Brightness.dark : Brightness.light,
-                        cardColor: !filters.containsKey('attributes') ? CRIMSON : Colors.white,
-                      ),
-                      child: Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50),
                         ),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(50),
-                          onTap: () {
-                            setState(() {
-                              filters.remove('attributes');
-                            });
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(10),
-                            child: Text(
-                              'Tous',
-                            ),
+                      )
+                      .toList(),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            Text(
+              AppLocalizations.of(context).translate('attributes'),
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              physics: BouncingScrollPhysics(),
+              child: Row(
+                children: [
+                  Theme(
+                    data: ThemeData(
+                      brightness: !filters.containsKey('attributes') ? Brightness.dark : Brightness.light,
+                      cardColor: !filters.containsKey('attributes') ? CRIMSON : Colors.white,
+                    ),
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(50),
+                        onTap: () {
+                          setState(() {
+                            filters.remove('attributes');
+                          });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          child: Text(
+                            'Tous',
                           ),
                         ),
                       ),
                     ),
-                    ...Provider.of<DataContext>(context)
-                        .attributes
-                        .map(
-                          (e) => Theme(
-                            data: ThemeData(
-                              brightness: filters.containsKey('attributes') && filters['attributes'] == e['tag'] ? Brightness.dark : Brightness.light,
-                              cardColor: filters.containsKey('attributes') && filters['attributes'] == e['tag'] ? CRIMSON : Colors.white,
+                  ),
+                  ...Provider.of<DataContext>(context)
+                      .attributes
+                      .map(
+                        (e) => Theme(
+                          data: ThemeData(
+                            brightness: filters.containsKey('attributes') && filters['attributes'] == e['tag'] ? Brightness.dark : Brightness.light,
+                            cardColor: filters.containsKey('attributes') && filters['attributes'] == e['tag'] ? CRIMSON : Colors.white,
+                          ),
+                          child: Card(
+                            color: filters.containsKey('attributes') && filters['attributes'] == e['tag'] ? CRIMSON : Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(50),
                             ),
-                            child: Card(
-                              color: filters.containsKey('attributes') && filters['attributes'] == e['tag'] ? CRIMSON : Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(50),
-                              ),
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(50),
-                                onTap: () {
-                                  setState(() {
-                                    filters['attributes'] = e['tag'];
-                                  });
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.all(10),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Image.asset(
-                                        e['imageURL'],
-                                        height: 18,
-                                      ),
-                                      SizedBox(
-                                        width: 5,
-                                      ),
-                                      Text(
-                                        e[widget.languageCode],
-                                      ),
-                                    ],
-                                  ),
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(50),
+                              onTap: () {
+                                setState(() {
+                                  filters['attributes'] = e['tag'];
+                                });
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(10),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Image.asset(
+                                      e['imageURL'],
+                                      height: 18,
+                                    ),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text(
+                                      e[widget.languageCode],
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
                           ),
-                        )
-                        .toList(),
-                  ],
-                ),
+                        ),
+                      )
+                      .toList(),
+                ],
               ),
-            ],
+            ),
             SizedBox(
               height: 20,
             ),
