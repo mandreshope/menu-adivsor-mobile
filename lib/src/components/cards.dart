@@ -381,38 +381,20 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
             expanded = true;
           });
         else {
-          CartContext cartContext = Provider.of<CartContext>(
-            context,
-            listen: false,
-          );
-          if ((cartContext.itemCount == 0) ||
-              (cartContext.contains(widget.food)) ||
-              (cartContext.pricelessItems && widget.food.price.amount == null) ||
-              (!cartContext.pricelessItems && widget.food.price.amount != null)) {
-            if (cartContext.contains(widget.food)) {
-              var result = await showDialog(
-                context: context,
-                builder: (_) => ConfirmationDialog(
-                  title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
-                  content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
+          var result = await showDialog(
+            context: context,
+            builder: (_) => Container(
+              child: Dialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
                 ),
-              );
-
-              if (result is bool && result) {
-                cartContext.removeItem(widget.food);
-              }
-            } else
-              showDialog(
-                context: context,
-                builder: (_) => AddToBagDialog(
+                child: FoodPage(
                   food: widget.food,
+                  modalMode: true,
                 ),
-              );
-          } else {
-            Fluttertoast.showToast(
-              msg: AppLocalizations.of(context).translate('priceless_and_not_priceless_not_allowed'),
-            );
-          }
+              ),
+            ),
+          );
         }
       },
       child: Card(
