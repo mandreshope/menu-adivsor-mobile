@@ -173,7 +173,14 @@ class User {
     this.commands,
   });
 
-  Map<String, dynamic> toJson() => {'id': id, 'email': email, 'phoneNumber': phoneNumber, 'photoURL': photoURL, 'address': address, 'name': name.toJson()};
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'email': email,
+        'phoneNumber': phoneNumber,
+        'photoURL': photoURL,
+        'address': address,
+        'name': name.toJson(),
+      };
 }
 
 class Command {
@@ -182,7 +189,7 @@ class Command {
   final String commandType;
   final int totalPrice;
   final bool validated;
-  final List<Food> items;
+  final List<Map> items;
   final DateTime createdAt;
 
   Command({
@@ -201,7 +208,7 @@ class Command {
         commandType: json['commandType'],
         totalPrice: json['totalPrice'],
         validated: json['validated'],
-        items: (json['items'] as List).map<Food>((e) => Food.fromJson(e)).toList(),
+        items: json['items'],
         createdAt: json['createdAt'] != null ? DateTime.fromMillisecondsSinceEpoch(json['createdAt']) : null,
       );
 }
