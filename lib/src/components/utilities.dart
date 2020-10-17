@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/pages/home.dart';
 import 'package:menu_advisor/src/pages/login.dart';
 import 'package:menu_advisor/src/pages/map.dart';
+import 'package:menu_advisor/src/pages/order.dart';
 import 'package:menu_advisor/src/pages/profile.dart';
 import 'package:menu_advisor/src/pages/qr_code_scan.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
+import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
+import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:provider/provider.dart';
 
@@ -121,18 +125,31 @@ class ScaffoldWithBottomMenu extends StatelessWidget {
               ),
               Spacer(),
               Expanded(
-                child: IconButton(
-                  icon: FaIcon(
-                    FontAwesomeIcons.shoppingBag,
-                    color: Colors.white,
+                child: Consumer<CartContext>(
+                  builder: (_, cartContext, __) => IconButton(
+                    icon: FaIcon(
+                      FontAwesomeIcons.shoppingBag,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      /* showModalBottomSheet(
+                        context: context,
+                        builder: (_) => BagModal(),
+                        backgroundColor: Colors.transparent,
+                      );*/
+                      if (cartContext.itemCount == 0)
+                        Fluttertoast.showToast(
+                          msg: AppLocalizations.of(context)
+                              .translate('empty_cart'),
+                        );
+                      else
+                        RouteUtil.goTo(
+                          context: context,
+                          child: OrderPage(),
+                          routeName: orderRoute,
+                        );
+                    },
                   ),
-                  onPressed: () {
-                    showModalBottomSheet(
-                      context: context,
-                      builder: (_) => BagModal(),
-                      backgroundColor: Colors.transparent,
-                    );
-                  },
                 ),
               ),
               Expanded(
