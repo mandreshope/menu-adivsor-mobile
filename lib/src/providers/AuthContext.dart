@@ -34,8 +34,6 @@ class AuthContext extends ChangeNotifier {
       _api.init(accessToken, refreshToken);
       currentUser = await _api.getMe();
     }
-
-    return;
   }
 
   Future<bool> login(String email, String password) => _api
