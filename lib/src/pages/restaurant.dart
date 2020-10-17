@@ -14,6 +14,7 @@ import 'package:menu_advisor/src/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:provider/provider.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class RestaurantPage extends StatefulWidget {
   final String restaurant;
@@ -33,7 +34,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
   bool searchLoading = false;
   bool loading = true;
   bool switchingFavorite = false;
-  TabController controller;
+  TabController tabController;
   int activeTabIndex = 0;
 
   String searchValue = '';
@@ -51,22 +52,18 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
 
   String foodType;
 
-  bool loadingFoods = true;
   Map<String, List<Food>> foods = Map();
 
   Restaurant restaurant;
+
+  ItemScrollController itemScrollController = ItemScrollController();
+  ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
 
   @override
   void initState() {
     super.initState();
 
     _lang = Provider.of<SettingContext>(context, listen: false).languageCode;
-
-    controller = TabController(
-      vsync: this,
-      initialIndex: 0,
-      length: 3,
-    );
 
     api
         .getRestaurant(
@@ -95,11 +92,30 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
           'type': 'drink',
         },
       );
-      setState(() {
-        filters['restaurant'] = restaurant.id;
-        loading = false;
-        foodType = restaurant.foodTypes.first['tag'];
+
+      tabController = TabController(
+        vsync: this,
+        initialIndex: 0,
+        length: 3 + restaurant.foodTypes.length,
+      );
+
+      tabController.addListener(() {
+        print(tabController.index);
+        itemScrollController.scrollTo(
+          index: tabController.index,
+          duration: Duration(
+            milliseconds: 400,
+          ),
+        );
       });
+
+      itemPositionsListener.itemPositions.addListener(() {
+        print('Scroll position: ${itemPositionsListener.itemPositions.value.first.index}');
+        tabController.animateTo(itemPositionsListener.itemPositions.value.first.index);
+      });
+
+      filters['restaurant'] = restaurant.id;
+      foodType = restaurant.foodTypes.first['tag'];
 
       for (int i = 0; i < restaurant.foodTypes.length; i++) {
         var element = restaurant.foodTypes[i]['tag'];
@@ -114,8 +130,9 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
           },
         );
       }
+
       setState(() {
-        loadingFoods = false;
+        loading = false;
       });
     }).catchError((error) {
       print(error);
@@ -240,17 +257,15 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                   title: Text(restaurant.name),
                 )
               : null,
-          body: SafeArea(
-            child: loading
-                ? Center(
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
-                    ),
-                  )
-                : _isSearching
-                    ? _renderSearchView()
-                    : _renderMainScreen(),
-          ),
+          body: loading
+              ? Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
+                  ),
+                )
+              : _isSearching
+                  ? _renderSearchView()
+                  : _renderMainScreen(),
         ),
       ),
     );
@@ -455,216 +470,203 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
   }
 
   Widget _renderMainScreen() {
-    return CustomScrollView(
-      physics: BouncingScrollPhysics(),
-      slivers: [
-        SliverAppBar(
-          expandedHeight: 160.0,
-          floating: false,
-          pinned: true,
-          stretch: true,
-          centerTitle: false,
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                restaurant.name,
-              ),
-              SizedBox(
-                height: 5,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Icon(
-                    Icons.location_on,
-                    size: 14,
-                  ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Text(
-                    restaurant.address,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          bottom: TabBar(
-            controller: controller,
-            tabs: [
-              Tab(
-                text: AppLocalizations.of(context).translate('a_la_carte'),
-                icon: FaIcon(
-                  FontAwesomeIcons.list,
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              restaurant.name,
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.location_on,
+                  size: 14,
                 ),
-              ),
-              Tab(
-                text: AppLocalizations.of(context).translate('menus'),
-                icon: FaIcon(
-                  FontAwesomeIcons.hamburger,
+                SizedBox(
+                  width: 5,
                 ),
-              ),
-              Tab(
-                text: AppLocalizations.of(context).translate('drinks'),
-                icon: FaIcon(
-                  FontAwesomeIcons.wineGlass,
+                Text(
+                  restaurant.address,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
+              ],
+            ),
+          ],
+        ),
+        bottom: TabBar(
+          controller: tabController,
+          isScrollable: true,
+          tabs: [
+            Tab(
+              text: AppLocalizations.of(context).translate('a_la_carte'),
+            ),
+            for (var foodType in restaurant.foodTypes)
+              Tab(
+                text: foodType[Provider.of<SettingContext>(context).languageCode],
               ),
-            ],
-          ),
-          actions: [
-            if (showFavoriteButton)
-              switchingFavorite
-                  ? Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Center(
-                        child: SizedBox(
-                          height: 14,
-                          child: FittedBox(
-                            child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
-                            ),
+            Tab(
+              text: AppLocalizations.of(context).translate('menus'),
+            ),
+            Tab(
+              text: AppLocalizations.of(context).translate('drinks'),
+            ),
+          ],
+        ),
+        actions: [
+          if (showFavoriteButton)
+            switchingFavorite
+                ? Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Center(
+                      child: SizedBox(
+                        height: 14,
+                        child: FittedBox(
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
                           ),
                         ),
                       ),
-                    )
-                  : IconButton(
-                      onPressed: _toggleFavorite,
-                      icon: Icon(
-                        isInFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: isInFavorite ? CRIMSON : Colors.white,
-                      ),
                     ),
-            IconButton(
-              onPressed: () {
+                  )
+                : IconButton(
+                    onPressed: _toggleFavorite,
+                    icon: Icon(
+                      isInFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: isInFavorite ? CRIMSON : Colors.white,
+                    ),
+                  ),
+          IconButton(
+            onPressed: () {
+              setState(() {
+                _isSearching = true;
+              });
+            },
+            icon: Icon(
+              Icons.search,
+              color: Colors.white,
+            ),
+          ),
+          IconButton(
+            onPressed: () async {
+              String lang = await showDialog<String>(
+                context: context,
+                builder: (_) => LanguageDialog(lang: _lang),
+              );
+              if (lang != null)
                 setState(() {
-                  _isSearching = true;
+                  _lang = lang;
                 });
-              },
-              icon: Icon(
-                Icons.search,
-                color: Colors.white,
-              ),
+            },
+            icon: Icon(
+              Icons.language,
             ),
-            IconButton(
-              onPressed: () async {
-                String lang = await showDialog<String>(
-                  context: context,
-                  builder: (_) => LanguageDialog(lang: _lang),
-                );
-                if (lang != null)
-                  setState(() {
-                    _lang = lang;
-                  });
-              },
-              icon: Icon(
-                Icons.language,
-              ),
-            ),
-          ],
-          flexibleSpace: FlexibleSpaceBar(
-            background: Image.network(
-              restaurant.imageURL,
-              fit: BoxFit.cover,
-              color: Colors.black45,
-              colorBlendMode: BlendMode.darken,
-            ),
-            stretchModes: [
-              StretchMode.zoomBackground,
-            ],
           ),
-        ),
-        SliverFillRemaining(
-          fillOverscroll: true,
-          child: TabBarView(
-            controller: controller,
-            physics: BouncingScrollPhysics(),
-            children: [
-              _renderALaCarte(),
-              _renderMenus(),
-              _renderDrinks(),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _renderALaCarte() {
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        Container(
-          margin: const EdgeInsets.only(
-            top: 50,
-            left: 20,
-            right: 20,
-          ),
+        ],
+        flexibleSpace: Container(
           decoration: BoxDecoration(
-            color: BACKGROUND_COLOR,
-            border: Border(
-              top: BorderSide(
-                color: Colors.grey[400],
-                style: BorderStyle.solid,
-                width: 1,
+            image: DecorationImage(
+              image: NetworkImage(
+                restaurant.imageURL,
               ),
+              fit: BoxFit.cover,
             ),
           ),
-          child: loadingFoods
-              ? Center(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
-                  ),
-                )
-              : _renderFoodListOfType(foodType),
-        ),
-        Positioned(
-          top: 10,
-          left: 0,
-          right: 0,
           child: Container(
-            height: 41,
-            width: double.infinity,
-            alignment: Alignment.center,
-            child: ListView(
-              shrinkWrap: true,
-              scrollDirection: Axis.horizontal,
-              children: [
-                if (restaurant.foodTypes.length > 0)
-                  for (int i = 0; i < restaurant.foodTypes.length; i++) ...[
-                    tab(
-                      index: i,
-                      text: restaurant.foodTypes[i][Provider.of<SettingContext>(context).languageCode],
-                    ),
-                    if (i < restaurant.foodTypes.length - 1)
-                      SizedBox(
-                        width: 5,
-                      ),
-                  ]
-                else
-                  tab(
-                    index: 0,
-                    text: AppLocalizations.of(context).translate('all'),
-                  ),
-              ],
-            ),
+            color: Colors.black.withOpacity(.6),
           ),
         ),
-      ],
+      ),
+      body: ScrollablePositionedList.separated(
+        itemScrollController: itemScrollController,
+        itemPositionsListener: itemPositionsListener,
+        itemCount: 3 + restaurant.foodTypes.length,
+        padding: const EdgeInsets.all(20),
+        physics: BouncingScrollPhysics(),
+        itemBuilder: (_, index) {
+          if (index == 0)
+            return Text(
+              AppLocalizations.of(context).translate('a_la_carte'),
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            );
+
+          if (index == restaurant.foodTypes.length + 1)
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  AppLocalizations.of(context).translate('menu'),
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                _renderMenus(),
+              ],
+            );
+
+          if (index == 3 + restaurant.foodTypes.length - 1)
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  AppLocalizations.of(context).translate('drinks'),
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                _renderDrinks(),
+              ],
+            );
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                restaurant.foodTypes[index - 1][Provider.of<SettingContext>(context).languageCode],
+                style: TextStyle(
+                  fontSize: 18,
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              _renderFoodListOfType(restaurant.foodTypes[index - 1]['tag']),
+            ],
+          );
+        },
+        separatorBuilder: (_, index) => Padding(
+          padding: const EdgeInsets.symmetric(
+            vertical: 10,
+          ),
+          child: Divider(),
+        ),
+      ),
     );
   }
 
   Widget _renderDrinks() {
     return drinks.length > 0
         ? SingleChildScrollView(
-            padding: const EdgeInsets.all(
-              20,
-            ),
             child: Column(
               children: drinks
                   .map(
@@ -710,9 +712,6 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
         var menus = snapshot.data;
         return menus.length > 0
             ? SingleChildScrollView(
-                padding: const EdgeInsets.all(
-                  20,
-                ),
                 child: Column(
                   children: menus
                       .map(
@@ -767,7 +766,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
             children: [
               Icon(
                 Icons.warning,
-                size: 40,
+                size: 20,
               ),
               Text(
                 AppLocalizations.of(context).translate('no_food'),

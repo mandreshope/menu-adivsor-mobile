@@ -19,11 +19,13 @@ class FoodPage extends StatefulWidget {
   final Food food;
   final String imageTag;
   final String restaurantName;
+  final bool modalMode;
 
   FoodPage({
     this.food,
     this.imageTag,
     this.restaurantName,
+    this.modalMode = false,
   });
 
   @override
@@ -80,20 +82,31 @@ class _FoodPageState extends State<FoodPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        leading: IconButton(
-          icon: Icon(
-            Icons.keyboard_arrow_left,
-            color: Colors.black,
-          ),
-          onPressed: () => RouteUtil.goBack(context: context),
+    return !widget.modalMode
+        ? Scaffold(
+            appBar: AppBar(
+              elevation: 0,
+              backgroundColor: Colors.transparent,
+              leading: IconButton(
+                icon: Icon(
+                  Icons.keyboard_arrow_left,
+                  color: Colors.black,
+                ),
+                onPressed: () => RouteUtil.goBack(context: context),
+              ),
+            ),
+            body: mainContent,
+          )
+        : Scaffold(
+            body: mainContent,
+          );
+  }
+
+  Widget get mainContent => Container(
+        width: !widget.modalMode ? double.infinity : MediaQuery.of(context).size.width - 60,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
         ),
-      ),
-      body: Container(
-        width: double.infinity,
         child: Stack(
           fit: StackFit.expand,
           children: [
@@ -575,7 +588,5 @@ class _FoodPageState extends State<FoodPage> {
             ),
           ],
         ),
-      ),
-    );
-  }
+      );
 }
