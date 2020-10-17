@@ -6,6 +6,7 @@ import 'package:menu_advisor/src/pages/home.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/CommandContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
+import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:provider/provider.dart';
@@ -165,7 +166,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
     );
   }
 
-  _submitForm() {
+  _submitForm() async {
     FormState formState = _formKey.currentState;
 
     CommandContext commandContext = Provider.of<CommandContext>(
@@ -179,17 +180,28 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
     );
 
     if (formState.validate()) {
-      commandContext.clear();
-      bagContext.clear();
+      try {
+        await Api.instance.sendCommand(
+          commandType: commandContext.commandType,
+          items: bagContext.items.entries.map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),
+          restaurant: bagContext.currentOrigin,
+          totalPrice: (bagContext.totalPrice * 100).round(),
+        );
 
-      Fluttertoast.showToast(
-        msg: 'Commande envoyée avec succès. Nous vous enverrons un mail pour confirmation',
-      );
-      RouteUtil.goTo(
-        context: context,
-        child: HomePage(),
-        routeName: homeRoute,
-      );
+        commandContext.clear();
+        bagContext.clear();
+
+        Fluttertoast.showToast(
+          msg: 'Commande envoyée avec succès. Nous vous enverrons un mail pour confirmation',
+        );
+        RouteUtil.goTo(
+          context: context,
+          child: HomePage(),
+          routeName: homeRoute,
+        );
+      } catch (error) {
+        Fluttertoast.showToast(msg: 'Erreur lors de l\'envoi de la commande...');
+      }
     }
   }
 }
