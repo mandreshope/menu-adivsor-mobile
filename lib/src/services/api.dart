@@ -487,4 +487,55 @@ class Api {
       },
     );
   }
+
+  Future<Command> sendCommand({
+    String commandType,
+    int totalPrice,
+    String restaurant,
+    List<Object> items,
+  }) async {
+    await _refreshTokens();
+
+    return http.post(
+      '$_apiURL/commands',
+      headers: {
+        'authorization': 'Bearer $_accessToken',
+      },
+      body: {
+        'commandType': commandType,
+        'totalPrice': totalPrice,
+        'restaurant': restaurant,
+        'items': items,
+      },
+    ).then<Command>((response) {
+      if (response.statusCode != 200)
+        return Future.error(
+          jsonDecode(response.body),
+        );
+
+      return Command.fromJson(jsonDecode(response.body));
+    });
+  }
+
+  Future setCommandToPayedStatus({
+    String id,
+    String paymentIntentId,
+  }) async {
+    await _refreshTokens();
+
+    return http.put(
+      '$_apiURL/commands/$id',
+      headers: {
+        'authorization': 'Bearer $_accessToken',
+      },
+      body: {
+        'payed': {
+          'status': true,
+          'paymentIntentId': paymentIntentId,
+        }
+      },
+    ).then((response) {
+      if (response.statusCode != 200) return Future.error(jsonDecode(response.body));
+    });
+  }
 }
