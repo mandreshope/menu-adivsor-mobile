@@ -8,10 +8,12 @@ import 'package:http/http.dart' as http;
 class StripeTransactionResponse {
   String message;
   bool success;
+  String paymentIntentId;
 
   StripeTransactionResponse({
     this.message,
     this.success,
+    this.paymentIntentId,
   });
 }
 
@@ -70,6 +72,7 @@ class StripeService {
         return new StripeTransactionResponse(
           message: 'Transaction successful',
           success: true,
+          paymentIntentId: response.paymentIntentId,
         );
       } else {
         return new StripeTransactionResponse(
