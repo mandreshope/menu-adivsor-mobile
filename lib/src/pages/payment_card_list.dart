@@ -42,8 +42,8 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Consumer<AuthContext>(
-            builder: (_, authContext, __) {
+          Consumer3<AuthContext, BagContext, CommandContext>(
+            builder: (_, authContext, bagContext, commandContext, __) {
               var user = authContext.currentUser;
 
               return user.paymentCards.length > 0
@@ -77,54 +77,49 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                           isPaying = true;
                                         });
                                         try {
-                                          await StripeService.payViaExistingCard(
-                                            amount: (Provider.of<BagContext>(
-                                                      context,
-                                                      listen: false,
-                                                    ).totalPrice *
-                                                    100)
-                                                .floor()
-                                                .toString(),
-                                            card: creditCard,
-                                            currency: 'eur',
-                                          );
-                                          CommandContext commandContext = Provider.of<CommandContext>(
-                                            context,
-                                            listen: false,
-                                          );
-                                          BagContext bagContext = Provider.of<BagContext>(
-                                            context,
-                                            listen: false,
-                                          );
-
-                                          await Api.instance.sendCommand(
+                                          var command = await Api.instance.sendCommand(
+                                            relatedUser: authContext.currentUser.id,
                                             commandType: commandContext.commandType,
                                             items: bagContext.items.entries.map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),
                                             restaurant: bagContext.currentOrigin,
                                             totalPrice: (bagContext.totalPrice * 100).round(),
                                           );
+                                          var payment = await StripeService.payViaExistingCard(
+                                            amount: (bagContext.totalPrice * 100).floor().toString(),
+                                            card: creditCard,
+                                            currency: 'eur',
+                                          );
+                                          if (payment.success) {
+                                            await Api.instance.setCommandToPayedStatus(
+                                              id: command.id,
+                                              paymentIntentId: payment.paymentIntentId,
+                                            );
+                                            Fluttertoast.showToast(
+                                              msg: AppLocalizations.of(
+                                                context,
+                                              ).translate('success'),
+                                            );
 
-                                          Fluttertoast.showToast(
-                                            msg: AppLocalizations.of(
+                                            Provider.of<BagContext>(
                                               context,
-                                            ).translate('success'),
-                                          );
+                                              listen: false,
+                                            ).clear();
+                                            Provider.of<CommandContext>(
+                                              context,
+                                              listen: false,
+                                            ).clear();
 
-                                          Provider.of<BagContext>(
-                                            context,
-                                            listen: false,
-                                          ).clear();
-                                          Provider.of<CommandContext>(
-                                            context,
-                                            listen: false,
-                                          ).clear();
-
-                                          RouteUtil.goTo(
-                                            context: context,
-                                            child: HomePage(),
-                                            routeName: homeRoute,
-                                            method: RoutingMethod.atTop,
-                                          );
+                                            RouteUtil.goTo(
+                                              context: context,
+                                              child: HomePage(),
+                                              routeName: homeRoute,
+                                              method: RoutingMethod.atTop,
+                                            );
+                                          } else {
+                                            Fluttertoast.showToast(
+                                              msg: 'Echec du paiemenet. Carte invalide',
+                                            );
+                                          }
                                         } catch (error) {
                                           Fluttertoast.showToast(
                                             msg: 'Echec du paiemenet. Carte invalide',
