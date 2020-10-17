@@ -3,11 +3,11 @@ import 'package:menu_advisor/src/models.dart';
 
 class BagContext extends ChangeNotifier {
   Map<Food, int> _items = Map();
-  Restaurant _currentOrigin;
+  String _currentOrigin;
 
-  Restaurant get currentOrigin => _currentOrigin;
+  String get currentOrigin => _currentOrigin;
 
-  set currentOrigin(Restaurant currentOrigin) {
+  set currentOrigin(String currentOrigin) {
     _currentOrigin = currentOrigin;
     notifyListeners();
   }
@@ -19,7 +19,7 @@ class BagContext extends ChangeNotifier {
         );
   }
 
-  bool hasSameOriginAsInBag(Food item) => currentOrigin == null || item.restaurant == currentOrigin.id;
+  bool hasSameOriginAsInBag(Food item) => currentOrigin == null || item.restaurant == currentOrigin;
 
   bool hasSamePricingAsInBag(Food item) => (pricelessItems && (item.price == null || item.price.amount == null)) || (!pricelessItems && item.price != null && item.price.amount != null);
 
@@ -30,6 +30,7 @@ class BagContext extends ChangeNotifier {
         (value) => number,
         ifAbsent: () => number,
       );
+      currentOrigin = item.restaurant;
       notifyListeners();
       return true;
     }
