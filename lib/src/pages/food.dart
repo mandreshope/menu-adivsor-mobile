@@ -11,6 +11,7 @@ import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
+import 'package:menu_advisor/src/utils/button_item_count_widget.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:provider/provider.dart';
 
@@ -36,10 +37,15 @@ class _FoodPageState extends State<FoodPage> {
   bool loading = true;
   String restaurantName;
   bool switchingFavorite = false;
+  int itemCount = 1;
 
   @override
   void initState() {
     super.initState();
+
+    CartContext cartContext = Provider.of<CartContext>(context, listen: false);
+    if (cartContext.contains(widget.food))
+      itemCount = cartContext.getCount(widget.food);
 
     api
         .getRestaurant(
@@ -110,7 +116,8 @@ class _FoodPageState extends State<FoodPage> {
                     ),
                   ),
                 ),
-                if (widget.food.price != null && widget.food.price.amount != null) ...[
+                if (widget.food.price != null &&
+                    widget.food.price.amount != null) ...[
                   SizedBox(height: 20),
                   Padding(
                     padding: const EdgeInsets.only(
@@ -135,7 +142,9 @@ class _FoodPageState extends State<FoodPage> {
                     right: 100.0,
                   ),
                   child: Column(
-                    crossAxisAlignment: loading ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+                    crossAxisAlignment: loading
+                        ? CrossAxisAlignment.center
+                        : CrossAxisAlignment.start,
                     children: [
                       Text(
                         AppLocalizations.of(context).translate('product_of'),
@@ -170,7 +179,8 @@ class _FoodPageState extends State<FoodPage> {
                               height: 22,
                               child: FittedBox(
                                 child: CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
+                                  valueColor:
+                                      AlwaysStoppedAnimation<Color>(CRIMSON),
                                 ),
                               ),
                             ),
@@ -197,7 +207,9 @@ class _FoodPageState extends State<FoodPage> {
                         height: 5,
                       ),
                       Text(
-                        widget.food.description ?? AppLocalizations.of(context).translate('no_description'),
+                        widget.food.description ??
+                            AppLocalizations.of(context)
+                                .translate('no_description'),
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.normal,
@@ -244,24 +256,32 @@ class _FoodPageState extends State<FoodPage> {
                                         (e) => FittedBox(
                                           child: Card(
                                             shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(20),
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
                                             ),
                                             margin: EdgeInsets.zero,
                                             child: Padding(
                                               padding: const EdgeInsets.all(8),
                                               child: Builder(
                                                 builder: (_) {
-                                                  var attribute = dataContext.attributes.firstWhere(
-                                                    (element) => element['tag'] == e,
+                                                  var attribute = dataContext
+                                                      .attributes
+                                                      .firstWhere(
+                                                    (element) =>
+                                                        element['tag'] == e,
                                                     orElse: null,
                                                   );
 
                                                   return Row(
                                                     children: [
-                                                      if (attribute != null) ...[
-                                                        FadeInImage.assetNetwork(
-                                                          placeholder: 'assets/images/loading.gif',
-                                                          image: attribute['imageURL'],
+                                                      if (attribute !=
+                                                          null) ...[
+                                                        FadeInImage
+                                                            .assetNetwork(
+                                                          placeholder:
+                                                              'assets/images/loading.gif',
+                                                          image: attribute[
+                                                              'imageURL'],
                                                           height: 14,
                                                         ),
                                                         SizedBox(
@@ -269,7 +289,10 @@ class _FoodPageState extends State<FoodPage> {
                                                         ),
                                                       ],
                                                       Text(
-                                                        attribute[Provider.of<SettingContext>(context).languageCode],
+                                                        attribute[Provider.of<
+                                                                    SettingContext>(
+                                                                context)
+                                                            .languageCode],
                                                       ),
                                                     ],
                                                   );
@@ -288,7 +311,8 @@ class _FoodPageState extends State<FoodPage> {
                                 left: 20.0,
                               ),
                               child: Text(
-                                AppLocalizations.of(context).translate('no_attribute'),
+                                AppLocalizations.of(context)
+                                    .translate('no_attribute'),
                                 style: TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.normal,
@@ -325,7 +349,8 @@ class _FoodPageState extends State<FoodPage> {
                         FloatingActionButton(
                           onPressed: !switchingFavorite
                               ? () async {
-                                  AuthContext authContext = Provider.of<AuthContext>(
+                                  AuthContext authContext =
+                                      Provider.of<AuthContext>(
                                     context,
                                     listen: false,
                                   );
@@ -334,23 +359,29 @@ class _FoodPageState extends State<FoodPage> {
                                     switchingFavorite = true;
                                   });
                                   if (!isInFavorite)
-                                    await authContext.addToFavoriteFoods(widget.food);
+                                    await authContext
+                                        .addToFavoriteFoods(widget.food);
                                   else
-                                    await authContext.removeFromFavoriteFoods(widget.food);
+                                    await authContext
+                                        .removeFromFavoriteFoods(widget.food);
                                   setState(() {
                                     switchingFavorite = false;
                                     isInFavorite = !isInFavorite;
                                   });
                                   Fluttertoast.showToast(
                                     msg: AppLocalizations.of(context).translate(
-                                      isInFavorite ? 'added_to_favorite' : 'removed_from_favorite',
+                                      isInFavorite
+                                          ? 'added_to_favorite'
+                                          : 'removed_from_favorite',
                                     ),
                                   );
                                 }
                               : null,
                           child: !switchingFavorite
                               ? Icon(
-                                  isInFavorite ? Icons.favorite : Icons.favorite_border,
+                                  isInFavorite
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
                                 )
                               : SizedBox(
                                   width: 15,
@@ -370,53 +401,103 @@ class _FoodPageState extends State<FoodPage> {
                       ],
                       Expanded(
                         child: Consumer<CartContext>(
-                          builder: (_, cartContext, __) => RaisedButton(
-                            padding: EdgeInsets.all(20),
-                            color: cartContext.contains(widget.food) ? Colors.teal : CRIMSON,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            onPressed: () async {
-                              if ((cartContext.itemCount == 0) || (cartContext.hasSamePricingAsInBag(widget.food) && cartContext.hasSameOriginAsInBag(widget.food))) {
-                                if (cartContext.contains(widget.food)) {
-                                  var result = await showDialog(
-                                    context: context,
-                                    builder: (_) => ConfirmationDialog(
-                                      title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
-                                      content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
-                                    ),
-                                  );
+                          builder: (_, cartContext, __) => Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              //
+                              ButtonItemCountWidget(
+                                  onAdded: (value) {
+                                    print(value);
+                                    itemCount = value;
+                                  },
+                                  onRemoved: (value) {
+                                    print(value);
+                                    itemCount = value;
+                                  },
+                                  itemCount: itemCount),
 
-                                  if (result is bool && result) {
-                                    cartContext.removeItem(widget.food);
+                              //button add
+                              RaisedButton(
+                                padding: EdgeInsets.all(20),
+                                color: cartContext.contains(widget.food)
+                                    ? Colors.teal
+                                    : CRIMSON,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                onPressed: () async {
+                                  if ((cartContext.itemCount == 0) ||
+                                      (cartContext.hasSamePricingAsInBag(
+                                              widget.food) &&
+                                          cartContext.hasSameOriginAsInBag(
+                                              widget.food))) {
+                                    if (cartContext.contains(widget.food)) {
+                                      var result = await showDialog(
+                                        context: context,
+                                        builder: (_) => ConfirmationDialog(
+                                          title: AppLocalizations.of(context)
+                                              .translate(
+                                                  'confirm_remove_from_cart_title'),
+                                          content: AppLocalizations.of(context)
+                                              .translate(
+                                                  'confirm_remove_from_cart_content'),
+                                        ),
+                                      );
+
+                                      if (result is bool && result) {
+                                        cartContext.removeItem(widget.food);
+                                        setState(() {
+                                          itemCount = 1;
+                                        });
+                                      }
+                                    } else {
+                                      /*bool result = await showDialog<bool>(
+                                        context: context,
+                                        builder: (_) => AddToBagDialog(
+                                          food: widget.food,
+                                        ),
+                                      );
+                                      if (result is bool && result) {}*/
+                                      if (cartContext.contains(widget.food))
+                                        cartContext.setCount(
+                                            widget.food, itemCount);
+                                      else
+                                        cartContext.addItem(
+                                            widget.food, itemCount);
+
+                                      Navigator.of(context).pop(true);
+                                    }
+                                  } else if (!cartContext
+                                      .hasSamePricingAsInBag(widget.food)) {
+                                    Fluttertoast.showToast(
+                                      msg: AppLocalizations.of(context).translate(
+                                          'priceless_and_not_priceless_not_allowed'),
+                                    );
+                                  } else if (!cartContext
+                                      .hasSameOriginAsInBag(widget.food)) {
+                                    Fluttertoast.showToast(
+                                      msg: AppLocalizations.of(context).translate(
+                                          'from_different_origin_not_allowed'),
+                                    );
                                   }
-                                } else {
-                                  bool result = await showDialog<bool>(
-                                    context: context,
-                                    builder: (_) => AddToBagDialog(
-                                      food: widget.food,
-                                    ),
-                                  );
-                                  if (result is bool && result) {}
-                                }
-                              } else if (!cartContext.hasSamePricingAsInBag(widget.food)) {
-                                Fluttertoast.showToast(
-                                  msg: AppLocalizations.of(context).translate('priceless_and_not_priceless_not_allowed'),
-                                );
-                              } else if (!cartContext.hasSameOriginAsInBag(widget.food)) {
-                                Fluttertoast.showToast(
-                                  msg: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
-                                );
-                              }
-                            },
-                            child: Text(
-                              cartContext.contains(widget.food) ? AppLocalizations.of(context).translate('remove_from_cart') : AppLocalizations.of(context).translate("add_to_cart"),
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
+                                },
+                                child: Text(
+                                  cartContext.contains(widget.food)
+                                      ? AppLocalizations.of(context)
+                                          .translate('remove_from_cart')
+                                      : AppLocalizations.of(context)
+                                          .translate("add_to_cart"),
+                                          overflow: TextOverflow.ellipsis,
+                                          softWrap: false,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: showFavorite ? 15 : 20,
+                                  ),
+                                ),
                               ),
-                            ),
+                            ],
                           ),
                         ),
                       )
@@ -455,11 +536,15 @@ class _FoodPageState extends State<FoodPage> {
                             child: Container(
                               child: Center(
                                 child: Hero(
-                                  tag: widget.imageTag ?? 'foodImage${widget.food.id}',
+                                  tag: widget.imageTag ??
+                                      'foodImage${widget.food.id}',
                                   child: widget.food.imageURL != null
                                       ? Image.network(
                                           widget.food.imageURL,
-                                          width: MediaQuery.of(context).size.width - 100,
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width -
+                                              100,
                                         )
                                       : Icon(
                                           Icons.fastfood,
