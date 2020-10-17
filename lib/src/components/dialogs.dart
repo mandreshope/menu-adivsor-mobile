@@ -85,9 +85,9 @@ class BagModal extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Consumer<BagContext>(
-                  builder: (_, bagContext, __) => Text(
-                    'Total: ${bagContext.totalPrice}€',
+                Consumer<CartContext>(
+                  builder: (_, cartContext, __) => Text(
+                    'Total: ${cartContext.totalPrice}€',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
@@ -102,10 +102,10 @@ class BagModal extends StatelessWidget {
                 horizontal: 10,
               ),
               physics: BouncingScrollPhysics(),
-              child: Consumer<BagContext>(
-                builder: (_, bagContext, __) {
+              child: Consumer<CartContext>(
+                builder: (_, cartContext, __) {
                   final List<Widget> list = [];
-                  bagContext.items.forEach(
+                  cartContext.items.forEach(
                     (food, count) {
                       list.add(
                         BagItem(
@@ -116,7 +116,7 @@ class BagModal extends StatelessWidget {
                     },
                   );
 
-                  if (bagContext.itemCount == 0)
+                  if (cartContext.itemCount == 0)
                     return Center(
                       child: Text(
                         AppLocalizations.of(context).translate('no_item_in_cart'),
@@ -131,10 +131,10 @@ class BagModal extends StatelessWidget {
               ),
             ),
           ),
-          Consumer<BagContext>(
-            builder: (_, bagContext, __) => FlatButton(
+          Consumer<CartContext>(
+            builder: (_, cartContext, __) => FlatButton(
               onPressed: () {
-                if (bagContext.itemCount == 0)
+                if (cartContext.itemCount == 0)
                   Fluttertoast.showToast(
                     msg: AppLocalizations.of(context).translate('empty_cart'),
                   );
@@ -184,8 +184,8 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
   void initState() {
     super.initState();
 
-    BagContext bagContext = Provider.of<BagContext>(context, listen: false);
-    if (bagContext.contains(widget.food)) itemCount = bagContext.getCount(widget.food);
+    CartContext cartContext = Provider.of<CartContext>(context, listen: false);
+    if (cartContext.contains(widget.food)) itemCount = cartContext.getCount(widget.food);
   }
 
   @override
@@ -195,8 +195,8 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
-      child: Consumer<BagContext>(
-        builder: (_, bagContext, __) => Container(
+      child: Consumer<CartContext>(
+        builder: (_, cartContext, __) => Container(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -208,7 +208,7 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
                   right: 25.0,
                 ),
                 child: Text(
-                  bagContext.contains(widget.food) ? AppLocalizations.of(context).translate('edit') : AppLocalizations.of(context).translate('add_to_cart'),
+                  cartContext.contains(widget.food) ? AppLocalizations.of(context).translate('edit') : AppLocalizations.of(context).translate('add_to_cart'),
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -279,7 +279,7 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
                   child: RaisedButton(
                     color: CRIMSON,
                     child: Text(
-                      bagContext.contains(widget.food) ? AppLocalizations.of(context).translate('edit') : AppLocalizations.of(context).translate('add'),
+                      cartContext.contains(widget.food) ? AppLocalizations.of(context).translate('edit') : AppLocalizations.of(context).translate('add'),
                       style: TextStyle(
                         fontSize: 18,
                         color: Colors.white,
@@ -287,10 +287,10 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
                       ),
                     ),
                     onPressed: () {
-                      if (bagContext.contains(widget.food))
-                        bagContext.setCount(widget.food, itemCount);
+                      if (cartContext.contains(widget.food))
+                        cartContext.setCount(widget.food, itemCount);
                       else
-                        bagContext.addItem(widget.food, itemCount);
+                        cartContext.addItem(widget.food, itemCount);
 
                       Navigator.of(context).pop(true);
                     },

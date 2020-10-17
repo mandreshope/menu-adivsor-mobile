@@ -241,13 +241,13 @@ class _PaymentCardDetailsPageState extends State<PaymentCardDetailsPage> {
       if (widget.isPaymentStep) {
         StripeService.init();
 
-        BagContext bagContext = Provider.of<BagContext>(context, listen: false);
+        CartContext cartContext = Provider.of<CartContext>(context, listen: false);
 
         setState(() {
           _onProgress = true;
         });
         var response = await StripeService.payViaExistingCard(
-          amount: (bagContext.totalPrice * 100).round().toString(),
+          amount: (cartContext.totalPrice * 100).round().toString(),
           currency: 'eur',
           card: PaymentCard(
             cardNumber: _cardNumberController.value.text,
@@ -262,7 +262,7 @@ class _PaymentCardDetailsPageState extends State<PaymentCardDetailsPage> {
           _onProgress = false;
         });
         if (response.success) {
-          bagContext.clear();
+          cartContext.clear();
 
           RouteUtil.goTo(
             context: context,

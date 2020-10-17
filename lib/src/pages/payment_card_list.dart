@@ -42,8 +42,8 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Consumer3<AuthContext, BagContext, CommandContext>(
-            builder: (_, authContext, bagContext, commandContext, __) {
+          Consumer3<AuthContext, CartContext, CommandContext>(
+            builder: (_, authContext, cartContext, commandContext, __) {
               var user = authContext.currentUser;
 
               return user.paymentCards.length > 0
@@ -80,12 +80,12 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                           var command = await Api.instance.sendCommand(
                                             relatedUser: authContext.currentUser.id,
                                             commandType: commandContext.commandType,
-                                            items: bagContext.items.entries.map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),
-                                            restaurant: bagContext.currentOrigin,
-                                            totalPrice: (bagContext.totalPrice * 100).round(),
+                                            items: cartContext.items.entries.map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),
+                                            restaurant: cartContext.currentOrigin,
+                                            totalPrice: (cartContext.totalPrice * 100).round(),
                                           );
                                           var payment = await StripeService.payViaExistingCard(
-                                            amount: (bagContext.totalPrice * 100).floor().toString(),
+                                            amount: (cartContext.totalPrice * 100).floor().toString(),
                                             card: creditCard,
                                             currency: 'eur',
                                           );
@@ -100,7 +100,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                               ).translate('success'),
                                             );
 
-                                            Provider.of<BagContext>(
+                                            Provider.of<CartContext>(
                                               context,
                                               listen: false,
                                             ).clear();

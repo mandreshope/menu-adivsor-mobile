@@ -174,7 +174,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
       listen: false,
     );
 
-    BagContext bagContext = Provider.of<BagContext>(
+    CartContext cartContext = Provider.of<CartContext>(
       context,
       listen: false,
     );
@@ -183,13 +183,13 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
       try {
         await Api.instance.sendCommand(
           commandType: commandContext.commandType,
-          items: bagContext.items.entries.map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),
-          restaurant: bagContext.currentOrigin,
-          totalPrice: (bagContext.totalPrice * 100).round(),
+          items: cartContext.items.entries.map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),
+          restaurant: cartContext.currentOrigin,
+          totalPrice: (cartContext.totalPrice * 100).round(),
         );
 
         commandContext.clear();
-        bagContext.clear();
+        cartContext.clear();
 
         Fluttertoast.showToast(
           msg: 'Commande envoyée avec succès. Nous vous enverrons un mail pour confirmation',

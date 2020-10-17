@@ -369,16 +369,16 @@ class _FoodPageState extends State<FoodPage> {
                         ),
                       ],
                       Expanded(
-                        child: Consumer<BagContext>(
-                          builder: (_, bagContext, __) => RaisedButton(
+                        child: Consumer<CartContext>(
+                          builder: (_, cartContext, __) => RaisedButton(
                             padding: EdgeInsets.all(20),
-                            color: bagContext.contains(widget.food) ? Colors.teal : CRIMSON,
+                            color: cartContext.contains(widget.food) ? Colors.teal : CRIMSON,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
                             onPressed: () async {
-                              if ((bagContext.itemCount == 0) || (bagContext.hasSamePricingAsInBag(widget.food) && bagContext.hasSameOriginAsInBag(widget.food))) {
-                                if (bagContext.contains(widget.food)) {
+                              if ((cartContext.itemCount == 0) || (cartContext.hasSamePricingAsInBag(widget.food) && cartContext.hasSameOriginAsInBag(widget.food))) {
+                                if (cartContext.contains(widget.food)) {
                                   var result = await showDialog(
                                     context: context,
                                     builder: (_) => ConfirmationDialog(
@@ -388,7 +388,7 @@ class _FoodPageState extends State<FoodPage> {
                                   );
 
                                   if (result is bool && result) {
-                                    bagContext.removeItem(widget.food);
+                                    cartContext.removeItem(widget.food);
                                   }
                                 } else {
                                   bool result = await showDialog<bool>(
@@ -399,18 +399,18 @@ class _FoodPageState extends State<FoodPage> {
                                   );
                                   if (result is bool && result) {}
                                 }
-                              } else if (!bagContext.hasSamePricingAsInBag(widget.food)) {
+                              } else if (!cartContext.hasSamePricingAsInBag(widget.food)) {
                                 Fluttertoast.showToast(
                                   msg: AppLocalizations.of(context).translate('priceless_and_not_priceless_not_allowed'),
                                 );
-                              } else if (!bagContext.hasSameOriginAsInBag(widget.food)) {
+                              } else if (!cartContext.hasSameOriginAsInBag(widget.food)) {
                                 Fluttertoast.showToast(
                                   msg: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
                                 );
                               }
                             },
                             child: Text(
-                              bagContext.contains(widget.food) ? AppLocalizations.of(context).translate('remove_from_cart') : AppLocalizations.of(context).translate("add_to_cart"),
+                              cartContext.contains(widget.food) ? AppLocalizations.of(context).translate('remove_from_cart') : AppLocalizations.of(context).translate("add_to_cart"),
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,

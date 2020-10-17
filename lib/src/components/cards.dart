@@ -243,8 +243,8 @@ class _FoodCardState extends State<FoodCard> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Consumer<BagContext>(
-                              builder: (_, bagContext, __) => RawMaterialButton(
+                            Consumer<CartContext>(
+                              builder: (_, cartContext, __) => RawMaterialButton(
                                 fillColor: DARK_BLUE,
                                 padding: const EdgeInsets.all(15),
                                 shape: RoundedRectangleBorder(
@@ -260,36 +260,37 @@ class _FoodCardState extends State<FoodCard> {
                                   ),
                                   padding: const EdgeInsets.all(5.0),
                                   child: FaIcon(
-                                    bagContext.contains(widget.food) ? FontAwesomeIcons.minus : FontAwesomeIcons.plus,
+                                    cartContext.contains(widget.food) ? FontAwesomeIcons.minus : FontAwesomeIcons.plus,
                                     size: 10,
                                   ),
                                 ),
-                                onPressed:
-                                    (bagContext.itemCount == 0) || (bagContext.pricelessItems && widget.food.price.amount == null) || (!bagContext.pricelessItems && widget.food.price.amount != null)
-                                        ? () async {
-                                            if (bagContext.contains(widget.food)) {
-                                              var result = await showDialog(
-                                                context: context,
-                                                builder: (_) => ConfirmationDialog(
-                                                  title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
-                                                  content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
-                                                ),
-                                              );
+                                onPressed: (cartContext.itemCount == 0) ||
+                                        (cartContext.pricelessItems && widget.food.price.amount == null) ||
+                                        (!cartContext.pricelessItems && widget.food.price.amount != null)
+                                    ? () async {
+                                        if (cartContext.contains(widget.food)) {
+                                          var result = await showDialog(
+                                            context: context,
+                                            builder: (_) => ConfirmationDialog(
+                                              title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
+                                              content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
+                                            ),
+                                          );
 
-                                              if (result is bool && result) {
-                                                bagContext.removeItem(widget.food);
-                                              }
-                                            } else
-                                              showDialog(
-                                                context: context,
-                                                builder: (_) => AddToBagDialog(
-                                                  food: widget.food,
-                                                ),
-                                              );
+                                          if (result is bool && result) {
+                                            cartContext.removeItem(widget.food);
                                           }
-                                        : () {
-                                            Fluttertoast.showToast(msg: 'Vous ne pouvez pas à la fois commander des articles sans prix et avec prix');
-                                          },
+                                        } else
+                                          showDialog(
+                                            context: context,
+                                            builder: (_) => AddToBagDialog(
+                                              food: widget.food,
+                                            ),
+                                          );
+                                      }
+                                    : () {
+                                        Fluttertoast.showToast(msg: 'Vous ne pouvez pas à la fois commander des articles sans prix et avec prix');
+                                      },
                               ),
                             ),
                             SizedBox(
@@ -380,15 +381,15 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
             expanded = true;
           });
         else {
-          BagContext bagContext = Provider.of<BagContext>(
+          CartContext cartContext = Provider.of<CartContext>(
             context,
             listen: false,
           );
-          if ((bagContext.itemCount == 0) ||
-              (bagContext.contains(widget.food)) ||
-              (bagContext.pricelessItems && widget.food.price.amount == null) ||
-              (!bagContext.pricelessItems && widget.food.price.amount != null)) {
-            if (bagContext.contains(widget.food)) {
+          if ((cartContext.itemCount == 0) ||
+              (cartContext.contains(widget.food)) ||
+              (cartContext.pricelessItems && widget.food.price.amount == null) ||
+              (!cartContext.pricelessItems && widget.food.price.amount != null)) {
+            if (cartContext.contains(widget.food)) {
               var result = await showDialog(
                 context: context,
                 builder: (_) => ConfirmationDialog(
@@ -398,7 +399,7 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
               );
 
               if (result is bool && result) {
-                bagContext.removeItem(widget.food);
+                cartContext.removeItem(widget.food);
               }
             } else
               showDialog(
@@ -540,21 +541,21 @@ class DrinkCard extends StatefulWidget {
 class _DrinkCardState extends State<DrinkCard> {
   @override
   Widget build(BuildContext context) {
-    return Consumer<BagContext>(
-      builder: (_, bagContext, __) => InkWell(
+    return Consumer<CartContext>(
+      builder: (_, cartContext, __) => InkWell(
         onTap: () async {
-          if (bagContext.itemCount != 0) {
-            if (!bagContext.hasSamePricingAsInBag(widget.food))
+          if (cartContext.itemCount != 0) {
+            if (!cartContext.hasSamePricingAsInBag(widget.food))
               return Fluttertoast.showToast(
                 msg: AppLocalizations.of(context).translate('priceless_and_not_priceless_not_allowed'),
               );
-            if (!bagContext.hasSameOriginAsInBag(widget.food))
+            if (!cartContext.hasSameOriginAsInBag(widget.food))
               return Fluttertoast.showToast(
                 msg: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
               );
           }
 
-          if (bagContext.contains(widget.food)) {
+          if (cartContext.contains(widget.food)) {
             var result = await showDialog(
               context: context,
               builder: (_) => ConfirmationDialog(
@@ -564,7 +565,7 @@ class _DrinkCardState extends State<DrinkCard> {
             );
 
             if (result is bool && result) {
-              bagContext.removeItem(widget.food);
+              cartContext.removeItem(widget.food);
             }
           } else {
             bool result = await showDialog<bool>(
@@ -942,9 +943,9 @@ class BagItem extends StatelessWidget {
                 );
 
                 if (result is bool && result) {
-                  BagContext bagContext = Provider.of<BagContext>(context, listen: false);
+                  CartContext cartContext = Provider.of<CartContext>(context, listen: false);
 
-                  bagContext.removeItem(food);
+                  cartContext.removeItem(food);
                 }
               },
             ),

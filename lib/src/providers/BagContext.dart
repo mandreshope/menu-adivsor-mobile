@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/models.dart';
 
-class BagContext extends ChangeNotifier {
+class CartContext extends ChangeNotifier {
   Map<Food, int> _items = Map();
   String _currentOrigin;
 

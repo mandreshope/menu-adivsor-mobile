@@ -263,7 +263,7 @@ class _LoginPageState extends State<LoginPage> {
       context,
       listen: false,
     );
-    BagContext bagContext = Provider.of<BagContext>(
+    CartContext cartContext = Provider.of<CartContext>(
       context,
       listen: false,
     );
@@ -274,7 +274,7 @@ class _LoginPageState extends State<LoginPage> {
         password,
       );
       if (result) {
-        if (bagContext.itemCount > 0)
+        if (cartContext.itemCount > 0)
           RouteUtil.goTo(
             context: context,
             child: OrderPage(),

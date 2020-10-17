@@ -40,10 +40,10 @@ class _OrderPageState extends State<OrderPage> {
                 vertical: 10,
               ),
               physics: BouncingScrollPhysics(),
-              child: Consumer<BagContext>(
-                builder: (_, bagContext, __) {
+              child: Consumer<CartContext>(
+                builder: (_, cartContext, __) {
                   final List<Widget> list = [];
-                  bagContext.items.forEach(
+                  cartContext.items.forEach(
                     (food, count) {
                       if (food.price != null)
                         list.add(
@@ -55,7 +55,7 @@ class _OrderPageState extends State<OrderPage> {
                     },
                   );
 
-                  if (bagContext.itemCount == 0)
+                  if (cartContext.itemCount == 0)
                     return Center(
                       child: Text(
                         AppLocalizations.of(context).translate('no_item_in_cart'),
@@ -82,8 +82,8 @@ class _OrderPageState extends State<OrderPage> {
               ),
             ),
           ),
-          Consumer2<BagContext, CommandContext>(
-            builder: (_, bagContext, commandContext, __) => Padding(
+          Consumer2<CartContext, CommandContext>(
+            builder: (_, cartContext, commandContext, __) => Padding(
               padding: const EdgeInsets.all(10),
               child: Card(
                 shape: RoundedRectangleBorder(
@@ -109,7 +109,7 @@ class _OrderPageState extends State<OrderPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          if (!bagContext.pricelessItems)
+                          if (!cartContext.pricelessItems)
                             Theme(
                               data: ThemeData(
                                 cardColor: commandContext.commandType == 'delivery' ? CRIMSON : Colors.white,
@@ -226,8 +226,8 @@ class _OrderPageState extends State<OrderPage> {
               ),
             ),
           ),
-          Consumer<BagContext>(
-            builder: (_, bagContext, __) => Padding(
+          Consumer<CartContext>(
+            builder: (_, cartContext, __) => Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 20,
               ),
@@ -243,7 +243,7 @@ class _OrderPageState extends State<OrderPage> {
                     ),
                   ),
                   Text(
-                    '${bagContext.totalPrice}€',
+                    '${cartContext.totalPrice}€',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 22,
@@ -255,8 +255,8 @@ class _OrderPageState extends State<OrderPage> {
           ),
           Padding(
             padding: const EdgeInsets.all(20),
-            child: Consumer3<CommandContext, AuthContext, BagContext>(
-              builder: (_, commandContext, authContext, bagContext, __) => FlatButton(
+            child: Consumer3<CommandContext, AuthContext, CartContext>(
+              builder: (_, commandContext, authContext, cartContext, __) => FlatButton(
                 onPressed: () async {
                   if (authContext.currentUser == null) {
                     if (commandContext.commandType != 'delivery')
@@ -284,11 +284,11 @@ class _OrderPageState extends State<OrderPage> {
                       await Api.instance.sendCommand(
                         relatedUser: authContext.currentUser.id,
                         commandType: commandContext.commandType,
-                        items: bagContext.items.entries.map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),
-                        restaurant: bagContext.currentOrigin,
-                        totalPrice: (bagContext.totalPrice * 100).round(),
+                        items: cartContext.items.entries.map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),
+                        restaurant: cartContext.currentOrigin,
+                        totalPrice: (cartContext.totalPrice * 100).round(),
                       );
-                      bagContext.clear();
+                      cartContext.clear();
                       commandContext.clear();
                       Fluttertoast.showToast(
                         msg: AppLocalizations.of(context).translate('success'),
@@ -318,7 +318,7 @@ class _OrderPageState extends State<OrderPage> {
                 ),
                 color: Colors.teal,
                 child: Text(
-                  (commandContext.commandType != 'delivery' && authContext.currentUser != null) ? AppLocalizations.of(context).translate('validate') : AppLocalizations.of(context).translate("next"),
+                  (commandContext.commandType != 'delivery' && authContext.currentUser != null) ? AppLocalizations.of(context).translate('validate') : AppLocalizations.of(context).translate('next'),
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,

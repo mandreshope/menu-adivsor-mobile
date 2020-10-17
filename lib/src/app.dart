@@ -24,7 +24,7 @@ class _MyAppState extends State<MyApp> {
           create: (_) => AuthContext(),
         ),
         ChangeNotifierProvider(
-          create: (_) => BagContext(),
+          create: (_) => CartContext(),
         ),
         ChangeNotifierProvider(
           create: (_) => SettingContext(),
@@ -50,12 +50,10 @@ class _MyAppState extends State<MyApp> {
           ],
           locale: Locale(settingContext.languageCode),
           localeResolutionCallback: (locale, supportedLocales) {
-            if (settingContext.languageCode != null)
-              return Locale(settingContext.languageCode);
+            if (settingContext.languageCode != null) return Locale(settingContext.languageCode);
 
             for (var supportedLocale in supportedLocales) {
-              if (supportedLocale.languageCode == locale.languageCode &&
-                  supportedLocale.countryCode == locale.countryCode) {
+              if (supportedLocale.languageCode == locale.languageCode && supportedLocale.countryCode == locale.countryCode) {
                 return supportedLocale;
               }
             }

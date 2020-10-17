@@ -60,7 +60,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     listen: false,
                   ).clear();
 
-                  Provider.of<BagContext>(
+                  Provider.of<CartContext>(
                     context,
                     listen: false,
                   ).clear();
