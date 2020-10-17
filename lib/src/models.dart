@@ -191,6 +191,9 @@ class Command {
   final bool validated;
   final List<Map> items;
   final DateTime createdAt;
+  final String shippingAddress;
+  final DateTime shippingTime;
+  final bool shipAsSoonAsPossible;
 
   Command({
     this.id,
@@ -200,6 +203,9 @@ class Command {
     this.validated,
     this.items,
     this.createdAt,
+    this.shippingAddress,
+    this.shippingTime,
+    this.shipAsSoonAsPossible,
   });
 
   factory Command.fromJson(Map<String, dynamic> json) => Command(
@@ -210,6 +216,9 @@ class Command {
         validated: json['validated'],
         items: json['items'],
         createdAt: json['createdAt'] != null ? DateTime.fromMillisecondsSinceEpoch(json['createdAt']) : null,
+        shippingAddress: json['shippingAddress'],
+        shippingTime: json['shippingTime'] != null ? DateTime.fromMillisecondsSinceEpoch(json['shippingTime']) : null,
+        shipAsSoonAsPossible: json['shipAsSoonAsPossible'] ?? false,
       );
 }
 
