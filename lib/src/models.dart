@@ -177,6 +177,7 @@ class User {
 }
 
 class Command {
+  final String id;
   final String relatedUser;
   final String commandType;
   final int totalPrice;
@@ -185,6 +186,7 @@ class Command {
   final DateTime createdAt;
 
   Command({
+    this.id,
     this.relatedUser,
     this.commandType,
     this.totalPrice,
@@ -194,6 +196,7 @@ class Command {
   });
 
   factory Command.fromJson(Map<String, dynamic> json) => Command(
+        id: json['_id'],
         relatedUser: json['relatedUser'],
         commandType: json['commandType'],
         totalPrice: json['totalPrice'],
