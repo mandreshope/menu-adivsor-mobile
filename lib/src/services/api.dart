@@ -489,25 +489,30 @@ class Api {
   }
 
   Future<Command> sendCommand({
+    String relatedUser,
     String commandType,
     int totalPrice,
     String restaurant,
-    List<Object> items,
+    List<Map<String, dynamic>> items,
   }) async {
     await _refreshTokens();
 
-    return http.post(
+    return http
+        .post(
       '$_apiURL/commands',
       headers: {
         'authorization': 'Bearer $_accessToken',
+        'Content-type': 'application/json',
       },
-      body: {
+      body: jsonEncode({
+        'relatedUser': relatedUser,
         'commandType': commandType,
-        'totalPrice': totalPrice,
+        'totalPrice': totalPrice.toString(),
         'restaurant': restaurant,
         'items': items,
-      },
-    ).then<Command>((response) {
+      }),
+    )
+        .then<Command>((response) {
       if (response.statusCode != 200)
         return Future.error(
           jsonDecode(response.body),
@@ -523,18 +528,23 @@ class Api {
   }) async {
     await _refreshTokens();
 
-    return http.put(
+    return http
+        .put(
       '$_apiURL/commands/$id',
       headers: {
         'authorization': 'Bearer $_accessToken',
+        'Content-type': 'application/json',
       },
-      body: {
-        'payed': {
-          'status': true,
-          'paymentIntentId': paymentIntentId,
-        }
-      },
-    ).then((response) {
+      body: jsonEncode(
+        {
+          'payed': {
+            'status': true,
+            'paymentIntentId': paymentIntentId,
+          }
+        },
+      ),
+    )
+        .then((response) {
       if (response.statusCode != 200) return Future.error(jsonDecode(response.body));
     });
   }
