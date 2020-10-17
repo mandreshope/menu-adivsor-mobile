@@ -88,6 +88,22 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                             card: creditCard,
                                             currency: 'eur',
                                           );
+                                          CommandContext commandContext = Provider.of<CommandContext>(
+                                            context,
+                                            listen: false,
+                                          );
+                                          BagContext bagContext = Provider.of<BagContext>(
+                                            context,
+                                            listen: false,
+                                          );
+
+                                          await Api.instance.sendCommand(
+                                            commandType: commandContext.commandType,
+                                            items: bagContext.items.entries.map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),
+                                            restaurant: bagContext.currentOrigin,
+                                            totalPrice: (bagContext.totalPrice * 100).round(),
+                                          );
+
                                           Fluttertoast.showToast(
                                             msg: AppLocalizations.of(
                                               context,
@@ -111,7 +127,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                           );
                                         } catch (error) {
                                           Fluttertoast.showToast(
-                                            msg: 'Carte invalide',
+                                            msg: 'Echec du paiemenet. Carte invalide',
                                           );
                                         } finally {
                                           setState(() {
