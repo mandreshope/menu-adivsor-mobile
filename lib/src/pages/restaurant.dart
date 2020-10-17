@@ -602,7 +602,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
               ),
             );
 
-          if (index == 3 + restaurant.foodTypes.length - 2)
+          if (index == restaurant.foodTypes.length + 1)
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
