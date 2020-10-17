@@ -90,7 +90,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   Container(
                     height: 110,
-                    color: Colors.grey,
+                    color: Colors.grey.withAlpha(50),
                     child: Consumer<AuthContext>(
                       builder: (_, authContext, __) => authContext.currentUser !=
                               null
