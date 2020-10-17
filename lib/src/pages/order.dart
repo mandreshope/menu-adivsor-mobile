@@ -4,12 +4,14 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/pages/delivery_details.dart';
+import 'package:menu_advisor/src/pages/home.dart';
 import 'package:menu_advisor/src/pages/login.dart';
 import 'package:menu_advisor/src/pages/user_details.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/CommandContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
+import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:provider/provider.dart';
@@ -253,57 +255,75 @@ class _OrderPageState extends State<OrderPage> {
           ),
           Padding(
             padding: const EdgeInsets.all(20),
-            child: FlatButton(
-              onPressed: () {
-                AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
-
-                CommandContext commandContext = Provider.of<CommandContext>(context, listen: false);
-
-                if (authContext.currentUser == null) {
-                  if (commandContext.commandType != 'delivery')
+            child: Consumer3<CommandContext, AuthContext, BagContext>(
+              builder: (_, commandContext, authContext, bagContext, __) => FlatButton(
+                onPressed: () async {
+                  if (authContext.currentUser == null) {
+                    if (commandContext.commandType != 'delivery')
+                      RouteUtil.goTo(
+                        context: context,
+                        child: UserDetailsPage(),
+                        routeName: userDetailsRoute,
+                      );
+                    else {
+                      Fluttertoast.showToast(msg: 'Veuillez vous connecter pour pouvoir continuer');
+                      RouteUtil.goTo(
+                        context: context,
+                        child: LoginPage(),
+                        routeName: loginRoute,
+                      );
+                    }
+                  } else if (commandContext.commandType == 'delivery') {
                     RouteUtil.goTo(
                       context: context,
-                      child: UserDetailsPage(),
-                      routeName: userDetailsRoute,
+                      child: DeliveryDetailsPage(),
+                      routeName: loginRoute,
                     );
-                  else
-                    Fluttertoast.showToast(msg: 'Veuillez vous connecter pour pouvoir continuer');
-                  RouteUtil.goTo(
-                    context: context,
-                    child: LoginPage(),
-                    routeName: loginRoute,
-                  );
-                } else if (commandContext.commandType == 'delivery') {
-                  RouteUtil.goTo(
-                    context: context,
-                    child: DeliveryDetailsPage(),
-                    routeName: loginRoute,
-                  );
-                } else if (commandContext.commandType == 'on_site' || commandContext.commandType == 'takeaway') {
-                  RouteUtil.goTo(
-                    context: context,
-                    child: UserDetailsPage(),
-                    routeName: userDetailsRoute,
-                  );
-                } else {
-                  Fluttertoast.showToast(
-                    msg: 'Veuillez sélection un type de commande avant de continuer',
-                  );
-                }
-              },
-              padding: const EdgeInsets.all(
-                20.0,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              color: Colors.teal,
-              child: Text(
-                AppLocalizations.of(context).translate("next"),
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+                  } else if (commandContext.commandType == 'on_site' || commandContext.commandType == 'takeaway') {
+                    try {
+                      await Api.instance.sendCommand(
+                        relatedUser: authContext.currentUser.id,
+                        commandType: commandContext.commandType,
+                        items: bagContext.items.entries.map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),
+                        restaurant: bagContext.currentOrigin,
+                        totalPrice: (bagContext.totalPrice * 100).round(),
+                      );
+                      bagContext.clear();
+                      commandContext.clear();
+                      Fluttertoast.showToast(
+                        msg: AppLocalizations.of(context).translate('success'),
+                      );
+                      RouteUtil.goTo(
+                        context: context,
+                        child: HomePage(),
+                        routeName: homeRoute,
+                        method: RoutingMethod.atTop,
+                      );
+                    } catch (error) {
+                      Fluttertoast.showToast(
+                        msg: 'Erreur lors de l\'envoi de la commande',
+                      );
+                    }
+                  } else {
+                    Fluttertoast.showToast(
+                      msg: 'Veuillez sélection un type de commande avant de continuer',
+                    );
+                  }
+                },
+                padding: const EdgeInsets.all(
+                  20.0,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                color: Colors.teal,
+                child: Text(
+                  (commandContext.commandType != 'delivery' && authContext.currentUser != null) ? AppLocalizations.of(context).translate('validate') : AppLocalizations.of(context).translate("next"),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
