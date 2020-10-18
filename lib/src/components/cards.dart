@@ -297,6 +297,7 @@ class _FoodCardState extends State<FoodCard> {
 
                                           if (result is bool && result) {
                                             cartContext.removeItem(widget.food);
+                                            RouteUtil.goBack(context: context);
                                           }
                                         } else
                                           showDialog(
@@ -428,120 +429,193 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
         }
       },
       child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Row(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Hero(
-                tag: widget.food.id,
-                              child: FadeInImage.assetNetwork(
-                  placeholder: 'assets/images/loading.gif',
-                  image: widget.food.imageURL,
-                  width: 50,
-                  height: 50,
-                  fit: BoxFit.contain,
-                  imageErrorBuilder: (_, __, ___) => Icon(
-                    Icons.food_bank_outlined,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Hero(
+                    tag: widget.food.id,
+                                  child: FadeInImage.assetNetwork(
+                      placeholder: 'assets/images/loading.gif',
+                      image: widget.food.imageURL,
+                      width: 50,
+                      height: 50,
+                      fit: BoxFit.contain,
+                      imageErrorBuilder: (_, __, ___) => Icon(
+                        Icons.food_bank_outlined,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              SizedBox(
-                width: 15.0,
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.food.name,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      widget.food.description ??
-                          AppLocalizations.of(context)
-                              .translate('no_description'),
-                    ),
-                    if (widget.food.attributes.length > 0) ...[
-                      SizedBox(
-                        height: 5,
-                      ),
-                      Consumer<DataContext>(
-                        builder: (_, dataContext, __) => Wrap(
-                          spacing: expanded ? 5 : 0,
-                          children: widget.food.attributes
-                              .map(
-                                (e) => FittedBox(
-                                  child: Card(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        20,
-                                      ),
-                                    ),
-                                    elevation: expanded ? 4.0 : 0.0,
-                                    margin: EdgeInsets.zero,
-                                    child: Padding(
-                                      padding: expanded
-                                          ? const EdgeInsets.all(
-                                              8,
-                                            )
-                                          : const EdgeInsets.symmetric(
-                                              vertical: 8,
-                                              horizontal: 4,
-                                            ),
-                                      child: Builder(
-                                        builder: (_) {
-                                          var attribute =
-                                              dataContext.attributes.firstWhere(
-                                            (element) => element['tag'] == e,
-                                            orElse: null,
-                                          );
+                  SizedBox(
+                    width: 15.0,
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.food.name,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Text(
+                          widget.food.description ??
+                              AppLocalizations.of(context)
+                                  .translate('no_description'),
+                        ),
+                        if (widget.food.attributes.length > 0) ...[
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Consumer<DataContext>(
+                            builder: (_, dataContext, __) => Wrap(
+                              spacing: expanded ? 5 : 0,
+                              children: widget.food.attributes
+                                  .map(
+                                    (e) => FittedBox(
+                                      child: Card(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            20,
+                                          ),
+                                        ),
+                                        elevation: expanded ? 4.0 : 0.0,
+                                        margin: EdgeInsets.zero,
+                                        child: Padding(
+                                          padding: expanded
+                                              ? const EdgeInsets.all(
+                                                  8,
+                                                )
+                                              : const EdgeInsets.symmetric(
+                                                  vertical: 8,
+                                                  horizontal: 4,
+                                                ),
+                                          child: Builder(
+                                            builder: (_) {
+                                              var attribute =
+                                                  dataContext.attributes.firstWhere(
+                                                (element) => element['tag'] == e,
+                                                orElse: null,
+                                              );
 
-                                          return Row(
-                                            children: [
-                                              if (attribute != null) ...[
-                                                FadeInImage.assetNetwork(
-                                                  placeholder:
-                                                      'assets/images/loading.gif',
-                                                  image: attribute['imageURL'],
-                                                  height: 14,
-                                                ),
-                                                if (expanded)
-                                                  SizedBox(
-                                                    width: 5,
-                                                  ),
-                                              ],
-                                              if (expanded)
-                                                Text(
-                                                  attribute[Provider.of<
-                                                              SettingContext>(
-                                                          context)
-                                                      .languageCode],
-                                                ),
-                                            ],
-                                          );
-                                        },
+                                              return Row(
+                                                children: [
+                                                  if (attribute != null) ...[
+                                                    FadeInImage.assetNetwork(
+                                                      placeholder:
+                                                          'assets/images/loading.gif',
+                                                      image: attribute['imageURL'],
+                                                      height: 14,
+                                                    ),
+                                                    if (expanded)
+                                                      SizedBox(
+                                                        width: 5,
+                                                      ),
+                                                  ],
+                                                  if (expanded)
+                                                    Text(
+                                                      attribute[Provider.of<
+                                                                  SettingContext>(
+                                                              context)
+                                                          .languageCode],
+                                                    ),
+                                                ],
+                                              );
+                                            },
+                                          ),
+                                        ),
                                       ),
                                     ),
+                                  )
+                                  .toList(),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  Text('${widget.food.price.amount / 100}€'),
+                ],
+              ),
+            ),
+            Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Consumer<CartContext>(
+                              builder: (_, cartContext, __) =>
+                                  RawMaterialButton(
+                                fillColor: DARK_BLUE,
+                                padding: const EdgeInsets.all(12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.only(
+                                    // bottomLeft: Radius.circular(30),
+                                    topRight: Radius.circular(30),
                                   ),
                                 ),
-                              )
-                              .toList(),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.white,
+                                  ),
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: FaIcon(
+                                    cartContext.contains(widget.food)
+                                        ? FontAwesomeIcons.minus
+                                        : FontAwesomeIcons.plus,
+                                    size: 10,
+                                  ),
+                                ),
+                                onPressed: (cartContext.itemCount == 0) ||
+                                        (cartContext.pricelessItems &&
+                                            widget.food.price.amount == null) ||
+                                        (!cartContext.pricelessItems &&
+                                            widget.food.price.amount != null)
+                                    ? () async {
+                                        if (cartContext.contains(widget.food)) {
+                                          var result = await showDialog(
+                                            context: context,
+                                            builder: (_) => ConfirmationDialog(
+                                              title: AppLocalizations.of(
+                                                      context)
+                                                  .translate(
+                                                      'confirm_remove_from_cart_title'),
+                                              content: AppLocalizations.of(
+                                                      context)
+                                                  .translate(
+                                                      'confirm_remove_from_cart_content'),
+                                            ),
+                                          );
+
+                                          if (result is bool && result) {
+                                            cartContext.removeItem(widget.food);
+                                            
+                                          }
+                                        } else
+                                          showDialog(
+                                            context: context,
+                                            builder: (_) => AddToBagDialog(
+                                              food: widget.food,
+                                            ),
+                                          );
+                                      }
+                                    : () {
+                                        Fluttertoast.showToast(
+                                            msg:
+                                                'Vous ne pouvez pas à la fois commander des articles sans prix et avec prix');
+                                      },
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              Text('${widget.food.price.amount / 100}€'),
-            ],
-          ),
+          ],
         ),
       ),
     );
@@ -617,53 +691,127 @@ RouteUtil.goTo(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Hero(tag: widget.food.id, child: widget.food.imageURL != null
-                    ? CircleAvatar(
-                        backgroundImage: NetworkImage(
-                          widget.food.imageURL,
-                        ),
-                        onBackgroundImageError: (_, __) {},
-                        backgroundColor: Colors.grey,
-                        maxRadius: 20,
-                      )
-                    : Icon(
-                        Icons.fastfood,
-                      ),),
-                
-                SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        widget.food.name,
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      if (widget.food.price != null)
-                        Text(
-                          '${widget.food.price.amount / 100}€',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.grey[600],
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Hero(tag: widget.food.id, child: widget.food.imageURL != null
+                        ? CircleAvatar(
+                            backgroundImage: NetworkImage(
+                              widget.food.imageURL,
+                            ),
+                            onBackgroundImageError: (_, __) {},
+                            backgroundColor: Colors.grey,
+                            maxRadius: 20,
+                          )
+                        : Icon(
+                            Icons.fastfood,
+                          ),),
+                    
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            widget.food.name,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                    ],
-                  ),
+                          if (widget.food.price != null)
+                            Text(
+                              '${widget.food.price.amount / 100}€',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Consumer<CartContext>(
+                              builder: (_, cartContext, __) =>
+                                  RawMaterialButton(
+                                fillColor: DARK_BLUE,
+                                padding: const EdgeInsets.all(12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.only(
+                                    // bottomLeft: Radius.circular(30),
+                                    topRight: Radius.circular(30),
+                                  ),
+                                ),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.white,
+                                  ),
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: FaIcon(
+                                    cartContext.contains(widget.food)
+                                        ? FontAwesomeIcons.minus
+                                        : FontAwesomeIcons.plus,
+                                    size: 10,
+                                  ),
+                                ),
+                                onPressed: (cartContext.itemCount == 0) ||
+                                        (cartContext.pricelessItems &&
+                                            widget.food.price.amount == null) ||
+                                        (!cartContext.pricelessItems &&
+                                            widget.food.price.amount != null)
+                                    ? () async {
+                                        if (cartContext.contains(widget.food)) {
+                                          var result = await showDialog(
+                                            context: context,
+                                            builder: (_) => ConfirmationDialog(
+                                              title: AppLocalizations.of(
+                                                      context)
+                                                  .translate(
+                                                      'confirm_remove_from_cart_title'),
+                                              content: AppLocalizations.of(
+                                                      context)
+                                                  .translate(
+                                                      'confirm_remove_from_cart_content'),
+                                            ),
+                                          );
+
+                                          if (result is bool && result) {
+                                            cartContext.removeItem(widget.food);
+                                           
+                                          }
+                                        } else
+                                          showDialog(
+                                            context: context,
+                                            builder: (_) => AddToBagDialog(
+                                              food: widget.food,
+                                            ),
+                                          );
+                                      }
+                                    : () {
+                                        Fluttertoast.showToast(
+                                            msg:
+                                                'Vous ne pouvez pas à la fois commander des articles sans prix et avec prix');
+                                      },
+                              ),
+                            ),
+                          ],
+                        ),
+            
+            ],
           ),
         ),
       ),
