@@ -83,6 +83,15 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                             items: cartContext.items.entries.map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),
                                             restaurant: cartContext.currentOrigin,
                                             totalPrice: (cartContext.totalPrice * 100).round(),
+                                            shippingAddress: commandContext.deliveryAddress,
+                                            shipAsSoonAsPossible: commandContext.deliveryDate == null && commandContext.deliveryTime == null,
+                                            shippingTime: commandContext.deliveryDate
+                                                .add(
+                                                  Duration(
+                                                    minutes: commandContext.deliveryTime.hour * 60 + commandContext.deliveryTime.minute,
+                                                  ),
+                                                )
+                                                .millisecondsSinceEpoch,
                                           );
                                           var payment = await StripeService.payViaExistingCard(
                                             amount: (cartContext.totalPrice * 100).floor().toString(),
@@ -90,8 +99,8 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                             currency: 'eur',
                                           );
                                           if (payment.success) {
-                                            await Api.instance.setCommandToPayedStatus(
-                                              id: command.id,
+                                            Api.instance.setCommandToPayedStatus(
+                                              id: command['_id'],
                                               paymentIntentId: payment.paymentIntentId,
                                             );
                                             Fluttertoast.showToast(
@@ -117,7 +126,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                             );
                                           } else {
                                             Fluttertoast.showToast(
-                                              msg: 'Echec du paiemenet. Carte invalide',
+                                              msg: 'Echec du paiemenet',
                                             );
                                           }
                                         } catch (error) {
