@@ -100,8 +100,8 @@ class _FoodPageState extends State<FoodPage> {
             ),
             body: mainContent,
           )
-        : Container(
-            child: mainContent,
+        : Scaffold(
+            body: mainContent,
           ) ;
   }
 
