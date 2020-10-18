@@ -101,12 +101,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
 
       tabController.addListener(() {
         print(tabController.index);
-        itemScrollController.scrollTo(
-          index: tabController.index,
-          duration: Duration(
-            milliseconds: 400,
-          ),
-        );
+        itemScrollController.jumpTo(index: tabController.index);
       });
 
       itemPositionsListener.itemPositions.addListener(() {
@@ -591,7 +586,6 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
         itemPositionsListener: itemPositionsListener,
         itemCount: 3 + restaurant.foodTypes.length,
         padding: const EdgeInsets.all(20),
-        physics: BouncingScrollPhysics(),
         itemBuilder: (_, index) {
           if (index == 0)
             return Text(
