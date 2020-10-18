@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/constants/date_format.dart';
 import 'package:menu_advisor/src/pages/payment_card_list.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/CommandContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:menu_advisor/src/utils/extensions.dart';
 import 'package:provider/provider.dart';
 
 class DeliveryDetailsPage extends StatefulWidget {
@@ -56,7 +58,8 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                             keyboardType: TextInputType.streetAddress,
                             textInputAction: TextInputAction.done,
                             decoration: InputDecoration(
-                              labelText: AppLocalizations.of(context).translate("address_placeholder"),
+                              labelText: AppLocalizations.of(context)
+                                  .translate("address_placeholder"),
                             ),
                             onChanged: (value) {
                               commandContext.deliveryAddress = value;
@@ -72,7 +75,8 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                             vertical: 15,
                           ),
                           child: Text(
-                            AppLocalizations.of(context).translate('date_and_time'),
+                            AppLocalizations.of(context)
+                                .translate('date_and_time'),
                             textAlign: TextAlign.start,
                           ),
                         ),
@@ -93,14 +97,17 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                     });
                                   },
                                   child: ListTile(
-                                    contentPadding: const EdgeInsets.symmetric(horizontal: 25.0),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 25.0),
                                     title: Text(
-                                      AppLocalizations.of(context).translate('as_soon_as_possible'),
+                                      AppLocalizations.of(context)
+                                          .translate('as_soon_as_possible'),
                                     ),
                                     leading: Icon(
                                       Icons.timer,
                                     ),
-                                    trailing: deliveryDate == null && deliveryTime == null
+                                    trailing: deliveryDate == null &&
+                                            deliveryTime == null
                                         ? Icon(
                                             Icons.check,
                                             color: Colors.green[300],
@@ -116,7 +123,8 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                   onTap: () async {
                                     var date = await showDatePicker(
                                       context: context,
-                                      initialDate: deliveryDate ?? DateTime.now(),
+                                      initialDate:
+                                          deliveryDate ?? DateTime.now(),
                                       firstDate: DateTime.now(),
                                       lastDate: DateTime.now().add(
                                         Duration(days: 30),
@@ -127,8 +135,10 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                         context: context,
                                         initialTime: deliveryTime ??
                                             TimeOfDay(
-                                              hour: 6,
-                                              minute: 0,
+                                              hour: DateTime.now().hour,
+                                              minute: DateTime.now()
+                                                  .add(Duration(minutes: 15))
+                                                  .minute,
                                             ),
                                       );
 
@@ -144,14 +154,16 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                     }
                                   },
                                   child: ListTile(
-                                    contentPadding: const EdgeInsets.symmetric(horizontal: 25.0),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 25.0),
                                     title: Text(
                                       'Planifier une commande',
                                     ),
                                     leading: Icon(
                                       Icons.calendar_today_outlined,
                                     ),
-                                    trailing: deliveryDate != null && deliveryTime != null
+                                    trailing: deliveryDate != null &&
+                                            deliveryTime != null
                                         ? Icon(
                                             Icons.check,
                                             color: Colors.green[300],
@@ -160,6 +172,21 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                   ),
                                 ),
                               ),
+                              if (deliveryDate != null) ...[
+                                Divider(),
+                                ListTile(
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 25.0),
+                                  title: Text(
+                                    '${deliveryDate?.dateToString(DATE_FORMATED_ddMMyyyy) ?? ""}    ${deliveryTime?.hour ?? ""} : ${deliveryTime?.minute ?? ""}',
+                                  ),
+                                  leading: Container(
+                                    width: 1,
+                                    height: 1,
+                                  ),
+                                  trailing: null,
+                                ),
+                              ]
                             ],
                           ),
                         ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/pages/restaurant.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
@@ -72,6 +73,25 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
                     flashOn = !flashOn;
                   });
                 },
+              ),
+            ),
+            Positioned(
+              bottom: 20,
+              right: 20,
+              child: Container(
+                padding: EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                    color: CRIMSON, borderRadius: BorderRadius.circular(158)),
+                child: InkWell(
+                  child: Icon(
+                    Icons.camera,
+                    color: Colors.white,
+                  ),
+                  onTap: () async {
+                    final pickedFile = await ImagePicker()
+                        .getImage(source: ImageSource.gallery);
+                  },
+                ),
               ),
             ),
           ],

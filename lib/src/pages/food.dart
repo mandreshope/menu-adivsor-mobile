@@ -20,12 +20,14 @@ class FoodPage extends StatefulWidget {
   final String imageTag;
   final String restaurantName;
   final bool modalMode;
+  final bool fromDelevery;
 
   FoodPage({
     this.food,
     this.imageTag,
     this.restaurantName,
     this.modalMode = false,
+    this.fromDelevery = false
   });
 
   @override
@@ -40,14 +42,15 @@ class _FoodPageState extends State<FoodPage> {
   String restaurantName;
   bool switchingFavorite = false;
   int itemCount = 1;
+  CartContext _cartContext;
 
   @override
   void initState() {
     super.initState();
 
-    CartContext cartContext = Provider.of<CartContext>(context, listen: false);
-    if (cartContext.contains(widget.food))
-      itemCount = cartContext.getCount(widget.food);
+    _cartContext = Provider.of<CartContext>(context, listen: false);
+    if (_cartContext.contains(widget.food))
+      itemCount = _cartContext.getCount(widget.food);
 
     api
         .getRestaurant(
@@ -99,10 +102,13 @@ class _FoodPageState extends State<FoodPage> {
           )
         : Scaffold(
             body: mainContent,
-          );
+          ) ;
   }
 
+
+
   Widget get mainContent => Container(
+      
         width: !widget.modalMode ? double.infinity : MediaQuery.of(context).size.width - 60,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
@@ -111,7 +117,7 @@ class _FoodPageState extends State<FoodPage> {
           fit: StackFit.expand,
           children: [
             Column(
-              mainAxisSize: MainAxisSize.max,
+              mainAxisSize: widget.fromDelevery ? MainAxisSize.min : MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
@@ -335,6 +341,7 @@ class _FoodPageState extends State<FoodPage> {
                     ],
                   ),
                 ),
+                if(!widget.fromDelevery)...[
                 Spacer(),
                 // Align(
                 //   alignment: Alignment.center,
@@ -350,6 +357,23 @@ class _FoodPageState extends State<FoodPage> {
                 //     ),
                 //   ),
                 // ),
+                if (!this._cartContext.contains(widget.food))
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (showFavorite) SizedBox(width: 30,),
+                    ButtonItemCountWidget(
+                                      onAdded: (value) {
+                                        print(value);
+                                        itemCount = value;
+                                      },
+                                      onRemoved: (value) {
+                                        print(value);
+                                        itemCount = value;
+                                      },
+                                      itemCount: itemCount),
+                  ],
+                ),
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 30,
@@ -357,6 +381,7 @@ class _FoodPageState extends State<FoodPage> {
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       if (showFavorite) ...[
                         FloatingActionButton(
@@ -414,23 +439,7 @@ class _FoodPageState extends State<FoodPage> {
                       ],
                       Expanded(
                         child: Consumer<CartContext>(
-                          builder: (_, cartContext, __) => Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              //
-                              ButtonItemCountWidget(
-                                  onAdded: (value) {
-                                    print(value);
-                                    itemCount = value;
-                                  },
-                                  onRemoved: (value) {
-                                    print(value);
-                                    itemCount = value;
-                                  },
-                                  itemCount: itemCount),
-
-                              //button add
+                          builder: (_, cartContext, __) =>
                               RaisedButton(
                                 padding: EdgeInsets.all(20),
                                 color: cartContext.contains(widget.food)
@@ -506,17 +515,17 @@ class _FoodPageState extends State<FoodPage> {
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: showFavorite ? 15 : 20,
+                                    fontSize: 20,
                                   ),
                                 ),
                               ),
-                            ],
+                            
                           ),
                         ),
-                      )
                     ],
                   ),
                 ),
+              ]
               ],
             ),
             Positioned(
