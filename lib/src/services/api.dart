@@ -488,12 +488,15 @@ class Api {
     );
   }
 
-  Future<Command> sendCommand({
+  Future<Map> sendCommand({
     String relatedUser,
     String commandType,
     int totalPrice,
     String restaurant,
     List<Map<String, dynamic>> items,
+    int shippingTime,
+    String shippingAddress,
+    bool shipAsSoonAsPossible,
   }) async {
     await _refreshTokens();
 
@@ -510,15 +513,18 @@ class Api {
         'totalPrice': totalPrice.toString(),
         'restaurant': restaurant,
         'items': items,
+        'shippingTime': shippingTime,
+        'shippingAddress': shippingAddress,
+        'shipAsSoonAsPossible': shipAsSoonAsPossible,
       }),
     )
-        .then<Command>((response) {
+        .then<Map>((response) {
       if (response.statusCode != 200)
         return Future.error(
           jsonDecode(response.body),
         );
 
-      return Command.fromJson(jsonDecode(response.body));
+      return jsonDecode(response.body);
     });
   }
 
