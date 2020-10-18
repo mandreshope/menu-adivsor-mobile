@@ -472,6 +472,7 @@ class _FoodPageState extends State<FoodPage> {
                                         setState(() {
                                           itemCount = 1;
                                         });
+                                        RouteUtil.goBack(context: context);
                                       }
                                     } else {
                                       /*bool result = await showDialog<bool>(
