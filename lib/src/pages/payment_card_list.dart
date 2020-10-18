@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_credit_card/credit_card_widget.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -6,6 +8,7 @@ import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/add_payment_card.dart';
 import 'package:menu_advisor/src/pages/home.dart';
+import 'package:menu_advisor/src/pages/summary.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/CommandContext.dart';
@@ -93,6 +96,8 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                                 )
                                                 .millisecondsSinceEpoch,
                                           );
+                                          var commandStr = command.toString();
+                                          CommandModel cm = CommandModel.fromJson(command);
                                           var payment = await StripeService.payViaExistingCard(
                                             amount: (cartContext.totalPrice * 100).floor().toString(),
                                             card: creditCard,
@@ -118,11 +123,18 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                               listen: false,
                                             ).clear();
 
+                                            
                                             RouteUtil.goTo(
                                               context: context,
                                               child: HomePage(),
                                               routeName: homeRoute,
                                               method: RoutingMethod.atTop,
+                                            );
+                                            RouteUtil.goTo(
+                                              context: context,
+                                              child: Summary(commande: cm,),
+                                              routeName: homeRoute,
+                                              // method: RoutingMethod.atTop,
                                             );
                                           } else {
                                             Fluttertoast.showToast(

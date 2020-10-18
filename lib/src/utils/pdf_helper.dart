@@ -1,0 +1,161 @@
+import 'dart:io';
+
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:menu_advisor/src/constants/date_format.dart';
+import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/utils/AppLocalization.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart';
+import 'package:menu_advisor/src/utils/extensions.dart';
+
+import '../types.dart';
+
+class PdfHelper {
+  List<Food> foods = [
+    Food(
+        id: "sf",
+        name: "qsdff",
+        category: null,
+        restaurant: "qsdf",
+        price: Price(amount: 15, currency: "13")),
+    Food(
+        id: "sf",
+        name: "qsdff",
+        category: null,
+        restaurant: "qsdf",
+        price: Price(amount: 15, currency: "13")),
+    Food(
+        id: "sf",
+        name: "qsdff",
+        category: null,
+        restaurant: "qsdf",
+        price: Price(amount: 15, currency: "13")),
+    Food(
+        id: "sf",
+        name: "qsdff",
+        category: null,
+        restaurant: "qsdf",
+        price: Price(amount: 15, currency: "13")),
+  ];
+CommandModel commande;
+
+  PdfHelper(ctx,CommandModel commande) {
+    final Document pdf = Document();
+
+    this.commande = commande;
+
+    pdf.addPage(MultiPage(
+      pageFormat:
+            PdfPageFormat.letter.copyWith(marginBottom: 1.5 * PdfPageFormat.cm),
+        crossAxisAlignment: CrossAxisAlignment.start,
+        header: (Context context) {
+          if (context.pageNumber == 1) {
+            return null;
+          }
+          return Container(
+              alignment: Alignment.centerRight,
+              margin: const EdgeInsets.only(bottom: 3.0 * PdfPageFormat.mm),
+              padding: const EdgeInsets.only(bottom: 3.0 * PdfPageFormat.mm),
+              decoration: const BoxDecoration(
+                  border: BoxBorder(
+                      bottom: true, width: 0.5, color: PdfColors.grey)),
+              child: Text('Portable Document Format',
+                  style: Theme.of(context)
+                      .defaultTextStyle
+                      .copyWith(color: PdfColors.grey)));
+        },
+        footer: (Context context) {
+          return Container(
+              alignment: Alignment.centerRight,
+              margin: const EdgeInsets.only(top: 1.0 * PdfPageFormat.cm),
+              child: Text('Page ${context.pageNumber} of ${context.pagesCount}',
+                  style: Theme.of(context)
+                      .defaultTextStyle
+                      .copyWith(color: PdfColors.grey)));
+        },
+        build:(Context context) => <Widget>[
+          _body(ctx)
+        ]
+
+    ));
+
+    //getExternalStorageDirectory().then((value) async {
+      
+
+    //});
+
+    _saveFile(pdf,ctx);
+    
+  }
+
+  _saveFile(Document pdf,ctx) async {
+    String pathToSaveFile = "/storage/emulated/0/MenuAdvisor/";
+      final Directory appDirectory = Directory(pathToSaveFile);
+      if(!await appDirectory.exists()){ 
+        var dirTemp = await appDirectory.create(recursive: true);
+      }
+
+      String fileName = "${DateTime.now().dateToString(DATE_FORMATED_ddMMyyyyHHmm)}.pdf";
+      File file = File("$pathToSaveFile$fileName");
+      file.writeAsBytesSync(pdf.save());
+      print("file saved... to $pathToSaveFile$fileName");
+
+      Fluttertoast.showToast(
+                    msg: "${AppLocalizations.of(ctx).translate('success')} \n$pathToSaveFile$fileName",
+                  );
+  }
+
+  Widget _body(ctx) => Column(
+        children: [
+          SizedBox(
+            height: 25,
+          ),
+          Text(
+            AppLocalizations.of(ctx).translate('summary').toUpperCase(),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(
+            height: 15,
+          ),
+          for (int i = 0; i <= commande.items.length - 1; i++) _items(commande.items[i], i),
+           SizedBox(
+            height: 15,
+          ),
+          Text(
+            "Total : ${commande.totalPrice ?? 0}",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.right,
+          ),
+        ],
+      );
+
+ Widget _items(CommandItem item, int position) {
+    return Container(
+      padding: EdgeInsets.all(10),
+      color: position % 2 == 0 ? PdfColor.fromInt(0xffda143c) : PdfColors.white,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Container(
+            width: 150,
+            child: _text(item.food?.name ?? "", position)
+            ),
+          _text("|", position),
+          Container(
+            width: 10,
+            child: _text("${item?.quantity ?? 0}", position)),
+          _text("|", position),
+          _text("${item.food?.price?.amount ?? 0} ${item.food.price.currency}", position),
+        ],
+      ),
+    );
+  }
+
+  _text(String value, position) => Text(
+        value,
+        style: TextStyle(
+            fontSize: 16,
+            color: position % 2 == 0 ? PdfColors.white : PdfColors.black),
+      );
+}

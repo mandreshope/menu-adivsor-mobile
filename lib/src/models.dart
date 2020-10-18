@@ -51,7 +51,7 @@ class Food {
 
   factory Food.fromJson(Map<String, dynamic> json) => Food(
         id: json['_id'],
-        name: json['name'],
+        name: json['name'] is Map<String, dynamic> ? json['name']["fr"] : json['name'],
         imageURL: json['imageURL'],
         category: json.containsKey('category') && json['category'] != null && json['category'] is Map<String, dynamic> ? FoodCategory.fromJson(json['category']) : null,
         restaurant: json['restaurant'],
@@ -259,4 +259,60 @@ class PaymentCard {
         'owner': owner,
         'zipCode': zipCode,
       };
+}
+
+
+
+//command model
+class CommandModel {
+  List<CommandItem> items;
+  Restaurant restaurant;
+  int totalPrice;
+  
+  CommandModel({this.items});
+
+  CommandModel.fromJson(Map<String, dynamic> json) {
+    if (json['items'] != null) {
+      items =  List<CommandItem>();
+      json['items'].forEach((v) {
+        items.add( CommandItem.fromJson(v));
+      });
+    }
+    totalPrice = json['totalPrice'];
+    restaurant = json['restaurant'] != null
+        ?  Restaurant.fromJson(json['restaurant'])
+        : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data =  Map<String, dynamic>();
+    if (this.items != null) {
+      data['items'] = this.items.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class CommandItem {
+  String sId;
+  int quantity;
+  Food food;
+
+  CommandItem({this.sId, this.quantity, this.food});
+
+  CommandItem.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    food = json['item'] != null ?  Food.fromJson(json['item']) : null;
+    quantity = json['quantity'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data =  Map<String, dynamic>();
+    data['_id'] = this.sId;
+    data['quantity'] = this.quantity;
+    if (this.food != null) {
+      data['item'] = this.food.toJson();
+    }
+    return data;
+  }
 }
