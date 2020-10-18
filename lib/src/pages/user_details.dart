@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/constants/date_format.dart';
 import 'package:menu_advisor/src/constants/validators.dart';
 import 'package:menu_advisor/src/pages/home.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
@@ -9,6 +10,7 @@ import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:menu_advisor/src/utils/extensions.dart';
 import 'package:provider/provider.dart';
 
 class UserDetailsPage extends StatefulWidget {
@@ -28,6 +30,9 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
   final FocusNode _phoneNumberFocus = FocusNode();
   final FocusNode _emailFocus = FocusNode();
   final FocusNode _addressFocus = FocusNode();
+
+  DateTime deliveryDate;
+  TimeOfDay deliveryTime;
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +96,8 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  AppLocalizations.of(context).translate("mail_address_placeholder"),
+                  AppLocalizations.of(context)
+                      .translate("mail_address_placeholder"),
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                   ),
@@ -118,7 +124,8 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                 if (commandContext.commandType == 'delivery') ...[
                   SizedBox(height: 10),
                   Text(
-                    AppLocalizations.of(context).translate("address_placeholder"),
+                    AppLocalizations.of(context)
+                        .translate("address_placeholder"),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
@@ -139,6 +146,79 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                     ),
                   ),
                 ],
+                SizedBox(height: 25),
+                if (commandContext.commandType == 'takeaway')
+                  Material(
+                    color: Colors.white,
+                    child: InkWell(
+                      onTap: () async {
+                        var date = await showDatePicker(
+                          context: context,
+                          initialDate: deliveryDate ?? DateTime.now(),
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime.now().add(
+                            Duration(days: 30),
+                          ),
+                        );
+                        if (date != null) {
+                          var time = await showTimePicker(
+                            context: context,
+                            initialTime: deliveryTime ??
+                                TimeOfDay(
+                                  hour: DateTime.now().hour,
+                                  minute: DateTime.now()
+                                      .add(Duration(minutes: 15))
+                                      .minute,
+                                ),
+                          );
+
+                          if (time != null) {
+                            commandContext.deliveryDate = date;
+                            commandContext.deliveryTime = time;
+
+                            setState(() {
+                              deliveryDate = date;
+                              deliveryTime = time;
+                            });
+                          }
+                        }
+                      },
+                      child: ListTile(
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 25.0),
+                        title: Text(
+                          'Planifier une commande',
+                        ),
+                        leading: Icon(
+                          Icons.calendar_today_outlined,
+                        ),
+                        trailing: deliveryDate != null && deliveryTime != null
+                            ? Icon(
+                                Icons.check,
+                                color: Colors.green[300],
+                              )
+                            : null,
+                      ),
+                    ),
+                  ),
+                if (deliveryDate != null) ...[
+                  Divider(),
+                  Container(
+                    color: Colors.white,
+                    child: ListTile(
+                      contentPadding:
+                          const EdgeInsets.symmetric(horizontal: 25.0),
+                      title: Text(
+                        '${deliveryDate?.dateToString(DATE_FORMATED_ddMMyyyy) ?? ""}    ${deliveryTime?.hour ?? ""} : ${deliveryTime?.minute ?? ""}',
+                      ),
+                      leading: Container(
+                        width: 1,
+                        height: 1,
+                      ),
+                      trailing: null,
+                    ),
+                  ),
+                ],
                 Spacer(),
                 FlatButton(
                   color: CRIMSON,
@@ -150,7 +230,9 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                   ),
                   onPressed: _submitForm,
                   child: Text(
-                    commandContext.commandType == 'delivery' ? AppLocalizations.of(context).translate('next') : AppLocalizations.of(context).translate('validate'),
+                    commandContext.commandType == 'delivery'
+                        ? AppLocalizations.of(context).translate('next')
+                        : AppLocalizations.of(context).translate('validate'),
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -183,7 +265,9 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
       try {
         await Api.instance.sendCommand(
           commandType: commandContext.commandType,
-          items: cartContext.items.entries.map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),
+          items: cartContext.items.entries
+              .map((e) => {'quantity': e.value, 'item': e.key.id})
+              .toList(),
           restaurant: cartContext.currentOrigin,
           totalPrice: (cartContext.totalPrice * 100).round(),
         );
@@ -192,7 +276,8 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
         cartContext.clear();
 
         Fluttertoast.showToast(
-          msg: 'Commande envoyée avec succès. Nous vous enverrons un mail pour confirmation',
+          msg:
+              'Commande envoyée avec succès. Nous vous enverrons un mail pour confirmation',
         );
         RouteUtil.goTo(
           context: context,
@@ -200,7 +285,8 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
           routeName: homeRoute,
         );
       } catch (error) {
-        Fluttertoast.showToast(msg: 'Erreur lors de l\'envoi de la commande...');
+        Fluttertoast.showToast(
+            msg: 'Erreur lors de l\'envoi de la commande...');
       }
     }
   }
