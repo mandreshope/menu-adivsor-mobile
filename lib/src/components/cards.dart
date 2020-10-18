@@ -401,7 +401,7 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
             expanded = true;
           });
         else {
-          var result = await showDialog(
+          /*var result = await showDialog(
             context: context,
             builder: (_) => Container(
               child: Dialog(
@@ -414,7 +414,17 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                 ),
               ),
             ),
-          );
+          );*/
+        RouteUtil.goTo(
+        context: context,
+        child: Material(
+                  child: FoodPage(
+            food: widget.food,
+            imageTag: widget.food.id,
+          ),
+        ),
+        routeName: foodRoute,
+      );
         }
       },
       child: Card(
@@ -424,14 +434,17 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              FadeInImage.assetNetwork(
-                placeholder: 'assets/images/loading.gif',
-                image: widget.food.imageURL,
-                width: 50,
-                height: 50,
-                fit: BoxFit.contain,
-                imageErrorBuilder: (_, __, ___) => Icon(
-                  Icons.food_bank_outlined,
+              Hero(
+                tag: widget.food.id,
+                              child: FadeInImage.assetNetwork(
+                  placeholder: 'assets/images/loading.gif',
+                  image: widget.food.imageURL,
+                  width: 50,
+                  height: 50,
+                  fit: BoxFit.contain,
+                  imageErrorBuilder: (_, __, ___) => Icon(
+                    Icons.food_bank_outlined,
+                  ),
                 ),
               ),
               SizedBox(
@@ -565,8 +578,15 @@ class _DrinkCardState extends State<DrinkCard> {
                     .translate('from_different_origin_not_allowed'),
               );
           }
-
-          if (cartContext.contains(widget.food)) {
+RouteUtil.goTo(
+                  context: context,
+                  child: FoodPage(
+                    food: widget.food,
+                    imageTag: widget.food.id,
+                  ),
+                  routeName: foodRoute,
+                );
+          /*if (cartContext.contains(widget.food)) {
             var result = await showDialog(
               context: context,
               builder: (_) => ConfirmationDialog(
@@ -588,7 +608,8 @@ class _DrinkCardState extends State<DrinkCard> {
               ),
             );
             if (result is bool && result) {}
-          }
+          }*/
+          
         },
         child: Card(
           elevation: 2.0,
@@ -602,7 +623,7 @@ class _DrinkCardState extends State<DrinkCard> {
               mainAxisSize: MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                widget.food.imageURL != null
+                Hero(tag: widget.food.id, child: widget.food.imageURL != null
                     ? CircleAvatar(
                         backgroundImage: NetworkImage(
                           widget.food.imageURL,
@@ -613,7 +634,8 @@ class _DrinkCardState extends State<DrinkCard> {
                       )
                     : Icon(
                         Icons.fastfood,
-                      ),
+                      ),),
+                
                 SizedBox(
                   width: 10,
                 ),
