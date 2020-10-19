@@ -30,6 +30,7 @@ class _LoginPageState extends State<LoginPage> {
   final FocusNode _passwordFocus = FocusNode();
 
   bool loading = false;
+  bool isPasswordRemember = false;
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +112,8 @@ class _LoginPageState extends State<LoginPage> {
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.next,
                         decoration: InputDecoration(
-                          labelText: AppLocalizations.of(context).translate("mail_address_placeholder"),
+                          labelText: AppLocalizations.of(context)
+                              .translate("mail_address_placeholder"),
                         ),
                         onFieldSubmitted: (_) {
                           _emailFocus.unfocus();
@@ -125,10 +127,30 @@ class _LoginPageState extends State<LoginPage> {
                         keyboardType: TextInputType.text,
                         obscureText: true,
                         textInputAction: TextInputAction.done,
-                        labelText: AppLocalizations.of(context).translate("password_placeholder"),
+                        labelText: AppLocalizations.of(context)
+                            .translate("password_placeholder"),
                         onFieldSubmitted: (_) => _submitForm(),
                       ),
-                      SizedBox(height: 40),
+                      // SizedBox(height: 25),
+                      InkWell(
+                        onTap: () {
+                          setState(() {
+                            isPasswordRemember = !isPasswordRemember;
+                          });
+                        },
+                        child: Row(
+                          children: [
+                            Checkbox(
+                                value: isPasswordRemember,
+                                activeColor: CRIMSON,
+                                onChanged: (value) => null),
+                            Text(
+                              AppLocalizations.of(context).translate("remember_password"),
+                            )
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 20),
                       RaisedButton(
                         padding: EdgeInsets.all(15),
                         color: CRIMSON,
@@ -149,7 +171,8 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               )
                             : Text(
-                                AppLocalizations.of(context).translate("login_button"),
+                                AppLocalizations.of(context)
+                                    .translate("login_button"),
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 20,
@@ -159,7 +182,8 @@ class _LoginPageState extends State<LoginPage> {
                       SizedBox(height: 10),
                       TextButton(
                         child: Text(
-                          AppLocalizations.of(context).translate("forgotten_password"),
+                          AppLocalizations.of(context)
+                              .translate("forgotten_password"),
                           style: TextStyle(
                             color: CRIMSON,
                             decoration: TextDecoration.underline,
@@ -175,7 +199,8 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       FlatButton(
                         child: Text(
-                          AppLocalizations.of(context).translate("skip_for_now"),
+                          AppLocalizations.of(context)
+                              .translate("skip_for_now"),
                         ),
                         onPressed: () {
                           RouteUtil.goTo(
@@ -223,7 +248,8 @@ class _LoginPageState extends State<LoginPage> {
                         );
                       },
                       child: Text(
-                        AppLocalizations.of(context).translate("create_account"),
+                        AppLocalizations.of(context)
+                            .translate("create_account"),
                         style: TextStyle(
                           decoration: TextDecoration.underline,
                           fontWeight: FontWeight.bold,
@@ -244,7 +270,8 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   _submitForm() async {
-    final String email = _emailController.value.text, password = _passwordController.value.text;
+    final String email = _emailController.value.text,
+        password = _passwordController.value.text;
 
     if (email.isEmpty || password.isEmpty) {
       Fluttertoast.showToast(
@@ -272,6 +299,7 @@ class _LoginPageState extends State<LoginPage> {
       final result = await authContext.login(
         email,
         password,
+        isPasswordRemember: isPasswordRemember
       );
       if (result) {
         if (cartContext.itemCount > 0)
@@ -291,7 +319,8 @@ class _LoginPageState extends State<LoginPage> {
     } catch (error) {
       print(error);
       Fluttertoast.showToast(
-        msg: AppLocalizations.of(context).translate("invalid_email_or_password"),
+        msg:
+            AppLocalizations.of(context).translate("invalid_email_or_password"),
         backgroundColor: CRIMSON,
         textColor: Colors.white,
       );

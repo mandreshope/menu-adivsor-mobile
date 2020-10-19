@@ -12,6 +12,7 @@ import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Splash extends StatefulWidget {
   final Color textColor;
@@ -53,13 +54,20 @@ class _SplashState extends State<Splash> {
         setState(() {
           loadingUser = true;
         });
-        try {
+        authContext.initialized.then((value) {
+          _autoLogin(authContext);
+        }).catchError((onError){
+          _autoLogin(authContext);
+        });
+
+        /*try {
           await authContext.initialized;
         } catch (error) {
           Fluttertoast.showToast(
             msg: AppLocalizations.of(context).translate('session_expired'),
           );
           await authContext.logout();
+
           RouteUtil.goTo(
             context: context,
             child: LoginPage(),
@@ -84,9 +92,42 @@ class _SplashState extends State<Splash> {
             child: LoginPage(),
             routeName: loginRoute,
             method: RoutingMethod.replaceLast,
-          );
+          );*/
       },
     );
+  }
+
+  _autoLogin(AuthContext authContext) async {
+    try {
+      final result = await authContext.autoLogin();
+      if (result) {
+        RouteUtil.goTo(
+          context: context,
+          child: HomePage(),
+          routeName: homeRoute,
+        );
+      } else {
+        RouteUtil.goTo(
+          context: context,
+          child: LoginPage(),
+          routeName: loginRoute,
+          method: RoutingMethod.replaceLast,
+        );
+      }
+    } catch (error) {
+      print(error);
+
+      RouteUtil.goTo(
+        context: context,
+        child: LoginPage(),
+        routeName: loginRoute,
+        method: RoutingMethod.replaceLast,
+      );
+    } finally {
+      setState(() {
+        loadingUser = false;
+      });
+    }
   }
 
   @override

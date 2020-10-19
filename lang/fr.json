@@ -150,5 +150,6 @@
   "priceless_and_not_priceless_not_allowed": "Vous ne pouvez pas à la fois commander des articles sans prix et avec prix",
   "from_different_origin_not_allowed": "Vous ne pouvez pas commander des articles venant de différents restaurants en même temps",
   "no_attribute": "Aucun attribut",
-  "summary":"Resumé"
+  "summary":"Resumé",
+  "remember_password" : "Mémoriser mon mot de passe"
 }
