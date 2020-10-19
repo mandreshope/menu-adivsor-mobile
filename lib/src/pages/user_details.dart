@@ -98,8 +98,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  AppLocalizations.of(context)
-                      .translate("mail_address_placeholder"),
+                  AppLocalizations.of(context).translate("mail_address_placeholder"),
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                   ),
@@ -126,8 +125,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                 if (commandContext.commandType == 'delivery') ...[
                   SizedBox(height: 10),
                   Text(
-                    AppLocalizations.of(context)
-                        .translate("address_placeholder"),
+                    AppLocalizations.of(context).translate("address_placeholder"),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
@@ -168,9 +166,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                             initialTime: deliveryTime ??
                                 TimeOfDay(
                                   hour: DateTime.now().hour,
-                                  minute: DateTime.now()
-                                      .add(Duration(minutes: 15))
-                                      .minute,
+                                  minute: DateTime.now().add(Duration(minutes: 15)).minute,
                                 ),
                           );
 
@@ -186,8 +182,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                         }
                       },
                       child: ListTile(
-                        contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 25.0),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 25.0),
                         title: Text(
                           'Planifier une commande',
                         ),
@@ -208,8 +203,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                   Container(
                     color: Colors.white,
                     child: ListTile(
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 25.0),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 25.0),
                       title: Text(
                         '${deliveryDate?.dateToString(DATE_FORMATED_ddMMyyyy) ?? ""}    ${deliveryTime?.hour ?? ""} : ${deliveryTime?.minute ?? ""}',
                       ),
@@ -232,9 +226,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                   ),
                   onPressed: _submitForm,
                   child: Text(
-                    commandContext.commandType == 'delivery'
-                        ? AppLocalizations.of(context).translate('next')
-                        : AppLocalizations.of(context).translate('validate'),
+                    commandContext.commandType == 'delivery' ? AppLocalizations.of(context).translate('next') : AppLocalizations.of(context).translate('validate'),
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -277,7 +269,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
               .toList(),
           restaurant: cartContext.currentOrigin,
           totalPrice: (cartContext.totalPrice * 100).round(),
-          customer: {
+          consumer: {
             'name': _displayNameController.value.text,
             'address': _addressController.value.text,
             'phoneNumber': _phoneNumberController.value.text,
@@ -289,8 +281,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
         cartContext.clear();
 
         Fluttertoast.showToast(
-          msg:
-              'Commande envoyée avec succès. Nous vous enverrons un mail pour confirmation',
+          msg: 'Commande envoyée avec succès. Nous vous enverrons un mail pour confirmation',
         );
         RouteUtil.goTo(
           context: context,
@@ -306,8 +297,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
           // method: RoutingMethod.atTop,
         );
       } catch (error) {
-        Fluttertoast.showToast(
-            msg: 'Erreur lors de l\'envoi de la commande...');
+        Fluttertoast.showToast(msg: 'Erreur lors de l\'envoi de la commande...');
       }
     }
   }
