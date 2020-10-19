@@ -123,17 +123,12 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                               listen: false,
                                             ).clear();
 
-                                            
                                             RouteUtil.goTo(
                                               context: context,
-                                              child: HomePage(),
-                                              routeName: homeRoute,
-                                              method: RoutingMethod.atTop,
-                                            );
-                                            RouteUtil.goTo(
-                                              context: context,
-                                              child: Summary(commande: cm,),
-                                              routeName: homeRoute,
+                                              child: Summary(
+                                                commande: cm,
+                                              ),
+                                              routeName: summaryRoute,
                                               // method: RoutingMethod.atTop,
                                             );
                                           } else {

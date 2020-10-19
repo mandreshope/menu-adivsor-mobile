@@ -25,4 +25,4 @@ const String profileEditRoute = 'profileEdit';
 const String favoritesRoute = 'favorites';
 const String commandHistoryRoute = 'commandHistory';
 const String deliveryDetailsRoute = 'deliveryDetails';
-const String summary = 'summary';
+const String summaryRoute = 'summary';
