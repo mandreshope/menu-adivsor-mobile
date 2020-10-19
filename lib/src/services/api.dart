@@ -497,7 +497,7 @@ class Api {
     int shippingTime,
     String shippingAddress,
     bool shipAsSoonAsPossible,
-    Map consumer,
+    Map customer,
   }) async {
     await _refreshTokens();
 
@@ -517,7 +517,7 @@ class Api {
         'shippingTime': shippingTime,
         'shippingAddress': shippingAddress,
         'shipAsSoonAsPossible': shipAsSoonAsPossible,
-        'consumer': consumer,
+        'customer': customer,
       }),
     )
         .then<Map>((response) {
