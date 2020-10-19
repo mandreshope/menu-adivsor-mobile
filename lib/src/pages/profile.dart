@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:menu_advisor/src/components/utilities.dart';
-import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/pages/change_password.dart';
 import 'package:menu_advisor/src/pages/command_history.dart';
 import 'package:menu_advisor/src/pages/favorites.dart';
@@ -66,8 +65,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     listen: false,
                   ).clear();
 
-                  Provider.of<SettingContext>(context, listen: false)
-                      .resetLanguage();
+                  Provider.of<SettingContext>(context, listen: false).resetLanguage();
 
                   RouteUtil.goTo(
                     context: context,
@@ -92,8 +90,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     height: 110,
                     color: Colors.grey.withAlpha(50),
                     child: Consumer<AuthContext>(
-                      builder: (_, authContext, __) => authContext.currentUser !=
-                              null
+                      builder: (_, authContext, __) => authContext.currentUser != null
                           ? Stack(
                               fit: StackFit.expand,
                               children: [
@@ -126,34 +123,23 @@ class _ProfilePageState extends State<ProfilePage> {
                                       height: 10,
                                     ),
                                     Text(
-                                      authContext.currentUser.name.first.length !=
-                                              0
-                                          ? authContext.currentUser.name.first
-                                          : AppLocalizations.of(context)
-                                              .translate('no_firstname'),
+                                      authContext.currentUser.name.first.length != 0 ? authContext.currentUser.name.first : AppLocalizations.of(context).translate('no_firstname'),
                                     ),
                                     Text(
-                                      authContext.currentUser.name.last.length !=
-                                              0
-                                          ? authContext.currentUser.name.last
-                                          : AppLocalizations.of(context)
-                                              .translate('no_lastname'),
+                                      authContext.currentUser.name.last.length != 0 ? authContext.currentUser.name.last : AppLocalizations.of(context).translate('no_lastname'),
                                     ),
                                     SizedBox(
                                       height: 5,
                                     ),
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
                                         Icon(
                                           Icons.location_on_sharp,
                                         ),
                                         Text(
-                                          authContext.currentUser.address ??
-                                              AppLocalizations.of(context)
-                                                  .translate('no_address'),
+                                          authContext.currentUser.address ?? AppLocalizations.of(context).translate('no_address'),
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                           ),
@@ -212,8 +198,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           isExpanded: true,
                           value: isSystemSetting ? 'system' : languageCode,
                           onChanged: (String languageCode) {
-                            SettingContext settingContext =
-                                Provider.of<SettingContext>(
+                            SettingContext settingContext = Provider.of<SettingContext>(
                               context,
                               listen: false,
                             );
@@ -228,10 +213,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               DropdownMenuItem<String>(
                                 value: _supportedLanguages[i],
                                 child: Text(
-                                  i == 0
-                                      ? AppLocalizations.of(context)
-                                          .translate(_languages[i])
-                                      : _languages[i],
+                                  i == 0 ? AppLocalizations.of(context).translate(_languages[i]) : _languages[i],
                                   style: TextStyle(
                                     color: Colors.grey,
                                   ),
@@ -264,8 +246,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             vertical: 15,
                           ),
                           child: Text(
-                            AppLocalizations.of(context)
-                                .translate('change_password'),
+                            AppLocalizations.of(context).translate('change_password'),
                             style: GoogleFonts.raleway(
                               textStyle: TextStyle(
                                 color: Colors.white,
@@ -300,8 +281,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             vertical: 15,
                           ),
                           child: Text(
-                            AppLocalizations.of(context)
-                                .translate('manage_cards'),
+                            AppLocalizations.of(context).translate('manage_cards'),
                             style: GoogleFonts.raleway(
                               textStyle: TextStyle(
                                 color: Colors.white,
@@ -335,8 +315,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             vertical: 15,
                           ),
                           child: Text(
-                            AppLocalizations.of(context)
-                                .translate('view_favorites'),
+                            AppLocalizations.of(context).translate('view_favorites'),
                             style: GoogleFonts.raleway(
                               textStyle: TextStyle(
                                 color: Colors.white,
@@ -371,8 +350,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             vertical: 15,
                           ),
                           child: Text(
-                            AppLocalizations.of(context)
-                                .translate('view_command_history'),
+                            AppLocalizations.of(context).translate('view_command_history'),
                             style: GoogleFonts.raleway(
                               textStyle: TextStyle(
                                 color: Colors.white,

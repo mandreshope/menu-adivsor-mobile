@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/pages/home.dart';
@@ -96,8 +95,7 @@ class ScaffoldWithBottomMenu extends StatelessWidget {
                     color: Colors.white,
                   ),
                   onPressed: () {
-                    if (ModalRoute.of(context).settings.name == homeRoute)
-                      return;
+                    if (ModalRoute.of(context).settings.name == homeRoute) return;
 
                     RouteUtil.goTo(
                       routeName: homeRoute,
@@ -139,8 +137,7 @@ class ScaffoldWithBottomMenu extends StatelessWidget {
                       );*/
                       if (cartContext.itemCount == 0)
                         Fluttertoast.showToast(
-                          msg: AppLocalizations.of(context)
-                              .translate('empty_cart'),
+                          msg: AppLocalizations.of(context).translate('empty_cart'),
                         );
                       else
                         RouteUtil.goTo(
@@ -159,14 +156,11 @@ class ScaffoldWithBottomMenu extends StatelessWidget {
                     color: Colors.white,
                   ),
                   onPressed: () async {
-                    if (ModalRoute.of(context).settings.name == profileRoute)
-                      return;
+                    if (ModalRoute.of(context).settings.name == profileRoute) return;
 
-                    AuthContext authContext =
-                        Provider.of<AuthContext>(context, listen: false);
+                    AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
 
-                    SettingContext settingContext =
-                        Provider.of<SettingContext>(context, listen: false);
+                    SettingContext settingContext = Provider.of<SettingContext>(context, listen: false);
                     await settingContext.initialized;
 
                     if (authContext.currentUser != null)
