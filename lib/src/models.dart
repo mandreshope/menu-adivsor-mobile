@@ -189,7 +189,7 @@ class Command {
   final String commandType;
   final int totalPrice;
   final bool validated;
-  final List<Map> items;
+  final List<dynamic> items;
   final DateTime createdAt;
   final String shippingAddress;
   final DateTime shippingTime;

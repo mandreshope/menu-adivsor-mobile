@@ -12,6 +12,8 @@ class RoundedButton extends StatelessWidget {
 
   final EdgeInsets padding;
 
+  final double radius;
+
   const RoundedButton({
     Key key,
     @required this.child,
@@ -19,17 +21,18 @@ class RoundedButton extends StatelessWidget {
     this.backgroundColor = Colors.white,
     this.boxShadow,
     this.padding,
+    this.radius = 50.0
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(50.0),
+      borderRadius: BorderRadius.circular(radius),
       child: Material(
         type: MaterialType.button,
         color: backgroundColor,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(50.0),
+          borderRadius: BorderRadius.circular(radius),
         ),
         child: InkWell(
           child: Container(

@@ -16,10 +16,12 @@ import 'package:provider/provider.dart';
 class SearchPage extends StatefulWidget {
   final String type;
   final Map<String, dynamic> filters;
+  final bool showButton;
 
   SearchPage({
     this.type = 'all',
     this.filters = const {},
+    this.showButton = false,
   });
 
   @override
@@ -63,7 +65,7 @@ class _SearchPageState extends State<SearchPage> {
     if (type == 'all' && _searchValue == '') {
       _timer?.cancel();
       return;
-    }
+    } 
 
     setState(() {
       _loading = true;
@@ -158,6 +160,7 @@ class _SearchPageState extends State<SearchPage> {
                                     ),
                                     child: FoodCard(
                                       food: Food.fromJson(e.content),
+                                      showButton: widget.showButton,
                                     ),
                                   );
                                 else if (e.type.toString() ==

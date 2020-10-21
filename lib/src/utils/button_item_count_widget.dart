@@ -7,12 +7,15 @@ class ButtonItemCountWidget extends StatefulWidget {
   ButtonItemCountWidget(
       {@required this.onAdded,
       @required this.onRemoved,
-      @required this.itemCount,this.isFromDelevery = false})
+      @required this.itemCount,
+      this.isFromDelevery = false,
+      @required this.isContains = false})
       : super();
   Function onAdded;
   Function onRemoved;
   int itemCount;
   bool isFromDelevery;
+  bool isContains;
 
   @override
   _ButtonItemCountWidgetState createState() => _ButtonItemCountWidgetState();
@@ -21,64 +24,85 @@ class ButtonItemCountWidget extends StatefulWidget {
 class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: widget.isFromDelevery ? 15:5),
-      child: Row(
-        children: [
-          CircleButton(
-            backgroundColor: Colors.transparent,
-            border: Border.all(
-              width: 1,
-              color: Colors.grey,
+    if (!widget.isContains)
+    return CircleButton(
+        backgroundColor: TEAL,
+        onPressed: () {
+          // setState(() {
+                  widget.onAdded(++widget.itemCount);
+                // });
+        },
+        child: FaIcon(
+          FontAwesomeIcons.plus,
+          color: Colors.white,
+          size: 12,
+        ));
+    return Container(
+      decoration: BoxDecoration(
+          color: CRIMSON,
+          borderRadius: BorderRadius.all(
+            Radius.circular(3),
+          )),
+      padding: EdgeInsets.symmetric(vertical: 2),
+      child: Padding(
+        padding:
+            EdgeInsets.symmetric(horizontal: widget.isFromDelevery ? 0 : 0),
+        child: Row(
+          children: [
+            RoundedButton(
+              backgroundColor: CRIMSON,
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              radius: 0.0,
+              child: FaIcon(
+                FontAwesomeIcons.minus,
+                color: Colors.white,
+                size: 12,
+              ),
+              onPressed: 
+                   () {
+                    // if (widget.itemCount > 1)
+                      // setState(() {
+                        widget.onRemoved(--widget.itemCount);
+                      // });
+                    },
             ),
-            child: FaIcon(
-              FontAwesomeIcons.minus,
-              color: Colors.black,
-              size: widget.isFromDelevery ? 12 : 25,
-            ),
-            onPressed: widget.itemCount > 1
-                ? () {
-                    setState(() {
-                      widget.onRemoved(--widget.itemCount);
-                    });
-                  }
-                : null,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            child: Container(
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 0.0),
+              child: Container(
                 decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.grey[200],
+                  //shape: BoxShape.circle,
+                  color: Colors.white,
                 ),
-                padding: const EdgeInsets.all(15.0),
-                child: Text(
-                  '${widget.itemCount}',
-                  style: TextStyle(
-                    color: CRIMSON,
-                    fontWeight: FontWeight.bold,
+                padding: EdgeInsets.symmetric(vertical: 6),
+                width: 35,
+                child: Center(
+                  child: Text(
+                    '${widget.itemCount}',
+                    style: TextStyle(
+                      color: CRIMSON,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
-          ),
-          CircleButton(
-            backgroundColor: Colors.transparent,
-            border: Border.all(
-              width: 1,
-              color: Colors.grey,
             ),
-            child: FaIcon(
-              FontAwesomeIcons.plus,
-              color: Colors.black,
-              size: widget.isFromDelevery ? 12 : 25,
+            RoundedButton(
+              backgroundColor: CRIMSON,
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              radius: 0.0,
+              child: FaIcon(
+                FontAwesomeIcons.plus,
+                color: Colors.white,
+                size: widget.isFromDelevery ? 12 : 12,
+              ),
+              onPressed: () {
+                // setState(() {
+                  widget.onAdded(++widget.itemCount);
+                // });
+              },
             ),
-            onPressed: () {
-              setState(() {
-                widget.onAdded(++widget.itemCount);
-              });
-            },
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
