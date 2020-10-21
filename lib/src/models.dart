@@ -55,7 +55,7 @@ class Food {
         imageURL: json['imageURL'],
         category: json.containsKey('category') && json['category'] != null && json['category'] is Map<String, dynamic> ? FoodCategory.fromJson(json['category']) : null,
         restaurant: json['restaurant'],
-        price: Price.fromJson(json['price']),
+        price: json.containsKey('price') ? Price.fromJson(json['price']) : null,
         type: json['type'],
         attributes: (json['attributes'] as List).map((e) => e.toString()).toList(),
       );
@@ -261,31 +261,27 @@ class PaymentCard {
       };
 }
 
-
-
 //command model
 class CommandModel {
   List<CommandItem> items;
   Restaurant restaurant;
   int totalPrice;
-  
+
   CommandModel({this.items});
 
   CommandModel.fromJson(Map<String, dynamic> json) {
     if (json['items'] != null) {
-      items =  List<CommandItem>();
+      items = List<CommandItem>();
       json['items'].forEach((v) {
-        items.add( CommandItem.fromJson(v));
+        items.add(CommandItem.fromJson(v));
       });
     }
     totalPrice = json['totalPrice'];
-    restaurant = json['restaurant'] != null
-        ?  Restaurant.fromJson(json['restaurant'])
-        : null;
+    restaurant = json['restaurant'] != null ? Restaurant.fromJson(json['restaurant']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data =  Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     if (this.items != null) {
       data['items'] = this.items.map((v) => v.toJson()).toList();
     }
@@ -302,12 +298,12 @@ class CommandItem {
 
   CommandItem.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
-    food = json['item'] != null ?  Food.fromJson(json['item']) : null;
+    food = json['item'] != null ? Food.fromJson(json['item']) : null;
     quantity = json['quantity'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data =  Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['_id'] = this.sId;
     data['quantity'] = this.quantity;
     if (this.food != null) {
