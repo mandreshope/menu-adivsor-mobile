@@ -560,7 +560,7 @@ class _FoodPageState extends State<FoodPage> {
                   widget.food.imageURL,
                   // width: 4 * MediaQuery.of(context).size.width / 7,
                   width: MediaQuery.of(context).size.width,
-                  fit: BoxFit.cover,
+                  fit: BoxFit.contain,
                 )
               : Icon(
                   Icons.fastfood,

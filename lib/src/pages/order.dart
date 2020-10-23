@@ -52,7 +52,7 @@ class _OrderPageState extends State<OrderPage> {
                       final List<Widget> list = [];
                       cartContext.items.forEach(
                         (food, count) {
-                          if (food.price != null)
+                          //if (food.price != null)
                             list.add(
                               BagItem(
                                 food: food,

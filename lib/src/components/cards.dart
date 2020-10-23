@@ -312,10 +312,11 @@ class _FoodCardState extends State<FoodCard> {
                                         size: 10,
                                       ),
                                     ),
-                                    onPressed: (cartContext.itemCount == 0) &&
-                                            /*(cartContext.pricelessItems &&
+                                    onPressed: 
+                                    (cartContext.itemCount == 0) ||
+                                            (cartContext.pricelessItems &&
                                                 widget.food.price?.amount ==
-                                                    null) &&*/
+                                                    null) ||
                                             (!cartContext.pricelessItems &&
                                                 widget.food.price?.amount !=
                                                     null)
@@ -1207,18 +1208,7 @@ class BagItem extends StatelessWidget {
                         color: Colors.grey[600]
                       ),
                     ),
-                    /*if (food.price.amount != null)
-                      Text(
-                        '${food.price.amount / 100}€',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.grey[600],
-                        ),
-                      ),*/
-                  ],
-                ),
-              ),
-              if (food.price.amount != null)
+                    if (food.price?.amount != null)
                       Text(
                         '${food.price.amount / 100}€',
                         style: TextStyle(
@@ -1226,6 +1216,17 @@ class BagItem extends StatelessWidget {
                           color: Colors.grey[600],
                         ),
                       ),
+                  ],
+                ),
+              ),
+              /*if (food.price.amount != null)
+                      Text(
+                        '${food.price.amount / 100}€',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.grey[600],
+                        ),
+                      ),*/
               /*Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
@@ -1239,7 +1240,7 @@ class BagItem extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
+              ),*/
               IconButton(
                 icon: Icon(
                   Icons.edit,
@@ -1253,7 +1254,7 @@ class BagItem extends StatelessWidget {
                     ),
                   );
                 },
-              ),*/
+              ),
               /*ButtonItemCountWidget(
                 itemCount: count,
                 onAdded: (value) {
@@ -1266,7 +1267,7 @@ class BagItem extends StatelessWidget {
                 },
                 isContains: _cartContext.contains(food),
                 isFromDelevery: true,
-              ),
+              ),*/
               CircleButton(
                 backgroundColor: CRIMSON,
                 child: Icon(
@@ -1289,9 +1290,11 @@ class BagItem extends StatelessWidget {
                         Provider.of<CartContext>(context, listen: false);
 
                     cartContext.removeItem(food);
+                    if(cartContext.items.length == 0)
+                      RouteUtil.goBack(context: context);
                   }
                 },
-              ),*/
+              ),
             ],
           ),
         ),

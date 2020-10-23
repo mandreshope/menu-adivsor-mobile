@@ -42,20 +42,21 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
       return CircleButton(
           backgroundColor: TEAL,
           onPressed: () {
-            if (!_cartContext.hasSamePricingAsInBag(widget.food)) {
-              Fluttertoast.showToast(
-                msg: AppLocalizations.of(context)
-                    .translate('priceless_and_not_priceless_not_allowed'),
-              );
-            } else if (!_cartContext.hasSameOriginAsInBag(widget.food)) {
-              Fluttertoast.showToast(
-                msg: AppLocalizations.of(context)
-                    .translate('from_different_origin_not_allowed'),
-              );
-            }else{
-              widget.onAdded(++widget.itemCount);
+            if (_cartContext.itemCount != 0) {
+              if (!_cartContext.hasSamePricingAsInBag(widget.food)) {
+                Fluttertoast.showToast(
+                  msg: AppLocalizations.of(context)
+                      .translate('priceless_and_not_priceless_not_allowed'),
+                );
+              } else if (!_cartContext.hasSameOriginAsInBag(widget.food)) {
+                Fluttertoast.showToast(
+                  msg: AppLocalizations.of(context)
+                      .translate('from_different_origin_not_allowed'),
+                );
+              }
             }
-            
+
+            widget.onAdded(++widget.itemCount);
           },
           child: FaIcon(
             FontAwesomeIcons.plus,

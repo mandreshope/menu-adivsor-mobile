@@ -99,8 +99,10 @@ class Restaurant {
   final List<String> menus;
   final List<String> foods;
   final List<dynamic> foodTypes;
+  final String phoneNumber;
 
   Restaurant({
+    this.phoneNumber,
     @required this.id,
     @required this.name,
     this.type = 'common_restaurant',

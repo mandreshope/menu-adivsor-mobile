@@ -270,8 +270,8 @@ class _RestaurantPageState extends State<RestaurantPage>
                 )
               : _isSearching
                   ? _renderSearchView()
-                  // : _renderMain(),
-                  : _renderMainScreen(),
+                  : _renderMain(),
+          // : _renderMainScreen(),
         ),
       ),
     );
@@ -493,24 +493,122 @@ class _RestaurantPageState extends State<RestaurantPage>
                   sliver: SliverSafeArea(
                     top: false,
                     sliver: SliverAppBar(
-                      expandedHeight: 250.0,
+                      backgroundColor: Colors.white,
+                      expandedHeight: 320.0,
                       floating: false,
                       pinned: true,
-                      /*flexibleSpace: FlexibleSpaceBar(
-                        centerTitle: true,
-                        title: Text("Collapsing Toolbar",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16.0,
-                            )),
-                        background: Image.network(
-                          "https://images.pexels.com/photos/396547/pexels-photo-396547.jpeg?auto=compress&cs=tinysrgb&h=350",
-                          fit: BoxFit.cover,
-                        ),
-                      ),*/
+                      flexibleSpace: FlexibleSpaceBar(
+                          background: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: 65,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top:20,right: 20,left: 20,bottom: 15),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Image.network(
+                                  restaurant.imageURL,
+                                  // width: 4 * MediaQuery.of(context).size.width / 7,
+                                  width: MediaQuery.of(context).size.width / 3,
+                                  height: MediaQuery.of(context).size.width / 3,
+                                  fit: BoxFit.cover,
+                                ),
+                                SizedBox(
+                                  width: 15,
+                                ),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      restaurant.name,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20,
+                                      ),
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Icon(
+                                          FontAwesomeIcons.mapMarkerAlt,
+                                          size: 15,
+                                          color: CRIMSON,
+                                        ),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        Text(
+                                          restaurant.address,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Icon(
+                                          FontAwesomeIcons.phoneAlt,
+                                          size: 15,
+                                          color: CRIMSON,
+                                        ),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        Text(
+                                          "Tel : ${restaurant.phoneNumber ?? "0"}",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
+                                              color: Colors.black54),
+                                        )
+                                      ],
+                                    )
+                                  ],
+                                )
+                              ],
+                            ),
+                          ),
+                          Divider(),
+                          Container(
+                            margin: EdgeInsets.symmetric(horizontal: 20),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.access_time,
+                                  color: CRIMSON,
+                                ),
+                                SizedBox(
+                                  width: 25,
+                                ),
+                                Text(
+                                  "De 09:00 à 20:00",
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      color: CRIMSON,
+                                      fontWeight: FontWeight.normal),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 15,)
+                        ],
+                      )),
                       bottom: TabBar(
                         controller: tabController,
                         isScrollable: true,
+                        unselectedLabelColor: CRIMSON,
+                        indicator: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            color: CRIMSON),
                         tabs: [
                           Tab(
                             text: AppLocalizations.of(context)
@@ -539,81 +637,97 @@ class _RestaurantPageState extends State<RestaurantPage>
                 ),
               ];
             },
-            body: ScrollablePositionedList.separated(
-              itemScrollController: itemScrollController,
-              itemPositionsListener: itemPositionsListener,
-              itemCount: 3 + restaurant.foodTypes.length,
-              padding: const EdgeInsets.all(20),
-              itemBuilder: (_, index) {
-                if (index == 0)
-                  return Text(
-                    AppLocalizations.of(context).translate('a_la_carte'),
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  );
+            body: Column(
+              children: [
+                Expanded(
+                  child: ScrollablePositionedList.separated(
+                    itemScrollController: itemScrollController,
+                    itemPositionsListener: itemPositionsListener,
+                    itemCount: 3 + restaurant.foodTypes.length,
+                    padding: const EdgeInsets.all(20),
+                    itemBuilder: (_, index) {
+                      if (index == 0)
+                        return Text(
+                          AppLocalizations.of(context).translate('a_la_carte'),
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        );
 
-                if (index == restaurant.foodTypes.length + 1)
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        AppLocalizations.of(context).translate('menu'),
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      _renderMenus(),
-                    ],
-                  );
+                      if (index == restaurant.foodTypes.length + 1)
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              AppLocalizations.of(context).translate('menu'),
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            _renderMenus(),
+                          ],
+                        );
 
-                if (index == 3 + restaurant.foodTypes.length - 1)
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        AppLocalizations.of(context).translate('drinks'),
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      _renderDrinks(),
-                    ],
-                  );
+                      if (index == 3 + restaurant.foodTypes.length - 1)
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              AppLocalizations.of(context).translate('drinks'),
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            _renderDrinks(),
+                          ],
+                        );
 
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      restaurant.foodTypes[index - 1]
-                          [Provider.of<SettingContext>(context).languageCode],
-                      style: TextStyle(
-                        fontSize: 18,
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            restaurant.foodTypes[index - 1][
+                                Provider.of<SettingContext>(context)
+                                    .languageCode],
+                            style: TextStyle(
+                              fontSize: 18,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          _renderFoodListOfType(
+                              restaurant.foodTypes[index - 1]['tag']),
+                        ],
+                      );
+                    },
+                    separatorBuilder: (_, index) => Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 10,
                       ),
+                      child: Divider(),
                     ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    _renderFoodListOfType(
-                        restaurant.foodTypes[index - 1]['tag']),
-                  ],
-                );
-              },
-              separatorBuilder: (_, index) => Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 10,
+                  ),
                 ),
-                child: Divider(),
-              ),
+                Consumer<CartContext>(builder: (_, cartContext, __) {
+                  if (cartContext.itemCount > 0) {
+                    return OrderButton(
+                      totalPrice: cartContext.totalPrice,
+                    );
+                  } else {
+                    return SizedBox();
+                  }
+                })
+              ],
             ),
           ),
           Positioned(
@@ -829,7 +943,9 @@ class _RestaurantPageState extends State<RestaurantPage>
           ),
           Consumer<CartContext>(builder: (_, cartContext, __) {
             if (cartContext.itemCount > 0) {
-              return OrderButton(totalPrice: cartContext.totalPrice,);
+              return OrderButton(
+                totalPrice: cartContext.totalPrice,
+              );
             } else {
               return SizedBox();
             }
