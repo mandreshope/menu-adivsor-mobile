@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/providers/BagContext.dart';
+import 'package:menu_advisor/src/utils/AppLocalization.dart';
+import 'package:provider/provider.dart';
 
 class ButtonItemCountWidget extends StatefulWidget {
-  ButtonItemCountWidget(
+  ButtonItemCountWidget(this.food,
       {@required this.onAdded,
       @required this.onRemoved,
       @required this.itemCount,
@@ -16,27 +21,47 @@ class ButtonItemCountWidget extends StatefulWidget {
   int itemCount;
   bool isFromDelevery;
   bool isContains;
+  Food food;
 
   @override
   _ButtonItemCountWidgetState createState() => _ButtonItemCountWidgetState();
 }
 
 class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
+  CartContext _cartContext;
+
+  @override
+  void initState() {
+    super.initState();
+    _cartContext = Provider.of<CartContext>(context, listen: false);
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!widget.isContains)
-    return CircleButton(
-        backgroundColor: TEAL,
-        onPressed: () {
-          // setState(() {
-                  widget.onAdded(++widget.itemCount);
-                // });
-        },
-        child: FaIcon(
-          FontAwesomeIcons.plus,
-          color: Colors.white,
-          size: 12,
-        ));
+      return CircleButton(
+          backgroundColor: TEAL,
+          onPressed: () {
+            if (!_cartContext.hasSamePricingAsInBag(widget.food)) {
+              Fluttertoast.showToast(
+                msg: AppLocalizations.of(context)
+                    .translate('priceless_and_not_priceless_not_allowed'),
+              );
+            } else if (!_cartContext.hasSameOriginAsInBag(widget.food)) {
+              Fluttertoast.showToast(
+                msg: AppLocalizations.of(context)
+                    .translate('from_different_origin_not_allowed'),
+              );
+            }else{
+              widget.onAdded(++widget.itemCount);
+            }
+            
+          },
+          child: FaIcon(
+            FontAwesomeIcons.plus,
+            color: Colors.white,
+            size: 12,
+          ));
     return Container(
       decoration: BoxDecoration(
           color: CRIMSON,
@@ -58,19 +83,14 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                 color: Colors.white,
                 size: 12,
               ),
-              onPressed: 
-                   () {
-                    // if (widget.itemCount > 1)
-                      // setState(() {
-                        widget.onRemoved(--widget.itemCount);
-                      // });
-                    },
+              onPressed: () {
+                widget.onRemoved(--widget.itemCount);
+              },
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 0.0),
               child: Container(
                 decoration: BoxDecoration(
-                  //shape: BoxShape.circle,
                   color: Colors.white,
                 ),
                 padding: EdgeInsets.symmetric(vertical: 6),
@@ -96,9 +116,7 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                 size: widget.isFromDelevery ? 12 : 12,
               ),
               onPressed: () {
-                // setState(() {
-                  widget.onAdded(++widget.itemCount);
-                // });
+                widget.onAdded(++widget.itemCount);
               },
             ),
           ],

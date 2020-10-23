@@ -18,10 +18,13 @@ class SearchPage extends StatefulWidget {
   final Map<String, dynamic> filters;
   final bool showButton;
 
+  final String barTitle;
+
   SearchPage({
     this.type = 'all',
     this.filters = const {},
     this.showButton = false,
+    this.barTitle = 'Rechercher'
   });
 
   @override
@@ -31,7 +34,7 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   String _searchValue = '';
   bool _loading = false;
-  List<SearchResult> _searchResults = [];
+  var _searchResults;
   Api _api = Api.instance;
   Timer _timer;
   Map<String, dynamic> filters = Map();
@@ -71,7 +74,14 @@ class _SearchPageState extends State<SearchPage> {
       _loading = true;
     });
     try {
-      var results = await _api.search(
+     
+      var results = (type == 'food' && _searchValue.isEmpty) ? await _api.getFoods(
+        Provider.of<SettingContext>(
+          context,
+          listen: false,
+        ).languageCode,
+        filters: filters
+      ) : await _api.search(
         _searchValue,
         Provider.of<SettingContext>(
           context,
@@ -99,7 +109,7 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Rechercher"),
+        title: Text(widget.barTitle),
       ),
       body: SafeArea(
         child: Stack(
@@ -140,6 +150,7 @@ class _SearchPageState extends State<SearchPage> {
                                 ),
                               ),
                             if (!_loading)
+                              if(_searchResults is List<SearchResult>)...[
                               ..._searchResults.map((SearchResult e) {
                                 if (e.type.toString() ==
                                     'SearchResultType.restaurant')
@@ -178,6 +189,21 @@ class _SearchPageState extends State<SearchPage> {
 
                                 return null;
                               }).toList(),
+                              ]else ...[
+                                ..._searchResults.map((Food e) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(
+                                      bottom: 10,
+                                    ),
+                                    child: FoodCard(
+                                      food: e,
+                                      showButton: widget.showButton,
+                                    ),
+                                  );
+                                }).toList(),
+                                
+                              ]
+
                           ],
                         ),
                       ),

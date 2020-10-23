@@ -284,11 +284,25 @@ class _HomePageState extends State<HomePage> {
                       fontWeight: FontWeight.w800,
                     ),
                   ),
-                  onPressed: () => RouteUtil.goTo(
+                  onPressed: () => 
+                  /*RouteUtil.goTo(
                     context: context,
                     child: DiscoverPage(),
                     routeName: discoverRoute,
-                  ),
+                  ),*/
+                  RouteUtil.goTo(
+                            context: context,
+                            child: SearchPage(
+                              barTitle: 'Découvrir',
+                              type: 'food',
+                              filters: {
+                               // 'category': category.id,
+                                "searchCategory": "with_price",
+                              },
+                              showButton: true,
+                            ),
+                            routeName: searchRoute,
+                          )
                 ),
               ],
             ),
@@ -668,6 +682,7 @@ class _HomePageState extends State<HomePage> {
                         FoodCard(
                           food: food,
                           imageTag: 'onSitefoodImage${food.id}',
+                          showButton: false,
                         ),
                       ),
                   ],

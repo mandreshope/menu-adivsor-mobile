@@ -151,5 +151,7 @@
   "from_different_origin_not_allowed": "You cannot order items from different restaurants at the same time",
   "no_attribute": "No attribute",
   "summary":"Summary",
-  "remember_password" : "remember my password"
+  "remember_password" : "remember my password",
+  "have_allergies":"do you have any food allergies",
+  "command":"ORDER"
 }
