@@ -65,6 +65,9 @@ class _RestaurantPageState extends State<RestaurantPage>
   ItemScrollController itemScrollController = ItemScrollController();
   ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
 
+  ScrollController _scrollController = ScrollController();
+  bool _canScrollListRestaurant = false;
+
   @override
   void initState() {
     super.initState();
@@ -117,6 +120,22 @@ class _RestaurantPageState extends State<RestaurantPage>
             'Scroll position: ${itemPositionsListener.itemPositions.value.first.index}');
         tabController
             .animateTo(itemPositionsListener.itemPositions.value.first.index);
+
+        print("_scrollController.offset ${_scrollController.offset}");
+        /*if (_scrollController.offset >= 215) {
+          setState(() {
+            _canScrollListRestaurant = true;
+          });
+        } else {
+          // setState(() {
+          _canScrollListRestaurant = false;
+          // });
+        }*/
+      });
+
+      _scrollController.addListener(() {
+        print("_scrollController.offset ${_scrollController.offset}");
+        // if (itemPositionsListener.itemPositions.value.first.index < itemPositionsListener.itemPositions.value.length)
       });
 
       filters['restaurant'] = restaurant.id;
@@ -270,7 +289,27 @@ class _RestaurantPageState extends State<RestaurantPage>
                 )
               : _isSearching
                   ? _renderSearchView()
-                  : _renderMain(),
+                  : GestureDetector(
+                      onPanUpdate: (up){
+                        print("up");
+                      },
+                      onVerticalDragDown: (drag) {
+                        
+                        if ((_scrollController.offset <= 0 && 
+                        itemPositionsListener.itemPositions.value.first.index == 0)
+                        ) {
+                          setState(() {
+                            _canScrollListRestaurant = false;
+                          });
+                        } else if (
+                        _scrollController.offset >= 245 && 
+                        itemPositionsListener.itemPositions.value.first.index >= 0) {
+                          setState(() {
+                            _canScrollListRestaurant = true;
+                          });
+                        }
+                      },
+                      child: _renderMain()),
           // : _renderMainScreen(),
         ),
       ),
@@ -486,6 +525,7 @@ class _RestaurantPageState extends State<RestaurantPage>
       body: Stack(
         children: [
           NestedScrollView(
+            controller: _scrollController,
             headerSliverBuilder:
                 (BuildContext context, bool innerBoxIsScrolled) {
               return <Widget>[
@@ -505,7 +545,8 @@ class _RestaurantPageState extends State<RestaurantPage>
                             height: 65,
                           ),
                           Padding(
-                            padding: const EdgeInsets.only(top:20,right: 20,left: 20,bottom: 15),
+                            padding: const EdgeInsets.only(
+                                top: 20, right: 20, left: 20, bottom: 15),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -599,7 +640,9 @@ class _RestaurantPageState extends State<RestaurantPage>
                               ],
                             ),
                           ),
-                          SizedBox(height: 15,)
+                          SizedBox(
+                            height: 15,
+                          )
                         ],
                       )),
                       bottom: TabBar(
@@ -645,6 +688,9 @@ class _RestaurantPageState extends State<RestaurantPage>
                     itemPositionsListener: itemPositionsListener,
                     itemCount: 3 + restaurant.foodTypes.length,
                     padding: const EdgeInsets.all(20),
+                    physics: _canScrollListRestaurant
+                        ? AlwaysScrollableScrollPhysics()
+                        : NeverScrollableScrollPhysics(),
                     itemBuilder: (_, index) {
                       if (index == 0)
                         return Text(
@@ -736,6 +782,33 @@ class _RestaurantPageState extends State<RestaurantPage>
             height: 80,
             child: AppBar(
               title: Text(restaurant.name),
+              actions: [
+                SizedBox(
+                  width: 25,
+                ),
+                switchingFavorite
+                    ? Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Center(
+                          child: SizedBox(
+                            height: 14,
+                            child: FittedBox(
+                              child: CircularProgressIndicator(
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    : IconButton(
+                        onPressed: _toggleFavorite,
+                        icon: Icon(
+                          isInFavorite ? Icons.favorite : Icons.favorite_border,
+                          color: Colors.white,
+                        ),
+                      ),
+              ],
             ),
           )),
         ],

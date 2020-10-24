@@ -53,12 +53,12 @@ class _OrderPageState extends State<OrderPage> {
                       cartContext.items.forEach(
                         (food, count) {
                           //if (food.price != null)
-                            list.add(
-                              BagItem(
-                                food: food,
-                                count: count,
-                              ),
-                            );
+                          list.add(
+                            BagItem(
+                              food: food,
+                              count: count,
+                            ),
+                          );
                         },
                       );
 
@@ -194,6 +194,12 @@ class _OrderPageState extends State<OrderPage> {
         child: DeliveryDetailsPage(),
         routeName: loginRoute,
       );
+    } else if (commandContext.commandType == 'takeaway') {
+      RouteUtil.goTo(
+        context: context,
+        child: UserDetailsPage(),
+        routeName: userDetailsRoute,
+      );
     } else if (commandContext.commandType == 'on_site' ||
         commandContext.commandType == 'takeaway') {
       try {
@@ -238,8 +244,7 @@ class _OrderPageState extends State<OrderPage> {
     }
   }
 
-  Widget _commandType() => 
-  Consumer3<CommandContext, AuthContext, CartContext>(
+  Widget _commandType() => Consumer3<CommandContext, AuthContext, CartContext>(
         builder: (_, commandContext, authContext, cartContext, __) => Padding(
           padding: const EdgeInsets.all(10),
           child: Card(
@@ -283,11 +288,11 @@ class _OrderPageState extends State<OrderPage> {
                             ),
                             child: InkWell(
                               borderRadius: BorderRadius.circular(20),
-                              onTap: (){
-                                  commandContext.commandType = 'delivery';
-                                  _command(commandContext, authContext, cartContext);
-                                  },
-                                  
+                              onTap: () {
+                                commandContext.commandType = 'delivery';
+                                _command(
+                                    commandContext, authContext, cartContext);
+                              },
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 10,
@@ -330,7 +335,8 @@ class _OrderPageState extends State<OrderPage> {
                             borderRadius: BorderRadius.circular(20),
                             onTap: () {
                               commandContext.commandType = 'on_site';
-                            _command(commandContext, authContext, cartContext);
+                              _command(
+                                  commandContext, authContext, cartContext);
                             },
                             child: Container(
                               padding: const EdgeInsets.symmetric(
@@ -373,9 +379,10 @@ class _OrderPageState extends State<OrderPage> {
                           child: InkWell(
                             borderRadius: BorderRadius.circular(20),
                             onTap: () {
-                                commandContext.commandType = 'takeaway';
-                                _command(commandContext, authContext, cartContext);
-                              },
+                              commandContext.commandType = 'takeaway';
+                              _command(
+                                  commandContext, authContext, cartContext);
+                            },
                             child: Container(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 10,
