@@ -98,86 +98,95 @@ class _SearchPageState extends State<SearchPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Rechercher"),
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.refresh_sharp,
+            ),
+            onPressed: _initSearch
+          ),
+        ],
       ),
       body: SafeArea(
         child: Stack(
           fit: StackFit.expand,
           children: [
             RefreshIndicator(
-              onRefresh: () async {
-                await _initSearch();
-                return;
-              },
-              child: SingleChildScrollView(
-                padding: EdgeInsets.only(top: 90),
-                physics: BouncingScrollPhysics(),
-                child: _searchValue.length == 0 && type == 'all'
-                    ? Center(
-                        child: Text(
-                          AppLocalizations.of(context)
-                              .translate('start_by_typing_your_research'),
-                        ),
-                      )
-                    : Container(
-                        width: double.infinity,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            if (_loading)
-                              Center(
-                                child: CircularProgressIndicator(
-                                  valueColor:
-                                      AlwaysStoppedAnimation<Color>(CRIMSON),
+              onRefresh: _initSearch,
+              child: Container(
+                color: Colors.white,
+                height: double.infinity,
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.only(top: 90),
+                  physics: AlwaysScrollableScrollPhysics(),
+                  child: _searchValue.length == 0 && type == 'all'
+                      ? Center(
+                          child: Text(
+                            AppLocalizations.of(context)
+                                .translate('start_by_typing_your_research'),
+                          ),
+                        )
+                      : Container(
+                          width: double.infinity,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              if (_loading)
+                                Center(
+                                  child: CircularProgressIndicator(
+                                    valueColor:
+                                        AlwaysStoppedAnimation<Color>(CRIMSON),
+                                  ),
                                 ),
-                              ),
-                            if (!_loading && _searchResults.length == 0)
-                              Center(
-                                child: Text(
-                                  AppLocalizations.of(context)
-                                      .translate('no_result'),
+                              if (!_loading && _searchResults.length == 0)
+                                Center(
+                                  child: Text(
+                                    AppLocalizations.of(context)
+                                        .translate('no_result'),
+                                  ),
                                 ),
-                              ),
-                            if (!_loading)
-                              ..._searchResults.map((SearchResult e) {
-                                if (e.type.toString() ==
-                                    'SearchResultType.restaurant')
-                                  return Padding(
-                                    padding: const EdgeInsets.only(
-                                      bottom: 10,
-                                    ),
-                                    child: RestaurantCard(
-                                      restaurant:
-                                          Restaurant.fromJson(e.content),
-                                    ),
-                                  );
-                                else if (e.type.toString() ==
-                                    'SearchResultType.food')
-                                  return Padding(
-                                    padding: const EdgeInsets.only(
-                                      bottom: 10,
-                                    ),
-                                    child: FoodCard(
-                                      food: Food.fromJson(e.content),
-                                    ),
-                                  );
-                                else if (e.type.toString() ==
-                                    'SearchResultType.menu')
-                                  return Padding(
-                                    padding: const EdgeInsets.only(
-                                      bottom: 10,
-                                    ),
-                                    child: MenuCard(
-                                      lang: Provider.of<SettingContext>(context)
-                                          .languageCode,
-                                      menu: Menu.fromJson(e.content),
-                                    ),
-                                  );
+                              if (!_loading)
+                                ..._searchResults.map((SearchResult e) {
+                                  if (e.type.toString() ==
+                                      'SearchResultType.restaurant')
+                                    return Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: 10,
+                                      ),
+                                      child: RestaurantCard(
+                                        restaurant:
+                                            Restaurant.fromJson(e.content),
+                                      ),
+                                    );
+                                  else if (e.type.toString() ==
+                                      'SearchResultType.food')
+                                    return Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: 10,
+                                      ),
+                                      child: FoodCard(
+                                        food: Food.fromJson(e.content),
+                                      ),
+                                    );
+                                  else if (e.type.toString() ==
+                                      'SearchResultType.menu')
+                                    return Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: 10,
+                                      ),
+                                      child: MenuCard(
+                                        lang: Provider.of<SettingContext>(context)
+                                            .languageCode,
+                                        menu: Menu.fromJson(e.content),
+                                      ),
+                                    );
 
-                                return null;
-                              }).toList(),
-                          ],
+                                  return null;
+                                }).toList(),
+                            ],
+                          ),
                         ),
-                      ),
+                ),
               ),
             ),
             Positioned(
