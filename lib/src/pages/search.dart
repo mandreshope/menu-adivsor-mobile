@@ -69,22 +69,15 @@ class _SearchPageState extends State<SearchPage> {
       _loading = true;
     });
     try {
-      var results = (type == 'food' && _searchValue.isEmpty)
-          ? await _api.getFoods(
-              Provider.of<SettingContext>(
-                context,
-                listen: false,
-              ).languageCode,
-              filters: filters)
-          : await _api.search(
-              _searchValue,
-              Provider.of<SettingContext>(
-                context,
-                listen: false,
-              ).languageCode,
-              type: type,
-              filters: filters,
-            );
+      var results = await _api.search(
+        _searchValue,
+        Provider.of<SettingContext>(
+          context,
+          listen: false,
+        ).languageCode,
+        type: type,
+        filters: filters,
+      );
       setState(() {
         _searchResults = results;
       });
