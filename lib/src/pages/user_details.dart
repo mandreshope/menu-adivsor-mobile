@@ -237,8 +237,9 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                           child: SizedBox(
                             height: 23,
                             width: 23,
-                                                      child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            child: CircularProgressIndicator(
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                           ),
                         )
