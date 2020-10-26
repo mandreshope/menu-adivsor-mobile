@@ -121,13 +121,13 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                               listen: false,
                                             ).clear();
 
-                                            RouteUtil.goTo(
+                                            RouteUtil.goToAndRemoveUntil(
                                               context: context,
                                               child: Summary(
                                                 commande: cm,
                                               ),
                                               routeName: summaryRoute,
-                                              // method: RoutingMethod.atTop,
+                                              predicate: (route) => route.settings.name == homeRoute,
                                             );
                                           } else {
                                             Fluttertoast.showToast(
