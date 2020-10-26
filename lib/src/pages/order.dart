@@ -63,10 +63,13 @@ class _OrderPageState extends State<OrderPage> {
                       );
 
                       if (cartContext.itemCount == 0)
-                        return Center(
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 10.0,
+                          ),
                           child: Text(
-                            AppLocalizations.of(context)
-                                .translate('no_item_in_cart'),
+                            AppLocalizations.of(context).translate('no_item_in_cart'),
+                            textAlign: TextAlign.center,
                           ),
                         );
 
@@ -76,8 +79,7 @@ class _OrderPageState extends State<OrderPage> {
                           Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: Text(
-                              AppLocalizations.of(context)
-                                  .translate('all_items'),
+                              AppLocalizations.of(context).translate('all_items'),
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -121,8 +123,7 @@ class _OrderPageState extends State<OrderPage> {
               Padding(
                 padding: const EdgeInsets.all(20),
                 child: Consumer3<CommandContext, AuthContext, CartContext>(
-                  builder: (_, commandContext, authContext, cartContext, __) =>
-                      FlatButton(
+                  builder: (_, commandContext, authContext, cartContext, __) => FlatButton(
                     onPressed: () async {
                       // _command(commandContext, authContext, cartContext);
                       showModalBottomSheet(
@@ -141,10 +142,8 @@ class _OrderPageState extends State<OrderPage> {
                     child: Text(
                       commandContext.commandType == null
                           ? AppLocalizations.of(context).translate('validate')
-                          : (commandContext.commandType != 'delivery' &&
-                                  authContext.currentUser != null)
-                              ? AppLocalizations.of(context)
-                                  .translate('validate')
+                          : (commandContext.commandType != 'delivery' && authContext.currentUser != null)
+                              ? AppLocalizations.of(context).translate('validate')
                               : AppLocalizations.of(context).translate('next'),
                       style: TextStyle(
                         color: Colors.white,
@@ -180,8 +179,7 @@ class _OrderPageState extends State<OrderPage> {
           routeName: userDetailsRoute,
         );
       else {
-        Fluttertoast.showToast(
-            msg: 'Veuillez vous connecter pour pouvoir continuer');
+        Fluttertoast.showToast(msg: 'Veuillez vous connecter pour pouvoir continuer');
         RouteUtil.goTo(
           context: context,
           child: LoginPage(),
@@ -200,8 +198,7 @@ class _OrderPageState extends State<OrderPage> {
         child: UserDetailsPage(),
         routeName: userDetailsRoute,
       );
-    } else if (commandContext.commandType == 'on_site' ||
-        commandContext.commandType == 'takeaway') {
+    } else if (commandContext.commandType == 'on_site' || commandContext.commandType == 'takeaway') {
       try {
         setState(() {
           sendingCommand = true;
@@ -210,9 +207,7 @@ class _OrderPageState extends State<OrderPage> {
         var command = await Api.instance.sendCommand(
           relatedUser: authContext.currentUser.id,
           commandType: commandContext.commandType,
-          items: cartContext.items.entries
-              .map((e) => {'quantity': e.value, 'item': e.key.id})
-              .toList(),
+          items: cartContext.items.entries.map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),
           restaurant: cartContext.currentOrigin,
           totalPrice: (cartContext.totalPrice * 100).round(),
         );
@@ -275,12 +270,8 @@ class _OrderPageState extends State<OrderPage> {
                       if (!cartContext.pricelessItems)
                         Theme(
                           data: ThemeData(
-                            cardColor: commandContext.commandType == 'delivery'
-                                ? CRIMSON
-                                : Colors.white,
-                            brightness: commandContext.commandType == 'delivery'
-                                ? Brightness.dark
-                                : Brightness.light,
+                            cardColor: commandContext.commandType == 'delivery' ? CRIMSON : Colors.white,
+                            brightness: commandContext.commandType == 'delivery' ? Brightness.dark : Brightness.light,
                           ),
                           child: Card(
                             shape: RoundedRectangleBorder(
@@ -290,8 +281,7 @@ class _OrderPageState extends State<OrderPage> {
                               borderRadius: BorderRadius.circular(20),
                               onTap: () {
                                 commandContext.commandType = 'delivery';
-                                _command(
-                                    commandContext, authContext, cartContext);
+                                _command(commandContext, authContext, cartContext);
                               },
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
@@ -303,8 +293,7 @@ class _OrderPageState extends State<OrderPage> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Text(
-                                      AppLocalizations.of(context)
-                                          .translate('delivery'),
+                                      AppLocalizations.of(context).translate('delivery'),
                                     ),
                                     SizedBox(
                                       height: 10,
@@ -320,12 +309,8 @@ class _OrderPageState extends State<OrderPage> {
                         ),
                       Theme(
                         data: ThemeData(
-                          cardColor: commandContext.commandType == 'on_site'
-                              ? CRIMSON
-                              : Colors.white,
-                          brightness: commandContext.commandType == 'on_site'
-                              ? Brightness.dark
-                              : Brightness.light,
+                          cardColor: commandContext.commandType == 'on_site' ? CRIMSON : Colors.white,
+                          brightness: commandContext.commandType == 'on_site' ? Brightness.dark : Brightness.light,
                         ),
                         child: Card(
                           shape: RoundedRectangleBorder(
@@ -335,8 +320,7 @@ class _OrderPageState extends State<OrderPage> {
                             borderRadius: BorderRadius.circular(20),
                             onTap: () {
                               commandContext.commandType = 'on_site';
-                              _command(
-                                  commandContext, authContext, cartContext);
+                              _command(commandContext, authContext, cartContext);
                             },
                             child: Container(
                               padding: const EdgeInsets.symmetric(
@@ -348,8 +332,7 @@ class _OrderPageState extends State<OrderPage> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Text(
-                                    AppLocalizations.of(context)
-                                        .translate('on_site'),
+                                    AppLocalizations.of(context).translate('on_site'),
                                   ),
                                   SizedBox(
                                     height: 10,
@@ -365,12 +348,8 @@ class _OrderPageState extends State<OrderPage> {
                       ),
                       Theme(
                         data: ThemeData(
-                          cardColor: commandContext.commandType == 'takeaway'
-                              ? CRIMSON
-                              : Colors.white,
-                          brightness: commandContext.commandType == 'takeaway'
-                              ? Brightness.dark
-                              : Brightness.light,
+                          cardColor: commandContext.commandType == 'takeaway' ? CRIMSON : Colors.white,
+                          brightness: commandContext.commandType == 'takeaway' ? Brightness.dark : Brightness.light,
                         ),
                         child: Card(
                           shape: RoundedRectangleBorder(
@@ -380,8 +359,7 @@ class _OrderPageState extends State<OrderPage> {
                             borderRadius: BorderRadius.circular(20),
                             onTap: () {
                               commandContext.commandType = 'takeaway';
-                              _command(
-                                  commandContext, authContext, cartContext);
+                              _command(commandContext, authContext, cartContext);
                             },
                             child: Container(
                               padding: const EdgeInsets.symmetric(
@@ -393,8 +371,7 @@ class _OrderPageState extends State<OrderPage> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Text(
-                                    AppLocalizations.of(context)
-                                        .translate('takeaway'),
+                                    AppLocalizations.of(context).translate('takeaway'),
                                   ),
                                   SizedBox(
                                     height: 10,

@@ -20,12 +20,7 @@ class SearchPage extends StatefulWidget {
 
   final String barTitle;
 
-  SearchPage({
-    this.type = 'all',
-    this.filters = const {},
-    this.showButton = false,
-    this.barTitle = 'Rechercher'
-  });
+  SearchPage({this.type = 'all', this.filters = const {}, this.showButton = false, this.barTitle = 'Rechercher'});
 
   @override
   _SearchPageState createState() => _SearchPageState();
@@ -68,20 +63,13 @@ class _SearchPageState extends State<SearchPage> {
     if (type == 'all' && _searchValue == '') {
       _timer?.cancel();
       return;
-    } 
+    }
 
     setState(() {
       _loading = true;
     });
     try {
-     
-      var results = (type == 'food' && _searchValue.isEmpty) ? await _api.getFoods(
-        Provider.of<SettingContext>(
-          context,
-          listen: false,
-        ).languageCode,
-        filters: filters
-      ) : await _api.search(
+      var results = await _api.search(
         _searchValue,
         Provider.of<SettingContext>(
           context,
@@ -109,6 +97,13 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          IconButton(
+              icon: Icon(
+                Icons.refresh_sharp,
+              ),
+              onPressed: _initSearch),
+        ],
         title: Text(widget.barTitle),
       ),
       body: SafeArea(
@@ -116,97 +111,73 @@ class _SearchPageState extends State<SearchPage> {
           fit: StackFit.expand,
           children: [
             RefreshIndicator(
-              onRefresh: () async {
-                await _initSearch();
-                return;
-              },
-              child: SingleChildScrollView(
-                padding: EdgeInsets.only(top: 90),
-                physics: BouncingScrollPhysics(),
-                child: _searchValue.length == 0 && type == 'all'
-                    ? Center(
-                        child: Text(
-                          AppLocalizations.of(context)
-                              .translate('start_by_typing_your_research'),
-                        ),
-                      )
-                    : Container(
-                        width: double.infinity,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            if (_loading)
-                              Center(
-                                child: CircularProgressIndicator(
-                                  valueColor:
-                                      AlwaysStoppedAnimation<Color>(CRIMSON),
+              onRefresh: _initSearch,
+              child: Container(
+                color: Colors.white,
+                height: double.infinity,
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.only(top: 90),
+                  physics: AlwaysScrollableScrollPhysics(),
+                  child: _searchValue.length == 0 && type == 'all'
+                      ? Center(
+                          child: Text(
+                            AppLocalizations.of(context).translate('start_by_typing_your_research'),
+                          ),
+                        )
+                      : Container(
+                          width: double.infinity,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              if (_loading)
+                                Center(
+                                  child: CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
+                                  ),
                                 ),
-                              ),
-                            if (!_loading && _searchResults.length == 0)
-                              Center(
-                                child: Text(
-                                  AppLocalizations.of(context)
-                                      .translate('no_result'),
+                              if (!_loading && _searchResults.length == 0)
+                                Center(
+                                  child: Text(
+                                    AppLocalizations.of(context).translate('no_result'),
+                                  ),
                                 ),
-                              ),
-                            if (!_loading)
-                              if(_searchResults is List<SearchResult>)...[
-                              ..._searchResults.map((SearchResult e) {
-                                if (e.type.toString() ==
-                                    'SearchResultType.restaurant')
-                                  return Padding(
-                                    padding: const EdgeInsets.only(
-                                      bottom: 10,
-                                    ),
-                                    child: RestaurantCard(
-                                      restaurant:
-                                          Restaurant.fromJson(e.content),
-                                    ),
-                                  );
-                                else if (e.type.toString() ==
-                                    'SearchResultType.food')
-                                  return Padding(
-                                    padding: const EdgeInsets.only(
-                                      bottom: 10,
-                                    ),
-                                    child: FoodCard(
-                                      food: Food.fromJson(e.content),
-                                      showButton: widget.showButton,
-                                    ),
-                                  );
-                                else if (e.type.toString() ==
-                                    'SearchResultType.menu')
-                                  return Padding(
-                                    padding: const EdgeInsets.only(
-                                      bottom: 10,
-                                    ),
-                                    child: MenuCard(
-                                      lang: Provider.of<SettingContext>(context)
-                                          .languageCode,
-                                      menu: Menu.fromJson(e.content),
-                                    ),
-                                  );
+                              if (!_loading)
+                                ..._searchResults.map((SearchResult e) {
+                                  if (e.type.toString() == 'SearchResultType.restaurant')
+                                    return Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: 10,
+                                      ),
+                                      child: RestaurantCard(
+                                        restaurant: Restaurant.fromJson(e.content),
+                                      ),
+                                    );
+                                  else if (e.type.toString() == 'SearchResultType.food')
+                                    return Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: 10,
+                                      ),
+                                      child: FoodCard(
+                                        food: Food.fromJson(e.content),
+                                      ),
+                                    );
+                                  else if (e.type.toString() == 'SearchResultType.menu')
+                                    return Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: 10,
+                                      ),
+                                      child: MenuCard(
+                                        lang: Provider.of<SettingContext>(context).languageCode,
+                                        menu: Menu.fromJson(e.content),
+                                      ),
+                                    );
 
-                                return null;
-                              }).toList(),
-                              ]else ...[
-                                ..._searchResults.map((Food e) {
-                                  return Padding(
-                                    padding: const EdgeInsets.only(
-                                      bottom: 10,
-                                    ),
-                                    child: FoodCard(
-                                      food: e,
-                                      showButton: widget.showButton,
-                                    ),
-                                  );
+                                  return null;
                                 }).toList(),
-                                
-                              ]
-
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
+                ),
               ),
             ),
             Positioned(
@@ -240,8 +211,7 @@ class _SearchPageState extends State<SearchPage> {
                     Expanded(
                       child: TextFormField(
                         decoration: InputDecoration.collapsed(
-                          hintText: AppLocalizations.of(context)
-                              .translate("find_something"),
+                          hintText: AppLocalizations.of(context).translate("find_something"),
                         ),
                         onChanged: _onChanged,
                       ),
@@ -253,8 +223,7 @@ class _SearchPageState extends State<SearchPage> {
                           var result = await showDialog<Map<String, dynamic>>(
                             context: context,
                             builder: (_) => SearchSettingDialog(
-                              languageCode: Provider.of<SettingContext>(context)
-                                  .languageCode,
+                              languageCode: Provider.of<SettingContext>(context).languageCode,
                               filters: filters,
                               type: type,
                             ),

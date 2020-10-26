@@ -103,8 +103,7 @@ class _HomePageState extends State<HomePage> {
             ? Scaffold(
                 body: Center(
                   child: Text(
-                    AppLocalizations.of(context)
-                        .translate('geolocation_denied'),
+                    AppLocalizations.of(context).translate('geolocation_denied'),
                   ),
                 ),
               )
@@ -121,8 +120,7 @@ class _HomePageState extends State<HomePage> {
                       },
                     );
                     Fluttertoast.showToast(
-                      msg: AppLocalizations.of(context)
-                          .translate('before_exit_message'),
+                      msg: AppLocalizations.of(context).translate('before_exit_message'),
                     );
                     return false;
                   }
@@ -146,8 +144,7 @@ class _HomePageState extends State<HomePage> {
                           RefreshIndicator(
                             onRefresh: () async {
                               try {
-                                DataContext dataContext =
-                                    Provider.of<DataContext>(
+                                DataContext dataContext = Provider.of<DataContext>(
                                   context,
                                   listen: false,
                                 );
@@ -156,10 +153,7 @@ class _HomePageState extends State<HomePage> {
 
                                 Location location = Location(
                                   type: 'Point',
-                                  coordinates: [
-                                    position.longitude,
-                                    position.latitude
-                                  ],
+                                  coordinates: [position.longitude, position.latitude],
                                 );
 
                                 return dataContext.refresh(
@@ -172,8 +166,7 @@ class _HomePageState extends State<HomePage> {
                               } catch (error) {
                                 print(error);
                                 Fluttertoast.showToast(
-                                  msg: AppLocalizations.of(context)
-                                      .translate('gelocation_issue'),
+                                  msg: AppLocalizations.of(context).translate('gelocation_issue'),
                                 );
                               }
                             },
@@ -267,43 +260,42 @@ class _HomePageState extends State<HomePage> {
                   height: 10,
                 ),
                 RoundedButton(
-                  backgroundColor: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 12,
-                      spreadRadius: 0,
+                    backgroundColor: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 12,
+                        spreadRadius: 0,
+                      ),
+                    ],
+                    child: Text(
+                      AppLocalizations.of(context).translate("discover"),
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.black,
+                        fontFamily: 'Soft Elegance',
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
-                  ],
-                  child: Text(
-                    AppLocalizations.of(context).translate("discover"),
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.black,
-                      fontFamily: 'Soft Elegance',
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  onPressed: () => 
-                  /*RouteUtil.goTo(
+                    onPressed: () =>
+                        /*RouteUtil.goTo(
                     context: context,
                     child: DiscoverPage(),
                     routeName: discoverRoute,
                   ),*/
-                  RouteUtil.goTo(
-                            context: context,
-                            child: SearchPage(
-                              barTitle: 'Découvrir',
-                              type: 'food',
-                              filters: {
-                               // 'category': category.id,
-                                "searchCategory": "with_price",
-                              },
-                              showButton: true,
-                            ),
-                            routeName: searchRoute,
-                          )
-                ),
+                        RouteUtil.goTo(
+                          context: context,
+                          child: SearchPage(
+                            barTitle: 'Découvrir',
+                            type: 'food',
+                            filters: {
+                              // 'category': category.id,
+                              "searchCategory": "with_price",
+                            },
+                            showButton: true,
+                          ),
+                          routeName: searchRoute,
+                        )),
               ],
             ),
           ),
@@ -368,16 +360,14 @@ class _HomePageState extends State<HomePage> {
                       1,
                       CategoryCard(
                         imageURL: category.imageURL,
-                        name: category.name[
-                            Provider.of<SettingContext>(context).languageCode],
+                        name: category.name[Provider.of<SettingContext>(context).languageCode],
                         onPressed: () {
                           RouteUtil.goTo(
                             context: context,
                             child: SearchPage(
                               type: 'food',
                               filters: {
-                                // 'category': category.id,
-                                "foodCategory": category.id,
+                                "category": category.id,
                               },
                               showButton: true,
                             ),
@@ -557,9 +547,7 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      AppLocalizations.of(context)
-                              .translate('no_restaurant_near') ??
-                          "Aucun restaurant trouvé",
+                      AppLocalizations.of(context).translate('no_restaurant_near') ?? "Aucun restaurant trouvé",
                       style: TextStyle(
                         fontSize: 22,
                       ),
@@ -621,9 +609,7 @@ class _HomePageState extends State<HomePage> {
                       context: context,
                       child: SearchPage(
                         type: 'food',
-                        filters: {
-                          
-                        },
+                        filters: {},
                       ),
                       routeName: searchRoute,
                     );

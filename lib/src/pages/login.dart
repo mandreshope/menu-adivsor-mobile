@@ -310,6 +310,7 @@ class _LoginPageState extends State<LoginPage> {
             context: context,
             child: HomePage(),
             routeName: homeRoute,
+            method: RoutingMethod.atTop,
           );
       }
     } catch (error) {
