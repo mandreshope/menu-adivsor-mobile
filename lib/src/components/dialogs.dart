@@ -11,6 +11,7 @@ import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/DataContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
+import 'package:menu_advisor/src/utils/button_item_count_widget.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:provider/provider.dart';
 
@@ -119,7 +120,8 @@ class BagModal extends StatelessWidget {
                   if (cartContext.itemCount == 0)
                     return Center(
                       child: Text(
-                        AppLocalizations.of(context).translate('no_item_in_cart'),
+                        AppLocalizations.of(context)
+                            .translate('no_item_in_cart'),
                       ),
                     );
 
@@ -185,7 +187,8 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
     super.initState();
 
     CartContext cartContext = Provider.of<CartContext>(context, listen: false);
-    if (cartContext.contains(widget.food)) itemCount = cartContext.getCount(widget.food);
+    if (cartContext.contains(widget.food))
+      itemCount = cartContext.getCount(widget.food);
   }
 
   @override
@@ -208,7 +211,9 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
                   right: 25.0,
                 ),
                 child: Text(
-                  cartContext.contains(widget.food) ? AppLocalizations.of(context).translate('edit') : AppLocalizations.of(context).translate('add_to_cart'),
+                  cartContext.contains(widget.food)
+                      ? AppLocalizations.of(context).translate('edit')
+                      : AppLocalizations.of(context).translate('add_to_cart'),
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -226,6 +231,23 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
                 child: Row(
                   children: [
+                    ButtonItemCountWidget(
+                      widget.food,
+                        onAdded: (value) {
+                          setState(() {
+                            itemCount = value;
+                          });
+                        },
+                        onRemoved: (value) {
+                          if (value >0)
+                          setState(() {
+                            itemCount = value;
+                          });
+                        },
+                        itemCount: itemCount,
+                        isContains: true)
+
+/*
                     CircleButton(
                       backgroundColor: Colors.transparent,
                       border: Border.all(
@@ -266,37 +288,39 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
                         });
                       },
                     ),
+                  */
                   ],
                 ),
               ),
               Align(
-                alignment: Alignment.centerRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    right: 10.0,
-                    bottom: 10.0,
-                  ),
-                  child: RaisedButton(
-                    color: CRIMSON,
-                    child: Text(
-                      cartContext.contains(widget.food) ? AppLocalizations.of(context).translate('edit') : AppLocalizations.of(context).translate('add'),
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  alignment: Alignment.centerRight,
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      right: 10.0,
+                      bottom: 10.0,
                     ),
-                    onPressed: () {
-                      if (cartContext.contains(widget.food))
-                        cartContext.setCount(widget.food, itemCount);
-                      else
-                        cartContext.addItem(widget.food, itemCount);
+                    child: RaisedButton(
+                      color: CRIMSON,
+                      child: Text(
+                        cartContext.contains(widget.food)
+                            ? AppLocalizations.of(context).translate('edit')
+                            : AppLocalizations.of(context).translate('add'),
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      onPressed: () {
+                        if (cartContext.contains(widget.food))
+                          cartContext.setCount(widget.food, itemCount);
+                        else
+                          cartContext.addItem(widget.food, itemCount);
 
-                      Navigator.of(context).pop(true);
-                    },
-                  ),
-                ),
-              ),
+                        Navigator.of(context).pop(true);
+                      },
+                    ),
+                  )),
             ],
           ),
         ),
@@ -341,12 +365,16 @@ class LanguageDialog extends StatelessWidget {
                           vertical: 0,
                         ),
                         decoration: BoxDecoration(
-                          color: lang == 'fr' ? Colors.grey[400].withOpacity(.4) : Colors.transparent,
+                          color: lang == 'fr'
+                              ? Colors.grey[400].withOpacity(.4)
+                              : Colors.transparent,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: IconButton(
-                          icon: SvgPicture.asset('assets/images/france-flag.svg'),
-                          onPressed: () => Navigator.of(context).pop<String>('fr'),
+                          icon:
+                              SvgPicture.asset('assets/images/france-flag.svg'),
+                          onPressed: () =>
+                              Navigator.of(context).pop<String>('fr'),
                         ),
                       ),
                       Container(
@@ -355,12 +383,15 @@ class LanguageDialog extends StatelessWidget {
                           vertical: 0,
                         ),
                         decoration: BoxDecoration(
-                          color: lang == 'en' ? Colors.grey[400].withOpacity(.4) : Colors.transparent,
+                          color: lang == 'en'
+                              ? Colors.grey[400].withOpacity(.4)
+                              : Colors.transparent,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: IconButton(
                           icon: SvgPicture.asset('assets/images/usa-flag.svg'),
-                          onPressed: () => Navigator.of(context).pop<String>('en'),
+                          onPressed: () =>
+                              Navigator.of(context).pop<String>('en'),
                         ),
                       ),
                     ],
@@ -445,7 +476,8 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                     .map(
                       (e) => Theme(
                         data: ThemeData(
-                          brightness: type == e ? Brightness.dark : Brightness.light,
+                          brightness:
+                              type == e ? Brightness.dark : Brightness.light,
                           cardColor: type == e ? CRIMSON : Colors.white,
                         ),
                         child: Card(
@@ -492,8 +524,12 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                 children: [
                   Theme(
                     data: ThemeData(
-                      brightness: !filters.containsKey('category') ? Brightness.dark : Brightness.light,
-                      cardColor: !filters.containsKey('category') ? CRIMSON : Colors.white,
+                      brightness: !filters.containsKey('category')
+                          ? Brightness.dark
+                          : Brightness.light,
+                      cardColor: !filters.containsKey('category')
+                          ? CRIMSON
+                          : Colors.white,
                     ),
                     child: Card(
                       shape: RoundedRectangleBorder(
@@ -520,11 +556,20 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                       .map(
                         (e) => Theme(
                           data: ThemeData(
-                            brightness: filters.containsKey('category') && filters['category'] == e.id ? Brightness.dark : Brightness.light,
-                            cardColor: filters.containsKey('category') && filters['category'] == e.id ? CRIMSON : Colors.white,
+                            brightness: filters.containsKey('category') &&
+                                    filters['category'] == e.id
+                                ? Brightness.dark
+                                : Brightness.light,
+                            cardColor: filters.containsKey('category') &&
+                                    filters['category'] == e.id
+                                ? CRIMSON
+                                : Colors.white,
                           ),
                           child: Card(
-                            color: filters.containsKey('category') && filters['category'] == e.id ? CRIMSON : Colors.white,
+                            color: filters.containsKey('category') &&
+                                    filters['category'] == e.id
+                                ? CRIMSON
+                                : Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(50),
                             ),
@@ -566,8 +611,12 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                 children: [
                   Theme(
                     data: ThemeData(
-                      brightness: !filters.containsKey('attributes') ? Brightness.dark : Brightness.light,
-                      cardColor: !filters.containsKey('attributes') ? CRIMSON : Colors.white,
+                      brightness: !filters.containsKey('attributes')
+                          ? Brightness.dark
+                          : Brightness.light,
+                      cardColor: !filters.containsKey('attributes')
+                          ? CRIMSON
+                          : Colors.white,
                     ),
                     child: Card(
                       shape: RoundedRectangleBorder(
@@ -594,11 +643,20 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                       .map(
                         (e) => Theme(
                           data: ThemeData(
-                            brightness: filters.containsKey('attributes') && filters['attributes'] == e['tag'] ? Brightness.dark : Brightness.light,
-                            cardColor: filters.containsKey('attributes') && filters['attributes'] == e['tag'] ? CRIMSON : Colors.white,
+                            brightness: filters.containsKey('attributes') &&
+                                    filters['attributes'] == e['tag']
+                                ? Brightness.dark
+                                : Brightness.light,
+                            cardColor: filters.containsKey('attributes') &&
+                                    filters['attributes'] == e['tag']
+                                ? CRIMSON
+                                : Colors.white,
                           ),
                           child: Card(
-                            color: filters.containsKey('attributes') && filters['attributes'] == e['tag'] ? CRIMSON : Colors.white,
+                            color: filters.containsKey('attributes') &&
+                                    filters['attributes'] == e['tag']
+                                ? CRIMSON
+                                : Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(50),
                             ),

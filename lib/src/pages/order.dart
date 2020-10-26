@@ -52,20 +52,21 @@ class _OrderPageState extends State<OrderPage> {
                       final List<Widget> list = [];
                       cartContext.items.forEach(
                         (food, count) {
-                          if (food.price != null)
-                            list.add(
-                              BagItem(
-                                food: food,
-                                count: count,
-                              ),
-                            );
+                          //if (food.price != null)
+                          list.add(
+                            BagItem(
+                              food: food,
+                              count: count,
+                            ),
+                          );
                         },
                       );
 
                       if (cartContext.itemCount == 0)
                         return Center(
                           child: Text(
-                            AppLocalizations.of(context).translate('no_item_in_cart'),
+                            AppLocalizations.of(context)
+                                .translate('no_item_in_cart'),
                           ),
                         );
 
@@ -75,7 +76,8 @@ class _OrderPageState extends State<OrderPage> {
                           Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: Text(
-                              AppLocalizations.of(context).translate('all_items'),
+                              AppLocalizations.of(context)
+                                  .translate('all_items'),
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -86,150 +88,6 @@ class _OrderPageState extends State<OrderPage> {
                         ],
                       );
                     },
-                  ),
-                ),
-              ),
-              Consumer2<CartContext, CommandContext>(
-                builder: (_, cartContext, commandContext, __) => Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10.0,
-                        vertical: 20,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Text(
-                            AppLocalizations.of(context).translate('command_type'),
-                            style: TextStyle(
-                              fontSize: 16,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              if (!cartContext.pricelessItems)
-                                Theme(
-                                  data: ThemeData(
-                                    cardColor: commandContext.commandType == 'delivery' ? CRIMSON : Colors.white,
-                                    brightness: commandContext.commandType == 'delivery' ? Brightness.dark : Brightness.light,
-                                  ),
-                                  child: Card(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: InkWell(
-                                      borderRadius: BorderRadius.circular(20),
-                                      onTap: () => commandContext.commandType = 'delivery',
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 10,
-                                          vertical: 20,
-                                        ),
-                                        width: MediaQuery.of(context).size.width / 4,
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              AppLocalizations.of(context).translate('delivery'),
-                                            ),
-                                            SizedBox(
-                                              height: 10,
-                                            ),
-                                            FaIcon(
-                                              FontAwesomeIcons.houseUser,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              Theme(
-                                data: ThemeData(
-                                  cardColor: commandContext.commandType == 'on_site' ? CRIMSON : Colors.white,
-                                  brightness: commandContext.commandType == 'on_site' ? Brightness.dark : Brightness.light,
-                                ),
-                                child: Card(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: InkWell(
-                                    borderRadius: BorderRadius.circular(20),
-                                    onTap: () => commandContext.commandType = 'on_site',
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 10,
-                                        vertical: 20,
-                                      ),
-                                      width: MediaQuery.of(context).size.width / 4,
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            AppLocalizations.of(context).translate('on_site'),
-                                          ),
-                                          SizedBox(
-                                            height: 10,
-                                          ),
-                                          FaIcon(
-                                            FontAwesomeIcons.streetView,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Theme(
-                                data: ThemeData(
-                                  cardColor: commandContext.commandType == 'takeaway' ? CRIMSON : Colors.white,
-                                  brightness: commandContext.commandType == 'takeaway' ? Brightness.dark : Brightness.light,
-                                ),
-                                child: Card(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: InkWell(
-                                    borderRadius: BorderRadius.circular(20),
-                                    onTap: () => commandContext.commandType = 'takeaway',
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 10,
-                                        vertical: 20,
-                                      ),
-                                      width: MediaQuery.of(context).size.width / 4,
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            AppLocalizations.of(context).translate('takeaway'),
-                                          ),
-                                          SizedBox(
-                                            height: 10,
-                                          ),
-                                          FaIcon(
-                                            FontAwesomeIcons.briefcase,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
                   ),
                 ),
               ),
@@ -263,68 +121,15 @@ class _OrderPageState extends State<OrderPage> {
               Padding(
                 padding: const EdgeInsets.all(20),
                 child: Consumer3<CommandContext, AuthContext, CartContext>(
-                  builder: (_, commandContext, authContext, cartContext, __) => FlatButton(
+                  builder: (_, commandContext, authContext, cartContext, __) =>
+                      FlatButton(
                     onPressed: () async {
-                      if (authContext.currentUser == null) {
-                        if (commandContext.commandType != 'delivery')
-                          RouteUtil.goTo(
-                            context: context,
-                            child: UserDetailsPage(),
-                            routeName: userDetailsRoute,
-                          );
-                        else {
-                          Fluttertoast.showToast(msg: 'Veuillez vous connecter pour pouvoir continuer');
-                          RouteUtil.goTo(
-                            context: context,
-                            child: LoginPage(),
-                            routeName: loginRoute,
-                          );
-                        }
-                      } else if (commandContext.commandType == 'delivery') {
-                        RouteUtil.goTo(
+                      // _command(commandContext, authContext, cartContext);
+                      showModalBottomSheet(
                           context: context,
-                          child: DeliveryDetailsPage(),
-                          routeName: loginRoute,
-                        );
-                      } else if (commandContext.commandType == 'on_site' || commandContext.commandType == 'takeaway') {
-                        try {
-                          setState(() {
-                            sendingCommand = true;
+                          builder: (_) {
+                            return _commandType();
                           });
-
-                          var command = await Api.instance.sendCommand(
-                            relatedUser: authContext.currentUser.id,
-                            commandType: commandContext.commandType,
-                            items: cartContext.items.entries.map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),
-                            restaurant: cartContext.currentOrigin,
-                            totalPrice: (cartContext.totalPrice * 100).round(),
-                          );
-                          CommandModel cm = CommandModel.fromJson(command);
-
-                          cartContext.clear();
-                          commandContext.clear();
-                          Fluttertoast.showToast(
-                            msg: AppLocalizations.of(context).translate('success'),
-                          );
-
-                          RouteUtil.goTo(
-                            context: context,
-                            child: Summary(
-                              commande: cm,
-                            ),
-                            routeName: summaryRoute,
-                            // method: RoutingMethod.atTop,
-                          );
-                        } catch (error) {
-                          Fluttertoast.showToast(
-                            msg: 'Erreur lors de l\'envoi de la commande',
-                          );
-                        }
-                      } else {
-                        Fluttertoast.showToast(
-                          msg: 'Veuillez sélection un type de commande avant de continuer',
-                        );
-                      }
                     },
                     padding: const EdgeInsets.all(
                       20.0,
@@ -336,8 +141,10 @@ class _OrderPageState extends State<OrderPage> {
                     child: Text(
                       commandContext.commandType == null
                           ? AppLocalizations.of(context).translate('validate')
-                          : (commandContext.commandType != 'delivery' && authContext.currentUser != null)
-                              ? AppLocalizations.of(context).translate('validate')
+                          : (commandContext.commandType != 'delivery' &&
+                                  authContext.currentUser != null)
+                              ? AppLocalizations.of(context)
+                                  .translate('validate')
                               : AppLocalizations.of(context).translate('next'),
                       style: TextStyle(
                         color: Colors.white,
@@ -363,4 +170,250 @@ class _OrderPageState extends State<OrderPage> {
       ),
     );
   }
+
+  _command(commandContext, authContext, cartContext) async {
+    if (authContext.currentUser == null) {
+      if (commandContext.commandType != 'delivery')
+        RouteUtil.goTo(
+          context: context,
+          child: UserDetailsPage(),
+          routeName: userDetailsRoute,
+        );
+      else {
+        Fluttertoast.showToast(
+            msg: 'Veuillez vous connecter pour pouvoir continuer');
+        RouteUtil.goTo(
+          context: context,
+          child: LoginPage(),
+          routeName: loginRoute,
+        );
+      }
+    } else if (commandContext.commandType == 'delivery') {
+      RouteUtil.goTo(
+        context: context,
+        child: DeliveryDetailsPage(),
+        routeName: loginRoute,
+      );
+    } else if (commandContext.commandType == 'takeaway') {
+      RouteUtil.goTo(
+        context: context,
+        child: UserDetailsPage(),
+        routeName: userDetailsRoute,
+      );
+    } else if (commandContext.commandType == 'on_site' ||
+        commandContext.commandType == 'takeaway') {
+      try {
+        setState(() {
+          sendingCommand = true;
+        });
+
+        var command = await Api.instance.sendCommand(
+          relatedUser: authContext.currentUser.id,
+          commandType: commandContext.commandType,
+          items: cartContext.items.entries
+              .map((e) => {'quantity': e.value, 'item': e.key.id})
+              .toList(),
+          restaurant: cartContext.currentOrigin,
+          totalPrice: (cartContext.totalPrice * 100).round(),
+        );
+        CommandModel cm = CommandModel.fromJson(command);
+
+        cartContext.clear();
+        commandContext.clear();
+        Fluttertoast.showToast(
+          msg: AppLocalizations.of(context).translate('success'),
+        );
+
+        RouteUtil.goTo(
+          context: context,
+          child: Summary(
+            commande: cm,
+          ),
+          routeName: summaryRoute,
+          // method: RoutingMethod.atTop,
+        );
+      } catch (error) {
+        Fluttertoast.showToast(
+          msg: 'Erreur lors de l\'envoi de la commande',
+        );
+      }
+    } else {
+      Fluttertoast.showToast(
+        msg: 'Veuillez sélection un type de commande avant de continuer',
+      );
+    }
+  }
+
+  Widget _commandType() => Consumer3<CommandContext, AuthContext, CartContext>(
+        builder: (_, commandContext, authContext, cartContext, __) => Padding(
+          padding: const EdgeInsets.all(10),
+          child: Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10.0,
+                vertical: 20,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    AppLocalizations.of(context).translate('command_type'),
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      if (!cartContext.pricelessItems)
+                        Theme(
+                          data: ThemeData(
+                            cardColor: commandContext.commandType == 'delivery'
+                                ? CRIMSON
+                                : Colors.white,
+                            brightness: commandContext.commandType == 'delivery'
+                                ? Brightness.dark
+                                : Brightness.light,
+                          ),
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(20),
+                              onTap: () {
+                                commandContext.commandType = 'delivery';
+                                _command(
+                                    commandContext, authContext, cartContext);
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 20,
+                                ),
+                                width: MediaQuery.of(context).size.width / 4,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      AppLocalizations.of(context)
+                                          .translate('delivery'),
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    FaIcon(
+                                      FontAwesomeIcons.houseUser,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      Theme(
+                        data: ThemeData(
+                          cardColor: commandContext.commandType == 'on_site'
+                              ? CRIMSON
+                              : Colors.white,
+                          brightness: commandContext.commandType == 'on_site'
+                              ? Brightness.dark
+                              : Brightness.light,
+                        ),
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(20),
+                            onTap: () {
+                              commandContext.commandType = 'on_site';
+                              _command(
+                                  commandContext, authContext, cartContext);
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 20,
+                              ),
+                              width: MediaQuery.of(context).size.width / 4,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    AppLocalizations.of(context)
+                                        .translate('on_site'),
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  FaIcon(
+                                    FontAwesomeIcons.streetView,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Theme(
+                        data: ThemeData(
+                          cardColor: commandContext.commandType == 'takeaway'
+                              ? CRIMSON
+                              : Colors.white,
+                          brightness: commandContext.commandType == 'takeaway'
+                              ? Brightness.dark
+                              : Brightness.light,
+                        ),
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(20),
+                            onTap: () {
+                              commandContext.commandType = 'takeaway';
+                              _command(
+                                  commandContext, authContext, cartContext);
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 20,
+                              ),
+                              width: MediaQuery.of(context).size.width / 4,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    AppLocalizations.of(context)
+                                        .translate('takeaway'),
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  FaIcon(
+                                    FontAwesomeIcons.briefcase,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
 }

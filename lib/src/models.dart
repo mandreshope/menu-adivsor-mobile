@@ -99,8 +99,10 @@ class Restaurant {
   final List<String> menus;
   final List<String> foods;
   final List<dynamic> foodTypes;
+  final String phoneNumber;
 
   Restaurant({
+    this.phoneNumber,
     @required this.id,
     @required this.name,
     this.type = 'common_restaurant',
@@ -189,7 +191,7 @@ class Command {
   final String commandType;
   final int totalPrice;
   final bool validated;
-  final List<Map> items;
+  final List<dynamic> items;
   final DateTime createdAt;
   final String shippingAddress;
   final DateTime shippingTime;

@@ -132,24 +132,23 @@ class _LoginPageState extends State<LoginPage> {
                         onFieldSubmitted: (_) => _submitForm(),
                       ),
                       // SizedBox(height: 25),
-                      InkWell(
-                        onTap: () {
-                          setState(() {
-                            isPasswordRemember = !isPasswordRemember;
-                          });
-                        },
-                        child: Row(
-                          children: [
-                            Checkbox(
-                                value: isPasswordRemember,
-                                activeColor: CRIMSON,
-                                onChanged: (value) => null),
-                            Text(
-                              AppLocalizations.of(context).translate("remember_password"),
-                            )
-                          ],
-                        ),
+                      Row(
+                        children: [
+                          Checkbox(
+                              value: isPasswordRemember,
+                              activeColor: CRIMSON,
+                              onChanged: (value) {
+                                setState(() {
+                                  isPasswordRemember = value;
+                                });
+                              }),
+                          Text(
+                            AppLocalizations.of(context)
+                                .translate("remember_password"),
+                          )
+                        ],
                       ),
+
                       SizedBox(height: 20),
                       RaisedButton(
                         padding: EdgeInsets.all(15),
@@ -296,11 +295,8 @@ class _LoginPageState extends State<LoginPage> {
     );
 
     try {
-      final result = await authContext.login(
-        email,
-        password,
-        isPasswordRemember: isPasswordRemember
-      );
+      final result = await authContext.login(email, password,
+          isPasswordRemember: isPasswordRemember);
       if (result) {
         if (cartContext.itemCount > 0)
           RouteUtil.goTo(

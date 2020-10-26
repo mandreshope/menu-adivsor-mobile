@@ -16,11 +16,11 @@ import 'package:provider/provider.dart';
 class SearchPage extends StatefulWidget {
   final String type;
   final Map<String, dynamic> filters;
+  final bool showButton;
 
-  SearchPage({
-    this.type = 'all',
-    this.filters = const {},
-  });
+  final String barTitle;
+
+  SearchPage({this.type = 'all', this.filters = const {}, this.showButton = false, this.barTitle = 'Rechercher'});
 
   @override
   _SearchPageState createState() => _SearchPageState();
@@ -29,7 +29,7 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   String _searchValue = '';
   bool _loading = false;
-  List<SearchResult> _searchResults = [];
+  var _searchResults;
   Api _api = Api.instance;
   Timer _timer;
   Map<String, dynamic> filters = Map();
@@ -69,15 +69,22 @@ class _SearchPageState extends State<SearchPage> {
       _loading = true;
     });
     try {
-      var results = await _api.search(
-        _searchValue,
-        Provider.of<SettingContext>(
-          context,
-          listen: false,
-        ).languageCode,
-        type: type,
-        filters: filters,
-      );
+      var results = (type == 'food' && _searchValue.isEmpty)
+          ? await _api.getFoods(
+              Provider.of<SettingContext>(
+                context,
+                listen: false,
+              ).languageCode,
+              filters: filters)
+          : await _api.search(
+              _searchValue,
+              Provider.of<SettingContext>(
+                context,
+                listen: false,
+              ).languageCode,
+              type: type,
+              filters: filters,
+            );
       setState(() {
         _searchResults = results;
       });
@@ -97,15 +104,14 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Rechercher"),
         actions: [
           IconButton(
-            icon: Icon(
-              Icons.refresh_sharp,
-            ),
-            onPressed: _initSearch
-          ),
+              icon: Icon(
+                Icons.refresh_sharp,
+              ),
+              onPressed: _initSearch),
         ],
+        title: Text(widget.barTitle),
       ),
       body: SafeArea(
         child: Stack(
@@ -122,8 +128,7 @@ class _SearchPageState extends State<SearchPage> {
                   child: _searchValue.length == 0 && type == 'all'
                       ? Center(
                           child: Text(
-                            AppLocalizations.of(context)
-                                .translate('start_by_typing_your_research'),
+                            AppLocalizations.of(context).translate('start_by_typing_your_research'),
                           ),
                         )
                       : Container(
@@ -134,32 +139,27 @@ class _SearchPageState extends State<SearchPage> {
                               if (_loading)
                                 Center(
                                   child: CircularProgressIndicator(
-                                    valueColor:
-                                        AlwaysStoppedAnimation<Color>(CRIMSON),
+                                    valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
                                   ),
                                 ),
                               if (!_loading && _searchResults.length == 0)
                                 Center(
                                   child: Text(
-                                    AppLocalizations.of(context)
-                                        .translate('no_result'),
+                                    AppLocalizations.of(context).translate('no_result'),
                                   ),
                                 ),
                               if (!_loading)
                                 ..._searchResults.map((SearchResult e) {
-                                  if (e.type.toString() ==
-                                      'SearchResultType.restaurant')
+                                  if (e.type.toString() == 'SearchResultType.restaurant')
                                     return Padding(
                                       padding: const EdgeInsets.only(
                                         bottom: 10,
                                       ),
                                       child: RestaurantCard(
-                                        restaurant:
-                                            Restaurant.fromJson(e.content),
+                                        restaurant: Restaurant.fromJson(e.content),
                                       ),
                                     );
-                                  else if (e.type.toString() ==
-                                      'SearchResultType.food')
+                                  else if (e.type.toString() == 'SearchResultType.food')
                                     return Padding(
                                       padding: const EdgeInsets.only(
                                         bottom: 10,
@@ -168,15 +168,13 @@ class _SearchPageState extends State<SearchPage> {
                                         food: Food.fromJson(e.content),
                                       ),
                                     );
-                                  else if (e.type.toString() ==
-                                      'SearchResultType.menu')
+                                  else if (e.type.toString() == 'SearchResultType.menu')
                                     return Padding(
                                       padding: const EdgeInsets.only(
                                         bottom: 10,
                                       ),
                                       child: MenuCard(
-                                        lang: Provider.of<SettingContext>(context)
-                                            .languageCode,
+                                        lang: Provider.of<SettingContext>(context).languageCode,
                                         menu: Menu.fromJson(e.content),
                                       ),
                                     );
@@ -220,8 +218,7 @@ class _SearchPageState extends State<SearchPage> {
                     Expanded(
                       child: TextFormField(
                         decoration: InputDecoration.collapsed(
-                          hintText: AppLocalizations.of(context)
-                              .translate("find_something"),
+                          hintText: AppLocalizations.of(context).translate("find_something"),
                         ),
                         onChanged: _onChanged,
                       ),
@@ -233,8 +230,7 @@ class _SearchPageState extends State<SearchPage> {
                           var result = await showDialog<Map<String, dynamic>>(
                             context: context,
                             builder: (_) => SearchSettingDialog(
-                              languageCode: Provider.of<SettingContext>(context)
-                                  .languageCode,
+                              languageCode: Provider.of<SettingContext>(context).languageCode,
                               filters: filters,
                               type: type,
                             ),
