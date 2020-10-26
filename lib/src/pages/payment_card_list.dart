@@ -86,12 +86,13 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                             shippingAddress: commandContext.deliveryAddress,
                                             shipAsSoonAsPossible: commandContext.deliveryDate == null && commandContext.deliveryTime == null,
                                             shippingTime: commandContext.deliveryDate
-                                                .add(
-                                                  Duration(
-                                                    minutes: commandContext.deliveryTime.hour * 60 + commandContext.deliveryTime.minute,
-                                                  ),
-                                                )
-                                                .millisecondsSinceEpoch,
+                                                    ?.add(
+                                                      Duration(
+                                                        minutes: commandContext.deliveryTime.hour * 60 + commandContext.deliveryTime.minute,
+                                                      ),
+                                                    )
+                                                    ?.millisecondsSinceEpoch ??
+                                                null,
                                           );
                                           var commandStr = command.toString();
                                           CommandModel cm = CommandModel.fromJson(command);
