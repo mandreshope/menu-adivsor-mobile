@@ -33,8 +33,7 @@ class RestaurantPage extends StatefulWidget {
   _RestaurantPageState createState() => _RestaurantPageState();
 }
 
-class _RestaurantPageState extends State<RestaurantPage>
-    with SingleTickerProviderStateMixin {
+class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProviderStateMixin {
   bool isInFavorite = false;
   bool showFavoriteButton = true;
   bool searchLoading = false;
@@ -90,9 +89,7 @@ class _RestaurantPageState extends State<RestaurantPage>
       );
 
       if (authContext.currentUser == null) showFavoriteButton = false;
-      if (authContext.currentUser != null &&
-          authContext.currentUser.favoriteRestaurants.contains(restaurant.id))
-        isInFavorite = true;
+      if (authContext.currentUser != null && authContext.currentUser.favoriteRestaurants.contains(restaurant.id)) isInFavorite = true;
 
       drinks = await api.getFoods(
         Provider.of<SettingContext>(
@@ -116,10 +113,8 @@ class _RestaurantPageState extends State<RestaurantPage>
       });
 
       itemPositionsListener.itemPositions.addListener(() {
-        print(
-            'Scroll position: ${itemPositionsListener.itemPositions.value.first.index}');
-        tabController
-            .animateTo(itemPositionsListener.itemPositions.value.first.index);
+        print('Scroll position: ${itemPositionsListener.itemPositions.value.first.index}');
+        tabController.animateTo(itemPositionsListener.itemPositions.value.first.index);
 
         print("_scrollController.offset ${_scrollController.offset}");
         /*if (_scrollController.offset >= 215) {
@@ -290,20 +285,15 @@ class _RestaurantPageState extends State<RestaurantPage>
               : _isSearching
                   ? _renderSearchView()
                   : GestureDetector(
-                      onPanUpdate: (up){
+                      onPanUpdate: (up) {
                         print("up");
                       },
                       onVerticalDragDown: (drag) {
-                        
-                        if ((_scrollController.offset <= 0 && 
-                        itemPositionsListener.itemPositions.value.first.index == 0)
-                        ) {
+                        if ((_scrollController.offset <= 0 && itemPositionsListener.itemPositions.value.first.index == 0)) {
                           setState(() {
                             _canScrollListRestaurant = false;
                           });
-                        } else if (
-                        _scrollController.offset >= 245 && 
-                        itemPositionsListener.itemPositions.value.first.index >= 0) {
+                        } else if (_scrollController.offset >= 245 && itemPositionsListener.itemPositions.value.first.index >= 0) {
                           setState(() {
                             _canScrollListRestaurant = true;
                           });
@@ -387,8 +377,7 @@ class _RestaurantPageState extends State<RestaurantPage>
             child: searchValue.length == 0
                 ? Center(
                     child: Text(
-                      AppLocalizations.of(context)
-                          .translate('start_by_typing_your_research'),
+                      AppLocalizations.of(context).translate('start_by_typing_your_research'),
                     ),
                   )
                 : Container(
@@ -399,20 +388,17 @@ class _RestaurantPageState extends State<RestaurantPage>
                         if (searchLoading)
                           Center(
                             child: CircularProgressIndicator(
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(CRIMSON),
+                              valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
                             ),
                           ),
                         if (!searchLoading && searchResults.length == 0)
                           Center(
                             child: Text(
-                              AppLocalizations.of(context)
-                                  .translate('no_result'),
+                              AppLocalizations.of(context).translate('no_result'),
                             ),
                           ),
                         ...searchResults.map((SearchResult e) {
-                          if (e.type.toString() ==
-                              'SearchResultType.restaurant')
+                          if (e.type.toString() == 'SearchResultType.restaurant')
                             return Padding(
                               padding: const EdgeInsets.only(
                                 bottom: 10,
@@ -479,8 +465,7 @@ class _RestaurantPageState extends State<RestaurantPage>
                 Expanded(
                   child: TextFormField(
                     decoration: InputDecoration.collapsed(
-                      hintText: AppLocalizations.of(context)
-                          .translate("find_something"),
+                      hintText: AppLocalizations.of(context).translate("find_something"),
                     ),
                     onChanged: _onChanged,
                   ),
@@ -492,8 +477,7 @@ class _RestaurantPageState extends State<RestaurantPage>
                       var result = await showDialog<Map<String, dynamic>>(
                         context: context,
                         builder: (_) => SearchSettingDialog(
-                          languageCode:
-                              Provider.of<SettingContext>(context).languageCode,
+                          languageCode: Provider.of<SettingContext>(context).languageCode,
                           inRestaurant: true,
                           filters: filters,
                           type: type,
@@ -526,8 +510,7 @@ class _RestaurantPageState extends State<RestaurantPage>
         children: [
           NestedScrollView(
             controller: _scrollController,
-            headerSliverBuilder:
-                (BuildContext context, bool innerBoxIsScrolled) {
+            headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
               return <Widget>[
                 SliverOverlapAbsorber(
                   sliver: SliverSafeArea(
@@ -545,8 +528,7 @@ class _RestaurantPageState extends State<RestaurantPage>
                             height: 65,
                           ),
                           Padding(
-                            padding: const EdgeInsets.only(
-                                top: 20, right: 20, left: 20, bottom: 15),
+                            padding: const EdgeInsets.only(top: 20, right: 20, left: 20, bottom: 15),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -572,8 +554,7 @@ class _RestaurantPageState extends State<RestaurantPage>
                                       ),
                                     ),
                                     Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.start,
                                       children: [
                                         Icon(
                                           FontAwesomeIcons.mapMarkerAlt,
@@ -593,8 +574,7 @@ class _RestaurantPageState extends State<RestaurantPage>
                                       ],
                                     ),
                                     Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.start,
                                       children: [
                                         Icon(
                                           FontAwesomeIcons.phoneAlt,
@@ -606,10 +586,7 @@ class _RestaurantPageState extends State<RestaurantPage>
                                         ),
                                         Text(
                                           "Tel : ${restaurant.phoneNumber ?? "0"}",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 18,
-                                              color: Colors.black54),
+                                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black54),
                                         )
                                       ],
                                     )
@@ -632,10 +609,7 @@ class _RestaurantPageState extends State<RestaurantPage>
                                 ),
                                 Text(
                                   "De 09:00 à 20:00",
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      color: CRIMSON,
-                                      fontWeight: FontWeight.normal),
+                                  style: TextStyle(fontSize: 18, color: CRIMSON, fontWeight: FontWeight.normal),
                                 ),
                               ],
                             ),
@@ -649,34 +623,26 @@ class _RestaurantPageState extends State<RestaurantPage>
                         controller: tabController,
                         isScrollable: true,
                         unselectedLabelColor: CRIMSON,
-                        indicator: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            color: CRIMSON),
+                        indicator: BoxDecoration(borderRadius: BorderRadius.circular(5), color: CRIMSON),
                         tabs: [
                           Tab(
-                            text: AppLocalizations.of(context)
-                                .translate('a_la_carte'),
+                            text: AppLocalizations.of(context).translate('a_la_carte'),
                           ),
                           for (var foodType in restaurant.foodTypes)
                             Tab(
-                              text: foodType[
-                                  Provider.of<SettingContext>(context)
-                                      .languageCode],
+                              text: foodType[Provider.of<SettingContext>(context).languageCode],
                             ),
                           Tab(
-                            text:
-                                AppLocalizations.of(context).translate('menus'),
+                            text: AppLocalizations.of(context).translate('menus'),
                           ),
                           Tab(
-                            text: AppLocalizations.of(context)
-                                .translate('drinks'),
+                            text: AppLocalizations.of(context).translate('drinks'),
                           ),
                         ],
                       ),
                     ),
                   ),
-                  handle:
-                      NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                  handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
                 ),
               ];
             },
@@ -688,9 +654,7 @@ class _RestaurantPageState extends State<RestaurantPage>
                     itemPositionsListener: itemPositionsListener,
                     itemCount: 3 + restaurant.foodTypes.length,
                     padding: const EdgeInsets.all(20),
-                    physics: _canScrollListRestaurant
-                        ? AlwaysScrollableScrollPhysics()
-                        : NeverScrollableScrollPhysics(),
+                    physics: _canScrollListRestaurant ? AlwaysScrollableScrollPhysics() : NeverScrollableScrollPhysics(),
                     itemBuilder: (_, index) {
                       if (index == 0)
                         return Text(
@@ -741,9 +705,7 @@ class _RestaurantPageState extends State<RestaurantPage>
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Text(
-                            restaurant.foodTypes[index - 1][
-                                Provider.of<SettingContext>(context)
-                                    .languageCode],
+                            restaurant.foodTypes[index - 1][Provider.of<SettingContext>(context).languageCode],
                             style: TextStyle(
                               fontSize: 18,
                             ),
@@ -751,8 +713,7 @@ class _RestaurantPageState extends State<RestaurantPage>
                           SizedBox(
                             height: 10,
                           ),
-                          _renderFoodListOfType(
-                              restaurant.foodTypes[index - 1]['tag']),
+                          _renderFoodListOfType(restaurant.foodTypes[index - 1]['tag']),
                         ],
                       );
                     },
@@ -794,8 +755,7 @@ class _RestaurantPageState extends State<RestaurantPage>
                             height: 14,
                             child: FittedBox(
                               child: CircularProgressIndicator(
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                               ),
                             ),
                           ),
@@ -859,8 +819,7 @@ class _RestaurantPageState extends State<RestaurantPage>
             ),
             for (var foodType in restaurant.foodTypes)
               Tab(
-                text:
-                    foodType[Provider.of<SettingContext>(context).languageCode],
+                text: foodType[Provider.of<SettingContext>(context).languageCode],
               ),
             Tab(
               text: AppLocalizations.of(context).translate('menus'),
@@ -992,8 +951,7 @@ class _RestaurantPageState extends State<RestaurantPage>
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      restaurant.foodTypes[index - 1]
-                          [Provider.of<SettingContext>(context).languageCode],
+                      restaurant.foodTypes[index - 1][Provider.of<SettingContext>(context).languageCode],
                       style: TextStyle(
                         fontSize: 18,
                       ),
@@ -1001,8 +959,7 @@ class _RestaurantPageState extends State<RestaurantPage>
                     SizedBox(
                       height: 10,
                     ),
-                    _renderFoodListOfType(
-                        restaurant.foodTypes[index - 1]['tag']),
+                    _renderFoodListOfType(restaurant.foodTypes[index - 1]['tag']),
                   ],
                 );
               },

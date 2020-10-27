@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/pages/order.dart';
+import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:provider/provider.dart';
+
+import '../models.dart';
 
 class RoundedButton extends StatelessWidget {
   /// The child of the rounded button
@@ -19,15 +24,7 @@ class RoundedButton extends StatelessWidget {
 
   final double radius;
 
-  const RoundedButton(
-      {Key key,
-      @required this.child,
-      @required this.onPressed,
-      this.backgroundColor = Colors.white,
-      this.boxShadow,
-      this.padding,
-      this.radius = 50.0})
-      : super(key: key);
+  const RoundedButton({Key key, @required this.child, @required this.onPressed, this.backgroundColor = Colors.white, this.boxShadow, this.padding, this.radius = 50.0}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -41,8 +38,7 @@ class RoundedButton extends StatelessWidget {
         ),
         child: InkWell(
           child: Container(
-            padding: padding ??
-                const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+            padding: padding ?? const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
             decoration: BoxDecoration(
               boxShadow: boxShadow,
             ),
@@ -101,8 +97,9 @@ class CircleButton extends StatelessWidget {
 }
 
 class OrderButton extends StatelessWidget {
-  const OrderButton({Key key, this.totalPrice}) : super(key: key);
+  const OrderButton({Key key, this.totalPrice, this.fromModal = false}) : super(key: key);
   final double totalPrice;
+  final bool fromModal;
 
   @override
   Widget build(BuildContext context) {
@@ -127,18 +124,55 @@ class OrderButton extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Container(
-                    padding: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: CRIMSON
-                    ),
-                    child: Icon(Icons.shopping_cart,color: Colors.white,)),
-                  SizedBox(width: 10,),
+                  InkWell(
+                    onTap: () {
+                      //this.onTap();
+                      if (!fromModal)
+                      showModalBottomSheet(
+                          context: context,
+                          builder: (_) {
+                            return Consumer<CartContext>(builder: (_, _cartContext, __) {
+                              return Column(
+                                children: [
+                                  Expanded(
+                                    child: ListView.builder(
+                                        itemCount: _cartContext.items.length,
+                                        itemBuilder: (_, position) {
+                                          Food food = _cartContext.items.keys.elementAt(position);
+
+                                          var count = _cartContext.items.values.elementAt(position);
+
+                                          return BagItem(
+                                            food: food,
+                                            count: count,
+                                            activeDelete: false,
+                                          );
+                                        }),
+                                  ),
+                                  OrderButton(
+                                    totalPrice: _cartContext.totalPrice,
+                                    fromModal: true,
+                                  )
+                                ],
+                              );
+                            });
+                            /**/
+                          });
+                    },
+                    child: Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(shape: BoxShape.circle, color: CRIMSON),
+                        child: Icon(
+                          Icons.shopping_cart,
+                          color: Colors.white,
+                        )),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
                   Text(
                     '${this.totalPrice} €',
-                    style: TextStyle(
-                        fontSize: 25, fontWeight: FontWeight.bold, color: CRIMSON),
+                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: CRIMSON),
                   ),
                 ],
               ),
@@ -149,18 +183,15 @@ class OrderButton extends StatelessWidget {
             child: RaisedButton(
               padding: EdgeInsets.all(25),
               onPressed: () {
-                RouteUtil.goTo(
-                  context: context,
-                  child: OrderPage(),
-                  routeName: orderRoute,
-                );
+                  RouteUtil.goTo(
+                    context: context,
+                    child: OrderPage(),
+                    routeName: orderRoute,
+                  );
               },
               child: Text(
                 AppLocalizations.of(context).translate('command'),
-                style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold),
               ),
             ),
           )
