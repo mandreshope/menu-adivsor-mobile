@@ -124,6 +124,7 @@
   "enter_new_password_placeholder": "Entrer votre nouveau mot de passe",
   "invalid_password": "Mot de passe invalide",
   "add_payment_card_error": "Erreur lors de l'ajout de la carte",
+  "delete_payment_card_error": "Erreur lors de la suppression",
   "confirm_remove_payment_card_title": "Supprimer la carte?",
   "confirm_remove_payment_card_content": "Voulez-vous vraiment supprimer cette carte?",
   "no_address": "Aucune adresse",
@@ -150,8 +151,8 @@
   "priceless_and_not_priceless_not_allowed": "Vous ne pouvez pas à la fois commander des articles sans prix et avec prix",
   "from_different_origin_not_allowed": "Vous ne pouvez pas commander des articles venant de différents restaurants en même temps",
   "no_attribute": "Aucun attribut",
-  "summary":"Resumé",
-  "remember_password" : "Mémoriser mon mot de passe",
-  "have_allergies":"avez-vous des allergies alimentaires",
-  "command":"COMMANDER"
+  "summary": "Resumé",
+  "remember_password": "Mémoriser mon mot de passe",
+  "have_allergies": "avez-vous des allergies alimentaires",
+  "command": "COMMANDER"
 }
