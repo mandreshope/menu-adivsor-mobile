@@ -30,6 +30,7 @@ class PaymentCardListPage extends StatefulWidget {
 
 class _PaymentCardListPageState extends State<PaymentCardListPage> {
   bool isPaying = false;
+  bool isDeletingPaymentCard = false;
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +69,19 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
 
                                   if (result is bool && result) {
                                     // Remove card
-                                    await authContext.removePaymentCard(creditCard);
+                                    setState(() {
+                                      isDeletingPaymentCard = true;
+                                    });
+                                    try {
+                                      await authContext.removePaymentCard(creditCard);
+                                    } catch (error) {
+                                      Fluttertoast.showToast(
+                                        msg: AppLocalizations.of(context).translate('error_deleting_payment_card'),
+                                      );
+                                    }
+                                    setState(() {
+                                      isDeletingPaymentCard = false;
+                                    });
                                   }
                                 },
                                 onTap: widget.isPaymentStep
@@ -189,7 +202,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                     );
             },
           ),
-          if (isPaying)
+          if (isPaying || isDeletingPaymentCard)
             Container(
               color: Colors.black45,
               child: Center(

@@ -124,6 +124,7 @@
   "enter_new_password_placeholder": "Entrer your new password",
   "invalid_password": "Invalid password",
   "add_payment_card_error": "Error while adding payment card details",
+  "delete_payment_card_error": "Error while deleting payment card",
   "confirm_remove_payment_card_title": "Remove card?",
   "confirm_remove_payment_card_content": "Do you really want to remove this card?",
   "no_address": "No address",
@@ -150,8 +151,8 @@
   "priceless_and_not_priceless_not_allowed": "You cannot order priceless items and items with price at the same time",
   "from_different_origin_not_allowed": "You cannot order items from different restaurants at the same time",
   "no_attribute": "No attribute",
-  "summary":"Summary",
-  "remember_password" : "remember my password",
-  "have_allergies":"do you have any food allergies",
-  "command":"ORDER"
+  "summary": "Summary",
+  "remember_password": "remember my password",
+  "have_allergies": "do you have any food allergies",
+  "command": "ORDER"
 }
