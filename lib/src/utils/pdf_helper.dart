@@ -95,7 +95,7 @@ CommandModel commande;
         var dirTemp = await appDirectory.create(recursive: true);
       }
 
-      String fileName = "${DateTime.now().dateToString(DATE_FORMATED_ddMMyyyyHHmm)}.pdf";
+      String fileName = "${DateTime.now().dateToString(DATE_FORMATED_ddMMyyyyHHmmWithSpacer)}.pdf";
       File file = File("$pathToSaveFile$fileName");
       file.writeAsBytesSync(pdf.save());
       print("file saved... to $pathToSaveFile$fileName");
@@ -116,16 +116,40 @@ CommandModel commande;
             textAlign: TextAlign.center,
           ),
           SizedBox(
-            height: 15,
+            height: 8,
+          ),
+          Text(
+            commande?.restaurant?.name ?? "",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,color: PdfColor.fromInt(0xffda143c)),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(
+            height: 8,
+          ),
+          Text(
+            "${DateTime.now().dateToString(DATE_FORMATED_ddMMyyyyHHmmWithSpacer2)}",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,color: PdfColors.black),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(
+            height: 50,
           ),
           for (int i = 0; i <= commande.items.length - 1; i++) _items(commande.items[i], i),
            SizedBox(
             height: 15,
           ),
-          Text(
-            "Total : ${commande.totalPrice ?? 0}",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            textAlign: TextAlign.right,
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.only(right: 8),
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+              "Total : ${commande.totalPrice ?? 0} eur",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.right,
+            ),
+            ) 
+            
           ),
         ],
       );
@@ -138,13 +162,13 @@ CommandModel commande;
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           Container(
-            width: 150,
+            width: 120,
             child: _text(item.food?.name ?? "", position)
             ),
           _text("|", position),
           Container(
-            width: 10,
-            child: _text("${item?.quantity ?? 0}", position)),
+            width: 50,
+            child: _text("${item?.quantity ?? 0} x", position)),
           _text("|", position),
           _text("${item.food?.price?.amount ?? 0} ${item.food.price.currency}", position),
         ],

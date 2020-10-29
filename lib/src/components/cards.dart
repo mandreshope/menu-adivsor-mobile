@@ -441,7 +441,7 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.only(top: 15.0, right: 15.0, left: 15.0, bottom: 2),
+              padding: const EdgeInsets.only(top: 8.0, right: 15.0, left: 15.0, bottom: 2),
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -549,7 +549,7 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(right: 15, bottom: 8),
+              padding: const EdgeInsets.only(right: 15, bottom: 5),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -972,41 +972,44 @@ class _RestaurantCardState extends State<RestaurantCard> {
                           if (Provider.of<AuthContext>(context).currentUser != null)
                             Align(
                               alignment: Alignment.bottomRight,
-                              child: Consumer<AuthContext>(
-                                builder: (_, authContext, __) => SizedBox(
-                                  height: 50,
-                                  child: FittedBox(
-                                    child: switchingFavorite
-                                        ? Padding(
-                                            padding: const EdgeInsets.all(30),
-                                            child: CircularProgressIndicator(
-                                              valueColor: AlwaysStoppedAnimation<Color>(
-                                                CRIMSON,
+                              child: Visibility(
+                                visible: false,
+                                child: Consumer<AuthContext>(
+                                  builder: (_, authContext, __) => SizedBox(
+                                    height: 50,
+                                    child: FittedBox(
+                                      child: switchingFavorite
+                                          ? Padding(
+                                              padding: const EdgeInsets.all(30),
+                                              child: CircularProgressIndicator(
+                                                valueColor: AlwaysStoppedAnimation<Color>(
+                                                  CRIMSON,
+                                                ),
                                               ),
+                                            )
+                                          : IconButton(
+                                              icon: Icon(
+                                                authContext.currentUser?.favoriteRestaurants?.contains(widget.restaurant.id) ?? false ? Icons.favorite : Icons.favorite_border,
+                                                color: CRIMSON,
+                                              ),
+                                              onPressed: () async {
+                                                setState(() {
+                                                  switchingFavorite = true;
+                                                });
+                                                if (authContext.currentUser?.favoriteRestaurants?.contains(widget.restaurant.id) ?? false)
+                                                  await authContext.removeFromFavoriteRestaurants(
+                                                    widget.restaurant,
+                                                  );
+                                                else
+                                                  await authContext.addToFavoriteRestaurants(
+                                                    widget.restaurant,
+                                                  );
+                                                setState(() {
+                                                  switchingFavorite = false;
+                                                });
+                                              },
                                             ),
-                                          )
-                                        : IconButton(
-                                            icon: Icon(
-                                              authContext.currentUser?.favoriteRestaurants?.contains(widget.restaurant.id) ?? false ? Icons.favorite : Icons.favorite_border,
-                                              color: CRIMSON,
-                                            ),
-                                            onPressed: () async {
-                                              setState(() {
-                                                switchingFavorite = true;
-                                              });
-                                              if (authContext.currentUser?.favoriteRestaurants?.contains(widget.restaurant.id) ?? false)
-                                                await authContext.removeFromFavoriteRestaurants(
-                                                  widget.restaurant,
-                                                );
-                                              else
-                                                await authContext.addToFavoriteRestaurants(
-                                                  widget.restaurant,
-                                                );
-                                              setState(() {
-                                                switchingFavorite = false;
-                                              });
-                                            },
-                                          ),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -1038,12 +1041,7 @@ class BagItem extends StatelessWidget {
 
   CartContext _cartContext;
 
-  BagItem({
-    Key key,
-    @required this.food,
-    @required this.count,
-    this.activeDelete = true
-  }) : super(key: key);
+  BagItem({Key key, @required this.food, @required this.count, this.activeDelete = true}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -1171,13 +1169,10 @@ class BagItem extends StatelessWidget {
                   _cartContext.addItem(food, value);
                 },
                 onRemoved: (value) {
-                  value == 0 ? 
-                  _cartContext.removeItem(food) 
-                  :
-                   _cartContext.addItem(food, value);
+                  value == 0 ? _cartContext.removeItem(food) : _cartContext.addItem(food, value);
 
-                   if (_cartContext.items.length == 0) RouteUtil.goBack(context: context);
-                   count = value;
+                  if (_cartContext.items.length == 0) RouteUtil.goBack(context: context);
+                  count = value;
                 },
                 isContains: _cartContext.contains(food),
                 isFromDelevery: true,
@@ -1186,29 +1181,29 @@ class BagItem extends StatelessWidget {
                 width: 15,
               ),
               if (activeDelete)
-              CircleButton(
-                backgroundColor: CRIMSON,
-                child: Icon(
-                  Icons.delete,
-                  color: Colors.white,
+                CircleButton(
+                  backgroundColor: CRIMSON,
+                  child: Icon(
+                    Icons.delete,
+                    color: Colors.white,
+                  ),
+                  onPressed: () async {
+                    var result = await showDialog(
+                      context: context,
+                      child: ConfirmationDialog(
+                        title: AppLocalizations.of(context).translate('remove_item_confirmation_title'),
+                        content: AppLocalizations.of(context).translate('remove_item_confirmation_content'),
+                      ),
+                    );
+
+                    if (result is bool && result) {
+                      CartContext cartContext = Provider.of<CartContext>(context, listen: false);
+
+                      cartContext.removeItem(food);
+                      if (cartContext.items.length == 0) RouteUtil.goBack(context: context);
+                    }
+                  },
                 ),
-                onPressed: () async {
-                  var result = await showDialog(
-                    context: context,
-                    child: ConfirmationDialog(
-                      title: AppLocalizations.of(context).translate('remove_item_confirmation_title'),
-                      content: AppLocalizations.of(context).translate('remove_item_confirmation_content'),
-                    ),
-                  );
-
-                  if (result is bool && result) {
-                    CartContext cartContext = Provider.of<CartContext>(context, listen: false);
-
-                    cartContext.removeItem(food);
-                    if (cartContext.items.length == 0) RouteUtil.goBack(context: context);
-                  }
-                },
-              ),
             ],
           ),
         ),

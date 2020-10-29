@@ -171,6 +171,7 @@ class _OrderPageState extends State<OrderPage> {
   }
 
   _command(commandContext, authContext, cartContext) async {
+    Navigator.of(context).pop();
     if (authContext.currentUser == null) {
       if (commandContext.commandType != 'delivery')
         RouteUtil.goTo(
@@ -198,7 +199,7 @@ class _OrderPageState extends State<OrderPage> {
         child: UserDetailsPage(),
         routeName: userDetailsRoute,
       );
-    } else if (commandContext.commandType == 'on_site' || commandContext.commandType == 'takeaway') {
+    } else if (commandContext.commandType == 'on_site'/* || commandContext.commandType == 'takeaway'*/) {
       try {
         setState(() {
           sendingCommand = true;

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/constants/date_format.dart';
 import 'package:menu_advisor/src/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/pdf_helper.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:menu_advisor/src/utils/extensions.dart';
 
 import '../models.dart';
 
@@ -72,16 +74,36 @@ class Summary extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           SizedBox(
-            height: 15,
+            height: 8,
+          ),
+          Text(
+            commande?.restaurant?.name ?? "",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,color: CRIMSON),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(
+            height: 8,
+          ),
+          Text(
+            "${DateTime.now().dateToString(DATE_FORMATED_ddMMyyyyHHmmWithSpacer2)}",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,color: Colors.black),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(
+            height: 50,
           ),
           for (int i = 0; i <= commande.items.length - 1; i++) _items(commande.items[i], i),
           SizedBox(
             height: 15,
           ),
-          Text(
-            "Total : ${commande.totalPrice ?? 0}",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            textAlign: TextAlign.right,
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.only(right: 8),
+            child: Text(
+              "Total : ${commande.totalPrice ?? 0} eur",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.right,
+            ),
           ),
         ],
       );
@@ -94,13 +116,13 @@ class Summary extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
-            width: 150,
+            width: 120,
             child: _text(item.food?.name ?? "", position)
             ),
           _text("|", position),
           Container(
-            width: 10,
-            child: _text("${item?.quantity ?? 0}", position)),
+            width: 50,
+            child: _text("${item?.quantity ?? 0} x", position)),
           _text("|", position),
           _text("${item.food?.price?.amount ?? 0} ${item.food.price.currency}", position),
         ],

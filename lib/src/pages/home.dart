@@ -609,7 +609,9 @@ class _HomePageState extends State<HomePage> {
                       context: context,
                       child: SearchPage(
                         type: 'food',
-                        filters: {},
+                        filters: {
+                          "price.amount":null
+                        },
                       ),
                       routeName: searchRoute,
                     );
