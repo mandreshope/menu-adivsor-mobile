@@ -132,7 +132,7 @@ CommandModel commande;
             textAlign: TextAlign.center,
           ),
           SizedBox(
-            height: 50,
+            height: 25,
           ),
           for (int i = 0; i <= commande.items.length - 1; i++) _items(commande.items[i], i),
            SizedBox(
@@ -144,7 +144,7 @@ CommandModel commande;
             child: Align(
               alignment: Alignment.centerRight,
               child: Text(
-              "Total : ${commande.totalPrice ?? 0} eur",
+              commande.totalPrice == null ? "_" : "Total : ${commande.totalPrice/100} eur",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               textAlign: TextAlign.right,
             ),
@@ -170,7 +170,7 @@ CommandModel commande;
             width: 50,
             child: _text("${item?.quantity ?? 0} x", position)),
           _text("|", position),
-          _text("${item.food?.price?.amount ?? 0} ${item.food.price.currency}", position),
+          if (item.food?.price?.amount == null) _text("_", position) else _text("${item.food.price.amount/100} ${item.food.price?.currency ?? ""}", position),
         ],
       ),
     );

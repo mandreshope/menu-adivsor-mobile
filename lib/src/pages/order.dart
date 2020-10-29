@@ -94,33 +94,33 @@ class _OrderPageState extends State<OrderPage> {
                 ),
               ),
               Consumer<CartContext>(
-                builder: (_, cartContext, __) => cartContext.pricelessItems ?
-                Container()
-                :Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        '${AppLocalizations.of(context).translate('total_to_pay')} : ',
-                        style: TextStyle(
-                          fontWeight: FontWeight.normal,
-                          fontSize: 22,
+                builder: (_, cartContext, __) => cartContext.pricelessItems
+                    ? Container()
+                    : Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '${AppLocalizations.of(context).translate('total_to_pay')} : ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.normal,
+                                fontSize: 22,
+                              ),
+                            ),
+                            Text(
+                              '${cartContext.totalPrice}€',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 22,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Text(
-                        '${cartContext.totalPrice}€',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 22,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
               ),
               Padding(
                 padding: const EdgeInsets.all(20),
@@ -178,17 +178,17 @@ class _OrderPageState extends State<OrderPage> {
   }
 
   _command(commandContext, authContext, cartContext) async {
-    Navigator.of(context).pop();
     if (authContext.currentUser == null) {
       if (commandContext.commandType != 'delivery') {
-        if (commandContext.commandType == 'on_site' /* || commandContext.commandType == 'takeaway'*/) {
+        if (commandContext.commandType == 'on_site') {
+          
           try {
             setState(() {
               sendingCommand = true;
             });
 
             var command = await Api.instance.sendCommand(
-              relatedUser: authContext.currentUser.id,
+              // relatedUser: authContext.currentUser?.id ?? null,
               commandType: commandContext.commandType,
               items: cartContext.items.entries.map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),
               restaurant: cartContext.currentOrigin,
@@ -202,6 +202,12 @@ class _OrderPageState extends State<OrderPage> {
               msg: AppLocalizations.of(context).translate('success'),
             );
 
+            setState(() {
+              sendingCommand = false;
+            });
+
+            Navigator.of(context).pop(); // pop loading dialog
+
             RouteUtil.goTo(
               context: context,
               child: Summary(
@@ -211,10 +217,19 @@ class _OrderPageState extends State<OrderPage> {
               // method: RoutingMethod.atTop,
             );
           } catch (error) {
+            setState(() {
+              sendingCommand = false;
+            });
             Fluttertoast.showToast(
               msg: 'Erreur lors de l\'envoi de la commande',
             );
           }
+        } else if (commandContext.commandType == 'takeaway') {
+          RouteUtil.goTo(
+            context: context,
+            child: UserDetailsPage(),
+            routeName: userDetailsRoute,
+          );
         } else {
           RouteUtil.goTo(
             context: context,
@@ -263,6 +278,12 @@ class _OrderPageState extends State<OrderPage> {
           msg: AppLocalizations.of(context).translate('success'),
         );
 
+        setState(() {
+          sendingCommand = false;
+        });
+
+        Navigator.of(context).pop();
+
         RouteUtil.goTo(
           context: context,
           child: Summary(
@@ -272,6 +293,10 @@ class _OrderPageState extends State<OrderPage> {
           // method: RoutingMethod.atTop,
         );
       } catch (error) {
+        setState(() {
+          sendingCommand = false;
+        });
+
         Fluttertoast.showToast(
           msg: 'Erreur lors de l\'envoi de la commande',
         );
@@ -365,6 +390,7 @@ class _OrderPageState extends State<OrderPage> {
                             onTap: () {
                               commandContext.commandType = 'on_site';
                               _command(commandContext, authContext, cartContext);
+                              Navigator.of(context).pop();
                             },
                             child: Container(
                               padding: const EdgeInsets.symmetric(

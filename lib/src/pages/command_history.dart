@@ -186,6 +186,7 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
         .where((element) => element.commandType == title)
         
         .toList();
+        print(commandTemp);
     return commandTemp.length == 0
         ? Column(
             mainAxisAlignment: MainAxisAlignment.center,

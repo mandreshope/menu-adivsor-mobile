@@ -85,6 +85,7 @@ class CartContext extends ChangeNotifier {
 
   void clear() {
     _items.clear();
+    _currentOrigin = null;
     notifyListeners();
   }
 }

@@ -146,6 +146,7 @@ class OrderButton extends StatelessWidget {
                                             food: food,
                                             count: count,
                                             activeDelete: false,
+                                            imageTag: '${food.id}$position',
                                           );
                                         }),
                                   ),
@@ -171,7 +172,7 @@ class OrderButton extends StatelessWidget {
                     width: 10,
                   ),
                   Text(
-                    this.totalPrice == 0 ? "" : '${this.totalPrice}',
+                    this.totalPrice == 0 ? "" : '${this.totalPrice} €',
                     style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: CRIMSON),
                   ),
                 ],

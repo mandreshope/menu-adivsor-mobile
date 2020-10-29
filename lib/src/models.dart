@@ -208,7 +208,7 @@ class Command {
   });
 
   factory Command.fromJson(Map<String, dynamic> json) => Command(
-        id: json['_id'],
+        id: json['_id'] ?? "",
         relatedUser: json['relatedUser'],
         commandType: json['commandType'],
         totalPrice: json['totalPrice'],

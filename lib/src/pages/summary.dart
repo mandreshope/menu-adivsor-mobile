@@ -13,30 +13,10 @@ import '../models.dart';
 class Summary extends StatelessWidget {
   Summary({@required this.commande});
   List<Food> foods = [
-    Food(
-        id: "sf",
-        name: "qsdff",
-        category: null,
-        restaurant: "qsdf",
-        price: Price(amount: 15, currency: "13")),
-    Food(
-        id: "sf",
-        name: "qsdff",
-        category: null,
-        restaurant: "qsdf",
-        price: Price(amount: 15, currency: "13")),
-    Food(
-        id: "sf",
-        name: "qsdff",
-        category: null,
-        restaurant: "qsdf",
-        price: Price(amount: 15, currency: "13")),
-    Food(
-        id: "sf",
-        name: "qsdff",
-        category: null,
-        restaurant: "qsdf",
-        price: Price(amount: 15, currency: "13")),
+    Food(id: "sf", name: "qsdff", category: null, restaurant: "qsdf", price: Price(amount: 15, currency: "13")),
+    Food(id: "sf", name: "qsdff", category: null, restaurant: "qsdf", price: Price(amount: 15, currency: "13")),
+    Food(id: "sf", name: "qsdff", category: null, restaurant: "qsdf", price: Price(amount: 15, currency: "13")),
+    Food(id: "sf", name: "qsdff", category: null, restaurant: "qsdf", price: Price(amount: 15, currency: "13")),
   ];
 
   BuildContext context;
@@ -46,21 +26,20 @@ class Summary extends StatelessWidget {
   Widget build(BuildContext context) {
     this.context = context;
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.save),
-        onPressed: (){
-          print("save...");
-          PdfHelper(context,commande);
-          RouteUtil.goBack(context: context);
-        },
-      ),
-      appBar: AppBar(
-        title: Text(
-          AppLocalizations.of(context).translate('summary'),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.save),
+          onPressed: () {
+            print("save...");
+            PdfHelper(context, commande);
+            RouteUtil.goBack(context: context);
+          },
         ),
-      ),
-      body: _body()
-    );
+        appBar: AppBar(
+          title: Text(
+            AppLocalizations.of(context).translate('summary'),
+          ),
+        ),
+        body: _body());
   }
 
   Widget _body() => Column(
@@ -68,17 +47,17 @@ class Summary extends StatelessWidget {
           SizedBox(
             height: 25,
           ),
-          Text(
+          /*Text(
             AppLocalizations.of(context).translate('summary').toUpperCase(),
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
           SizedBox(
             height: 8,
-          ),
+          ),*/
           Text(
             commande?.restaurant?.name ?? "",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,color: CRIMSON),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: CRIMSON),
             textAlign: TextAlign.center,
           ),
           SizedBox(
@@ -86,11 +65,11 @@ class Summary extends StatelessWidget {
           ),
           Text(
             "${DateTime.now().dateToString(DATE_FORMATED_ddMMyyyyHHmmWithSpacer2)}",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,color: Colors.black),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
             textAlign: TextAlign.center,
           ),
           SizedBox(
-            height: 50,
+            height: 25,
           ),
           for (int i = 0; i <= commande.items.length - 1; i++) _items(commande.items[i], i),
           SizedBox(
@@ -100,7 +79,7 @@ class Summary extends StatelessWidget {
             width: double.infinity,
             padding: EdgeInsets.only(right: 8),
             child: Text(
-              "Total : ${commande.totalPrice ?? 0} eur",
+             commande.totalPrice == null ? "_" : "Total : ${commande.totalPrice/100} eur",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               textAlign: TextAlign.right,
             ),
@@ -115,26 +94,18 @@ class Summary extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Container(
-            width: 120,
-            child: _text(item.food?.name ?? "", position)
-            ),
+          Container(width: 120, child: _text(item.food?.name ?? "", position)),
           _text("|", position),
-          Container(
-            width: 50,
-            child: _text("${item?.quantity ?? 0} x", position)),
+          Container(width: 50, child: _text("${item?.quantity ?? 0} x", position)),
           _text("|", position),
-          _text("${item.food?.price?.amount ?? 0} ${item.food.price.currency}", position),
+          if (item.food?.price?.amount == null) _text("_", position) else _text("${item.food.price.amount/100} ${item.food.price?.currency ?? ""}", position),
         ],
       ),
     );
   }
 
   Widget _text(String value, position) => Text(
-          value,
-          style: TextStyle(
-              fontSize: 16,
-              color: position % 2 == 0 ? Colors.white : Colors.black),
-        
-  );
+        value,
+        style: TextStyle(fontSize: 16, color: position % 2 == 0 ? Colors.white : Colors.black),
+      );
 }

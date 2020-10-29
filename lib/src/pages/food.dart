@@ -498,7 +498,7 @@ class _FoodPageState extends State<FoodPage> {
               child:  Consumer<CartContext>(
                       builder: (_, cartContext, __) => 
                       cartContext.contains(widget.food) ?
-                        OrderButton(totalPrice: (cartContext.getCount(widget.food)*(widget.food.price?.amount ?? 00/100)).toDouble(),)
+                        OrderButton(totalPrice: (cartContext.getCount(widget.food)*(widget.food.price?.amount == null ? 00 : widget.food.price.amount/100)).toDouble(),)
                        : SizedBox(),
                        )
             ),
@@ -508,6 +508,7 @@ class _FoodPageState extends State<FoodPage> {
 
   Widget _image() => GestureDetector(
         onTap: () {
+          return;
           Navigator.of(context).push(
             MaterialPageRoute(
               fullscreenDialog: true,

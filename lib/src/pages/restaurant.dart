@@ -517,7 +517,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                     top: false,
                     sliver: SliverAppBar(
                       backgroundColor: Colors.white,
-                      expandedHeight: 320.0,
+                      expandedHeight: 340.0,
                       floating: false,
                       pinned: true,
                       flexibleSpace: FlexibleSpaceBar(

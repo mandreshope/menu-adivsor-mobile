@@ -309,6 +309,10 @@ class _FoodCardState extends State<FoodCard> {
                                                 // RouteUtil.goBack(
                                                 //     context: context);
                                               }
+                                            } else if (!cartContext.hasSameOriginAsInBag(widget.food)) {
+                                              Fluttertoast.showToast(
+                                                msg: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
+                                              );
                                             } else
                                               showDialog(
                                                 context: context,
@@ -954,7 +958,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                                 mainAxisSize: MainAxisSize.max,
                                 children: [
                                   Text(
-                                    widget.restaurant.name,
+                                    widget.restaurant.name ?? "",
                                     style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
@@ -962,7 +966,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                                   ),
                                   SizedBox(height: 5),
                                   Text(
-                                    AppLocalizations.of(context).translate(widget.restaurant.type),
+                                    widget.restaurant.type != null ? AppLocalizations.of(context).translate(widget.restaurant.type) : "",
                                     style: TextStyle(
                                       fontSize: 16,
                                     ),
@@ -1040,10 +1044,11 @@ class BagItem extends StatelessWidget {
   final Food food;
   int count;
   bool activeDelete;
+  String imageTag;
 
   CartContext _cartContext;
 
-  BagItem({Key key, @required this.food, @required this.count, this.activeDelete = true}) : super(key: key);
+  BagItem({Key key, @required this.food, @required this.count, this.activeDelete = true,this.imageTag}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -1085,7 +1090,7 @@ class BagItem extends StatelessWidget {
               ),
               food.imageURL != null
                   ? Hero(
-                      tag: food.id,
+                      tag: imageTag ?? food.id,
                       child: CircleAvatar(
                         backgroundImage: NetworkImage(
                           food.imageURL,
@@ -1163,8 +1168,7 @@ class BagItem extends StatelessWidget {
                   );
                 },
               ),*/
-              if (activeDelete) ...[
-                ButtonItemCountWidget(
+              ButtonItemCountWidget(
                   food,
                   itemCount: count,
                   onAdded: (value) {
@@ -1180,6 +1184,8 @@ class BagItem extends StatelessWidget {
                   isContains: _cartContext.contains(food),
                   isFromDelevery: true,
                 ),
+              if (activeDelete) ...[
+                
                 SizedBox(
                   width: 15,
                 ),
@@ -1216,7 +1222,7 @@ class BagItem extends StatelessWidget {
 }
 
 class CommandHistoryItem extends StatelessWidget {
-  CommandHistoryItem({Key key, this.command,this.position}) : super(key: key);
+  CommandHistoryItem({Key key, this.command, this.position}) : super(key: key);
   final Command command;
   final int position;
 
@@ -1224,7 +1230,6 @@ class CommandHistoryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     food = Food.fromJson(command.items[0]['item']);
 
     return InkWell(
@@ -1255,7 +1260,6 @@ class CommandHistoryItem extends StatelessWidget {
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-               
               food.imageURL != null
                   ? Hero(
                       tag: command.id,
@@ -1275,14 +1279,13 @@ class CommandHistoryItem extends StatelessWidget {
                 width: 20,
               ),
               Text(
-                food.name,
+                food.name ?? "",
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               Spacer(),
-              
               if (food.price?.amount != null)
                 Text(
                   '${food.price.amount / 100}€',
@@ -1291,8 +1294,7 @@ class CommandHistoryItem extends StatelessWidget {
                     color: Colors.grey[600],
                   ),
                 ),
-                
-                SizedBox(
+              SizedBox(
                 width: 20,
               ),
               /*Text(

@@ -290,7 +290,7 @@ class _HomePageState extends State<HomePage> {
                             type: 'food',
                             filters: {
                               // 'category': category.id,
-                              // "searchCategory": "with_price",
+                              "searchCategory": "with_price",
                             },
                             showButton: true,
                           ),

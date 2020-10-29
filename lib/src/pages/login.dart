@@ -17,6 +17,7 @@ import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:provider/provider.dart';
+import 'package:menu_advisor/src/utils/extensions.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -275,6 +276,15 @@ class _LoginPageState extends State<LoginPage> {
     if (email.isEmpty || password.isEmpty) {
       Fluttertoast.showToast(
         msg: AppLocalizations.of(context).translate("blank_email_or_password"),
+        backgroundColor: CRIMSON,
+        textColor: Colors.white,
+      );
+      return;
+    }
+
+    if (!email.isValidateEmail()){
+      Fluttertoast.showToast(
+        msg: AppLocalizations.of(context).translate("invalid_email"),
         backgroundColor: CRIMSON,
         textColor: Colors.white,
       );

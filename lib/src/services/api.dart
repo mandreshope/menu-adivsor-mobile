@@ -6,8 +6,8 @@ import 'package:menu_advisor/src/types.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Api {
-  final String _apiURL = 'https://menu-advisor.herokuapp.com';
-  // final String _apiURL = 'https://preprod-api.clicar.fr';
+  // final String _apiURL = 'https://menu-advisor.herokuapp.com';
+  final String _apiURL = 'https://preprod-api.clicar.fr';
   String _accessToken;
   String _refreshToken;
 
@@ -515,7 +515,7 @@ class Api {
     String commandType,
     int totalPrice,
     String restaurant,
-    List<Map<String, dynamic>> items,
+    var items,
     int shippingTime,
     String shippingAddress,
     bool shipAsSoonAsPossible,

@@ -264,6 +264,16 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
   }
 
   _submitForm() async {
+
+    if (!_emailController.text.isValidateEmail()){
+      Fluttertoast.showToast(
+        msg: AppLocalizations.of(context).translate("invalid_email"),
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+      );
+      return;
+    }
+
     FormState formState = _formKey.currentState;
 
     CommandContext commandContext = Provider.of<CommandContext>(
