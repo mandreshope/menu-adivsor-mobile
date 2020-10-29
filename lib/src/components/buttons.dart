@@ -150,7 +150,7 @@ class OrderButton extends StatelessWidget {
                                         }),
                                   ),
                                   OrderButton(
-                                    totalPrice: _cartContext.totalPrice ?? "",
+                                    totalPrice: _cartContext.totalPrice  ?? 0,
                                     fromModal: true,
                                   )
                                 ],
@@ -171,7 +171,7 @@ class OrderButton extends StatelessWidget {
                     width: 10,
                   ),
                   Text(
-                    '${this.totalPrice} €',
+                    this.totalPrice == 0 ? "" : '${this.totalPrice}',
                     style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: CRIMSON),
                   ),
                 ],

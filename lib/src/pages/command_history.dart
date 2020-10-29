@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/pages/food.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
+import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
+import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
@@ -134,8 +137,7 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
                     ],
                   ),
                 )
-              :
-              Column(mainAxisSize: MainAxisSize.max, children: [
+              : Column(mainAxisSize: MainAxisSize.max, children: [
                   Expanded(
                       child: ScrollablePositionedList.separated(
                     itemScrollController: itemScrollController,
@@ -180,13 +182,11 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
   }
 
   _renderViewItem(String title) {
-    var foods = commands
+    var commandTemp = commands
         .where((element) => element.commandType == title)
-        .map(
-          (e) => Food.fromJson(e.items[0]['item']),
-        )
+        
         .toList();
-    return foods.length == 0
+    return commandTemp.length == 0
         ? Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -205,58 +205,10 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
           )
         : SingleChildScrollView(
             child: Column(
-              children: foods
-                  .map((food) => Card(
-                        elevation: 2.0,
-                        margin: const EdgeInsets.all(10.0),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Container(
-                          padding: const EdgeInsets.all(10),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              food.imageURL != null
-                                  ? Hero(
-                                      tag: food.id,
-                                      child: CircleAvatar(
-                                        backgroundImage: NetworkImage(
-                                          food.imageURL,
-                                        ),
-                                        onBackgroundImageError: (_, __) {},
-                                        backgroundColor: Colors.grey,
-                                        maxRadius: 20,
-                                      ),
-                                    )
-                                  : Icon(
-                                      Icons.fastfood,
-                                    ),
-                              SizedBox(
-                                width: 20,
-                              ),
-                              Text(
-                                food.name,
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Spacer(),
-                              if (food.price?.amount != null)
-                                Text(
-                                  '${food.price.amount / 100}€',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                      ))
-                  .toList(),
+              children: [
+                for(var item in commandTemp)
+                  CommandHistoryItem(command: item,)
+              ]
             ),
           );
   }

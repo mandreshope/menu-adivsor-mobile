@@ -162,7 +162,7 @@ class _FoodPageState extends State<FoodPage> {
                         ),
                       ),
                       if (widget.food.price != null &&
-                          widget.food.price.amount != null)
+                          widget.food.price?.amount != null)
                         Positioned(
                           right: 25,
                           child: Text(
@@ -498,7 +498,7 @@ class _FoodPageState extends State<FoodPage> {
               child:  Consumer<CartContext>(
                       builder: (_, cartContext, __) => 
                       cartContext.contains(widget.food) ?
-                        OrderButton(totalPrice: (cartContext.getCount(widget.food)*(widget.food.price.amount/100)).toDouble(),)
+                        OrderButton(totalPrice: (cartContext.getCount(widget.food)*(widget.food.price?.amount ?? 00/100)).toDouble(),)
                        : SizedBox(),
                        )
             ),

@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/constants/date_format.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/food.dart';
 import 'package:menu_advisor/src/pages/restaurant.dart';
@@ -18,6 +19,7 @@ import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/button_item_count_widget.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:provider/provider.dart';
+import 'package:menu_advisor/src/utils/extensions.dart';
 
 class CategoryCard extends StatelessWidget {
   final String imageURL;
@@ -1161,29 +1163,26 @@ class BagItem extends StatelessWidget {
                   );
                 },
               ),*/
-              if (activeDelete)...[
+              if (activeDelete) ...[
+                ButtonItemCountWidget(
+                  food,
+                  itemCount: count,
+                  onAdded: (value) {
+                    count = value;
+                    _cartContext.addItem(food, value);
+                  },
+                  onRemoved: (value) {
+                    value == 0 ? _cartContext.removeItem(food) : _cartContext.addItem(food, value);
 
-              
-              ButtonItemCountWidget(
-                food,
-                itemCount: count,
-                onAdded: (value) {
-                  count = value;
-                  _cartContext.addItem(food, value);
-                },
-                onRemoved: (value) {
-                  value == 0 ? _cartContext.removeItem(food) : _cartContext.addItem(food, value);
-
-                  if (_cartContext.items.length == 0) RouteUtil.goBack(context: context);
-                  count = value;
-                },
-                isContains: _cartContext.contains(food),
-                isFromDelevery: true,
-              ),
-              SizedBox(
-                width: 15,
-              ),
-              
+                    if (_cartContext.items.length == 0) RouteUtil.goBack(context: context);
+                    count = value;
+                  },
+                  isContains: _cartContext.contains(food),
+                  isFromDelevery: true,
+                ),
+                SizedBox(
+                  width: 15,
+                ),
                 CircleButton(
                   backgroundColor: CRIMSON,
                   child: Icon(
@@ -1208,6 +1207,101 @@ class BagItem extends StatelessWidget {
                   },
                 ),
               ]
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class CommandHistoryItem extends StatelessWidget {
+  CommandHistoryItem({Key key, this.command,this.position}) : super(key: key);
+  final Command command;
+  final int position;
+
+  Food food;
+
+  @override
+  Widget build(BuildContext context) {
+
+    food = Food.fromJson(command.items[0]['item']);
+
+    return InkWell(
+      onTap: () {
+        RouteUtil.goTo(
+          context: context,
+          child: Material(
+            child: FoodPage(
+              food: food,
+              imageTag: command.id,
+              restaurantName: food.restaurant,
+              fromDelevery: true,
+              modalMode: false,
+            ),
+          ),
+          routeName: foodRoute,
+        );
+      },
+      child: Card(
+        elevation: 2.0,
+        margin: const EdgeInsets.all(10.0),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+               
+              food.imageURL != null
+                  ? Hero(
+                      tag: command.id,
+                      child: CircleAvatar(
+                        backgroundImage: NetworkImage(
+                          food.imageURL,
+                        ),
+                        onBackgroundImageError: (_, __) {},
+                        backgroundColor: Colors.grey,
+                        maxRadius: 20,
+                      ),
+                    )
+                  : Icon(
+                      Icons.fastfood,
+                    ),
+              SizedBox(
+                width: 20,
+              ),
+              Text(
+                food.name,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Spacer(),
+              
+              if (food.price?.amount != null)
+                Text(
+                  '${food.price.amount / 100}€',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                
+                SizedBox(
+                width: 20,
+              ),
+              /*Text(
+                  '${command.shippingTime?.day ?? ""}/${command.shippingTime?.month ?? ""} - ${command.shippingTime.hour}:${command.shippingTime.minute}',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.grey[600],
+                  ),
+                ),*/
             ],
           ),
         ),
