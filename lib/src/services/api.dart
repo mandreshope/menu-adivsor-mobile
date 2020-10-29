@@ -490,10 +490,14 @@ class Api {
     );
   }
 
-  Future<List<Command>> getCommandOfUser(User user) async {
+  Future<List<Command>> getCommandOfUser(
+    User user, {
+    int limit,
+    int offset = 0,
+  }) async {
     await _refreshTokens();
 
-    return http.get('$_apiURL/commands?filter={"relatedUser": "${user.id}"}', headers: {
+    return http.get('$_apiURL/commands?filter={"relatedUser": "${user.id}"}&offset=$offset${limit != null ? '&limit=$limit' : ''}', headers: {
       'authorization': 'Bearer $_accessToken',
       'Content-Type': 'application/json',
     }).then<List<Command>>((response) {
