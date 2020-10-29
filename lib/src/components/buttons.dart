@@ -150,7 +150,7 @@ class OrderButton extends StatelessWidget {
                                         }),
                                   ),
                                   OrderButton(
-                                    totalPrice: _cartContext.totalPrice,
+                                    totalPrice: _cartContext.totalPrice ?? "",
                                     fromModal: true,
                                   )
                                 ],

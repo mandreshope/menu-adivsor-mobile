@@ -94,7 +94,9 @@ class _OrderPageState extends State<OrderPage> {
                 ),
               ),
               Consumer<CartContext>(
-                builder: (_, cartContext, __) => Padding(
+                builder: (_, cartContext, __) => cartContext.pricelessItems ?
+                Container()
+                :Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 20,
                   ),
