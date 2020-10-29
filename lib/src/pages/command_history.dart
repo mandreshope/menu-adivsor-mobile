@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
@@ -53,18 +54,11 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
       tabController.animateTo(itemPositionsListener.itemPositions.value.first.index);
     });
 
-    AuthContext authContext = Provider.of<AuthContext>(
-      context,
-      listen: false,
-    );
+    loadData();
 
-    commands = authContext.currentUser.commands ?? List();
-
-    //loadData();
-
-    setState(() {
-      loading = false;
-    });
+    // setState(() {
+    //   loading = false;
+    // });
   }
 
   loadData() async {
@@ -73,41 +67,14 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
       listen: false,
     );
 
-    var delivery = commands.where((element) => element.commandType == 'delivery').toList();
+    AuthContext authContext = Provider.of<AuthContext>(
+      context,
+      listen: false,
+    );
 
-    for (var item in delivery) {
-      item.items.forEach((element) async {
-        var food = await api.getFood(
-          id: element['_id'] as String,
-          lang: settingContext.languageCode,
-        );
-        foodDelivery.add(food);
-      });
-    }
-
-    var onSite = commands.where((element) => element.commandType == 'on_site').toList();
-
-    for (var item in onSite) {
-      item.items.forEach((element) async {
-        var food = await api.getFood(
-          id: element['id'] as String,
-          lang: settingContext.languageCode,
-        );
-        foodOnSite.add(food);
-      });
-    }
-
-    var takeaway = commands.where((element) => element.commandType == 'takeaway').toList();
-
-    for (var item in takeaway) {
-      item.items.forEach((element) async {
-        var food = await api.getFood(
-          id: element['id'] as String,
-          lang: settingContext.languageCode,
-        );
-        foodOnTakeaway.add(food);
-      });
-    }
+    this.commands = await authContext.getCommandOfUser(
+      limit: 100,
+    );
 
     setState(() {
       loading = false;
@@ -130,13 +97,13 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
           indicator: BoxDecoration(borderRadius: BorderRadius.circular(5), color: Colors.white),
           tabs: [
             Tab(
-              text: AppLocalizations.of(context).translate('a_la_carte'),
+              text: AppLocalizations.of(context).translate('delivery'),
             ),
             Tab(
-              text: AppLocalizations.of(context).translate('menus'),
+              text: AppLocalizations.of(context).translate('on_site'),
             ),
             Tab(
-              text: AppLocalizations.of(context).translate('drinks'),
+              text: AppLocalizations.of(context).translate('takeaway'),
             ),
           ],
         ),
@@ -167,8 +134,7 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
                     ],
                   ),
                 )
-              : /*SingleChildScrollView(
-                child: */
+              :
               Column(mainAxisSize: MainAxisSize.max, children: [
                   Expanded(
                       child: ScrollablePositionedList.separated(
@@ -177,18 +143,11 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
                     padding: const EdgeInsets.all(20),
                     itemCount: 3,
                     itemBuilder: (_, index) {
-                      // return Container(height: 15,width: 5,child: Text("svn"),);
-                      if (index == 0)
-                        return _renderItems(
-                            title: 'delivery');
+                      if (index == 0) return _renderItems(title: 'delivery');
 
-                      if (index == 1)
-                        return _renderItems(
-                            title: 'on_site');
+                      if (index == 1) return _renderItems(title: 'on_site');
 
-                      // if (index == 2)
-                      return _renderItems(
-                          title: 'takeaway');
+                      return _renderItems(title: 'takeaway');
                     },
                     separatorBuilder: (_, index) => Padding(
                       padding: const EdgeInsets.symmetric(
@@ -198,12 +157,10 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
                     ),
                   )),
                 ]),
-      //),
-      //),
     );
   }
 
-  _renderItems({Function function, String title}) {
+  _renderItems({String title}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -218,19 +175,18 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
           height: 10,
         ),
         _renderViewItem(title)
-        //function(),
       ],
     );
   }
 
   _renderViewItem(String title) {
-    var food = commands
+    var foods = commands
         .where((element) => element.commandType == title)
         .map(
-          (e) => Card(),
+          (e) => Food.fromJson(e.items[0]['item']),
         )
         .toList();
-    return food.length == 0
+    return foods.length == 0
         ? Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -249,14 +205,59 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
           )
         : SingleChildScrollView(
             child: Column(
-              children: commands
-                  .where((element) => element.commandType == title)
-                  .map(
-                    (e) => Card(),
-                  )
+              children: foods
+                  .map((food) => Card(
+                        elevation: 2.0,
+                        margin: const EdgeInsets.all(10.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              food.imageURL != null
+                                  ? Hero(
+                                      tag: food.id,
+                                      child: CircleAvatar(
+                                        backgroundImage: NetworkImage(
+                                          food.imageURL,
+                                        ),
+                                        onBackgroundImageError: (_, __) {},
+                                        backgroundColor: Colors.grey,
+                                        maxRadius: 20,
+                                      ),
+                                    )
+                                  : Icon(
+                                      Icons.fastfood,
+                                    ),
+                              SizedBox(
+                                width: 20,
+                              ),
+                              Text(
+                                food.name,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Spacer(),
+                              if (food.price?.amount != null)
+                                Text(
+                                  '${food.price.amount / 100}€',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ))
                   .toList(),
             ),
           );
   }
-
 }

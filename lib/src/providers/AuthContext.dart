@@ -159,4 +159,12 @@ class AuthContext extends ChangeNotifier {
     return login(pref.getString('email'), pref.getString('password'),
         isPasswordRemember: true);
   }
+  Future<List<Command>> getCommandOfUser({
+    int limit,
+    int offset = 0,
+  }) async {
+    List<Command> commands = await _api.getCommandOfUser(currentUser,limit: limit,offset: offset);
+
+    return commands;
+  }
 }

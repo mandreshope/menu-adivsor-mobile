@@ -1161,6 +1161,9 @@ class BagItem extends StatelessWidget {
                   );
                 },
               ),*/
+              if (activeDelete)...[
+
+              
               ButtonItemCountWidget(
                 food,
                 itemCount: count,
@@ -1180,7 +1183,7 @@ class BagItem extends StatelessWidget {
               SizedBox(
                 width: 15,
               ),
-              if (activeDelete)
+              
                 CircleButton(
                   backgroundColor: CRIMSON,
                   child: Icon(
@@ -1204,6 +1207,7 @@ class BagItem extends StatelessWidget {
                     }
                   },
                 ),
+              ]
             ],
           ),
         ),
