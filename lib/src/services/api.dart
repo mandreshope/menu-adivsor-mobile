@@ -490,6 +490,22 @@ class Api {
     );
   }
 
+  Future<List<Command>> getCommandOfUser(User user) async {
+    await _refreshTokens();
+
+    return http.get('$_apiURL/commands?filter={"relatedUser": "${user.id}"}', headers: {
+      'authorization': 'Bearer $_accessToken',
+      'Content-Type': 'application/json',
+    }).then<List<Command>>((response) {
+      if (response.statusCode == 200) {
+        List datas = jsonDecode(response.body);
+        return datas.map<Command>((data) => Command.fromJson(data)).toList();
+      }
+
+      return Future.error(jsonDecode(response.body));
+    });
+  }
+
   Future<Map> sendCommand({
     String relatedUser,
     String commandType,
