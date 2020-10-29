@@ -59,14 +59,12 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
     );
 
     commands = authContext.currentUser.commands ?? List();
-    
+
     //loadData();
 
-    
     setState(() {
       loading = false;
     });
-
   }
 
   loadData() async {
@@ -85,9 +83,7 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
         );
         foodDelivery.add(food);
       });
-
     }
-
 
     var onSite = commands.where((element) => element.commandType == 'on_site').toList();
 
@@ -99,7 +95,6 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
         );
         foodOnSite.add(food);
       });
-
     }
 
     var takeaway = commands.where((element) => element.commandType == 'takeaway').toList();
@@ -112,14 +107,11 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
         );
         foodOnTakeaway.add(food);
       });
-
     }
 
-    
     setState(() {
       loading = false;
     });
-
   }
 
   @override
@@ -188,23 +180,14 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
                       // return Container(height: 15,width: 5,child: Text("svn"),);
                       if (index == 0)
                         return _renderItems(
-                            function: () => _renderDelivery(
-                                  commands,
-                                ),
                             title: 'delivery');
 
                       if (index == 1)
                         return _renderItems(
-                            function: () => _renderOnSite(
-                                  commands,
-                                ),
                             title: 'on_site');
 
                       // if (index == 2)
                       return _renderItems(
-                          function: () => _renderTakeAway(
-                                commands,
-                              ),
                           title: 'takeaway');
                     },
                     separatorBuilder: (_, index) => Padding(
@@ -234,47 +217,46 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
         SizedBox(
           height: 10,
         ),
-        function(),
+        _renderViewItem(title)
+        //function(),
       ],
     );
   }
 
-  _renderDelivery(List<Command> commands) {
-    return SingleChildScrollView(
-      child: Column(
-        children: commands
-            .where((element) => element.commandType == 'delivery')
-            .map(
-              (e) => Card(),
-            )
-            .toList(),
-      ),
-    );
+  _renderViewItem(String title) {
+    var food = commands
+        .where((element) => element.commandType == title)
+        .map(
+          (e) => Card(),
+        )
+        .toList();
+    return food.length == 0
+        ? Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.warning,
+                size: 40,
+              ),
+              Text(
+                "Aucun",
+                style: TextStyle(
+                  fontSize: 22,
+                ),
+              ),
+            ],
+          )
+        : SingleChildScrollView(
+            child: Column(
+              children: commands
+                  .where((element) => element.commandType == title)
+                  .map(
+                    (e) => Card(),
+                  )
+                  .toList(),
+            ),
+          );
   }
 
-  _renderOnSite(List<Command> commands) {
-    return SingleChildScrollView(
-      child: Column(
-        children: commands
-            .where((element) => element.commandType == 'on_site')
-            .map(
-              (e) => Card(),
-            )
-            .toList(),
-      ),
-    );
-  }
-
-  _renderTakeAway(List<Command> commands) {
-    return SingleChildScrollView(
-      child: Column(
-        children: commands
-            .where((element) => element.commandType == 'takeaway')
-            .map(
-              (e) => Card(),
-            )
-            .toList(),
-      ),
-    );
-  }
 }

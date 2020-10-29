@@ -126,11 +126,16 @@ class _OrderPageState extends State<OrderPage> {
                   builder: (_, commandContext, authContext, cartContext, __) => FlatButton(
                     onPressed: () async {
                       // _command(commandContext, authContext, cartContext);
-                      showModalBottomSheet(
-                          context: context,
-                          builder: (_) {
-                            return _commandType();
-                          });
+                      if (cartContext.pricelessItems) {
+                        commandContext.commandType = 'on_site';
+                        _command(commandContext, authContext, cartContext);
+                      } else {
+                        showModalBottomSheet(
+                            context: context,
+                            builder: (_) {
+                              return _commandType();
+                            });
+                      }
                     },
                     padding: const EdgeInsets.all(
                       20.0,
@@ -173,13 +178,49 @@ class _OrderPageState extends State<OrderPage> {
   _command(commandContext, authContext, cartContext) async {
     Navigator.of(context).pop();
     if (authContext.currentUser == null) {
-      if (commandContext.commandType != 'delivery')
-        RouteUtil.goTo(
-          context: context,
-          child: UserDetailsPage(),
-          routeName: userDetailsRoute,
-        );
-      else {
+      if (commandContext.commandType != 'delivery') {
+        if (commandContext.commandType == 'on_site' /* || commandContext.commandType == 'takeaway'*/) {
+          try {
+            setState(() {
+              sendingCommand = true;
+            });
+
+            var command = await Api.instance.sendCommand(
+              relatedUser: authContext.currentUser.id,
+              commandType: commandContext.commandType,
+              items: cartContext.items.entries.map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),
+              restaurant: cartContext.currentOrigin,
+              totalPrice: (cartContext.totalPrice * 100).round(),
+            );
+            CommandModel cm = CommandModel.fromJson(command);
+
+            cartContext.clear();
+            commandContext.clear();
+            Fluttertoast.showToast(
+              msg: AppLocalizations.of(context).translate('success'),
+            );
+
+            RouteUtil.goTo(
+              context: context,
+              child: Summary(
+                commande: cm,
+              ),
+              routeName: summaryRoute,
+              // method: RoutingMethod.atTop,
+            );
+          } catch (error) {
+            Fluttertoast.showToast(
+              msg: 'Erreur lors de l\'envoi de la commande',
+            );
+          }
+        } else {
+          RouteUtil.goTo(
+            context: context,
+            child: UserDetailsPage(),
+            routeName: userDetailsRoute,
+          );
+        }
+      } else {
         Fluttertoast.showToast(msg: 'Veuillez vous connecter pour pouvoir continuer');
         RouteUtil.goTo(
           context: context,
@@ -199,7 +240,7 @@ class _OrderPageState extends State<OrderPage> {
         child: UserDetailsPage(),
         routeName: userDetailsRoute,
       );
-    } else if (commandContext.commandType == 'on_site'/* || commandContext.commandType == 'takeaway'*/) {
+    } else if (commandContext.commandType == 'on_site' /* || commandContext.commandType == 'takeaway'*/) {
       try {
         setState(() {
           sendingCommand = true;
