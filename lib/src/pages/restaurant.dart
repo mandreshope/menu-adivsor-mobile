@@ -98,6 +98,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
         ).languageCode,
         filters: {
           'type': 'drink',
+          'restaurant': restaurant.id,
         },
       );
 
@@ -134,7 +135,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
       });
 
       filters['restaurant'] = restaurant.id;
-      foodType = restaurant.foodTypes.first['tag'];
+      if (restaurant.foodTypes.length > 0) foodType = restaurant.foodTypes.first['tag'];
 
       for (int i = 0; i < restaurant.foodTypes.length; i++) {
         var element = restaurant.foodTypes[i]['tag'];
