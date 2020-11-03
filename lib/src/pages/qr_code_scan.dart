@@ -80,16 +80,14 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
               right: 20,
               child: Container(
                 padding: EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                    color: CRIMSON, borderRadius: BorderRadius.circular(158)),
+                decoration: BoxDecoration(color: CRIMSON, borderRadius: BorderRadius.circular(158)),
                 child: InkWell(
                   child: Icon(
                     Icons.camera,
                     color: Colors.white,
                   ),
                   onTap: () async {
-                    final pickedFile = await ImagePicker()
-                        .getImage(source: ImageSource.gallery);
+                    final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
                   },
                 ),
               ),
@@ -104,8 +102,7 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
     this.controller = controller;
     controller.scannedDataStream.listen((String scanData) async {
       controller.pauseCamera();
-      if (!scanData
-          .startsWith(RegExp(r'https://(www\.|)preprod-api.clicar.fr/restaurants/'))) {
+      if (!scanData.startsWith(RegExp(r'https://(www\.|)preprod-api.clicar.fr/restaurants/'))) {
         Fluttertoast.showToast(
           msg: AppLocalizations.of(context).translate('invalid_qr_code'),
         );
@@ -116,7 +113,8 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
       setState(() {
         loading = true;
       });
-      String restaurantId = scanData.split('/').last;
+      List<String> datas = scanData.split('/');
+      String restaurantId = datas[datas.length - 2];
 
       RouteUtil.goTo(
         context: context,
