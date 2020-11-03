@@ -9,6 +9,7 @@ import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:provider/provider.dart';
+import 'package:menu_advisor/src/utils/extensions.dart';
 
 class SignupPage extends StatefulWidget {
   @override
@@ -19,8 +20,7 @@ class _SignupPageState extends State<SignupPage> {
   final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
 
   final FocusNode _phoneNumberFocus = FocusNode();
   final FocusNode _emailFocus = FocusNode();
@@ -98,8 +98,7 @@ class _SignupPageState extends State<SignupPage> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             Text(
-                              AppLocalizations.of(context)
-                                  .translate("add_phone_number"),
+                              AppLocalizations.of(context).translate("add_phone_number"),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
@@ -110,20 +109,20 @@ class _SignupPageState extends State<SignupPage> {
                               focusNode: _phoneNumberFocus,
                               textInputAction: TextInputAction.next,
                               keyboardType: TextInputType.phone,
+                              maxLength: 9,
                               onFieldSubmitted: (_) {
                                 _phoneNumberFocus.unfocus();
-                                FocusScope.of(context)
-                                    .requestFocus(_emailFocus);
+                                FocusScope.of(context).requestFocus(_emailFocus);
                               },
                               decoration: InputDecoration(
-                                contentPadding:
-                                    EdgeInsets.symmetric(horizontal: 10),
+                                contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                                prefixText: "+33",
+                                counter: Offstage(),
                               ),
                             ),
                             SizedBox(height: 10),
                             Text(
-                              AppLocalizations.of(context)
-                                  .translate("mail_address_placeholder"),
+                              AppLocalizations.of(context).translate("mail_address_placeholder"),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
@@ -135,19 +134,25 @@ class _SignupPageState extends State<SignupPage> {
                               textInputAction: TextInputAction.next,
                               keyboardType: TextInputType.emailAddress,
                               onFieldSubmitted: (_) {
-                                _emailFocus.unfocus();
-                                FocusScope.of(context)
-                                    .requestFocus(_passwordFocus);
+                                if (_.isValidateEmail()) {
+                                  _emailFocus.unfocus();
+                                  FocusScope.of(context).requestFocus(_passwordFocus);
+                                } else {
+                                  _emailFocus.requestFocus();
+                                  Fluttertoast.showToast(
+                                    msg: AppLocalizations.of(context).translate("invalid_email"),
+                                    backgroundColor: CRIMSON,
+                                    textColor: Colors.white,
+                                  );
+                                }
                               },
                               decoration: InputDecoration(
-                                contentPadding:
-                                    EdgeInsets.symmetric(horizontal: 10),
+                                contentPadding: EdgeInsets.symmetric(horizontal: 10),
                               ),
                             ),
                             SizedBox(height: 10),
                             Text(
-                              AppLocalizations.of(context)
-                                  .translate("password_placeholder"),
+                              AppLocalizations.of(context).translate("password_placeholder"),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
@@ -161,18 +166,15 @@ class _SignupPageState extends State<SignupPage> {
                               keyboardType: TextInputType.text,
                               onFieldSubmitted: (_) {
                                 _passwordFocus.unfocus();
-                                FocusScope.of(context)
-                                    .requestFocus(_confirmPasswordFocus);
+                                FocusScope.of(context).requestFocus(_confirmPasswordFocus);
                               },
                               decoration: InputDecoration(
-                                contentPadding:
-                                    EdgeInsets.symmetric(horizontal: 10),
+                                contentPadding: EdgeInsets.symmetric(horizontal: 10),
                               ),
                             ),
                             SizedBox(height: 10),
                             Text(
-                              AppLocalizations.of(context)
-                                  .translate("confirm_password_placeholder"),
+                              AppLocalizations.of(context).translate("confirm_password_placeholder"),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
@@ -189,8 +191,7 @@ class _SignupPageState extends State<SignupPage> {
                                 _submitForm();
                               },
                               decoration: InputDecoration(
-                                contentPadding:
-                                    EdgeInsets.symmetric(horizontal: 10),
+                                contentPadding: EdgeInsets.symmetric(horizontal: 10),
                               ),
                             ),
                             SizedBox(height: 30),
@@ -207,16 +208,14 @@ class _SignupPageState extends State<SignupPage> {
                                       height: 20,
                                       child: FittedBox(
                                         child: CircularProgressIndicator(
-                                          valueColor:
-                                              AlwaysStoppedAnimation<Color>(
+                                          valueColor: AlwaysStoppedAnimation<Color>(
                                             Colors.white,
                                           ),
                                         ),
                                       ),
                                     )
                                   : Text(
-                                      AppLocalizations.of(context)
-                                          .translate("next"),
+                                      AppLocalizations.of(context).translate("next"),
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 20,
@@ -240,28 +239,31 @@ class _SignupPageState extends State<SignupPage> {
 
   _submitForm() async {
     String email = _emailController.value.text,
-        phoneNumber = _phoneNumberController.value.text,
+        phoneNumber = "+33" + _phoneNumberController.value.text,
         password = _passwordController.value.text,
         confirmPassword = _confirmPasswordController.value.text;
 
-    if (email.length == 0 ||
-        phoneNumber.length == 0 ||
-        password.length == 0 ||
-        confirmPassword.length == 0)
+    if (email.length == 0 || phoneNumber.length == 0 || password.length == 0 || confirmPassword.length == 0)
       return Fluttertoast.showToast(
         msg: AppLocalizations.of(context).translate('empty_field'),
       );
 
-    if (password != confirmPassword) {
+    if (!email.isValidateEmail()) {
       Fluttertoast.showToast(
-          msg: AppLocalizations.of(context)
-              .translate("password_does_not_match"));
+        msg: AppLocalizations.of(context).translate("invalid_email"),
+        backgroundColor: CRIMSON,
+        textColor: Colors.white,
+      );
+      return;
+    }
+
+    if (password != confirmPassword) {
+      Fluttertoast.showToast(msg: AppLocalizations.of(context).translate("password_does_not_match"));
     } else {
       setState(() {
         loading = true;
       });
-      AuthContext authContext =
-          Provider.of<AuthContext>(context, listen: false);
+      AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
 
       try {
         var registrationToken = await authContext.signup(
@@ -284,19 +286,13 @@ class _SignupPageState extends State<SignupPage> {
         setState(() {
           loading = false;
         });
-        if (error is Map &&
-            error.containsKey('details') &&
-            (error['details'] as Map<String, dynamic>).containsKey("email"))
+        if (error is Map && error.containsKey('details') && (error['details'] as Map<String, dynamic>).containsKey("email"))
           Fluttertoast.showToast(
             msg: AppLocalizations.of(context).translate("email_already_in_use"),
           );
-        else if (error is Map &&
-            error.containsKey('details') &&
-            (error['details'] as Map<String, dynamic>)
-                .containsKey("phoneNumber"))
+        else if (error is Map && error.containsKey('details') && (error['details'] as Map<String, dynamic>).containsKey("phoneNumber"))
           Fluttertoast.showToast(
-            msg: AppLocalizations.of(context)
-                .translate("phone_number_already_in_use"),
+            msg: AppLocalizations.of(context).translate("phone_number_already_in_use"),
           );
         else
           Fluttertoast.showToast(

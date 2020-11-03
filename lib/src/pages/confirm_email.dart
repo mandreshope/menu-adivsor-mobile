@@ -106,6 +106,12 @@ class _ConfirmEmailPageState extends State<ConfirmEmailPage> with SingleTickerPr
                           inputFormatters: [
                             FilteringTextInputFormatter.allow(new RegExp(r'^[0-9]$')),
                           ],
+                          onChanged: (value){
+                            digits[i] = int.parse(
+                              value,
+                              radix: 10,
+                            );
+                          },
                           onFieldSubmitted: (value) {
                             _codeFocus[i].unfocus();
                             digits[i] = int.parse(

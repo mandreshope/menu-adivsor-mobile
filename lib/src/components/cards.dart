@@ -38,7 +38,7 @@ class CategoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 120,
+      width: 110,
       margin: EdgeInsets.symmetric(horizontal: 3),
       child: AspectRatio(
         aspectRatio: 3 / 5,
@@ -57,13 +57,6 @@ class CategoryCard extends StatelessWidget {
               children: [
                 Container(
                   padding: const EdgeInsets.all(10.0),
-                  // decoration: BoxDecoration(
-                  //   shape: BoxShape.circle,
-                  //   border: Border.all(
-                  //     color: DARK_BLUE,
-                  //     width: 2,
-                  //   ),
-                  // ),
                   child: imageURL == null
                       ? SvgPicture.asset(
                           'assets/images/foodCategory-dietetic.svg',
@@ -71,11 +64,13 @@ class CategoryCard extends StatelessWidget {
                           color: DARK_BLUE,
                         )
                       : ClipRRect(
-                          borderRadius: BorderRadius.circular(40),
+                          borderRadius: BorderRadius.circular(50),
                           child: FadeInImage.assetNetwork(
                             placeholder: 'assets/images/loading.gif',
                             image: imageURL,
-                            height: 40,
+                            height: 50,
+                            width: 50,
+                            fit: BoxFit.cover,
                           ),
                         ),
                 ),
@@ -162,7 +157,7 @@ class _FoodCardState extends State<FoodCard> {
             ? 2.5
             : widget.minified
                 ? 2.5
-                : 1.5,
+                : 1.9,
         child: Card(
           elevation: 4.0,
           color: Colors.white,
@@ -195,7 +190,7 @@ class _FoodCardState extends State<FoodCard> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SizedBox(
-                          height: widget.showButton ? 20 : 50,
+                          height: 20,
                           child: Row(
                             children: [],
                           ),
@@ -901,10 +896,12 @@ class MenuCard extends StatelessWidget {
 
 class RestaurantCard extends StatefulWidget {
   final Restaurant restaurant;
+  final bool fromHome;
 
   const RestaurantCard({
     Key key,
     @required this.restaurant,
+    this.fromHome = false
   }) : super(key: key);
 
   @override
@@ -917,9 +914,9 @@ class _RestaurantCardState extends State<RestaurantCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 300,
+      width: widget.fromHome ? 300 : MediaQuery.of(context).size.width - 50,
       child: AspectRatio(
-        aspectRatio: 1.5,
+        aspectRatio: widget.fromHome ? 2.5 : 3.5,
         child: Card(
           elevation: 4.0,
           color: Colors.white,

@@ -571,6 +571,7 @@ class _HomePageState extends State<HomePage> {
                       1.0,
                       RestaurantCard(
                         restaurant: restaurant,
+                        fromHome: true,
                       ),
                     ),
                 ],

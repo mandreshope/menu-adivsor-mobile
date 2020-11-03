@@ -630,7 +630,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                           ),
                           for (var foodType in restaurant.foodTypes)
                             Tab(
-                              text: foodType[Provider.of<SettingContext>(context).languageCode],
+                              text: foodType[Provider.of<SettingContext>(context).languageCode] ?? "",
                             ),
                           Tab(
                             text: AppLocalizations.of(context).translate('menus'),
@@ -705,7 +705,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Text(
-                            restaurant.foodTypes[index - 1][Provider.of<SettingContext>(context).languageCode],
+                            restaurant.foodTypes[index - 1][Provider.of<SettingContext>(context).languageCode] ?? "",
                             style: TextStyle(
                               fontSize: 18,
                             ),
@@ -747,7 +747,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                 SizedBox(
                   width: 25,
                 ),
-                switchingFavorite
+                /*switchingFavorite
                     ? Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Center(
@@ -767,7 +767,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                           isInFavorite ? Icons.favorite : Icons.favorite_border,
                           color: Colors.white,
                         ),
-                      ),
+                      ),*/
               ],
             ),
           )),
