@@ -92,6 +92,7 @@ class Api {
     return;
   }
 
+// asina time out
   Future<List<String>> _checkToken() {
     return http.get('$_apiURL/check-token?access_token=$_accessToken&refresh_token=$_refreshToken').then<List<String>>((response) {
       if (response.statusCode == 200) {

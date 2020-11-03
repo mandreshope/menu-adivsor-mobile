@@ -105,7 +105,7 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
     controller.scannedDataStream.listen((String scanData) async {
       controller.pauseCamera();
       if (!scanData
-          .startsWith(RegExp(r'https://(www\.|)menuadvisor.fr/restaurants/'))) {
+          .startsWith(RegExp(r'https://(www\.|)preprod-api.clicar.fr/restaurants/'))) {
         Fluttertoast.showToast(
           msg: AppLocalizations.of(context).translate('invalid_qr_code'),
         );

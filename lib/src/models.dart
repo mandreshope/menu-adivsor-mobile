@@ -33,7 +33,7 @@ class Food {
   final String imageURL;
   final String restaurant;
   final String description;
-  final String type;
+  final FoodType type;
   final List<String> attributes;
 
   Food({
@@ -56,7 +56,7 @@ class Food {
         category: json.containsKey('category') && json['category'] != null && json['category'] is Map<String, dynamic> ? FoodCategory.fromJson(json['category']) : null,
         restaurant: json['restaurant'],
         price: json.containsKey('price') ? Price.fromJson(json['price']) : null,
-        type: json['type'],
+        type: FoodType.fromJson(json['type']),
         attributes: (json['attributes'] as List).map((e) => e.toString()).toList(),
       );
 
@@ -313,4 +313,27 @@ class CommandItem {
     }
     return data;
   }
+}
+
+class FoodType {
+  String id;
+  String tag;
+  Map<String,dynamic> name;
+
+  FoodType({this.tag,this.name,this.id});
+
+  FoodType.fromJson(Map<String, dynamic> json) {
+    tag = json['tag'];
+    name = json['name'];
+    id = json["_id"];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['tag'] = this.tag;
+    data['name'] = this.name;
+    data["_id"] = this.id;
+    return data;
+  }
+
 }

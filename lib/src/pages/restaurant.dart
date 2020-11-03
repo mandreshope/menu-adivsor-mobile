@@ -105,7 +105,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
       tabController = TabController(
         vsync: this,
         initialIndex: 0,
-        length: 3 + restaurant.foodTypes.length,
+        length: 2 + restaurant.foodTypes.length,
       );
 
       tabController.addListener(() {
@@ -146,7 +146,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
           ).languageCode,
           filters: {
             'restaurant': widget.restaurant,
-            'type': element,
+            'tag': element,
           },
         );
       }
@@ -631,14 +631,14 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                           ),
                           for (var foodType in restaurant.foodTypes)
                             Tab(
-                              text: foodType[Provider.of<SettingContext>(context).languageCode] ?? "",
+                              text: foodType["name"][Provider.of<SettingContext>(context).languageCode] ?? "",
                             ),
                           Tab(
                             text: AppLocalizations.of(context).translate('menus'),
                           ),
-                          Tab(
+                         /* Tab(
                             text: AppLocalizations.of(context).translate('drinks'),
-                          ),
+                          ),*/
                         ],
                       ),
                     ),
@@ -706,7 +706,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Text(
-                            restaurant.foodTypes[index - 1][Provider.of<SettingContext>(context).languageCode] ?? "",
+                            restaurant.foodTypes[index - 1]["name"][Provider.of<SettingContext>(context).languageCode] ?? "",
                             style: TextStyle(
                               fontSize: 18,
                             ),
