@@ -146,7 +146,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
           ).languageCode,
           filters: {
             'restaurant': widget.restaurant,
-            'tag': element,
+            'type': element,
           },
         );
       }
@@ -653,16 +653,19 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                   child: ScrollablePositionedList.separated(
                     itemScrollController: itemScrollController,
                     itemPositionsListener: itemPositionsListener,
-                    itemCount: 3 + restaurant.foodTypes.length,
-                    padding: const EdgeInsets.all(20),
+                    itemCount: 2 + restaurant.foodTypes.length,
+                    padding: const EdgeInsets.symmetric(horizontal: 0,vertical: 20),
                     physics: _canScrollListRestaurant ? AlwaysScrollableScrollPhysics() : NeverScrollableScrollPhysics(),
                     itemBuilder: (_, index) {
                       if (index == 0)
-                        return Text(
-                          AppLocalizations.of(context).translate('a_la_carte'),
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
+                        return Padding(
+                          padding: const EdgeInsets.only(left: 15),
+                          child: Text(
+                            AppLocalizations.of(context).translate('a_la_carte'),
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         );
 
@@ -670,11 +673,14 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Text(
-                              AppLocalizations.of(context).translate('menu'),
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
+                            Padding(
+                              padding: const EdgeInsets.only(left: 15),
+                              child: Text(
+                                AppLocalizations.of(context).translate('menu'),
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                             SizedBox(
@@ -684,15 +690,18 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                           ],
                         );
 
-                      if (index == 3 + restaurant.foodTypes.length - 1)
+                      /*if (index == 3 + restaurant.foodTypes.length - 1)
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Text(
-                              AppLocalizations.of(context).translate('drinks'),
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
+                            Padding(
+                              padding: const EdgeInsets.only(left: 15),
+                              child: Text(
+                                AppLocalizations.of(context).translate('drinks'),
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                             SizedBox(
@@ -700,15 +709,18 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                             ),
                             _renderDrinks(),
                           ],
-                        );
+                        );*/
 
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Text(
-                            restaurant.foodTypes[index - 1]["name"][Provider.of<SettingContext>(context).languageCode] ?? "",
-                            style: TextStyle(
-                              fontSize: 18,
+                          Padding(
+                            padding: const EdgeInsets.only(left: 15),
+                            child: Text(
+                              restaurant.foodTypes[index - 1]["name"][Provider.of<SettingContext>(context).languageCode] ?? "",
+                              style: TextStyle(
+                                fontSize: 18,
+                              ),
                             ),
                           ),
                           SizedBox(
@@ -930,7 +942,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                     ],
                   );
 
-                if (index == 3 + restaurant.foodTypes.length - 1)
+                /*if (index == 3 + restaurant.foodTypes.length - 1)
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -946,7 +958,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                       ),
                       _renderDrinks(),
                     ],
-                  );
+                  );*/
 
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,

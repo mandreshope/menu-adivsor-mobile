@@ -12,6 +12,7 @@ import 'package:menu_advisor/src/pages/restaurant.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/DataContext.dart';
+import 'package:menu_advisor/src/providers/MenuContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
@@ -842,6 +843,10 @@ class MenuCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    MenuContext _controller = Provider.of<MenuContext>(context, listen: false);
+    _controller.menu = menu;
+    _controller.foodsGrouped = menu.foods;
+
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
@@ -850,13 +855,14 @@ class MenuCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Row(
               mainAxisSize: MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 menu.imageURL != null
-                    ? FadeInImage.assetNetwork(placeholder: 'assets/images/loading.gif', image: menu.imageURL, width: 40, height: 40, fit: BoxFit.contain)
+                    ? FadeInImage.assetNetwork(placeholder: 'assets/images/loading.gif', image: menu.imageURL, width: 100, height: 100, fit: BoxFit.contain)
                     : SizedBox(
                         width: 40,
                         height: 40,
@@ -875,6 +881,7 @@ class MenuCard extends StatelessWidget {
                         menu.name[lang],
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
+                          fontSize: 18
                         ),
                       ),
                       Text(
@@ -886,7 +893,34 @@ class MenuCard extends StatelessWidget {
                 ),
               ],
             ),
-            Column(),
+            Column(
+              children: [
+                for (var entry in _controller.foodsGrouped.entries)
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 15,),
+                      Text(entry.key,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),),
+                      Divider(),
+                      for (var food in entry.value)
+                        Card(
+                          elevation: 2,
+                          child: Container(
+                            margin: EdgeInsets.all(15),
+                            child: Center(
+                              child: Text(food.name),
+                            ),
+                          ),
+                        )
+                    ],
+                  )
+              ],
+            ),
           ],
         ),
       ),
@@ -898,11 +932,7 @@ class RestaurantCard extends StatefulWidget {
   final Restaurant restaurant;
   final bool fromHome;
 
-  const RestaurantCard({
-    Key key,
-    @required this.restaurant,
-    this.fromHome = false
-  }) : super(key: key);
+  const RestaurantCard({Key key, @required this.restaurant, this.fromHome = false}) : super(key: key);
 
   @override
   _RestaurantCardState createState() => _RestaurantCardState();
@@ -1045,7 +1075,7 @@ class BagItem extends StatelessWidget {
 
   CartContext _cartContext;
 
-  BagItem({Key key, @required this.food, @required this.count, this.activeDelete = true,this.imageTag}) : super(key: key);
+  BagItem({Key key, @required this.food, @required this.count, this.activeDelete = true, this.imageTag}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -1166,23 +1196,22 @@ class BagItem extends StatelessWidget {
                 },
               ),*/
               ButtonItemCountWidget(
-                  food,
-                  itemCount: count,
-                  onAdded: (value) {
-                    count = value;
-                    _cartContext.addItem(food, value);
-                  },
-                  onRemoved: (value) {
-                    value == 0 ? _cartContext.removeItem(food) : _cartContext.addItem(food, value);
+                food,
+                itemCount: count,
+                onAdded: (value) {
+                  count = value;
+                  _cartContext.addItem(food, value);
+                },
+                onRemoved: (value) {
+                  value == 0 ? _cartContext.removeItem(food) : _cartContext.addItem(food, value);
 
-                    if (_cartContext.items.length == 0) RouteUtil.goBack(context: context);
-                    count = value;
-                  },
-                  isContains: _cartContext.contains(food),
-                  isFromDelevery: true,
-                ),
+                  if (_cartContext.items.length == 0) RouteUtil.goBack(context: context);
+                  count = value;
+                },
+                isContains: _cartContext.contains(food),
+                isFromDelevery: true,
+              ),
               if (activeDelete) ...[
-                
                 SizedBox(
                   width: 15,
                 ),

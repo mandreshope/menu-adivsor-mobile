@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:menu_advisor/src/pages/menu_page.dart';
 import 'package:menu_advisor/src/pages/splash.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/CommandContext.dart';
 import 'package:menu_advisor/src/providers/DataContext.dart';
+import 'package:menu_advisor/src/providers/MenuContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/theme.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
@@ -35,6 +37,9 @@ class _MyAppState extends State<MyApp> {
         ),
         ChangeNotifierProvider(
           create: (_) => CommandContext(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => MenuContext(),
         )
       ],
       child: Consumer<SettingContext>(

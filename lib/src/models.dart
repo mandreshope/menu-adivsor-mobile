@@ -31,7 +31,7 @@ class Food {
   final double ratings;
   final Price price;
   final String imageURL;
-  final String restaurant;
+  final dynamic restaurant;
   final String description;
   final FoodType type;
   final List<String> attributes;
