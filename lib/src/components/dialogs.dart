@@ -583,7 +583,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                               child: Container(
                                 padding: const EdgeInsets.all(10),
                                 child: Text(
-                                  e.name[widget.languageCode],
+                                  e.name,
                                 ),
                               ),
                             ),

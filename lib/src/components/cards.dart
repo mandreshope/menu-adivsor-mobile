@@ -208,7 +208,7 @@ class _FoodCardState extends State<FoodCard> {
                                 Text(
                                   widget.food.name ?? "",
                                   style: TextStyle(
-                                    fontSize: 20,
+                                    fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -344,7 +344,7 @@ class _FoodCardState extends State<FoodCard> {
                           ? FadeInImage.assetNetwork(
                               image: widget.food.imageURL,
                               placeholder: 'assets/images/loading.gif',
-                              width: 100,
+                              width: 80,
                             )
                           : Icon(
                               Icons.fastfood,
@@ -440,10 +440,10 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
         }
       },
       child: Card(
-        child: Column(
+        child: Stack(
           children: [
             Padding(
-              padding: const EdgeInsets.only(top: 8.0, right: 15.0, left: 15.0, bottom: 2),
+              padding: const EdgeInsets.only(top: 8.0, right: 15.0, left: 15.0, bottom: 35),
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -550,77 +550,24 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(right: 15, bottom: 5),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Consumer<CartContext>(
-                      builder: (_, cartContext, __) => ButtonItemCountWidget(widget.food, onAdded: (value) {
-                            cartContext.addItem(widget.food, value);
-                          }, onRemoved: (value) {
-                            value == 0 ? cartContext.removeItem(widget.food) : cartContext.addItem(widget.food, value);
-                          }, itemCount: cartContext.getCount(widget.food), isContains: cartContext.contains(widget.food))
-                      /*RawMaterialButton(
-                      fillColor: DARK_BLUE,
-                      padding: const EdgeInsets.all(12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                          // bottomLeft: Radius.circular(30),
-                          topRight: Radius.circular(30),
+            Positioned(
+              bottom: 0,
+              right: 15,
+                          child: Padding(
+                padding: const EdgeInsets.only(right: 15, bottom: 5),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Consumer<CartContext>(
+                        builder: (_, cartContext, __) => ButtonItemCountWidget(widget.food, onAdded: (value) {
+                              cartContext.addItem(widget.food, value);
+                            }, onRemoved: (value) {
+                              value == 0 ? cartContext.removeItem(widget.food) : cartContext.addItem(widget.food, value);
+                            }, itemCount: cartContext.getCount(widget.food), isContains: cartContext.contains(widget.food))
                         ),
-                      ),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
-                        ),
-                        padding: const EdgeInsets.all(5.0),
-                        child: FaIcon(
-                          cartContext.contains(widget.food)
-                              ? FontAwesomeIcons.minus
-                              : FontAwesomeIcons.plus,
-                          size: 10,
-                        ),
-                      ),
-                      onPressed: (cartContext.itemCount == 0) ||
-                              (cartContext.pricelessItems &&
-                                  widget.food.price.amount == null) ||
-                              (!cartContext.pricelessItems &&
-                                  widget.food.price.amount != null)
-                          ? () async {
-                              if (cartContext.contains(widget.food)) {
-                                var result = await showDialog(
-                                  context: context,
-                                  builder: (_) => ConfirmationDialog(
-                                    title: AppLocalizations.of(context).translate(
-                                        'confirm_remove_from_cart_title'),
-                                    content: AppLocalizations.of(context)
-                                        .translate(
-                                            'confirm_remove_from_cart_content'),
-                                  ),
-                                );
-
-                                if (result is bool && result) {
-                                  cartContext.removeItem(widget.food);
-                                }
-                              } else
-                                showDialog(
-                                  context: context,
-                                  builder: (_) => AddToBagDialog(
-                                    food: widget.food,
-                                  ),
-                                );
-                            }
-                          : () {
-                              Fluttertoast.showToast(
-                                  msg:
-                                      'Vous ne pouvez pas à la fois commander des articles sans prix et avec prix');
-                            },
-                    ),*/
-                      ),
-                ],
+                  ],
+                ),
               ),
             ),
           ],
@@ -878,14 +825,14 @@ class MenuCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        menu.name[lang],
+                        menu.name,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18
                         ),
                       ),
                       Text(
-                        menu.description[lang],
+                        menu.description,
                         style: TextStyle(),
                       ),
                     ],

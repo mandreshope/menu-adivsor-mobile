@@ -35,7 +35,12 @@ class AuthContext extends ChangeNotifier {
       String accessToken = sharedPrefs.getString('access_token');
       String refreshToken = sharedPrefs.getString('refresh_token');
       _api.init(accessToken, refreshToken);
-      currentUser = await _api.getMe();
+      try {
+        currentUser = await _api.getMe();
+      } catch (e) {
+        currentUser = null;
+      }
+      
     }
   }
 

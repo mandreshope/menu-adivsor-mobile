@@ -305,7 +305,7 @@ class _LoginPageState extends State<LoginPage> {
     );
 
     try {
-      final result = await authContext.login(email, password,
+      final result = await authContext.login(email.trim(), password,
           isPasswordRemember: isPasswordRemember);
       if (result) {
         if (cartContext.itemCount > 0)

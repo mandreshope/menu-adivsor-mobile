@@ -3,7 +3,7 @@ import 'package:menu_advisor/src/types.dart';
 
 class FoodCategory {
   final String id;
-  final Map<String, dynamic> name;
+  final dynamic name;
   final String imageURL;
 
   const FoodCategory({
@@ -69,8 +69,8 @@ class Food {
 
 class Menu {
   final String imageURL;
-  final Map<String, dynamic> name;
-  final Map<String, dynamic> description;
+  final String name;
+  final String description;
   final List<Food> foods;
 
   Menu({
@@ -317,8 +317,8 @@ class CommandItem {
 
 class FoodType {
   String id;
-  String tag;
-  Map<String,dynamic> name;
+  dynamic tag;
+  dynamic name;
 
   FoodType({this.tag,this.name,this.id});
 

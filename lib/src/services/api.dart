@@ -423,8 +423,8 @@ class Api {
     );
   }
 
-  // Future<List<Menu>> getMenus(String lang, String id) => http.get('$_apiURL/restaurants/$id/menus?lang=$lang').then<List<Menu>>(
-  Future<List<Menu>> getMenus(String lang, String id) => http.get('$_apiURL/restaurants/$id/menus').then<List<Menu>>(
+  Future<List<Menu>> getMenus(String lang, String id) => http.get('$_apiURL/restaurants/$id/menus?lang=$lang').then<List<Menu>>(
+  // Future<List<Menu>> getMenus(String lang, String id) => http.get('$_apiURL/restaurants/$id/menus').then<List<Menu>>(
         (response) {
           if (response.statusCode == 200) {
             List<dynamic> datas = jsonDecode(response.body);
