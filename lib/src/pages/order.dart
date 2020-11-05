@@ -188,7 +188,7 @@ class _OrderPageState extends State<OrderPage> {
             });
 
             var command = await Api.instance.sendCommand(
-              // relatedUser: authContext.currentUser?.id ?? null,
+              relatedUser: authContext.currentUser?.id ?? null,
               commandType: commandContext.commandType,
               items: cartContext.items.entries.map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),
               restaurant: cartContext.currentOrigin,

@@ -268,8 +268,10 @@ class CommandModel {
   List<CommandItem> items;
   Restaurant restaurant;
   int totalPrice;
+  String commandType;
+  int code;
 
-  CommandModel({this.items});
+  CommandModel({this.items,this.commandType,this.code});
 
   CommandModel.fromJson(Map<String, dynamic> json) {
     if (json['items'] != null) {
@@ -279,6 +281,8 @@ class CommandModel {
       });
     }
     totalPrice = json['totalPrice'];
+    commandType = json['commandType'];
+    code = json['code'];
     restaurant = json['restaurant'] != null ? Restaurant.fromJson(json['restaurant']) : null;
   }
 

@@ -93,8 +93,11 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                     FocusScope.of(context).requestFocus(_emailFocus);
                   },
                   validator: Validators.required(context),
+                  maxLength: 9,
                   decoration: InputDecoration(
                     contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                    prefixText: "+33",
+                    counter: Offstage(),
                   ),
                 ),
                 SizedBox(height: 10),
@@ -316,7 +319,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
 
         Fluttertoast.showToast(
           msg:
-              'Commande envoyée avec succès. Nous vous enverrons un mail pour confirmation',
+              'Votre a été bien reçu. Nous vous enverrons un email de confirmation.',
         );
         RouteUtil.goTo(
           context: context,

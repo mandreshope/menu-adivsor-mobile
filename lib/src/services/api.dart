@@ -81,7 +81,7 @@ class Api {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     var newTokens = await _checkToken();
-    if (newTokens.length > 0) {
+    if (newTokens != null && newTokens.length > 0) {
       _accessToken = newTokens[0];
       _refreshToken = newTokens[1];
 
@@ -94,6 +94,7 @@ class Api {
 
 // asina time out
   Future<List<String>> _checkToken() {
+    if (_accessToken == null || _refreshToken == null) return null;
     return http.get('$_apiURL/check-token?access_token=$_accessToken&refresh_token=$_refreshToken').then<List<String>>((response) {
       if (response.statusCode == 200) {
         var result = jsonDecode(response.body);
