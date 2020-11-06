@@ -17,11 +17,15 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
 
+  final FocusNode _firstNameFocus = FocusNode();
+  final FocusNode _lastNameFocus = FocusNode();
   final FocusNode _phoneNumberFocus = FocusNode();
   final FocusNode _emailFocus = FocusNode();
   final FocusNode _passwordFocus = FocusNode();
@@ -97,6 +101,48 @@ class _SignupPageState extends State<SignupPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
+                            Text(
+                              "Nom",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(height: 5),
+                            TextFormField(
+                              controller: _firstNameController,
+                              focusNode: _firstNameFocus,
+                              textInputAction: TextInputAction.next,
+                              keyboardType: TextInputType.name,
+                              onFieldSubmitted: (_) {
+                                _firstNameFocus.unfocus();
+                                FocusScope.of(context).requestFocus(_lastNameFocus);
+                              },
+                              decoration: InputDecoration(
+                                contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              "Prénom",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(height: 5),
+                            TextFormField(
+                              controller: _lastNameController,
+                              focusNode: _lastNameFocus,
+                              textInputAction: TextInputAction.next,
+                              keyboardType: TextInputType.name,
+                              onFieldSubmitted: (_) {
+                                _lastNameFocus.unfocus();
+                                FocusScope.of(context).requestFocus(_phoneNumberFocus);
+                              },
+                              decoration: InputDecoration(
+                                contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                              ),
+                            ),
+                            SizedBox(height: 10),
                             Text(
                               AppLocalizations.of(context).translate("add_phone_number"),
                               style: TextStyle(
@@ -241,9 +287,11 @@ class _SignupPageState extends State<SignupPage> {
     String email = _emailController.value.text,
         phoneNumber = "+33" + _phoneNumberController.value.text,
         password = _passwordController.value.text,
-        confirmPassword = _confirmPasswordController.value.text;
+        confirmPassword = _confirmPasswordController.value.text,
+        firstName = _firstNameController.value.text,
+        lastName = _lastNameController.value.text;
 
-    if (email.length == 0 || phoneNumber.length == 0 || password.length == 0 || confirmPassword.length == 0)
+    if (email.length == 0 || firstName.length == 0 || lastName.length == 0 || phoneNumber.length == 0 || password.length == 0 || confirmPassword.length == 0)
       return Fluttertoast.showToast(
         msg: AppLocalizations.of(context).translate('empty_field'),
       );
@@ -270,6 +318,8 @@ class _SignupPageState extends State<SignupPage> {
           email: email,
           phoneNumber: phoneNumber,
           password: password,
+          lastName: lastName,
+          firstName: firstName
         );
         setState(() {
           loading = false;

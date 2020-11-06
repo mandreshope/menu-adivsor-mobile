@@ -74,11 +74,15 @@ class AuthContext extends ChangeNotifier {
     String email,
     String phoneNumber,
     String password,
+    String firstName,
+    String lastName,
   }) =>
       _api.register(
         email: email,
         phoneNumber: phoneNumber,
         password: password,
+        firstName: firstName,
+        lastName: lastName
       );
 
   Future addToFavoriteFoods(Food food) async {

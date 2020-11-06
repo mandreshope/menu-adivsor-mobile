@@ -5,6 +5,7 @@ import 'package:menu_advisor/src/constants/date_format.dart';
 import 'package:menu_advisor/src/constants/validators.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/summary.dart';
+import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/CommandContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
@@ -38,7 +39,24 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
   bool sendingCommand = false;
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+      AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
+
+      if (authContext.currentUser != null){
+      _displayNameController.text = authContext.currentUser.toString();
+      _phoneNumberController.text = authContext.currentUser.phoneNumber;
+      _emailController.text = authContext.currentUser.email;
+      _addressController.text = authContext.currentUser.address ?? "";
+    }
+
+  }
+
+  @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       appBar: AppBar(
         title: Text(

@@ -565,11 +565,16 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                         SizedBox(
                                           width: 5,
                                         ),
-                                        Text(
-                                          restaurant.address,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 18,
+                                        Container(
+                                          width: (MediaQuery.of(context).size.width / 2)- 10,
+                                          child: Text(
+                                            restaurant.address,
+                                            maxLines: 3,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
+                                            ),
                                           ),
                                         )
                                       ],
@@ -784,215 +789,6 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
               ],
             ),
           )),
-        ],
-      ),
-    );
-  }
-
-  Widget _renderMainScreen() {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              restaurant.name,
-            ),
-            SizedBox(
-              height: 5,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Icon(
-                  Icons.location_on,
-                  size: 14,
-                ),
-                SizedBox(
-                  width: 5,
-                ),
-                Text(
-                  restaurant.address,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        bottom: TabBar(
-          controller: tabController,
-          isScrollable: true,
-          tabs: [
-            Tab(
-              text: AppLocalizations.of(context).translate('a_la_carte'),
-            ),
-            for (var foodType in restaurant.foodTypes)
-              Tab(
-                text: foodType[Provider.of<SettingContext>(context).languageCode],
-              ),
-            Tab(
-              text: AppLocalizations.of(context).translate('menus'),
-            ),
-            Tab(
-              text: AppLocalizations.of(context).translate('drinks'),
-            ),
-          ],
-        ),
-        actions: [
-          if (showFavoriteButton)
-            switchingFavorite
-                ? Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Center(
-                      child: SizedBox(
-                        height: 14,
-                        child: FittedBox(
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
-                : IconButton(
-                    onPressed: _toggleFavorite,
-                    icon: Icon(
-                      isInFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: isInFavorite ? CRIMSON : Colors.white,
-                    ),
-                  ),
-          IconButton(
-            onPressed: () {
-              setState(() {
-                _isSearching = true;
-              });
-            },
-            icon: Icon(
-              Icons.search,
-              color: Colors.white,
-            ),
-          ),
-          IconButton(
-            onPressed: () async {
-              String lang = await showDialog<String>(
-                context: context,
-                builder: (_) => LanguageDialog(lang: _lang),
-              );
-              if (lang != null)
-                setState(() {
-                  _lang = lang;
-                });
-            },
-            icon: Icon(
-              Icons.language,
-            ),
-          ),
-        ],
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: NetworkImage(
-                restaurant.imageURL,
-              ),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: Container(
-            color: Colors.black.withOpacity(.6),
-          ),
-        ),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ScrollablePositionedList.separated(
-              itemScrollController: itemScrollController,
-              itemPositionsListener: itemPositionsListener,
-              itemCount: 3 + restaurant.foodTypes.length,
-              padding: const EdgeInsets.all(20),
-              itemBuilder: (_, index) {
-                if (index == 0)
-                  return Text(
-                    AppLocalizations.of(context).translate('a_la_carte'),
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  );
-
-                if (index == restaurant.foodTypes.length + 1)
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        AppLocalizations.of(context).translate('menu'),
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      _renderMenus(),
-                    ],
-                  );
-
-                /*if (index == 3 + restaurant.foodTypes.length - 1)
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        AppLocalizations.of(context).translate('drinks'),
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      _renderDrinks(),
-                    ],
-                  );*/
-
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      restaurant.foodTypes[index - 1][Provider.of<SettingContext>(context).languageCode],
-                      style: TextStyle(
-                        fontSize: 18,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    _renderFoodListOfType(restaurant.foodTypes[index - 1]['tag']),
-                  ],
-                );
-              },
-              separatorBuilder: (_, index) => Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 10,
-                ),
-                child: Divider(),
-              ),
-            ),
-          ),
-          Consumer<CartContext>(builder: (_, cartContext, __) {
-            if (cartContext.itemCount > 0) {
-              return OrderButton(
-                totalPrice: cartContext.totalPrice,
-              );
-            } else {
-              return SizedBox();
-            }
-          })
         ],
       ),
     );

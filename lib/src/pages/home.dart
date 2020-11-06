@@ -473,6 +473,7 @@ class _HomePageState extends State<HomePage> {
                           1,
                           FoodCard(
                             food: food,
+                            minified: true,
                           ),
                         )
                   ],
@@ -672,6 +673,7 @@ class _HomePageState extends State<HomePage> {
                           food: food,
                           imageTag: 'onSitefoodImage${food.id}',
                           showButton: false,
+                          minified: true,
                         ),
                       ),
                   ],

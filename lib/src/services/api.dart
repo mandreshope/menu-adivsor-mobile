@@ -146,14 +146,24 @@ class Api {
     String email,
     String phoneNumber,
     String password,
+    String firstName,
+    String lastName
   }) {
+    
     return http.post(
       '$_apiURL/users/register',
-      body: {
+      body: jsonEncode({
         'email': email,
         'password': password,
         'phoneNumber': phoneNumber,
-      },
+        'name':{
+          'first':firstName,
+          'last':lastName
+        }
+      }),
+      headers:{
+        'content-type': 'application/json'
+      }
     ).then<String>((response) {
       if (response.statusCode == 200) {
         Map<String, dynamic> data = jsonDecode(response.body);

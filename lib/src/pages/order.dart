@@ -10,6 +10,7 @@ import 'package:menu_advisor/src/pages/user_details.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/CommandContext.dart';
+import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
@@ -25,6 +26,33 @@ class OrderPage extends StatefulWidget {
 
 class _OrderPageState extends State<OrderPage> {
   bool sendingCommand = false;
+  CartContext _cartContext;
+  Restaurant _restaurant;
+ Api _api = Api.instance;
+
+ bool isRestaurantLoading = true;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+     _cartContext = Provider.of<CartContext>(context,listen: false);
+
+    _api
+        .getRestaurant(
+      id: _cartContext.currentOrigin,
+      lang: Provider.of<SettingContext>(
+        context,
+        listen: false,
+      ).languageCode,
+    ).then((value) {
+      _restaurant = value;
+      setState(() {
+        isRestaurantLoading = false;
+      });
+    });
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +104,87 @@ class _OrderPageState extends State<OrderPage> {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
+                          isRestaurantLoading ? Align(
+                            alignment: Alignment.topCenter,
+                            child: CircularProgressIndicator( valueColor: AlwaysStoppedAnimation<Color>(
+                                              CRIMSON,
+                                            ),),
+                          )
+                          :
+                          Padding(
+                            padding: const EdgeInsets.only(top: 20, right: 20, left: 20, bottom: 15),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Image.network(
+                                  _restaurant.imageURL,
+                                  // width: 4 * MediaQuery.of(context).size.width / 7,
+                                  width: MediaQuery.of(context).size.width / 3,
+                                  height: MediaQuery.of(context).size.width / 3,
+                                  fit: BoxFit.cover,
+                                ),
+                                SizedBox(
+                                  width: 15,
+                                ),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      _restaurant.name,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20,
+                                      ),
+                                    ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: [
+                                        Icon(
+                                          FontAwesomeIcons.mapMarkerAlt,
+                                          size: 15,
+                                          color: CRIMSON,
+                                        ),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        Container(
+                                          width: (MediaQuery.of(context).size.width -  MediaQuery.of(context).size.width / 3) - 95,
+                                          child: Text(
+                                            _restaurant.address,
+                                            maxLines: 3,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: [
+                                        Icon(
+                                          FontAwesomeIcons.phoneAlt,
+                                          size: 15,
+                                          color: CRIMSON,
+                                        ),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        Text(
+                                          "Tel : ${_restaurant.phoneNumber ?? "0"}",
+                                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black54),
+                                        )
+                                      ],
+                                    )
+                                  ],
+                                )
+                              ],
+                            ),
+                          ),
+                          
                           Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: Text(

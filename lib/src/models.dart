@@ -158,6 +158,7 @@ class User {
                 []
             : [],
         address: json['address'],
+        phoneNumber: json['phoneNumber']
       );
 
   User({
@@ -180,6 +181,14 @@ class User {
         'address': address,
         'name': name.toJson(),
       };
+
+  @override
+  String toString() {
+    // TODO: implement toString
+    return "${this.name.first} ${this.name.last}";
+    
+  }
+
 }
 
 class Command {

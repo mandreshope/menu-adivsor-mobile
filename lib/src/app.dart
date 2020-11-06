@@ -45,7 +45,7 @@ class _MyAppState extends State<MyApp> {
         builder: (_, settingContext, __) => MaterialApp(
           title: 'Menu Advisor',
           theme: theme,
-          debugShowCheckedModeBanner: false,
+          debugShowCheckedModeBanner: true,
           localizationsDelegates: [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,

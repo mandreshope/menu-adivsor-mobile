@@ -151,14 +151,14 @@ class _FoodCardState extends State<FoodCard> {
       width: widget.showButton
           ? MediaQuery.of(context).size.width - 50
           : widget.minified
-              ? 340
-              : 300,
+              ? 300
+              : 400,
       child: AspectRatio(
         aspectRatio: widget.showButton
             ? 2.5
             : widget.minified
-                ? 2.5
-                : 1.9,
+                ? 1.9
+                : 2.5,
         child: Card(
           elevation: 4.0,
           color: Colors.white,
@@ -443,18 +443,18 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
         child: Stack(
           children: [
             Padding(
-              padding: const EdgeInsets.only(top: 8.0, right: 15.0, left: 15.0, bottom: 35),
+              padding: const EdgeInsets.only(top: 15, right: 15.0, left: 15.0, bottom: 15),
               child: Row(
                 mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Hero(
                     tag: widget.food.id,
                     child: FadeInImage.assetNetwork(
                       placeholder: 'assets/images/loading.gif',
                       image: widget.food.imageURL,
-                      width: 50,
-                      height: 50,
+                      width: 80,
+                      height: 80,
                       fit: BoxFit.contain,
                       imageErrorBuilder: (_, __, ___) => Icon(
                         Icons.food_bank_outlined,
@@ -546,7 +546,7 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                       ],
                     ),
                   ),
-                  Text('${widget.food.price.amount / 100}€'),
+                  widget.food.price?.amount == null ? Text("") : Text('${widget.food.price.amount / 100}€'),
                 ],
               ),
             ),
@@ -940,7 +940,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                                   ),
                                   SizedBox(height: 5),
                                   Text(
-                                    widget.restaurant.type != null ? AppLocalizations.of(context).translate(widget.restaurant.type) : "",
+                                    widget.restaurant.type ?? "",
                                     style: TextStyle(
                                       fontSize: 16,
                                     ),
