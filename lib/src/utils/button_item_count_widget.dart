@@ -14,14 +14,16 @@ class ButtonItemCountWidget extends StatefulWidget {
       @required this.onRemoved,
       @required this.itemCount,
       this.isFromDelevery = false,
-      @required this.isContains = false})
+      @required this.isContains = false,
+      this.isMenu = false})
       : super();
   Function onAdded;
   Function onRemoved;
   int itemCount;
   bool isFromDelevery;
   bool isContains;
-  Food food;
+  dynamic food;
+  bool isMenu;
 
   @override
   _ButtonItemCountWidgetState createState() => _ButtonItemCountWidgetState();

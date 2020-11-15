@@ -154,5 +154,6 @@
   "summary": "Resumé",
   "remember_password": "Mémoriser mon mot de passe",
   "have_allergies": "avez-vous des allergies alimentaires",
-  "command": "COMMANDER"
+  "command": "COMMANDER",
+  "choose_option": "Choisissez une option"
 }

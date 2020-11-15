@@ -26,10 +26,10 @@ class Location {
 }
 
 class Price {
-  final int amount;
+   int amount;
   final String currency;
 
-  const Price({
+   Price({
     @required this.amount,
     @required this.currency,
   });

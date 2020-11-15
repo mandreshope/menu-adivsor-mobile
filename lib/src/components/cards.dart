@@ -404,6 +404,14 @@ class RestaurantFoodCard extends StatefulWidget {
 class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
   bool expanded = false;
 
+  bool loading = true;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -438,6 +446,7 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
             routeName: foodRoute,
           );
         }
+        
       },
       child: Card(
         child: Stack(
@@ -484,64 +493,77 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                           SizedBox(
                             height: 5,
                           ),
-                          Consumer<DataContext>(
-                            builder: (_, dataContext, __) => Wrap(
-                              spacing: expanded ? 5 : 0,
-                              children: widget.food.attributes
-                                  .map(
-                                    (e) => FittedBox(
-                                      child: Card(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            20,
-                                          ),
-                                        ),
-                                        elevation: expanded ? 4.0 : 0.0,
-                                        margin: EdgeInsets.zero,
-                                        child: Padding(
-                                          padding: expanded
-                                              ? const EdgeInsets.all(
-                                                  8,
-                                                )
-                                              : const EdgeInsets.symmetric(
-                                                  vertical: 8,
-                                                  horizontal: 4,
-                                                ),
-                                          child: Builder(
-                                            builder: (_) {
-                                              var attribute = dataContext.attributes.firstWhere(
-                                                (element) => element['tag'] == e,
-                                                orElse: null,
-                                              );
+                          // Consumer<DataContext>(
+                          //   builder: (_, dataContext, __) =>
+                             Container(
+                               padding: EdgeInsets.only(bottom: expanded ? 30 : 0),
+                               height: expanded ? 56 : 20,
+                               child: ListView(
+                                // spacing: expanded ? 5 : 5,
+                                // runSpacing: 5,
+                                scrollDirection: Axis.horizontal,
+                                children: widget.food.foodAttributes
+                                    .map(
+                                      (attribute) => Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                                        child: FittedBox(
+                                          child: Card(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(
+                                                20,
+                                              ),
+                                            ),
+                                            elevation: expanded ? 4.0 : 0.0,
+                                            margin: EdgeInsets.zero,
+                                            child: Padding(
+                                              padding: expanded
+                                                  ? const EdgeInsets.all(
+                                                      8,
+                                                    )
+                                                  : const EdgeInsets.symmetric(
+                                                      vertical: 8,
+                                                      horizontal: 4,
+                                                    ),
+                                              child: Builder(
+                                                builder: (_) {
+                                                  // var attribute = dataContext.attributes.firstWhere(
+                                                  //   (element) => element['tag'] == e,
+                                                  //   orElse: null,
+                                                  // );
 
-                                              return Row(
-                                                children: [
-                                                  if (attribute != null) ...[
-                                                    FadeInImage.assetNetwork(
-                                                      placeholder: 'assets/images/loading.gif',
-                                                      image: attribute['imageURL'],
-                                                      height: 14,
-                                                    ),
-                                                    if (expanded)
-                                                      SizedBox(
-                                                        width: 5,
-                                                      ),
-                                                  ],
-                                                  if (expanded)
-                                                    Text(
-                                                      attribute[Provider.of<SettingContext>(context).languageCode],
-                                                    ),
-                                                ],
-                                              );
-                                            },
+                                                  return Row(
+                                                    children: [
+                                                     // for (var attribute in dataContext.attributes)
+                                                     ...[
+FadeInImage.assetNetwork(
+                                                          placeholder: 'assets/images/loading.gif',
+                                                          image:  attribute.imageUrl,
+                                                          height: 14,
+                                                        ),
+                                                        if (expanded)
+                                                          SizedBox(
+                                                            width: 5,
+                                                          ),
+
+                                                      if (expanded)
+                                                        Text(
+                                                          attribute.tag,
+                                                        ),
+                                                      ]
+
+                                                    ],
+                                                  );
+                                                },
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  )
-                                  .toList(),
+                                    )
+                                    .toList(),
                             ),
-                          ),
+                             ),
+                          // ),
                         ],
                       ],
                     ),
@@ -560,8 +582,21 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Consumer<CartContext>(
-                        builder: (_, cartContext, __) => ButtonItemCountWidget(widget.food, onAdded: (value) {
-                              cartContext.addItem(widget.food, value);
+                        builder: (_, cartContext, __) => 
+                        ButtonItemCountWidget(widget.food, onAdded: (value) async {
+                              if (widget.food.options.isNotEmpty && widget.food.optionsSelected == null ){
+                                var optionSelected = await showDialog(
+                                                context: context,
+                                                barrierDismissible: false,
+                                                builder: (_) => OptionChoiceDialog(
+                                                  food: widget.food,
+                                                ),
+                                              );
+                                if (optionSelected != null)
+                                  cartContext.addItem(widget.food, value);
+                              }else{
+                                cartContext.addItem(widget.food, value);
+                              }
                             }, onRemoved: (value) {
                               value == 0 ? cartContext.removeItem(widget.food) : cartContext.addItem(widget.food, value);
                             }, itemCount: cartContext.getCount(widget.food), isContains: cartContext.contains(widget.food))
@@ -681,7 +716,7 @@ class _DrinkCardState extends State<DrinkCard> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          if (widget.food.price != null)
+                          if (widget.food.price != null && widget.food.price?.amount != null)
                             Text(
                               '${widget.food.price.amount / 100}€',
                               style: TextStyle(
@@ -781,18 +816,24 @@ class _DrinkCardState extends State<DrinkCard> {
 class MenuCard extends StatelessWidget {
   final Menu menu;
   final String lang;
+  final String restaurant;
+  int count = 0;
 
-  const MenuCard({
+  MenuCard({
     Key key,
     @required this.menu,
     @required this.lang,
+    this.restaurant
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     MenuContext _controller = Provider.of<MenuContext>(context, listen: false);
+    CartContext _cartContext = Provider.of<CartContext>(context, listen: false);
+    menu.restaurant = restaurant;
     _controller.menu = menu;
     _controller.foodsGrouped = menu.foods;
+    count = _cartContext.getCount(menu);
 
     return Card(
       shape: RoundedRectangleBorder(
@@ -806,7 +847,7 @@ class MenuCard extends StatelessWidget {
           children: [
             Row(
               mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 menu.imageURL != null
                     ? FadeInImage.assetNetwork(placeholder: 'assets/images/loading.gif', image: menu.imageURL, width: 100, height: 100, fit: BoxFit.contain)
@@ -823,6 +864,7 @@ class MenuCard extends StatelessWidget {
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
                         menu.name,
@@ -832,12 +874,30 @@ class MenuCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        menu.description,
+                        menu.description ?? "",
                         style: TextStyle(),
                       ),
+
                     ],
                   ),
                 ),
+                Consumer<CartContext>(
+                  builder: (_, _cart,__) {
+                    return ButtonItemCountWidget(
+                        menu,
+                        isMenu: true, onAdded: (value){
+                        _cart.addItem(menu, value);
+                        count = value;
+                        }, 
+                        onRemoved: (value){
+                          value == 0 ? _cart.removeItem(menu) 
+                          : _cart.addItem(menu, value);
+                          count = value;
+
+                        }, itemCount: count
+                        , isContains: _cart.contains(menu));
+                  }
+                )
               ],
             ),
             Column(
@@ -854,16 +914,35 @@ class MenuCard extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),),
                       Divider(),
-                      for (var food in entry.value)
+                      for (var food in entry.value)...[
                         Card(
                           elevation: 2,
                           child: Container(
                             margin: EdgeInsets.all(15),
-                            child: Center(
-                              child: Text(food.name),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(food.name),
+                                ),
+
+                                food?.price?.amount == null ? Text("") : Text("${food.price.amount / 100} €", style: TextStyle(fontWeight: FontWeight.bold)),
+
+                                /*ButtonItemCountWidget(
+                                  food,
+                                  isMenu: true, onAdded: (value){
+                                    _cartContext.addItem(food, value);
+                                }, onRemoved: (value){
+                                    value == 0 ? _cartContext.removeItem(food) 
+                                    : _cartContext.addItem(food, value);
+                                }, itemCount: _cartContext.getCount(food)
+                                , isContains: _cartContext.contains(food))*/
+                              ],
                             ),
                           ),
                         )
+                      ]
                     ],
                   )
               ],
@@ -1015,7 +1094,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
 }
 
 class BagItem extends StatelessWidget {
-  final Food food;
+  final dynamic food;
   int count;
   bool activeDelete;
   String imageTag;
@@ -1087,7 +1166,7 @@ class BagItem extends StatelessWidget {
                     Text(
                       food.name,
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

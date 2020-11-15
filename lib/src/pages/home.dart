@@ -18,6 +18,7 @@ import 'package:menu_advisor/src/pages/search.dart';
 import 'package:menu_advisor/src/providers/DataContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
+import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/services/stripe.dart';
 import 'package:menu_advisor/src/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
@@ -34,6 +35,7 @@ class _HomePageState extends State<HomePage> {
   bool loading = true;
   bool geolocationDenied = false;
   Location currentLocation;
+  String city;
 
   @override
   void initState() {
@@ -61,6 +63,7 @@ class _HomePageState extends State<HomePage> {
           context,
           listen: false,
         ).languageCode;
+        await Provider.of<DataContext>(context,listen: false).setCity(currentPosition.latitude, currentPosition.longitude);
         Provider.of<DataContext>(
           context,
           listen: false,
@@ -68,6 +71,7 @@ class _HomePageState extends State<HomePage> {
           lang,
           currentLocation,
         );
+        this.city = Provider.of<DataContext>(context,listen: false).getCity();
       } else {
         Position currentPosition = await getCurrentPosition();
         setState(() {
@@ -81,10 +85,13 @@ class _HomePageState extends State<HomePage> {
           context,
           listen: false,
         ).languageCode;
+
+        await Provider.of<DataContext>(context,listen: false).setCity(currentPosition.latitude, currentPosition.longitude);
         Provider.of<DataContext>(context, listen: false).refresh(
           lang,
           currentLocation,
         );
+        this.city = Provider.of<DataContext>(context,listen: false).getCity();
       }
     });
   }
@@ -249,7 +256,11 @@ class _HomePageState extends State<HomePage> {
                       onPressed: () {
                         RouteUtil.goTo(
                           context: context,
-                          child: SearchPage(),
+                          child: SearchPage(
+                            filters: {
+                              "city":this.city ?? ""
+                            },
+                          ),
                           routeName: searchRoute,
                         );
                       },
@@ -291,6 +302,7 @@ class _HomePageState extends State<HomePage> {
                             filters: {
                               // 'category': category.id,
                               "searchCategory": "with_price",
+                              // "city": this.city ?? ""
                             },
                             showButton: true,
                           ),
@@ -368,6 +380,7 @@ class _HomePageState extends State<HomePage> {
                               type: 'food',
                               filters: {
                                 "category": category.id,
+                                "city":this.city ?? ""
                               },
                               showButton: true,
                             ),
@@ -412,7 +425,7 @@ class _HomePageState extends State<HomePage> {
                       context: context,
                       child: SearchPage(
                         type: 'food',
-                        filters: {'searchCategory': 'with_price'},
+                        filters: {'searchCategory': 'with_price',"city":this.city ?? ""},
                       ),
                       routeName: searchRoute,
                     );
@@ -466,7 +479,7 @@ class _HomePageState extends State<HomePage> {
                 child: Row(
                   children: [
                     for (Food food in foods)
-                      if (food.price.amount == null)
+                      if (food.price?.amount == null)
                         SizedBox()
                       else
                         FadeAnimation(
@@ -512,6 +525,9 @@ class _HomePageState extends State<HomePage> {
                       context: context,
                       child: SearchPage(
                         type: 'restaurant',
+                        filters: {
+                          'city':this.city ?? ""
+                        },
                       ),
                       routeName: searchRoute,
                     );
@@ -612,7 +628,9 @@ class _HomePageState extends State<HomePage> {
                       child: SearchPage(
                         type: 'food',
                         filters: {
-                          "price.amount":null
+                          // "searchCategory": "with_price",
+                          "price.amount":null,
+                          "city":this.city ?? ""
                         },
                       ),
                       routeName: searchRoute,

@@ -19,7 +19,7 @@ class DataContext extends ChangeNotifier {
   List<Food> foods = [];
   bool loadingFoods = false;
 
-  List<Map<String, String>> attributes = [
+  /*List<Map<String, String>> attributes = [
     {
       'tag': 'allergen_egg',
       'fr': 'Oeufs',
@@ -41,22 +41,35 @@ class DataContext extends ChangeNotifier {
       'imageURL':
           'https://www.menu-touch.fr/resto/webmenu/v1.0/images/allergens/allergen_crustacean.png',
     },
-  ];
+  ];*/
+
+  List<FoodAttribute> attributes = List();
+  bool loadingFoodAttributes = false;
 
   final Api _api = Api.instance;
+
+
+  String _city = "";
+
+  setCity(double latitude, double longitude) async {
+    _city = await _api.getCityFromCoordinates(latitude, longitude);
+  }
+
+  String getCity() => _city;
 
   Future refresh(String lang, Location location) async {
     loadingFoodCategories = true;
     loadingPopularFoods = true;
     loadingNearestRestaurants = true;
     loadingOnSiteFoods = true;
+    loadingFoodAttributes = true;
     notifyListeners();
 
     await _fetchFoodCategories(lang);
 
     await _fetchPopularFoods(lang);
 
-    await _fetchNearestRestaurants(location);
+    await _fetchNearestRestaurants(location,lang);
 
     await _fetchOnSiteFoods(lang);
   }
@@ -77,17 +90,25 @@ class DataContext extends ChangeNotifier {
     }
   }
 
-  _fetchNearestRestaurants(Location location) async {
+  _fetchNearestRestaurants(Location location,lang) async {
     loadingNearestRestaurants = true;
     notifyListeners();
 
     try {
-      nearestRestaurants = await _api.getRestaurants(
+      nearestRestaurants.clear();
+      var _searchResult = await _api.search(
+        "",
+        lang,
+        type: 'restaurant',
         filters: {
-          "searchCategory": "nearest",
-          "location": location.toString(),
+          // "searchCategory": "nearest",
+          // "location": location.toString(),
+          "city":_city
         },
       );
+      _searchResult.take(5).forEach((e) {
+        nearestRestaurants.add(Restaurant.fromJson(e.content));
+      });
     } catch (error) {
       print(
         "Error while fetching popular restaurants",
@@ -104,13 +125,21 @@ class DataContext extends ChangeNotifier {
     notifyListeners();
 
     try {
+      popularFoods.clear();
       popularFoods = await _api.getFoods(
+        // "",
         lang,
         filters: {
           "searchCategory": "popular",
-          "limit": 5,
+          // "searchCategory": "with_price",
+          // "limit": 5,
+          "city":_city ?? ""
         },
+        // type: 'food'
       );
+      // _searchResult.take(5).forEach((e) {
+      //   popularFoods.add(Food.fromJson(e.content));
+      // });
     } catch (error) {
       print(error);
     } finally {
@@ -124,13 +153,21 @@ class DataContext extends ChangeNotifier {
     notifyListeners();
 
     try {
+      // onSiteFoods.clear();
       onSiteFoods = await _api.getFoods(
+        // "",
         lang,
+        // type: 'food',
         filters: {
           "searchCategory": "onsite",
-          "limit": 5,
+          // "limit": 5,
+          "city":_city,
+          // "price.amount":null
         },
       );
+      // _searchResult.take(5).forEach((e) {
+      //   onSiteFoods.add(Food.fromJson(e.content));
+      // });
     } catch (error) {
       print("Error while fetching on site foods");
       print(error);
@@ -157,4 +194,23 @@ class DataContext extends ChangeNotifier {
     notifyListeners();
     return;
   }
+
+  fetchFoodAttributes(List<String> id) async {
+    loadingFoodAttributes = true;
+    notifyListeners();
+    try {
+      attributes.clear();
+      id.forEach((element) async {
+        attributes.add(await _api.getFoodAttribute(id: element));
+      });
+    }catch (error) {
+      print(
+        'Error while  fetchFoodAttribute...',
+      );
+      print('$error');
+    }
+    loadingFoodAttributes = false;
+    notifyListeners();
+  }
+
 }

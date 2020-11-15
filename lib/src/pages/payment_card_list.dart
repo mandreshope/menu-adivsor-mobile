@@ -90,12 +90,19 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                           isPaying = true;
                                         });
                                         try {
+                                          var payment = await StripeService.payViaExistingCard(
+                                            amount: (cartContext.totalPrice * 100).floor().toString(),
+                                            card: creditCard,
+                                            currency: 'eur',
+                                          );
+
                                           var command = await Api.instance.sendCommand(
                                             relatedUser: authContext.currentUser.id,
                                             commandType: commandContext.commandType,
-                                            items: cartContext.items.entries.map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),
+                                            items: cartContext.items.entries.where((e) => !e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id,'options': e.key.optionsSelected}).toList(),
                                             restaurant: cartContext.currentOrigin,
                                             totalPrice: (cartContext.totalPrice * 100).round(),
+                                            menu: cartContext.items.entries.where((e) => e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),
                                             shippingAddress: commandContext.deliveryAddress,
                                             shipAsSoonAsPossible: commandContext.deliveryDate == null && commandContext.deliveryTime == null,
                                             shippingTime: commandContext.deliveryDate
@@ -109,11 +116,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                           );
                                           var commandStr = command.toString();
                                           CommandModel cm = CommandModel.fromJson(command);
-                                          var payment = await StripeService.payViaExistingCard(
-                                            amount: (cartContext.totalPrice * 100).floor().toString(),
-                                            card: creditCard,
-                                            currency: 'eur',
-                                          );
+
                                           if (payment.success) {
                                             Api.instance.setCommandToPayedStatus(
                                               id: command['_id'],

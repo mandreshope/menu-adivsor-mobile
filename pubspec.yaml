@@ -53,6 +53,7 @@ dependencies:
   pdf: ^1.11.2
   path_provider: ^1.6.21
   permission_handler: ^5.0.1+1
+  chips_choice: ^2.0.1
 
 dev_dependencies:
   flutter_test:

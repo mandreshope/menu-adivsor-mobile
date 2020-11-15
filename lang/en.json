@@ -154,5 +154,6 @@
   "summary": "Summary",
   "remember_password": "remember my password",
   "have_allergies": "do you have any food allergies",
-  "command": "ORDER"
+  "command": "ORDER",
+  "choose_option": "Choose an option"
 }

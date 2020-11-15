@@ -314,21 +314,25 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
       try {
         var command = await Api.instance.sendCommand(
           commandType: commandContext.commandType,
-          items: cartContext.items.entries
-              .map(
-                (e) => {
-                  'quantity': e.value,
-                  'item': e.key.id,
-                },
-              )
-              .toList(),
+          items: cartContext.items.entries.where((e) => !e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),
           restaurant: cartContext.currentOrigin,
           totalPrice: (cartContext.totalPrice * 100).round(),
           customer: {
             'name': _displayNameController.value.text,
             'address': _addressController.value.text,
             'phoneNumber': _phoneNumberController.value.text,
+            'email': _emailController.value.text
           },
+          shippingTime: commandContext.deliveryDate
+              ?.add(
+            Duration(
+              minutes: commandContext.deliveryTime.hour * 60 + commandContext.deliveryTime.minute,
+            ),
+          )
+              ?.millisecondsSinceEpoch ??
+              null,
+        menu: cartContext.items.entries.where((e) => e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),
+            
         );
         CommandModel cm = CommandModel.fromJson(command);
 

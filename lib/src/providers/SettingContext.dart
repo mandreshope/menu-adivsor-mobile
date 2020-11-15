@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:menu_advisor/src/services/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingContext extends ChangeNotifier {
   String _languageCode = 'system';
   Future<void> initialized;
+
 
   String get languageCode => _languageCode == 'system'
       ? WidgetsBinding.instance.window.locale.languageCode

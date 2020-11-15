@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/models.dart';
 
 class CartContext extends ChangeNotifier {
-  Map<Food, int> _items = Map();
+  Map<dynamic, int> _items = Map();
   String _currentOrigin;
 
   String get currentOrigin => _currentOrigin;
@@ -19,11 +19,13 @@ class CartContext extends ChangeNotifier {
         );
   }
 
-  bool hasSameOriginAsInBag(Food item) => currentOrigin == null || item.restaurant == currentOrigin;
+  bool hasSameOriginAsInBag(dynamic item) => 
+  currentOrigin == null || item.restaurant == currentOrigin;
 
-  bool hasSamePricingAsInBag(Food item) => (pricelessItems && (item.price == null || item.price.amount == null)) || (!pricelessItems && item.price != null && item.price.amount != null);
+  bool hasSamePricingAsInBag(dynamic item) => 
+  (pricelessItems && (item.price == null || item.price.amount == null)) || (!pricelessItems && item.price != null && item.price.amount != null);
 
-  bool addItem(Food item, number) {
+  bool addItem(dynamic item, number) {
     if (itemCount == 0 || (hasSamePricingAsInBag(item) && hasSameOriginAsInBag(item))) {
       _items.update(
         item,
@@ -38,7 +40,7 @@ class CartContext extends ChangeNotifier {
     return false;
   }
 
-  Map<Food, int> get items => _items;
+  Map<dynamic, int> get items => _items;
 
   int get itemCount => _items.length;
 
@@ -46,13 +48,18 @@ class CartContext extends ChangeNotifier {
     double totalPrice = 0;
 
     _items.forEach((food, count) {
+      /*if (food.isMenu) {
+        food.foods.forEach((f){
+         if (f.price != null && f.price.amount != null) totalPrice += f.price.amount / 100 * count;
+        });
+      }else*/
       if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100 * count;
     });
 
     return totalPrice;
   }
 
-  bool contains(Food food) {
+  bool contains(dynamic food) {
     return itemCount > 0 &&
         _items.keys.firstWhere(
               (element) => element.id == food.id,
@@ -61,13 +68,13 @@ class CartContext extends ChangeNotifier {
             null;
   }
 
-  void removeItem(Food food) {
+  void removeItem(dynamic food) {
     _items.removeWhere((key, _) => key.id == food.id);
     if (_items.length == 0) currentOrigin = null;
     notifyListeners();
   }
 
-  void setCount(Food food, int itemCount) {
+  void setCount(dynamic food, int itemCount) {
     _items.updateAll((key, value) {
       if (key.id == food.id) return itemCount;
       return value;
@@ -75,7 +82,7 @@ class CartContext extends ChangeNotifier {
     notifyListeners();
   }
 
-  int getCount(Food food) {
+  int getCount(dynamic food) {
     int count = 0;
     _items.forEach((key, value) {
       if (key.id == food.id) count = value;

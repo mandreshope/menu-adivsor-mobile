@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
+import 'package:menu_advisor/src/utils/extensions.dart';
 
 import '../models.dart';
 
@@ -54,7 +55,11 @@ class Summary extends StatelessWidget {
                 ),
                 //end commande id
                 Divider(),
+                // food
                 for (var command in commande.items) _items(command),
+                // Divider(),
+                // menu
+                for (var command in commande.menus) _items(command),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: Row(
@@ -68,9 +73,15 @@ class Summary extends StatelessWidget {
                 Divider(),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: Text(
-                    AppLocalizations.of(context).translate(commande.commandType ?? 'on_site').toUpperCase(),
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context).translate(commande.commandType ?? 'on_site').toUpperCase(),
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                      ),
+                      Text('${commande.shippingTime == null ? "" : commande.shippingTime.dateToString("dd/MM/yyyy HH:mm")}')
+                    ],
                   ),
                 ),
                 Divider(),
@@ -149,7 +160,8 @@ class Summary extends StatelessWidget {
         ),
       );
 
-  Widget _items(CommandItem item) {
+  Widget _items(CommandItem commandItem) {
+    dynamic item = commandItem.food != null ? commandItem.food : commandItem.menu; 
     return Column(
       children: [
         Container(
@@ -157,16 +169,16 @@ class Summary extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Text('${item.quantity}', style: TextStyle(fontSize: 16)),
+              Text('${commandItem.quantity}', style: TextStyle(fontSize: 16)),
               SizedBox(width: 15),
               Image.network(
-                item.food.imageURL,
+                item.imageURL,
                 width: 25,
               ),
               SizedBox(width: 8),
-              Text('${item.food.name}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              Text('${item.name}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               Spacer(),
-              item.food?.price?.amount == null ? Text("_") : Text("${item.food.price.amount / 100} €", style: TextStyle(fontSize: 16)),
+              item.price?.amount == null ? Text("_") : Text("${item.price.amount / 100} €", style: TextStyle(fontSize: 16)),
             ],
           ),
         ),

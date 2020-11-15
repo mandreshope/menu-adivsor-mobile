@@ -1,3 +1,4 @@
+import 'package:chips_choice/chips_choice.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -9,6 +10,7 @@ import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/order.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/DataContext.dart';
+import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/button_item_count_widget.dart';
@@ -181,6 +183,9 @@ class AddToBagDialog extends StatefulWidget {
 
 class _AddToBagDialogState extends State<AddToBagDialog> {
   int itemCount = 1;
+  dynamic optionSelected;
+  List<dynamic> options = [
+  ];
 
   @override
   void initState() {
@@ -189,6 +194,9 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
     CartContext cartContext = Provider.of<CartContext>(context, listen: false);
     if (cartContext.contains(widget.food))
       itemCount = cartContext.getCount(widget.food);
+    options = widget.food.options;
+    // if (options.length > 0)
+    //   optionSelected = options.first;
   }
 
   @override
@@ -220,107 +228,110 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                child: Text(
-                  AppLocalizations.of(context).translate('item_count'),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                child: Row(
-                  children: [
-                    ButtonItemCountWidget(
-                      widget.food,
-                        onAdded: (value) {
-                          setState(() {
-                            itemCount = value;
-                          });
-                        },
-                        onRemoved: (value) {
-                          if (value >0)
-                          setState(() {
-                            itemCount = value;
-                          });
-                        },
-                        itemCount: itemCount,
-                        isContains: true)
+              SizedBox(height: 10),
 
-/*
-                    CircleButton(
-                      backgroundColor: Colors.transparent,
-                      border: Border.all(
-                        width: 1,
-                        color: Colors.grey,
-                      ),
-                      child: FaIcon(
-                        FontAwesomeIcons.minus,
-                        color: Colors.black,
-                      ),
-                      onPressed: itemCount > 1
-                          ? () {
-                              setState(() {
-                                itemCount--;
-                              });
-                            }
-                          : null,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      child: Text(
-                        itemCount.toString(),
-                      ),
-                    ),
-                    CircleButton(
-                      backgroundColor: Colors.transparent,
-                      border: Border.all(
-                        width: 1,
-                        color: Colors.grey,
-                      ),
-                      child: FaIcon(
-                        FontAwesomeIcons.plus,
-                        color: Colors.black,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          itemCount++;
-                        });
-                      },
-                    ),
-                  */
-                  ],
+              if (options.isEmpty)
+                Container()
+              else ...[
+                Padding(
+                  padding: const EdgeInsets.only(left: 25.0),
+                  child: Text("Options"),
                 ),
-              ),
-              Align(
-                  alignment: Alignment.centerRight,
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      right: 10.0,
-                      bottom: 10.0,
+                Padding(
+                  padding: const EdgeInsets.only(left: 25.0),
+                  child: ChipsChoice.single(value: optionSelected,
+                    padding: EdgeInsets.zero,
+                    onChanged: (value) {
+                      setState(() {
+                        optionSelected = value;
+                        widget.food.optionsSelected = options[value];
+                      });
+                    },
+                    choiceItems: C2Choice.listFrom(
+                      source: options,
+                      value: (i, v) => i,
+                      label: (i, v) => v['name'][Provider.of<SettingContext>(context).languageCode],
                     ),
-                    child: RaisedButton(
-                      color: CRIMSON,
-                      child: Text(
-                        cartContext.contains(widget.food)
-                            ? AppLocalizations.of(context).translate('edit')
-                            : AppLocalizations.of(context).translate('add'),
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+              SizedBox(height: 5),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                          child: Text(
+                            AppLocalizations.of(context).translate('item_count'),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                          child: Row(
+                            children: [
+                              ButtonItemCountWidget(
+                                  widget.food,
+                                  onAdded: (value) {
+                                    setState(() {
+                                      itemCount = value;
+                                    });
+                                  },
+                                  onRemoved: (value) {
+                                    if (value >0)
+                                      setState(() {
+                                        itemCount = value;
+                                      });
+                                  },
+                                  itemCount: itemCount,
+                                  isContains: true)
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                        padding: const EdgeInsets.only(
+                          right: 25.0,
+                        ),
+                        child: RaisedButton(
+                          color: CRIMSON,
+                          child: Text(
+                            cartContext.contains(widget.food)
+                                ? AppLocalizations.of(context).translate('edit')
+                                : AppLocalizations.of(context).translate('add'),
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          onPressed: () {
+                            if (widget.food.options.isNotEmpty && optionSelected == null) {
+                              Fluttertoast.showToast(msg: AppLocalizations.of(context)
+                                  .translate('choose_option'),);
+                            }else{
+                              if (cartContext.contains(widget.food))
+                                cartContext.setCount(widget.food, itemCount);
+                              else
+                                cartContext.addItem(widget.food, itemCount);
+
+                              Navigator.of(context).pop(true);
+                            }
+
+                          },
                         ),
                       ),
-                      onPressed: () {
-                        if (cartContext.contains(widget.food))
-                          cartContext.setCount(widget.food, itemCount);
-                        else
-                          cartContext.addItem(widget.food, itemCount);
-
-                        Navigator.of(context).pop(true);
-                      },
-                    ),
-                  )),
+                ],
+              ),
             ],
           ),
         ),
@@ -583,7 +594,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                               child: Container(
                                 padding: const EdgeInsets.all(10),
                                 child: Text(
-                                  e.name,
+                                  e.name[Provider.of<SettingContext>(context).languageCode],
                                 ),
                               ),
                             ),
@@ -644,17 +655,17 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                         (e) => Theme(
                           data: ThemeData(
                             brightness: filters.containsKey('attributes') &&
-                                    filters['attributes'] == e['tag']
+                                    filters['attributes'] == e.tag['type']
                                 ? Brightness.dark
                                 : Brightness.light,
                             cardColor: filters.containsKey('attributes') &&
-                                    filters['attributes'] == e['tag']
+                                    filters['attributes'] == e.tag['type']
                                 ? CRIMSON
                                 : Colors.white,
                           ),
                           child: Card(
                             color: filters.containsKey('attributes') &&
-                                    filters['attributes'] == e['tag']
+                                    filters['attributes'] == e.tag['type']
                                 ? CRIMSON
                                 : Colors.white,
                             shape: RoundedRectangleBorder(
@@ -664,7 +675,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                               borderRadius: BorderRadius.circular(50),
                               onTap: () {
                                 setState(() {
-                                  filters['attributes'] = e['tag'];
+                                  filters['attributes'] = e.tag['type'];
                                 });
                               },
                               child: Container(
@@ -673,14 +684,14 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Image.asset(
-                                      e['imageURL'],
+                                      e.imageUrl['type'],
                                       height: 18,
                                     ),
                                     SizedBox(
                                       width: 5,
                                     ),
                                     Text(
-                                      e[widget.languageCode],
+                                      e.tag['type'],
                                     ),
                                   ],
                                 ),
@@ -715,6 +726,77 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+
+class OptionChoiceDialog extends StatefulWidget {
+  OptionChoiceDialog({this.food});
+  Food food;
+
+  @override
+  _OptionChoiceDialogState createState() => _OptionChoiceDialogState();
+}
+
+class _OptionChoiceDialogState extends State<OptionChoiceDialog> {
+  int itemCount = 1;
+  dynamic optionSelected;
+  List<dynamic> options = [
+  ];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    options = widget.food.options;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            child: Padding(
+                      padding: const EdgeInsets.only(left: 25.0),
+                      child: ChipsChoice.single(value: optionSelected,
+                        padding: EdgeInsets.zero,
+                        onChanged: (value) {
+                          setState(() {
+                            optionSelected = value;
+                            widget.food.optionsSelected = options[value];
+                          });
+                        },
+                        choiceItems: C2Choice.listFrom(
+                          source: options,
+                          value: (i, v) => i,
+                          label: (i, v) => v['name'][Provider.of<SettingContext>(context).languageCode],
+                        ),
+                      ),
+                    ),
+          ),
+          RaisedButton(
+                        padding: EdgeInsets.all(8),
+                        color: CRIMSON,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        onPressed: ()=> Navigator.of(context).pop(optionSelected),
+                        child: Text(
+                                AppLocalizations.of(context)
+                                    .translate("validate"),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                              ),
+                      ),
+        
+        ],
       ),
     );
   }

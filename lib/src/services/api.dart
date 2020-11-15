@@ -533,6 +533,7 @@ class Api {
     String shippingAddress,
     bool shipAsSoonAsPossible,
     Map customer,
+    var menu
   }) async {
     await _refreshTokens();
 
@@ -553,6 +554,7 @@ class Api {
         'shippingAddress': shippingAddress,
         'shipAsSoonAsPossible': shipAsSoonAsPossible,
         'customer': customer,
+        'menus':menu
       }),
     )
         .then<Map>((response) {
@@ -591,4 +593,54 @@ class Api {
       if (response.statusCode != 200) return Future.error(jsonDecode(response.body));
     });
   }
+
+
+Future<FoodAttribute> getFoodAttribute({
+    String id
+  }) async {
+    await _refreshTokens();
+
+    return http.get('$_apiURL/foodAttributes/$id', headers: {
+      'authorization': 'Bearer $_accessToken',
+      'Content-Type': 'application/json',
+    }).then<FoodAttribute>((response) {
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        return FoodAttribute.fromJson(data);
+      }
+
+      return Future.error(jsonDecode(response.body));
+    });
+  }
+
+Future<List<FoodAttribute>> getFoodAttributes() async {
+    await _refreshTokens();
+
+    return http.get('$_apiURL/foodAttributes', headers: {
+      'authorization': 'Bearer $_accessToken',
+      'Content-Type': 'application/json',
+    }).then<List<FoodAttribute>>((response) {
+      if (response.statusCode == 200) {
+        List datas = jsonDecode(response.body);
+        return datas.map<FoodAttribute>((data) => FoodAttribute.fromJson(data)).toList();
+      }
+
+      return Future.error(jsonDecode(response.body));
+    });
+  }
+
+  Future<dynamic> getCityFromCoordinates(double latitude, double longitude) async {
+
+    final String geoUrl = "https://nominatim.openstreetmap.org/reverse?format=geojson&lat=$latitude&lon=$longitude";
+    return http.get(geoUrl).then((value) {
+      Placemark data = Placemark.fromJson(json.decode(value.body));
+      // var js = json.decode(value.body);
+      String city =  data.features.first.properties.address.city;
+      return city;
+    }).catchError((onError){
+      return Future.error(onError.toString());
+    });
+
+  }
+
 }

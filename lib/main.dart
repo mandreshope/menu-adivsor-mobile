@@ -11,7 +11,7 @@ Future main() async {
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   await [
-    Permission.storage,
+    Permission.storage,Permission.location
   ].request();
 
   runApp(MyApp());

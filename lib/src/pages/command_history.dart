@@ -208,6 +208,7 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
             child: Column(
               children: [
                 for(var item in commandTemp)
+                  item.items.length == 0 ? Container() : 
                   CommandHistoryItem(command: item,)
               ]
             ),

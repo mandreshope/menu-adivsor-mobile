@@ -119,9 +119,9 @@ class _OrderPageState extends State<OrderPage> {
                                 Image.network(
                                   _restaurant.imageURL,
                                   // width: 4 * MediaQuery.of(context).size.width / 7,
-                                  width: MediaQuery.of(context).size.width / 3,
-                                  height: MediaQuery.of(context).size.width / 3,
-                                  fit: BoxFit.cover,
+                                  width: MediaQuery.of(context).size.width / 4,
+                                  height: MediaQuery.of(context).size.width / 4,
+                                  fit: BoxFit.contain,
                                 ),
                                 SizedBox(
                                   width: 15,
@@ -134,7 +134,7 @@ class _OrderPageState extends State<OrderPage> {
                                       _restaurant.name,
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 20,
+                                        fontSize: 15,
                                       ),
                                     ),
                                     Row(
@@ -142,7 +142,7 @@ class _OrderPageState extends State<OrderPage> {
                                       children: [
                                         Icon(
                                           FontAwesomeIcons.mapMarkerAlt,
-                                          size: 15,
+                                          size: 12,
                                           color: CRIMSON,
                                         ),
                                         SizedBox(
@@ -156,7 +156,7 @@ class _OrderPageState extends State<OrderPage> {
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
                                               fontWeight: FontWeight.bold,
-                                              fontSize: 18,
+                                              fontSize: 15,
                                             ),
                                           ),
                                         )
@@ -167,7 +167,7 @@ class _OrderPageState extends State<OrderPage> {
                                       children: [
                                         Icon(
                                           FontAwesomeIcons.phoneAlt,
-                                          size: 15,
+                                          size: 12,
                                           color: CRIMSON,
                                         ),
                                         SizedBox(
@@ -175,7 +175,7 @@ class _OrderPageState extends State<OrderPage> {
                                         ),
                                         Text(
                                           "Tel : ${_restaurant.phoneNumber ?? "0"}",
-                                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black54),
+                                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.black54),
                                         )
                                       ],
                                     )
@@ -217,14 +217,14 @@ class _OrderPageState extends State<OrderPage> {
                               '${AppLocalizations.of(context).translate('total_to_pay')} : ',
                               style: TextStyle(
                                 fontWeight: FontWeight.normal,
-                                fontSize: 22,
+                                fontSize: 18,
                               ),
                             ),
                             Text(
                               '${cartContext.totalPrice}€',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 22,
+                                fontSize: 18,
                               ),
                             ),
                           ],
@@ -232,7 +232,7 @@ class _OrderPageState extends State<OrderPage> {
                       ),
               ),
               Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(15),
                 child: Consumer3<CommandContext, AuthContext, CartContext>(
                   builder: (_, commandContext, authContext, cartContext, __) => FlatButton(
                     onPressed: () async {
@@ -286,7 +286,7 @@ class _OrderPageState extends State<OrderPage> {
     );
   }
 
-  _command(commandContext, authContext, cartContext) async {
+  _command(commandContext, authContext, CartContext cartContext) async {
     if (authContext.currentUser == null) {
       if (commandContext.commandType != 'delivery') {
         if (commandContext.commandType == 'on_site') {
@@ -299,9 +299,10 @@ class _OrderPageState extends State<OrderPage> {
             var command = await Api.instance.sendCommand(
               relatedUser: authContext.currentUser?.id ?? null,
               commandType: commandContext.commandType,
-              items: cartContext.items.entries.map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),
+              items: cartContext.items.entries.where((e) => !e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id, 'options': e.key.optionsSelected}).toList(),
               restaurant: cartContext.currentOrigin,
               totalPrice: (cartContext.totalPrice * 100).round(),
+              menu: cartContext.items.entries.where((e) => e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),
             );
             CommandModel cm = CommandModel.fromJson(command);
 
@@ -375,9 +376,11 @@ class _OrderPageState extends State<OrderPage> {
         var command = await Api.instance.sendCommand(
           relatedUser: authContext.currentUser.id,
           commandType: commandContext.commandType,
-          items: cartContext.items.entries.map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),
+          items: cartContext.items.entries.where((e) => !e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id, 'options': e.key.optionsSelected}).toList(),
           restaurant: cartContext.currentOrigin,
           totalPrice: (cartContext.totalPrice * 100).round(),
+        menu: cartContext.items.entries.where((e) => e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),
+            
         );
         CommandModel cm = CommandModel.fromJson(command);
 

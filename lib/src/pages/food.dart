@@ -24,12 +24,7 @@ class FoodPage extends StatefulWidget {
   final bool modalMode;
   final bool fromDelevery;
 
-  FoodPage(
-      {this.food,
-      this.imageTag,
-      this.restaurantName,
-      this.modalMode = false,
-      this.fromDelevery = false});
+  FoodPage({this.food, this.imageTag, this.restaurantName, this.modalMode = false, this.fromDelevery = false});
 
   @override
   _FoodPageState createState() => _FoodPageState();
@@ -50,8 +45,7 @@ class _FoodPageState extends State<FoodPage> {
     super.initState();
 
     _cartContext = Provider.of<CartContext>(context, listen: false);
-    if (_cartContext.contains(widget.food))
-      itemCount = _cartContext.getCount(widget.food);
+    if (_cartContext.contains(widget.food)) itemCount = _cartContext.getCount(widget.food);
 
     api
         .getRestaurant(
@@ -82,6 +76,9 @@ class _FoodPageState extends State<FoodPage> {
               orElse: () => null,
             ) !=
             null;
+
+    DataContext dataContext = Provider.of<DataContext>(context,listen: false);
+    dataContext.fetchFoodAttributes(widget.food.attributes);
   }
 
   @override
@@ -105,15 +102,13 @@ class _FoodPageState extends State<FoodPage> {
             body: mainContent,
           )
         : Scaffold(
-          backgroundColor: Colors.white,
+            backgroundColor: Colors.white,
             body: mainContent,
           );
   }
 
   Widget get mainContent => Container(
-        width: !widget.modalMode
-            ? double.infinity
-            : MediaQuery.of(context).size.width - 60,
+        width: !widget.modalMode ? double.infinity : MediaQuery.of(context).size.width - 60,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -121,13 +116,12 @@ class _FoodPageState extends State<FoodPage> {
           fit: StackFit.expand,
           children: [
             Column(
-              mainAxisSize:
-                  widget.fromDelevery ? MainAxisSize.min : MainAxisSize.max,
+              mainAxisSize: widget.fromDelevery ? MainAxisSize.min : MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
                   width: double.infinity,
-                  height: MediaQuery.of(context).size.height/3,
+                  height: MediaQuery.of(context).size.height / 3,
                   child: _image(),
                 ),
                 SizedBox(
@@ -143,13 +137,9 @@ class _FoodPageState extends State<FoodPage> {
                         padding: EdgeInsets.all(5),
                         child: Text(
                           '€',
-                          style: TextStyle(
-                              fontSize: 15,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold),
+                          style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold),
                         ),
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle, color: Colors.black),
+                        decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.black),
                       ),
                       Positioned(
                         left: 70,
@@ -161,8 +151,7 @@ class _FoodPageState extends State<FoodPage> {
                           ),
                         ),
                       ),
-                      if (widget.food.price != null &&
-                          widget.food.price?.amount != null)
+                      if (widget.food.price != null && widget.food.price?.amount != null)
                         Positioned(
                           right: 25,
                           child: Text(
@@ -200,9 +189,7 @@ class _FoodPageState extends State<FoodPage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 28),
                   child: Text(
-                    widget.food.description ??
-                        AppLocalizations.of(context)
-                            .translate('no_description'),
+                    widget.food.description ?? AppLocalizations.of(context).translate('no_description'),
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -219,7 +206,7 @@ class _FoodPageState extends State<FoodPage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 28.0),
                   child: Text(
-                    AppLocalizations.of(context).translate('description'),
+                    AppLocalizations.of(context).translate('attributes'),
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.grey,
@@ -228,76 +215,72 @@ class _FoodPageState extends State<FoodPage> {
                 ),
                 Padding(
                   padding: EdgeInsets.only(
-                    right: 3 * MediaQuery.of(context).size.width / 7,
+                    top: 10,
+                    right: 5 /** MediaQuery.of(context).size.width / 7*/,
                   ),
                   child: widget.food.attributes.length > 0
                       ? Consumer<DataContext>(
-                          builder: (_, dataContext, __) => Padding(
-                            padding: const EdgeInsets.only(
-                              left: 5.0,
-                            ),
-                            child: Wrap(
-                              spacing: 5,
-                              children: widget.food.attributes
-                                  .map(
-                                    (e) => FittedBox(
-                                      child: Card(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                        ),
-                                        margin: EdgeInsets.zero,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8),
-                                          child: Builder(
-                                            builder: (_) {
-                                              var attribute = dataContext
-                                                  .attributes
-                                                  .firstWhere(
-                                                (element) =>
-                                                    element['tag'] == e,
-                                                orElse: null,
-                                              );
-
-                                              return Row(
-                                                children: [
-                                                  if (attribute != null) ...[
-                                                    FadeInImage.assetNetwork(
-                                                      placeholder:
-                                                          'assets/images/loading.gif',
-                                                      image:
-                                                          attribute['imageURL'],
-                                                      height: 14,
-                                                    ),
-                                                    SizedBox(
-                                                      width: 5,
-                                                    ),
-                                                  ],
-                                                  Text(
-                                                    attribute[Provider.of<
-                                                                SettingContext>(
-                                                            context)
-                                                        .languageCode],
-                                                  ),
-                                                ],
-                                              );
-                                            },
+                          builder: (_, dataContext, __) {
+                            
+                          return !dataContext.loadingFoodAttributes
+                              ? Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: 5.0,
+                                  ),
+                                  child: Wrap(
+                                    spacing: 5,
+                                    runSpacing: 5,
+                                    children: dataContext.attributes
+                                        .map(
+                                          (attribute) => FittedBox(
+                                            child: Card(
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(20),
+                                              ),
+                                              margin: EdgeInsets.zero,
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(8),
+                                                child: Builder(
+                                                  builder: (_) {
+                                                    return Row(
+                                                      children: [
+                                                        if (dataContext.attributes != null)
+                                                        //for (var attribute in dataContext.attributes) 
+                                                        ...[
+                                                          FadeInImage.assetNetwork(
+                                                            placeholder: 'assets/images/loading.gif',
+                                                            image: attribute.imageUrl,
+                                                            height: 14,
+                                                          ),
+                                                          SizedBox(
+                                                            width: 5,
+                                                          ),
+                                                          Text(
+                                                            attribute.tag,
+                                                          ),
+                                                        ]
+                                                        else Text("")
+                                                      ],
+                                                    );
+                                                  },
+                                                ),
+                                              ),
+                                            ),
                                           ),
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                  .toList(),
-                            ),
-                          ),
-                        )
+                                        )
+                                        .toList(),
+                                  ),
+                                )
+                              : CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                  CRIMSON,
+                                ));})
                       : Padding(
                           padding: const EdgeInsets.only(
                             left: 20.0,
                           ),
                           child: Text(
-                            AppLocalizations.of(context)
-                                .translate('no_attribute'),
+                            AppLocalizations.of(context).translate('no_attribute'),
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.normal,
@@ -306,33 +289,44 @@ class _FoodPageState extends State<FoodPage> {
                         ),
                 ),
                 if (!widget.fromDelevery) ...[
-                //  Spacer(),
-                 // if (!this._cartContext.contains(widget.food))
-                 SizedBox(height: 15,),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        if (showFavorite)
-                          SizedBox(
-                            width: 30,
-                          ),
-                       Consumer<CartContext>(
-                      builder: (_, cartContext, __) => 
-                      ButtonItemCountWidget(
-                        widget.food,
-                            onAdded: (value) {
-                              cartContext.addItem(widget.food, value);
-                            },
-                            onRemoved: (value) {
-                              value == 0
-                                  ? cartContext.removeItem(widget.food)
-                                  : cartContext.addItem(widget.food, value);
-                            },
-                            itemCount: cartContext.getCount(widget.food),
-                            isContains: cartContext.contains(widget.food))
-                       )
-                      ],
-                    ),
+                  //  Spacer(),
+                  // if (!this._cartContext.contains(widget.food))
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (showFavorite)
+                        SizedBox(
+                          width: 30,
+                        ),
+                      Consumer<CartContext>(
+                          builder: (_, cartContext, __) => 
+                          ButtonItemCountWidget(widget.food, 
+                          onAdded: (value) async {
+                              if (widget.food.options.isNotEmpty && widget.food.optionsSelected == null ){
+                                var optionSelected = await showDialog(
+                                                context: context,
+                                                barrierDismissible: false,
+                                                builder: (_) => OptionChoiceDialog(
+                                                  food: widget.food,
+                                                ),
+                                              );
+                                if (optionSelected != null)
+                                  cartContext.addItem(widget.food, value);
+                              }else{
+                                cartContext.addItem(widget.food, value);
+                              }
+                                
+                              }, 
+                              onRemoved: (value) {
+                                value == 0 ? cartContext.removeItem(widget.food) : cartContext.addItem(widget.food, value);
+                              }, 
+                              itemCount: cartContext.getCount(widget.food), 
+                              isContains: cartContext.contains(widget.food)))
+                    ],
+                  ),
                   /*  
                   Padding(
                     padding: const EdgeInsets.symmetric(
@@ -488,20 +482,19 @@ class _FoodPageState extends State<FoodPage> {
                   ),
                 */
                 ],
-                
               ],
             ),
             Positioned(
-              bottom: 0,
-              right: 0,
-              left: 0,
-              child:  Consumer<CartContext>(
-                      builder: (_, cartContext, __) => 
-                      cartContext.contains(widget.food) ?
-                        OrderButton(totalPrice: (cartContext.getCount(widget.food)*(widget.food.price?.amount == null ? 00 : widget.food.price.amount/100)).toDouble(),)
-                       : SizedBox(),
-                       )
-            ),
+                bottom: 0,
+                right: 0,
+                left: 0,
+                child: Consumer<CartContext>(
+                  builder: (_, cartContext, __) => cartContext.contains(widget.food)
+                      ? OrderButton(
+                          totalPrice: (cartContext.getCount(widget.food) * (widget.food.price?.amount == null ? 00 : widget.food.price.amount / 100)).toDouble(),
+                        )
+                      : SizedBox(),
+                )),
           ],
         ),
       );
@@ -538,8 +531,7 @@ class _FoodPageState extends State<FoodPage> {
                           child: widget.food.imageURL != null
                               ? Image.network(
                                   widget.food.imageURL,
-                                  width:
-                                      MediaQuery.of(context).size.width - 100,
+                                  width: MediaQuery.of(context).size.width - 100,
                                 )
                               : Icon(
                                   Icons.fastfood,

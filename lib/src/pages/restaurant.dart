@@ -117,7 +117,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
         print('Scroll position: ${itemPositionsListener.itemPositions.value.first.index}');
         tabController.animateTo(itemPositionsListener.itemPositions.value.first.index);
 
-        print("_scrollController.offset ${_scrollController.offset}");
+        //print("_scrollController.offset ${_scrollController.offset}");
         /*if (_scrollController.offset >= 215) {
           setState(() {
             _canScrollListRestaurant = true;
@@ -150,6 +150,13 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
           },
         );
       }
+      foods.forEach((key, value) {
+        value.forEach((element) {
+          element.attributes.forEach((att) async {
+            element.foodAttributes.add(await api.getFoodAttribute(id:att));
+          });
+        });
+      });
 
       setState(() {
         loading = false;
@@ -424,7 +431,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                               ),
                               child: MenuCard(
                                 lang: _lang,
-                                menu: Menu.fromJson(e.content),
+                                menu: Menu.fromJson(e.content,resto: widget.restaurant),
                               ),
                             );
 
@@ -848,6 +855,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                         (e) => MenuCard(
                           menu: e,
                           lang: _lang,
+                          restaurant: widget.restaurant,
                         ),
                       )
                       .toList(),
