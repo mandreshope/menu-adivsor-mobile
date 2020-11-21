@@ -11,7 +11,9 @@ import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
+import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
+import 'package:translator/translator.dart';
 
 class SearchPage extends StatefulWidget {
   final String type;
@@ -104,7 +106,7 @@ class _SearchPageState extends State<SearchPage> {
               ),
               onPressed: _initSearch),
         ],
-        title: Text(widget.barTitle),
+        title: TextTranslator(widget.barTitle),
       ),
       body: SafeArea(
         child: Stack(

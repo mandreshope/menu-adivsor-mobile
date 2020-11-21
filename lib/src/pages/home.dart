@@ -23,6 +23,7 @@ import 'package:menu_advisor/src/services/stripe.dart';
 import 'package:menu_advisor/src/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -279,14 +280,15 @@ class _HomePageState extends State<HomePage> {
                         spreadRadius: 0,
                       ),
                     ],
-                    child: Text(
-                      AppLocalizations.of(context).translate("discover"),
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.black,
-                        fontFamily: 'Soft Elegance',
-                        fontWeight: FontWeight.w800,
-                      ),
+                    child: TextTranslator(
+                        AppLocalizations.of(context).translate("discover"),
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.black,
+                          fontFamily: 'Soft Elegance',
+                          fontWeight: FontWeight.w800,
+                        ),
+                      
                     ),
                     onPressed: () =>
                         /*RouteUtil.goTo(

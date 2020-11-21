@@ -19,6 +19,7 @@ import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/button_item_count_widget.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 import 'package:menu_advisor/src/utils/extensions.dart';
 
@@ -78,13 +79,14 @@ class CategoryCard extends StatelessWidget {
                 SizedBox(
                   height: 10,
                 ),
-                Text(
-                  name,
-                  style: TextStyle(
-                    color: DARK_BLUE,
-                    fontFamily: 'Golden Ranger',
-                    fontSize: 18,
-                  ),
+                TextTranslator(
+                    name,
+                    style: TextStyle(
+                      color: DARK_BLUE,
+                      fontFamily: 'Golden Ranger',
+                      fontSize: 18,
+                    ),
+                  
                 ),
                 SizedBox(
                   height: 20,
@@ -1018,12 +1020,13 @@ class _RestaurantCardState extends State<RestaurantCard> {
                                     ),
                                   ),
                                   SizedBox(height: 5),
-                                  Text(
-                                    widget.restaurant.type ?? "",
-                                    style: TextStyle(
-                                      fontSize: 16,
+                                  TextTranslator(
+                                      widget.restaurant.type ?? "",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                      ),
                                     ),
-                                  ),
+                                  
                                 ],
                               ),
                             ),

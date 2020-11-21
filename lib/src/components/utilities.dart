@@ -14,6 +14,7 @@ import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
 class SectionTitle extends StatelessWidget {
@@ -31,9 +32,10 @@ class SectionTitle extends StatelessWidget {
         horizontal: 30,
       ),
       margin: const EdgeInsets.only(bottom: 10),
-      child: Text(
-        text,
-        style: Theme.of(context).textTheme.headline5,
+      child: TextTranslator(
+          text,
+          style: Theme.of(context).textTheme.headline5,
+        
       ),
     );
   }
