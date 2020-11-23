@@ -14,6 +14,7 @@ import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/services/stripe.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
 class PaymentCardListPage extends StatefulWidget {
@@ -36,7 +37,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: TextTranslator(
           AppLocalizations.of(context).translate('my_payment_cards'),
         ),
       ),
@@ -191,7 +192,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                             padding: const EdgeInsets.symmetric(
                               horizontal: 40.0,
                             ),
-                            child: Text(
+                            child: TextTranslator(
                               AppLocalizations.of(context).translate('no_payment_card').replaceFirst('\$', '+'),
                               textAlign: TextAlign.center,
                               style: TextStyle(

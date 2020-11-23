@@ -16,6 +16,7 @@ import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
@@ -281,7 +282,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
           ),*/
           appBar: _isSearching
               ? AppBar(
-                  title: Text(restaurant.name),
+                  title: TextTranslator(restaurant.name),
                 )
               : null,
           body: loading
@@ -331,7 +332,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
         },
         child: Container(
           padding: const EdgeInsets.all(10),
-          child: Text(
+          child: TextTranslator(
             text,
           ),
           decoration: BoxDecoration(
@@ -384,7 +385,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
             physics: BouncingScrollPhysics(),
             child: searchValue.length == 0
                 ? Center(
-                    child: Text(
+                    child: TextTranslator(
                       AppLocalizations.of(context).translate('start_by_typing_your_research'),
                     ),
                   )
@@ -401,7 +402,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                           ),
                         if (!searchLoading && searchResults.length == 0)
                           Center(
-                            child: Text(
+                            child: TextTranslator(
                               AppLocalizations.of(context).translate('no_result'),
                             ),
                           ),
@@ -554,7 +555,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
+                                    TextTranslator(
                                       restaurant.name,
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
@@ -574,7 +575,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                         ),
                                         Container(
                                           width: (MediaQuery.of(context).size.width / 2)- 10,
-                                          child: Text(
+                                          child: TextTranslator(
                                             restaurant.address,
                                             maxLines: 3,
                                             overflow: TextOverflow.ellipsis,
@@ -597,7 +598,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                         SizedBox(
                                           width: 5,
                                         ),
-                                        Text(
+                                        TextTranslator(
                                           "Tel : ${restaurant.phoneNumber ?? "0"}",
                                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black54),
                                         )
@@ -620,7 +621,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                 SizedBox(
                                   width: 25,
                                 ),
-                                Text(
+                                TextTranslator(
                                   "De 09:00 à 20:00",
                                   style: TextStyle(fontSize: 18, color: CRIMSON, fontWeight: FontWeight.normal),
                                 ),
@@ -672,7 +673,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                       if (index == 0)
                         return Padding(
                           padding: const EdgeInsets.only(left: 15),
-                          child: Text(
+                          child: TextTranslator(
                             AppLocalizations.of(context).translate('a_la_carte'),
                             style: TextStyle(
                               fontSize: 22,
@@ -687,7 +688,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                           children: [
                             Padding(
                               padding: const EdgeInsets.only(left: 15),
-                              child: Text(
+                              child: TextTranslator(
                                 AppLocalizations.of(context).translate('menu'),
                                 style: TextStyle(
                                   fontSize: 22,
@@ -708,7 +709,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                           children: [
                             Padding(
                               padding: const EdgeInsets.only(left: 15),
-                              child: Text(
+                              child: TextTranslator(
                                 AppLocalizations.of(context).translate('drinks'),
                                 style: TextStyle(
                                   fontSize: 22,
@@ -728,7 +729,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                         children: [
                           Padding(
                             padding: const EdgeInsets.only(left: 15),
-                            child: Text(
+                            child: TextTranslator(
                               restaurant.foodTypes[index - 1]["name"][Provider.of<SettingContext>(context).languageCode] ?? "",
                               style: TextStyle(
                                 fontSize: 18,
@@ -767,7 +768,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
             width: double.infinity,
             height: 80,
             child: AppBar(
-              title: Text(restaurant.name),
+              title: TextTranslator(restaurant.name),
               actions: [
                 SizedBox(
                   width: 25,
@@ -822,7 +823,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                 Icons.warning,
                 size: 40,
               ),
-              Text(
+              TextTranslator(
                 AppLocalizations.of(context).translate('no_drink'),
                 style: TextStyle(
                   fontSize: 22,
@@ -869,7 +870,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                     Icons.warning,
                     size: 40,
                   ),
-                  Text(
+                  TextTranslator(
                     AppLocalizations.of(context).translate('no_menu'),
                     style: TextStyle(
                       fontSize: 22,
@@ -906,7 +907,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                 Icons.warning,
                 size: 20,
               ),
-              Text(
+              TextTranslator(
                 AppLocalizations.of(context).translate('no_food'),
                 style: TextStyle(
                   fontSize: 22,

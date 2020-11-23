@@ -1,10 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:menu_advisor/src/services/api.dart';
+import 'package:flutter/services.dart';
+import 'package:menu_advisor/src/models.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingContext extends ChangeNotifier {
   String _languageCode = 'system';
   Future<void> initialized;
+  List<Language> langs = List();
 
 
   String get languageCode => _languageCode == 'system'
@@ -23,6 +27,7 @@ class SettingContext extends ChangeNotifier {
 
   SettingContext() {
     initialized = _loadCurrentUserSettings();
+    _loadLangFromAsset();
   }
 
   Future<void> _loadCurrentUserSettings() async {
@@ -37,6 +42,14 @@ class SettingContext extends ChangeNotifier {
       );
     }
     return;
+  }
+
+  Future<void> _loadLangFromAsset() async {
+    var data = await rootBundle.loadString('lang/code.json');
+    var jsonResult = json.decode(data);
+    var result = (jsonResult as List).map<Language>((json) => Language.fromJson(json)).toList();
+    this.langs.addAll(result);
+    print(langs);
   }
 
   resetLanguage() {

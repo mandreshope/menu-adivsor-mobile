@@ -6,6 +6,7 @@ import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
 import '../models.dart';
@@ -190,7 +191,7 @@ class OrderButton extends StatelessWidget {
                     routeName: orderRoute,
                   );
               },
-              child: Text(
+              child: TextTranslator(
                 AppLocalizations.of(context).translate('command'),
                 style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold),
               ),

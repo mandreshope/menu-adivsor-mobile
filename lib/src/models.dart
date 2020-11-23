@@ -625,3 +625,25 @@ class Geometry {
     return data;
   }
 }
+
+class Language {
+  String code;
+  String name;
+  String nativeName;
+
+  Language({this.code, this.name, this.nativeName});
+
+  Language.fromJson(Map<String, dynamic> json) {
+    code = json['code'];
+    name = json['name'];
+    nativeName = json['nativeName'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['code'] = this.code;
+    data['name'] = this.name;
+    data['nativeName'] = this.nativeName;
+    return data;
+  }
+}

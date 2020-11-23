@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:menu_advisor/src/utils/textTranslator.dart';
 
 class MenuAdvisorTextLogo extends StatelessWidget {
   /// Color of the logo
@@ -22,7 +23,7 @@ class MenuAdvisorTextLogo extends StatelessWidget {
       crossAxisAlignment: crossAxisAlignment,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
+        TextTranslator(
           "Menu",
           style: TextStyle(
             fontSize: fontSize * 0.9,
@@ -30,7 +31,7 @@ class MenuAdvisorTextLogo extends StatelessWidget {
             fontFamily: "Cool Sans",
           ),
         ),
-        Text(
+        TextTranslator(
           "Advisor",
           style: TextStyle(
             fontSize: fontSize * 1.30,

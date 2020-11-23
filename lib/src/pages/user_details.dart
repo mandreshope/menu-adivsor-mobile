@@ -13,6 +13,7 @@ import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/extensions.dart';
+import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
 class UserDetailsPage extends StatefulWidget {
@@ -59,7 +60,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
     
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: TextTranslator(
           AppLocalizations.of(context).translate('your_informations'),
         ),
       ),
@@ -72,7 +73,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
+                TextTranslator(
                   AppLocalizations.of(context).translate("your_name"),
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
@@ -94,7 +95,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                   ),
                 ),
                 SizedBox(height: 10),
-                Text(
+                TextTranslator(
                   AppLocalizations.of(context).translate("add_phone_number"),
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
@@ -119,7 +120,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                   ),
                 ),
                 SizedBox(height: 10),
-                Text(
+                TextTranslator(
                   AppLocalizations.of(context)
                       .translate("mail_address_placeholder"),
                   style: TextStyle(
@@ -147,7 +148,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                 ),
                 if (commandContext.commandType == 'delivery') ...[
                   SizedBox(height: 10),
-                  Text(
+                  TextTranslator(
                     AppLocalizations.of(context)
                         .translate("address_placeholder"),
                     style: TextStyle(
@@ -210,7 +211,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                       child: ListTile(
                         contentPadding:
                             const EdgeInsets.symmetric(horizontal: 25.0),
-                        title: Text(
+                        title: TextTranslator(
                           'Planifier une commande',
                         ),
                         leading: Icon(
@@ -232,7 +233,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                     child: ListTile(
                       contentPadding:
                           const EdgeInsets.symmetric(horizontal: 25.0),
-                      title: Text(
+                      title: TextTranslator(
                         '${deliveryDate?.dateToString(DATE_FORMATED_ddMMyyyy) ?? ""}    ${deliveryTime?.hour ?? ""} : ${deliveryTime?.minute ?? ""}',
                       ),
                       leading: Container(
@@ -264,7 +265,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                             ),
                           ),
                         )
-                      : Text(
+                      : TextTranslator(
                           commandContext.commandType == 'delivery'
                               ? AppLocalizations.of(context).translate('next')
                               : AppLocalizations.of(context)

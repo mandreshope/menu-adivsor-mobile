@@ -15,6 +15,7 @@ import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/button_item_count_widget.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
 class ConfirmationDialog extends StatelessWidget {
@@ -30,10 +31,10 @@ class ConfirmationDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(
+      title: TextTranslator(
         title,
       ),
-      content: Text(
+      content: TextTranslator(
         content,
       ),
       actions: [
@@ -41,7 +42,7 @@ class ConfirmationDialog extends StatelessWidget {
           onPressed: () {
             Navigator.of(context).pop(false);
           },
-          child: Text(
+          child: TextTranslator(
             AppLocalizations.of(context).translate('cancel'),
           ),
         ),
@@ -49,7 +50,7 @@ class ConfirmationDialog extends StatelessWidget {
           onPressed: () {
             Navigator.of(context).pop(true);
           },
-          child: Text(
+          child: TextTranslator(
             AppLocalizations.of(context).translate("confirm"),
           ),
         ),
@@ -81,7 +82,7 @@ class BagModal extends StatelessWidget {
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                TextTranslator(
                   AppLocalizations.of(context).translate("in_cart"),
                   style: TextStyle(
                     fontSize: 22,
@@ -121,7 +122,7 @@ class BagModal extends StatelessWidget {
 
                   if (cartContext.itemCount == 0)
                     return Center(
-                      child: Text(
+                      child: TextTranslator(
                         AppLocalizations.of(context)
                             .translate('no_item_in_cart'),
                       ),
@@ -153,7 +154,7 @@ class BagModal extends StatelessWidget {
                 20.0,
               ),
               color: Colors.teal,
-              child: Text(
+              child: TextTranslator(
                 AppLocalizations.of(context).translate("order"),
                 style: TextStyle(
                   color: Colors.white,
@@ -218,7 +219,7 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
                   left: 25.0,
                   right: 25.0,
                 ),
-                child: Text(
+                child: TextTranslator(
                   cartContext.contains(widget.food)
                       ? AppLocalizations.of(context).translate('edit')
                       : AppLocalizations.of(context).translate('add_to_cart'),
@@ -235,7 +236,7 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
               else ...[
                 Padding(
                   padding: const EdgeInsets.only(left: 25.0),
-                  child: Text("Options"),
+                  child: TextTranslator("Options"),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 25.0),
@@ -269,7 +270,7 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                          child: Text(
+                          child: TextTranslator(
                             AppLocalizations.of(context).translate('item_count'),
                           ),
                         ),
@@ -304,7 +305,7 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
                         ),
                         child: RaisedButton(
                           color: CRIMSON,
-                          child: Text(
+                          child: TextTranslator(
                             cartContext.contains(widget.food)
                                 ? AppLocalizations.of(context).translate('edit')
                                 : AppLocalizations.of(context).translate('add'),
@@ -355,7 +356,7 @@ class LanguageDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
+            TextTranslator(
               AppLocalizations.of(context).translate('language'),
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -460,7 +461,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
+            TextTranslator(
               AppLocalizations.of(context).translate('search_type'),
               style: TextStyle(
                 fontSize: 20,
@@ -504,7 +505,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                             },
                             child: Container(
                               padding: const EdgeInsets.all(10),
-                              child: Text(
+                              child: TextTranslator(
                                 AppLocalizations.of(context).translate(e),
                               ),
                             ),
@@ -518,7 +519,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
             SizedBox(
               height: 15,
             ),
-            Text(
+            TextTranslator(
               AppLocalizations.of(context).translate('categories'),
               style: TextStyle(
                 fontSize: 20,
@@ -555,7 +556,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                         },
                         child: Container(
                           padding: const EdgeInsets.all(10),
-                          child: Text(
+                          child: TextTranslator(
                             'Tous',
                           ),
                         ),
@@ -593,7 +594,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                               },
                               child: Container(
                                 padding: const EdgeInsets.all(10),
-                                child: Text(
+                                child: TextTranslator(
                                   e.name[Provider.of<SettingContext>(context).languageCode],
                                 ),
                               ),
@@ -608,7 +609,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
             SizedBox(
               height: 15,
             ),
-            Text(
+            TextTranslator(
               AppLocalizations.of(context).translate('attributes'),
               style: TextStyle(
                 fontSize: 20,
@@ -642,7 +643,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                         },
                         child: Container(
                           padding: const EdgeInsets.all(10),
-                          child: Text(
+                          child: TextTranslator(
                             'Tous',
                           ),
                         ),
@@ -690,7 +691,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                                     SizedBox(
                                       width: 5,
                                     ),
-                                    Text(
+                                    TextTranslator(
                                       e.tag['type'],
                                     ),
                                   ],
@@ -716,7 +717,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                     'type': type,
                   },
                 ),
-                child: Text(
+                child: TextTranslator(
                   AppLocalizations.of(context).translate('confirm'),
                   style: TextStyle(
                     color: Colors.white,
@@ -785,7 +786,7 @@ class _OptionChoiceDialogState extends State<OptionChoiceDialog> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         onPressed: ()=> Navigator.of(context).pop(optionSelected),
-                        child: Text(
+                        child: TextTranslator(
                                 AppLocalizations.of(context)
                                     .translate("validate"),
                                 style: TextStyle(

@@ -15,6 +15,7 @@ import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -43,7 +44,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
         return ScaffoldWithBottomMenu(
           appBar: AppBar(
-            title: Text(
+            title: TextTranslator(
               AppLocalizations.of(context).translate('profile_and_settings'),
             ),
             actions: [
@@ -113,7 +114,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     SizedBox(
                                       height: 10,
                                     ),
-                                    Text(
+                                    TextTranslator(
                                       authContext.currentUser.email,
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
@@ -122,10 +123,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                     SizedBox(
                                       height: 10,
                                     ),
-                                    Text(
+                                    TextTranslator(
                                       authContext.currentUser.name.first.length != 0 ? authContext.currentUser.name.first : AppLocalizations.of(context).translate('no_firstname'),
                                     ),
-                                    Text(
+                                    TextTranslator(
                                       authContext.currentUser.name.last.length != 0 ? authContext.currentUser.name.last : AppLocalizations.of(context).translate('no_lastname'),
                                     ),
                                     SizedBox(
@@ -138,7 +139,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                         Icon(
                                           Icons.location_on_sharp,
                                         ),
-                                        Text(
+                                        TextTranslator(
                                           authContext.currentUser.address ?? AppLocalizations.of(context).translate('no_address'),
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
@@ -178,7 +179,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        /* Text(
+                        /* TextTranslator(
                           AppLocalizations.of(context).translate("my_settings"),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
@@ -189,8 +190,8 @@ class _ProfilePageState extends State<ProfilePage> {
                           height: 30,
                         ),*/
 //_profilSettings(),
-                        Text(
-                          AppLocalizations.of(context).translate("language"),
+                        TextTranslator(
+                          "language",
                           style: Theme.of(context).textTheme.headline6,
                         ),
                         DropdownButton<String>(
@@ -209,10 +210,21 @@ class _ProfilePageState extends State<ProfilePage> {
                             color: Colors.grey[700],
                           ),
                           items: [
+                            /*for (var i=0;i< settingContext.langs.length;i++) 
+                               DropdownMenuItem<String>(
+                                value: settingContext.langs[i].code,
+                                child: TextTranslator(
+                                  i == 0 ? AppLocalizations.of(context).translate("system_setting") : settingContext.langs[i].name,
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ),
+                            */
                             for (int i = 0; i < _supportedLanguages.length; i++)
                               DropdownMenuItem<String>(
                                 value: _supportedLanguages[i],
-                                child: Text(
+                                child: TextTranslator(
                                   i == 0 ? AppLocalizations.of(context).translate(_languages[i]) : _languages[i],
                                   style: TextStyle(
                                     color: Colors.grey,
@@ -224,7 +236,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         /*SizedBox(
                           height: 30,
                         ),
-                        Text(
+                        TextTranslator(
                           AppLocalizations.of(context).translate("password"),
                           style: Theme.of(context).textTheme.headline6,
                         ),*/
@@ -245,7 +257,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           padding: const EdgeInsets.symmetric(
                             vertical: 15,
                           ),
-                          child: Text(
+                          child: TextTranslator(
                             AppLocalizations.of(context).translate('change_password'),
                             style: GoogleFonts.raleway(
                               textStyle: TextStyle(
@@ -258,7 +270,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         /*SizedBox(
                           height: 30,
                         ),
-                        Text(
+                        TextTranslator(
                           AppLocalizations.of(context)
                               .translate("my_payment_cards"),
                           style: Theme.of(context).textTheme.headline6,
@@ -280,7 +292,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           padding: const EdgeInsets.symmetric(
                             vertical: 15,
                           ),
-                          child: Text(
+                          child: TextTranslator(
                             AppLocalizations.of(context).translate('manage_cards'),
                             style: GoogleFonts.raleway(
                               textStyle: TextStyle(
@@ -293,7 +305,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         /*SizedBox(
                           height: 30,
                         ),
-                        Text(
+                        TextTranslator(
                           AppLocalizations.of(context).translate("favorites"),
                           style: Theme.of(context).textTheme.headline6,
                         ),*/
@@ -314,7 +326,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           padding: const EdgeInsets.symmetric(
                             vertical: 15,
                           ),
-                          child: Text(
+                          child: TextTranslator(
                             AppLocalizations.of(context).translate('view_favorites'),
                             style: GoogleFonts.raleway(
                               textStyle: TextStyle(
@@ -327,7 +339,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         /*SizedBox(
                           height: 30,
                         ),
-                        Text(
+                        TextTranslator(
                           AppLocalizations.of(context)
                               .translate("command_history"),
                           style: Theme.of(context).textTheme.headline6,
@@ -349,7 +361,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           padding: const EdgeInsets.symmetric(
                             vertical: 15,
                           ),
-                          child: Text(
+                          child: TextTranslator(
                             AppLocalizations.of(context).translate('view_command_history'),
                             style: GoogleFonts.raleway(
                               textStyle: TextStyle(
@@ -402,7 +414,7 @@ class _ProfilePageState extends State<ProfilePage> {
         padding: const EdgeInsets.symmetric(
           vertical: 8,
         ),
-        child: Text(
+        child: TextTranslator(
           AppLocalizations.of(context).translate('change_password'),
           style: GoogleFonts.raleway(
             textStyle: TextStyle(

@@ -16,6 +16,7 @@ import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 import 'package:menu_advisor/src/utils/extensions.dart';
 
@@ -95,7 +96,7 @@ class _LoginPageState extends State<LoginPage> {
                     children: [
                       Align(
                         alignment: Alignment.center,
-                        child: Text(
+                        child: TextTranslator(
                           AppLocalizations.of(context).translate("welcome"),
                           style: TextStyle(
                             fontFamily: 'Golden Ranger',
@@ -143,7 +144,7 @@ class _LoginPageState extends State<LoginPage> {
                                   isPasswordRemember = value;
                                 });
                               }),
-                          Text(
+                          TextTranslator(
                             AppLocalizations.of(context)
                                 .translate("remember_password"),
                           )
@@ -170,7 +171,7 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                 ),
                               )
-                            : Text(
+                            : TextTranslator(
                                 AppLocalizations.of(context)
                                     .translate("login_button"),
                                 style: TextStyle(
@@ -181,7 +182,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       SizedBox(height: 10),
                       TextButton(
-                        child: Text(
+                        child: TextTranslator(
                           AppLocalizations.of(context)
                               .translate("forgotten_password"),
                           style: TextStyle(
@@ -198,7 +199,7 @@ class _LoginPageState extends State<LoginPage> {
                         },
                       ),
                       FlatButton(
-                        child: Text(
+                        child: TextTranslator(
                           AppLocalizations.of(context)
                               .translate("skip_for_now"),
                         ),
@@ -247,7 +248,7 @@ class _LoginPageState extends State<LoginPage> {
                           routeName: signupRoute,
                         );
                       },
-                      child: Text(
+                      child: TextTranslator(
                         AppLocalizations.of(context)
                             .translate("create_account"),
                         style: TextStyle(

@@ -15,6 +15,7 @@ import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/button_item_count_widget.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
 class FoodPage extends StatefulWidget {
@@ -96,7 +97,7 @@ class _FoodPageState extends State<FoodPage> {
                 onPressed: () => RouteUtil.goBack(context: context),
               ),
               centerTitle: true,
-              title: Text(widget.food.name),
+              title: TextTranslator(widget.food.name),
               actions: [],
             ),
             body: mainContent,
@@ -143,7 +144,7 @@ class _FoodPageState extends State<FoodPage> {
                       ),
                       Positioned(
                         left: 70,
-                        child: Text(
+                        child: TextTranslator(
                           'Prix',
                           style: TextStyle(
                             fontSize: 20,
@@ -171,7 +172,7 @@ class _FoodPageState extends State<FoodPage> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 28.0),
-                  child: Text(
+                  child: TextTranslator(
                     AppLocalizations.of(context).translate('description'),
                     style: TextStyle(
                       fontSize: 18,
@@ -188,7 +189,7 @@ class _FoodPageState extends State<FoodPage> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 28),
-                  child: Text(
+                  child: TextTranslator(
                     widget.food.description ?? AppLocalizations.of(context).translate('no_description'),
                     style: TextStyle(
                       fontSize: 16,
@@ -205,7 +206,7 @@ class _FoodPageState extends State<FoodPage> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 28.0),
-                  child: Text(
+                  child: TextTranslator(
                     AppLocalizations.of(context).translate('attributes'),
                     style: TextStyle(
                       fontSize: 18,
@@ -255,11 +256,11 @@ class _FoodPageState extends State<FoodPage> {
                                                           SizedBox(
                                                             width: 5,
                                                           ),
-                                                          Text(
+                                                          TextTranslator(
                                                             attribute.tag,
                                                           ),
                                                         ]
-                                                        else Text("")
+                                                        else TextTranslator("")
                                                       ],
                                                     );
                                                   },
@@ -279,7 +280,7 @@ class _FoodPageState extends State<FoodPage> {
                           padding: const EdgeInsets.only(
                             left: 20.0,
                           ),
-                          child: Text(
+                          child: TextTranslator(
                             AppLocalizations.of(context).translate('no_attribute'),
                             style: TextStyle(
                               fontSize: 22,
@@ -460,7 +461,7 @@ class _FoodPageState extends State<FoodPage> {
                                   );
                                 }
                               },
-                              child: Text(
+                              child: TextTranslator(
                                 cartContext.contains(widget.food)
                                     ? AppLocalizations.of(context)
                                         .translate('remove_from_cart')
@@ -511,7 +512,7 @@ class _FoodPageState extends State<FoodPage> {
                     iconTheme: IconThemeData(
                       color: Colors.black,
                     ),
-                    title: Text(
+                    title: TextTranslator(
                       widget.food.name,
                       style: TextStyle(
                         color: Colors.black,

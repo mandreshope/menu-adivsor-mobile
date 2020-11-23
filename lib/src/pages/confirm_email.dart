@@ -9,6 +9,7 @@ import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
 class ConfirmEmailPage extends StatefulWidget {
@@ -62,7 +63,7 @@ class _ConfirmEmailPageState extends State<ConfirmEmailPage> with SingleTickerPr
                   right: 40.0,
                   bottom: 10.0,
                 ),
-                child: Text(
+                child: TextTranslator(
                   AppLocalizations.of(context).translate("enter_code").replaceAll('*', widget.email),
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -71,7 +72,7 @@ class _ConfirmEmailPageState extends State<ConfirmEmailPage> with SingleTickerPr
                   ),
                 ),
               ),
-              Text(
+              TextTranslator(
                 AppLocalizations.of(context).translate("email_not_yours"),
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -150,7 +151,7 @@ class _ConfirmEmailPageState extends State<ConfirmEmailPage> with SingleTickerPr
                             ),
                           ),
                         )
-                      : Text(
+                      : TextTranslator(
                           AppLocalizations.of(context).translate('next'),
                           style: TextStyle(
                             color: Colors.white,

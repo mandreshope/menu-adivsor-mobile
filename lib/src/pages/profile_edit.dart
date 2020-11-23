@@ -4,6 +4,7 @@ import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
+import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
 class ProfileEditPage extends StatefulWidget {
@@ -41,7 +42,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(
+          title: TextTranslator(
             AppLocalizations.of(context).translate('edit_profile'),
           ),
         ),
@@ -128,7 +129,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                           ),
                         ),
                       )
-                    : Text(
+                    : TextTranslator(
                         AppLocalizations.of(context).translate("save"),
                         style: TextStyle(
                           color: Colors.white,

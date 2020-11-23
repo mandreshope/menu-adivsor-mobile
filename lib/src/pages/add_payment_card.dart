@@ -12,6 +12,7 @@ import 'package:menu_advisor/src/services/stripe.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/input_formatters.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
 class PaymentCardDetailsPage extends StatefulWidget {
@@ -57,7 +58,7 @@ class _PaymentCardDetailsPageState extends State<PaymentCardDetailsPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(
+          title: TextTranslator(
             AppLocalizations.of(context).translate('card_details'),
           ),
         ),
@@ -215,7 +216,7 @@ class _PaymentCardDetailsPageState extends State<PaymentCardDetailsPage> {
                           SizedBox(
                             width: 5,
                           ),
-                          Text(
+                          TextTranslator(
                             widget.isPaymentStep ? AppLocalizations.of(context).translate('validate') : AppLocalizations.of(context).translate('save'),
                             style: TextStyle(
                               color: Colors.white,

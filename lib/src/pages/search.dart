@@ -122,7 +122,7 @@ class _SearchPageState extends State<SearchPage> {
                   physics: AlwaysScrollableScrollPhysics(),
                   child: _searchValue.length == 0 && type == 'all'
                       ? Center(
-                          child: Text(
+                          child: TextTranslator(
                             AppLocalizations.of(context).translate('start_by_typing_your_research'),
                           ),
                         )
@@ -139,7 +139,7 @@ class _SearchPageState extends State<SearchPage> {
                                 ),
                               if (!_loading && _searchResults.length == 0)
                                 Center(
-                                  child: Text(
+                                  child: TextTranslator(
                                     AppLocalizations.of(context).translate('no_result'),
                                   ),
                                 ),

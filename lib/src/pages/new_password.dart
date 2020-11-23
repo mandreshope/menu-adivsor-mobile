@@ -8,6 +8,7 @@ import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
 class NewPasswordPage extends StatefulWidget {
@@ -77,7 +78,7 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text(
+                        TextTranslator(
                           AppLocalizations.of(context)
                               .translate("enter_code")
                               .replaceFirst('*', widget.email),
@@ -102,7 +103,7 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
                           validator: Validators.required(context),
                         ),
                         SizedBox(height: 5),
-                        Text(
+                        TextTranslator(
                           AppLocalizations.of(context)
                               .translate("new_password"),
                           style: TextStyle(
@@ -128,7 +129,7 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
                           validator: Validators.required(context),
                         ),
                         SizedBox(height: 10),
-                        Text(
+                        TextTranslator(
                           AppLocalizations.of(context)
                               .translate("confirm_password_placeholder"),
                           style: TextStyle(
@@ -172,7 +173,7 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
                                     ),
                                   ),
                                 )
-                              : Text(
+                              : TextTranslator(
                                   AppLocalizations.of(context)
                                       .translate("confirm"),
                                   style: TextStyle(

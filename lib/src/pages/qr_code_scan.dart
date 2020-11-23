@@ -6,6 +6,7 @@ import 'package:menu_advisor/src/pages/restaurant.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class QRCodeScanPage extends StatefulWidget {
@@ -23,7 +24,7 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Scan code QR"),
+        title: TextTranslator("Scan code QR"),
       ),
       backgroundColor: BACKGROUND_COLOR,
       body: SafeArea(
@@ -51,7 +52,7 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
               top: 200,
               left: 0,
               right: 0,
-              child: Text(
+              child: TextTranslator(
                 AppLocalizations.of(context).translate("center_camera"),
                 textAlign: TextAlign.center,
                 style: TextStyle(

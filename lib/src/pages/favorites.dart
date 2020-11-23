@@ -6,6 +6,7 @@ import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
+import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
 class FavoritesPage extends StatefulWidget {
@@ -94,7 +95,7 @@ class _FavoritesPageState extends State<FavoritesPage>
       ),
       child: Scaffold(
         appBar: AppBar(
-          title: Text(
+          title: TextTranslator(
             AppLocalizations.of(context).translate('favorites'),
             style: TextStyle(
               color: Colors.black,
@@ -151,7 +152,7 @@ class _FavoritesPageState extends State<FavoritesPage>
                             Icons.warning,
                             size: 40,
                           ),
-                          Text(
+                          TextTranslator(
                             AppLocalizations.of(context)
                                 .translate('no_favorite_restaurant'),
                             style: TextStyle(
@@ -194,7 +195,7 @@ class _FavoritesPageState extends State<FavoritesPage>
                             Icons.warning,
                             size: 40,
                           ),
-                          Text(
+                          TextTranslator(
                             AppLocalizations.of(context)
                                 .translate('no_favorite_food'),
                             style: TextStyle(

@@ -15,6 +15,7 @@ import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
 import '../models.dart';
@@ -58,7 +59,7 @@ class _OrderPageState extends State<OrderPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: TextTranslator(
           AppLocalizations.of(context).translate('order'),
         ),
       ),
@@ -95,7 +96,7 @@ class _OrderPageState extends State<OrderPage> {
                           padding: const EdgeInsets.symmetric(
                             vertical: 10.0,
                           ),
-                          child: Text(
+                          child: TextTranslator(
                             AppLocalizations.of(context).translate('no_item_in_cart'),
                             textAlign: TextAlign.center,
                           ),
@@ -130,7 +131,7 @@ class _OrderPageState extends State<OrderPage> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
+                                    TextTranslator(
                                       _restaurant.name,
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
@@ -150,7 +151,7 @@ class _OrderPageState extends State<OrderPage> {
                                         ),
                                         Container(
                                           width: (MediaQuery.of(context).size.width -  MediaQuery.of(context).size.width / 3) - 95,
-                                          child: Text(
+                                          child: TextTranslator(
                                             _restaurant.address,
                                             maxLines: 3,
                                             overflow: TextOverflow.ellipsis,
@@ -173,7 +174,7 @@ class _OrderPageState extends State<OrderPage> {
                                         SizedBox(
                                           width: 5,
                                         ),
-                                        Text(
+                                        TextTranslator(
                                           "Tel : ${_restaurant.phoneNumber ?? "0"}",
                                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.black54),
                                         )
@@ -187,7 +188,7 @@ class _OrderPageState extends State<OrderPage> {
                           
                           Padding(
                             padding: const EdgeInsets.all(10.0),
-                            child: Text(
+                            child: TextTranslator(
                               AppLocalizations.of(context).translate('all_items'),
                               style: TextStyle(
                                 fontSize: 20,
@@ -213,7 +214,7 @@ class _OrderPageState extends State<OrderPage> {
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
+                            TextTranslator(
                               '${AppLocalizations.of(context).translate('total_to_pay')} : ',
                               style: TextStyle(
                                 fontWeight: FontWeight.normal,
@@ -255,7 +256,7 @@ class _OrderPageState extends State<OrderPage> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     color: Colors.teal,
-                    child: Text(
+                    child: TextTranslator(
                       commandContext.commandType == null
                           ? AppLocalizations.of(context).translate('validate')
                           : (commandContext.commandType != 'delivery' && authContext.currentUser != null)
@@ -436,7 +437,7 @@ class _OrderPageState extends State<OrderPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
+                  TextTranslator(
                     AppLocalizations.of(context).translate('command_type'),
                     style: TextStyle(
                       fontSize: 16,
@@ -473,7 +474,7 @@ class _OrderPageState extends State<OrderPage> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Text(
+                                    TextTranslator(
                                       AppLocalizations.of(context).translate('delivery'),
                                     ),
                                     SizedBox(
@@ -513,7 +514,7 @@ class _OrderPageState extends State<OrderPage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Text(
+                                  TextTranslator(
                                     AppLocalizations.of(context).translate('on_site'),
                                   ),
                                   SizedBox(
@@ -552,7 +553,7 @@ class _OrderPageState extends State<OrderPage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Text(
+                                  TextTranslator(
                                     AppLocalizations.of(context).translate('takeaway'),
                                   ),
                                   SizedBox(

@@ -8,6 +8,7 @@ import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/extensions.dart';
+import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
 class DeliveryDetailsPage extends StatefulWidget {
@@ -28,7 +29,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
         iconTheme: IconThemeData(
           color: Colors.black,
         ),
-        title: Text(
+        title: TextTranslator(
           AppLocalizations.of(context).translate('delivery_details'),
           style: TextStyle(
             color: Colors.black,
@@ -74,7 +75,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                             horizontal: 35.0,
                             vertical: 15,
                           ),
-                          child: Text(
+                          child: TextTranslator(
                             AppLocalizations.of(context)
                                 .translate('date_and_time'),
                             textAlign: TextAlign.start,
@@ -99,7 +100,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                   child: ListTile(
                                     contentPadding: const EdgeInsets.symmetric(
                                         horizontal: 25.0),
-                                    title: Text(
+                                    title: TextTranslator(
                                       AppLocalizations.of(context)
                                           .translate('as_soon_as_possible'),
                                     ),
@@ -156,7 +157,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                   child: ListTile(
                                     contentPadding: const EdgeInsets.symmetric(
                                         horizontal: 25.0),
-                                    title: Text(
+                                    title: TextTranslator(
                                       'Planifier une commande',
                                     ),
                                     leading: Icon(
@@ -177,7 +178,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                 ListTile(
                                   contentPadding: const EdgeInsets.symmetric(
                                       horizontal: 25.0),
-                                  title: Text(
+                                  title: TextTranslator(
                                     '${deliveryDate?.dateToString(DATE_FORMATED_ddMMyyyy) ?? ""}    ${deliveryTime?.hour ?? ""} : ${deliveryTime?.minute ?? ""}',
                                   ),
                                   leading: Container(
@@ -226,7 +227,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                     }
                   }
                 },
-                child: Text(
+                child: TextTranslator(
                   AppLocalizations.of(context).translate('next'),
                   style: TextStyle(
                     color: Colors.white,

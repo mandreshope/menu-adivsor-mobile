@@ -8,6 +8,7 @@ import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 import 'package:menu_advisor/src/utils/extensions.dart';
 
@@ -101,7 +102,7 @@ class _SignupPageState extends State<SignupPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Text(
+                            TextTranslator(
                               "Nom",
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
@@ -122,7 +123,7 @@ class _SignupPageState extends State<SignupPage> {
                               ),
                             ),
                             SizedBox(height: 10),
-                            Text(
+                            TextTranslator(
                               "Prénom",
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
@@ -143,7 +144,7 @@ class _SignupPageState extends State<SignupPage> {
                               ),
                             ),
                             SizedBox(height: 10),
-                            Text(
+                            TextTranslator(
                               AppLocalizations.of(context).translate("add_phone_number"),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
@@ -167,7 +168,7 @@ class _SignupPageState extends State<SignupPage> {
                               ),
                             ),
                             SizedBox(height: 10),
-                            Text(
+                            TextTranslator(
                               AppLocalizations.of(context).translate("mail_address_placeholder"),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
@@ -197,7 +198,7 @@ class _SignupPageState extends State<SignupPage> {
                               ),
                             ),
                             SizedBox(height: 10),
-                            Text(
+                            TextTranslator(
                               AppLocalizations.of(context).translate("password_placeholder"),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
@@ -219,7 +220,7 @@ class _SignupPageState extends State<SignupPage> {
                               ),
                             ),
                             SizedBox(height: 10),
-                            Text(
+                            TextTranslator(
                               AppLocalizations.of(context).translate("confirm_password_placeholder"),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
@@ -260,7 +261,7 @@ class _SignupPageState extends State<SignupPage> {
                                         ),
                                       ),
                                     )
-                                  : Text(
+                                  : TextTranslator(
                                       AppLocalizations.of(context).translate("next"),
                                       style: TextStyle(
                                         color: Colors.white,

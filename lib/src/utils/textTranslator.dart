@@ -29,13 +29,13 @@ class TextTranslator extends StatelessWidget {
   Widget build(BuildContext context) {
     final lang = Provider.of<SettingContext>(context).languageCode;
     return FutureBuilder(
-      future: data.translate(to: 'en'),
-      builder: (_,data){
-        if (!data.hasData){
+      future: _translate(),
+      builder: (_,snapshot){
+        if (!snapshot.hasData){
           return Center(child: CupertinoActivityIndicator(animating: true,));
         }else{
           return Text(
-            data.data.toString(),
+            data is String ? data : snapshot.data.toString(),
             style: this.style,
             maxLines: this.maxLines,
             overflow: this.overflow,
@@ -53,4 +53,15 @@ class TextTranslator extends StatelessWidget {
       }
     );
   }
+
+  Future<dynamic> _translate() async {
+    try {
+      var translate = await data.translate(to: "ko");
+      return translate;
+    } catch (e) {
+      print("error transalator $e");
+      return "-1error";
+    }
+  }
+
 }

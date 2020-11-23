@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
+import 'package:menu_advisor/src/utils/textTranslator.dart';
 
 class DiscoverPage extends StatefulWidget {
   @override
@@ -11,12 +12,12 @@ class _DiscoverPageState extends State<DiscoverPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: TextTranslator(
           AppLocalizations.of(context).translate('discover'),
         ),
       ),
       body: Center(
-        child: Text(
+        child: TextTranslator(
           "En cours de construction...",
           style: TextStyle(
             fontSize: 22,

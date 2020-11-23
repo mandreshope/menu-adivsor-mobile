@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/extensions.dart';
+import 'package:menu_advisor/src/utils/textTranslator.dart';
 
 import '../models.dart';
 
@@ -17,7 +18,7 @@ class Summary extends StatelessWidget {
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          title: Text(
+          title: TextTranslator(
             AppLocalizations.of(context).translate('summary'),
           ),
         ),
@@ -37,8 +38,8 @@ class Summary extends StatelessWidget {
                 //commande id
                 Row(
                   children: [
-                    Text("Commande ID : "),
-                    Text(commande.code?.toString()?.padLeft(6,'0') ?? "", style: TextStyle(color: CRIMSON, fontWeight: FontWeight.bold, fontSize: 18)),
+                    TextTranslator("Commande ID : "),
+                    TextTranslator(commande.code?.toString()?.padLeft(6,'0') ?? "", style: TextStyle(color: CRIMSON, fontWeight: FontWeight.bold, fontSize: 18)),
                     Spacer(),
                     Container(
                       padding: EdgeInsets.all(5),
@@ -46,7 +47,7 @@ class Summary extends StatelessWidget {
                         borderRadius: BorderRadius.horizontal(left: Radius.circular(15), right: Radius.circular(15)),
                         color: Colors.orange,
                       ),
-                      child: Text(
+                      child: TextTranslator(
                         "En attente",
                         style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12),
                       ),
@@ -64,7 +65,7 @@ class Summary extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: Row(
                     children: [
-                      Text('Total', style: TextStyle(fontSize: 16)),
+                      TextTranslator('Total', style: TextStyle(fontSize: 16)),
                       Spacer(),
                       Text('${commande.totalPrice / 100} €', style: TextStyle(fontSize: 16, color: CRIMSON, fontWeight: FontWeight.bold)),
                     ],
@@ -76,11 +77,11 @@ class Summary extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      TextTranslator(
                         AppLocalizations.of(context).translate(commande.commandType ?? 'on_site').toUpperCase(),
                         style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                       ),
-                      Text('${commande.shippingTime == null ? "" : commande.shippingTime.dateToString("dd/MM/yyyy HH:mm")}')
+                      TextTranslator('${commande.shippingTime == null ? "" : commande.shippingTime.dateToString("dd/MM/yyyy HH:mm")}')
                     ],
                   ),
                 ),
@@ -110,7 +111,7 @@ class Summary extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                TextTranslator(
                   commande.restaurant.name,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
@@ -128,7 +129,7 @@ class Summary extends StatelessWidget {
                     SizedBox(
                       width: 5,
                     ),
-                    Text(
+                    TextTranslator(
                       commande.restaurant.address ?? "",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -148,7 +149,7 @@ class Summary extends StatelessWidget {
                     SizedBox(
                       width: 5,
                     ),
-                    Text(
+                    TextTranslator(
                       "Tel : 0",
                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black54),
                     )
@@ -169,14 +170,14 @@ class Summary extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Text('${commandItem.quantity}', style: TextStyle(fontSize: 16)),
+              TextTranslator('${commandItem.quantity}', style: TextStyle(fontSize: 16)),
               SizedBox(width: 15),
               Image.network(
                 item.imageURL,
                 width: 25,
               ),
               SizedBox(width: 8),
-              Text('${item.name}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              TextTranslator('${item.name}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               Spacer(),
               item.price?.amount == null ? Text("_") : Text("${item.price.amount / 100} €", style: TextStyle(fontSize: 16)),
             ],

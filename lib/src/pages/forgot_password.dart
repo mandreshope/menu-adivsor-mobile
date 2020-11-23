@@ -9,6 +9,7 @@ import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
@@ -89,7 +90,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text(
+                        TextTranslator(
                           AppLocalizations.of(context)
                               .translate("forgot_password"),
                           style: TextStyle(
@@ -135,7 +136,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                     ),
                                   ),
                                 )
-                              : Text(
+                              : TextTranslator(
                                   AppLocalizations.of(context)
                                       .translate("next"),
                                   style: TextStyle(

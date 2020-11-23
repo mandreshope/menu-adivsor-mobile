@@ -9,6 +9,7 @@ import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
@@ -88,7 +89,7 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: TextTranslator(
           AppLocalizations.of(context).translate('command_history'),
         ),
         // backgroundColor: Colors.white,
@@ -128,7 +129,7 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
                         Icons.warning,
                         size: 40,
                       ),
-                      Text(
+                      TextTranslator(
                         AppLocalizations.of(context).translate('no_command'),
                         style: TextStyle(
                           fontSize: 22,
@@ -166,7 +167,7 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
+        TextTranslator(
           AppLocalizations.of(context).translate(title),
           style: TextStyle(
             fontSize: 22,
@@ -196,7 +197,7 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
                 Icons.warning,
                 size: 40,
               ),
-              Text(
+              TextTranslator(
                 "Aucun",
                 style: TextStyle(
                   fontSize: 22,

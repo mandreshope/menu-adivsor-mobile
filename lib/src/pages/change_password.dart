@@ -7,6 +7,7 @@ import 'package:menu_advisor/src/constants/validators.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
 class ChangePasswordPage extends StatefulWidget {
@@ -31,7 +32,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: TextTranslator(
           AppLocalizations.of(context).translate('change_password'),
         ),
       ),
@@ -138,7 +139,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                                   ),
                                 ),
                               )
-                            : Text(
+                            : TextTranslator(
                                 AppLocalizations.of(context)
                                     .translate("confirm"),
                                 style: TextStyle(

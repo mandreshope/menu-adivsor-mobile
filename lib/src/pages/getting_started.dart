@@ -4,6 +4,7 @@ import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/pages/home.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:menu_advisor/src/utils/textTranslator.dart';
 
 class GettingStartedPage extends StatefulWidget {
   @override
@@ -69,7 +70,7 @@ class _GettingStartedPageState extends State<GettingStartedPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     FlatButton(
-                      child: Text(
+                      child: TextTranslator(
                         "Passer".toUpperCase(),
                         style: TextStyle(
                           color: CRIMSON,

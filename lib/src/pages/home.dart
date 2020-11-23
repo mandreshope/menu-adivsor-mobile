@@ -110,7 +110,7 @@ class _HomePageState extends State<HomePage> {
         : geolocationDenied
             ? Scaffold(
                 body: Center(
-                  child: Text(
+                  child: TextTranslator(
                     AppLocalizations.of(context).translate('geolocation_denied'),
                   ),
                 ),
@@ -350,7 +350,7 @@ class _HomePageState extends State<HomePage> {
               return Container(
                 height: 200,
                 child: Center(
-                  child: Text(
+                  child: TextTranslator(
                     AppLocalizations.of(context).translate('no_food_category'),
                     style: TextStyle(
                       fontSize: 22,
@@ -432,7 +432,7 @@ class _HomePageState extends State<HomePage> {
                       routeName: searchRoute,
                     );
                   },
-                  child: Text(
+                  child: TextTranslator(
                     AppLocalizations.of(context).translate("see_all"),
                     style: Theme.of(context).textTheme.caption,
                   ),
@@ -461,7 +461,7 @@ class _HomePageState extends State<HomePage> {
                 return Container(
                   height: 200,
                   child: Center(
-                    child: Text(
+                    child: TextTranslator(
                       AppLocalizations.of(context).translate('no_food'),
                       style: TextStyle(
                         fontSize: 22,
@@ -534,7 +534,7 @@ class _HomePageState extends State<HomePage> {
                       routeName: searchRoute,
                     );
                   },
-                  child: Text(
+                  child: TextTranslator(
                     AppLocalizations.of(context).translate('see_all'),
                     style: Theme.of(context).textTheme.caption,
                   ),
@@ -565,7 +565,7 @@ class _HomePageState extends State<HomePage> {
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
+                    TextTranslator(
                       AppLocalizations.of(context).translate('no_restaurant_near') ?? "Aucun restaurant trouvé",
                       style: TextStyle(
                         fontSize: 22,
@@ -638,7 +638,7 @@ class _HomePageState extends State<HomePage> {
                       routeName: searchRoute,
                     );
                   },
-                  child: Text(
+                  child: TextTranslator(
                     AppLocalizations.of(context).translate("see_all"),
                     style: Theme.of(context).textTheme.caption,
                   ),
@@ -667,7 +667,7 @@ class _HomePageState extends State<HomePage> {
                 return Container(
                   height: 200,
                   child: Center(
-                    child: Text(
+                    child: TextTranslator(
                       AppLocalizations.of(context).translate('no_food'),
                       style: TextStyle(
                         fontSize: 22,

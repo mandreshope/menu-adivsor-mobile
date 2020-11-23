@@ -43,7 +43,7 @@ class CategoryCard extends StatelessWidget {
       width: 110,
       margin: EdgeInsets.symmetric(horizontal: 3),
       child: AspectRatio(
-        aspectRatio: 3 / 5,
+        aspectRatio: 2.8 / 5,
         child: Card(
           elevation: 4.0,
           color: Colors.white,
@@ -86,10 +86,12 @@ class CategoryCard extends StatelessWidget {
                       fontFamily: 'Golden Ranger',
                       fontSize: 18,
                     ),
+                    maxLines: 2,
+                    textAlign: TextAlign.center,
                   
                 ),
                 SizedBox(
-                  height: 20,
+                  height: 15,
                 ),
                 GestureDetector(
                   child: Container(
@@ -207,7 +209,7 @@ class _FoodCardState extends State<FoodCard> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.max,
                               children: [
-                                Text(
+                                TextTranslator(
                                   widget.food.name ?? "",
                                   style: TextStyle(
                                     fontSize: 18,
@@ -226,7 +228,7 @@ class _FoodCardState extends State<FoodCard> {
                                           ),
                                         ),
                                       )
-                                    : Text(
+                                    : TextTranslator(
                                         restaurantName ?? AppLocalizations.of(context).translate('no_associated_restaurant'),
                                         style: TextStyle(
                                           fontSize: 16,
@@ -479,7 +481,7 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        TextTranslator(
                           widget.food.name,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
@@ -488,7 +490,7 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                         SizedBox(
                           height: 5,
                         ),
-                        Text(
+                        TextTranslator(
                           widget.food.description ?? AppLocalizations.of(context).translate('no_description'),
                         ),
                         if (widget.food.attributes.length > 0) ...[
@@ -548,7 +550,7 @@ FadeInImage.assetNetwork(
                                                           ),
 
                                                       if (expanded)
-                                                        Text(
+                                                        TextTranslator(
                                                           attribute.tag,
                                                         ),
                                                       ]
@@ -711,7 +713,7 @@ class _DrinkCardState extends State<DrinkCard> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
+                          TextTranslator(
                             widget.food.name,
                             style: TextStyle(
                               fontSize: 20,
@@ -868,14 +870,14 @@ class MenuCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Text(
+                      TextTranslator(
                         menu.name,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18
                         ),
                       ),
-                      Text(
+                      TextTranslator(
                         menu.description ?? "",
                         style: TextStyle(),
                       ),
@@ -910,7 +912,7 @@ class MenuCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       SizedBox(height: 15,),
-                      Text(entry.key,
+                      TextTranslator(entry.key,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -926,7 +928,7 @@ class MenuCard extends StatelessWidget {
                               children: [
                                 Align(
                                   alignment: Alignment.centerLeft,
-                                  child: Text(food.name),
+                                  child: TextTranslator(food.name),
                                 ),
 
                                 food?.price?.amount == null ? Text("") : Text("${food.price.amount / 100} €", style: TextStyle(fontWeight: FontWeight.bold)),
@@ -1012,7 +1014,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 mainAxisSize: MainAxisSize.max,
                                 children: [
-                                  Text(
+                                  TextTranslator(
                                     widget.restaurant.name ?? "",
                                     style: TextStyle(
                                       fontSize: 20,
@@ -1137,7 +1139,7 @@ class BagItem extends StatelessWidget {
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
+              TextTranslator(
                 '$count x ',
                 style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 20),
               ),
@@ -1166,14 +1168,14 @@ class BagItem extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    TextTranslator(
                       food.name,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Text(
+                    TextTranslator(
                       food?.description ?? "",
                       style: TextStyle(fontSize: food?.description == null ? 0 : 15, fontWeight: FontWeight.bold, color: Colors.grey[600]),
                     ),
@@ -1189,7 +1191,7 @@ class BagItem extends StatelessWidget {
                 ),
               ),
               /*if (food.price.amount != null)
-                      Text(
+                      TextTranslator(
                         '${food.price.amount / 100}€',
                         style: TextStyle(
                           fontSize: 18,
@@ -1202,7 +1204,7 @@ class BagItem extends StatelessWidget {
                   color: Colors.grey[200],
                 ),
                 padding: const EdgeInsets.all(15.0),
-                child: Text(
+                child: TextTranslator(
                   '$count',
                   style: TextStyle(
                     color: CRIMSON,
@@ -1333,7 +1335,7 @@ class CommandHistoryItem extends StatelessWidget {
               SizedBox(
                 width: 20,
               ),
-              Text(
+              TextTranslator(
                 food.name ?? "",
                 style: TextStyle(
                   fontSize: 20,
@@ -1352,7 +1354,7 @@ class CommandHistoryItem extends StatelessWidget {
               SizedBox(
                 width: 20,
               ),
-              /*Text(
+              /*TextTranslator(
                   '${command.shippingTime?.day ?? ""}/${command.shippingTime?.month ?? ""} - ${command.shippingTime.hour}:${command.shippingTime.minute}',
                   style: TextStyle(
                     fontSize: 18,

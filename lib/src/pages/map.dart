@@ -17,6 +17,7 @@ import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
 class MapPage extends StatefulWidget {
@@ -144,7 +145,7 @@ class _MapPageState extends State<MapPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: TextTranslator(
           AppLocalizations.of(context).translate("map_page_title"),
         ),
       ),
@@ -187,7 +188,7 @@ class _MapPageState extends State<MapPage> {
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
-                                        Text(
+                                        TextTranslator(
                                           restaurant.content['name'],
                                         ),
                                         SizedBox(
@@ -214,7 +215,7 @@ class _MapPageState extends State<MapPage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Text(
+                                  TextTranslator(
                                     AppLocalizations.of(context).translate('you'),
                                     style: TextStyle(
                                       color: CRIMSON,
@@ -365,7 +366,7 @@ class _MapPageState extends State<MapPage> {
                                                         height: 20,
                                                       ),
                                                       SizedBox(width: 20),
-                                                      Text(
+                                                      TextTranslator(
                                                         e.content['name'],
                                                       ),
                                                       Spacer(),
@@ -402,7 +403,7 @@ class _MapPageState extends State<MapPage> {
                                       .toList(),
                                 ],
                               )
-                            : Text(
+                            : TextTranslator(
                                 AppLocalizations.of(context).translate('no_result'),
                                 textAlign: TextAlign.center,
                               ),

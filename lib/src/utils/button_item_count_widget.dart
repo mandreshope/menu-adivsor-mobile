@@ -6,6 +6,7 @@ import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
+import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
 class ButtonItemCountWidget extends StatefulWidget {
@@ -99,7 +100,7 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                 padding: EdgeInsets.symmetric(vertical: 6),
                 width: 35,
                 child: Center(
-                  child: Text(
+                  child: TextTranslator(
                     '${widget.itemCount}',
                     style: TextStyle(
                       color: CRIMSON,
