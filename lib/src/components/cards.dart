@@ -290,7 +290,19 @@ class _FoodCardState extends State<FoodCard> {
                                         size: 10,
                                       ),
                                     ),
-                                    onPressed: (cartContext.itemCount == 0) ||
+                                    onPressed: 
+                                    widget.food.options.isNotEmpty ? 
+                                    () => RouteUtil.goTo(
+                                          context: context,
+                                          child: FoodPage(
+                                            food: widget.food,
+                                            imageTag: widget.imageTag,
+                                            restaurantName: restaurantName,
+                                          ),
+                                          routeName: foodRoute,
+                                        ) :
+                                    
+                                    (cartContext.itemCount == 0) ||
                                             (cartContext.pricelessItems && widget.food.price?.amount == null) ||
                                             (!cartContext.pricelessItems && widget.food.price?.amount != null)
                                         ? () async {
@@ -919,32 +931,42 @@ class MenuCard extends StatelessWidget {
                       ),),
                       Divider(),
                       for (var food in entry.value)...[
-                        Card(
-                          elevation: 2,
-                          child: Container(
-                            margin: EdgeInsets.all(15),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: TextTranslator(food.name),
+                        Consumer<MenuContext>(
+                          builder: (context, menuContext,w) {
+                            return InkWell(
+                              onTap: (){
+                                menuContext.select(entry.key, food);
+                              },
+                                child: Card(
+                                elevation: 2,
+                                child: Container(
+                                  margin: EdgeInsets.all(15),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Radio(value: menuContext.selectedMenu[entry.key]?.first?.id, groupValue: food.id, onChanged: null,activeColor: CRIMSON,hoverColor: CRIMSON,),
+                                      Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: TextTranslator(food.name),
+                                      ),
+
+                                      food?.price?.amount == null ? Text("") : Text("${food.price.amount / 100} €", style: TextStyle(fontWeight: FontWeight.bold)),
+
+                                      /*ButtonItemCountWidget(
+                                        food,
+                                        isMenu: true, onAdded: (value){
+                                          _cartContext.addItem(food, value);
+                                      }, onRemoved: (value){
+                                          value == 0 ? _cartContext.removeItem(food) 
+                                          : _cartContext.addItem(food, value);
+                                      }, itemCount: _cartContext.getCount(food)
+                                      , isContains: _cartContext.contains(food))*/
+                                    ],
+                                  ),
                                 ),
-
-                                food?.price?.amount == null ? Text("") : Text("${food.price.amount / 100} €", style: TextStyle(fontWeight: FontWeight.bold)),
-
-                                /*ButtonItemCountWidget(
-                                  food,
-                                  isMenu: true, onAdded: (value){
-                                    _cartContext.addItem(food, value);
-                                }, onRemoved: (value){
-                                    value == 0 ? _cartContext.removeItem(food) 
-                                    : _cartContext.addItem(food, value);
-                                }, itemCount: _cartContext.getCount(food)
-                                , isContains: _cartContext.contains(food))*/
-                              ],
-                            ),
-                          ),
+                              ),
+                            );
+                          }
                         )
                       ]
                     ],
@@ -1016,6 +1038,8 @@ class _RestaurantCardState extends State<RestaurantCard> {
                                 children: [
                                   TextTranslator(
                                     widget.restaurant.name ?? "",
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,

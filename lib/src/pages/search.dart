@@ -13,7 +13,6 @@ import 'package:menu_advisor/src/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
-import 'package:translator/translator.dart';
 
 class SearchPage extends StatefulWidget {
   final String type;

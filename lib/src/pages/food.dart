@@ -289,6 +289,9 @@ class _FoodPageState extends State<FoodPage> {
                           ),
                         ),
                 ),
+
+                // Text("test"),
+
                 if (!widget.fromDelevery) ...[
                   //  Spacer(),
                   // if (!this._cartContext.contains(widget.food))
@@ -483,6 +486,7 @@ class _FoodPageState extends State<FoodPage> {
                   ),
                 */
                 ],
+
               ],
             ),
             Positioned(

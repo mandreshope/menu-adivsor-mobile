@@ -1,19 +1,48 @@
 import 'dart:convert';
 
+import 'package:firebase_mlkit_language/firebase_mlkit_language.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingContext extends ChangeNotifier {
-  String _languageCode = 'system';
+  String _languageCode = 'fr';
   Future<void> initialized;
-  List<Language> langs = List();
+  List<String> _languageCodes = [
+    SupportedLanguages.English,
+    SupportedLanguages.Japanese,
+    SupportedLanguages.Chinese,
+    SupportedLanguages.French,
+    SupportedLanguages.Italian,
+    SupportedLanguages.Spanish,
+    SupportedLanguages.Russian,
+    SupportedLanguages.Korean,
+    SupportedLanguages.Dutch,
+    SupportedLanguages.German,
+  ];
 
+  List<String> _languages = [
+    "ANGLAIS",
+    "JAPONAIS",
+    "CHINOIS",
+    "ARABE",
+    "FRANCAIS",
+    "ITALIEN",
+    "ESPAGNOL",
+    "RUSSE",
+    "CORÉEN",
+    "NÉÉRLENDAIS",
+    "ALLEMAND"
+  ];
 
-  String get languageCode => _languageCode == 'system'
+  get languages => _languages;
+  get languageCodes => _languageCodes;
+
+  String get languageCode => _languageCode;
+  /*_languageCode == 'fr'
       ? WidgetsBinding.instance.window.locale.languageCode
-      : _languageCode;
+      : _languageCode;*/
 
   bool get isSystemSetting => _languageCode == 'system';
 
@@ -27,7 +56,6 @@ class SettingContext extends ChangeNotifier {
 
   SettingContext() {
     initialized = _loadCurrentUserSettings();
-    _loadLangFromAsset();
   }
 
   Future<void> _loadCurrentUserSettings() async {
@@ -44,15 +72,17 @@ class SettingContext extends ChangeNotifier {
     return;
   }
 
-  Future<void> _loadLangFromAsset() async {
-    var data = await rootBundle.loadString('lang/code.json');
-    var jsonResult = json.decode(data);
-    var result = (jsonResult as List).map<Language>((json) => Language.fromJson(json)).toList();
-    this.langs.addAll(result);
-    print(langs);
+  resetLanguage() {
+    languageCode = 'fr';
   }
 
-  resetLanguage() {
-    languageCode = 'system';
+  Future<void> downloadLanguage() async  {
+      print("download loading...");
+      
+      await Future.forEach(_languageCodes, (item) => FirebaseLanguage.instance.modelManager().downloadModel(item));
+
+     print("download finish...");
   }
+
+
 }
