@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -8,6 +9,7 @@ import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/pages/list_lang.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
@@ -19,6 +21,7 @@ import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'order.dart';
 
@@ -68,11 +71,14 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
   ScrollController _scrollController = ScrollController();
   bool _canScrollListRestaurant = false;
 
+  String _langTranslate;
+
   @override
   void initState() {
     super.initState();
 
     _lang = Provider.of<SettingContext>(context, listen: false).languageCode;
+    _langTranslate = Provider.of<SettingContext>(context, listen: false).languageCodeTranslate;
 
     api
         .getRestaurant(
@@ -283,6 +289,10 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
           appBar: _isSearching
               ? AppBar(
                   title: TextTranslator(restaurant.name),
+                  actions: [
+                    Icon(Icons.add),
+                    Flag('fr',height: 50,width: 50,)
+                  ],
                 )
               : null,
           body: loading
@@ -587,22 +597,29 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                         )
                                       ],
                                     ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: [
-                                        Icon(
-                                          FontAwesomeIcons.phoneAlt,
-                                          size: 15,
-                                          color: CRIMSON,
-                                        ),
-                                        SizedBox(
-                                          width: 5,
-                                        ),
-                                        TextTranslator(
-                                          "Tel : ${restaurant.phoneNumber ?? "0"}",
-                                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black54),
-                                        )
-                                      ],
+                                    InkWell(
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: [
+                                          Icon(
+                                            FontAwesomeIcons.phoneAlt,
+                                            size: 15,
+                                            color: CRIMSON,
+                                          ),
+                                          SizedBox(
+                                            width: 5,
+                                          ),
+                                          TextTranslator(
+                                            "Tel : ${restaurant.phoneNumber ?? "0"}",
+                                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black54),
+                                          )
+                                        ],
+                                      ),
+                                      onTap: () async {
+                                        if (restaurant.phoneNumber != null)
+                                          await launch(
+                                              "tel:${restaurant.phoneNumber}");
+                                      },
                                     )
                                   ],
                                 )
@@ -770,9 +787,15 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
             child: AppBar(
               title: TextTranslator(restaurant.name),
               actions: [
+                InkWell(
+                    onTap: (){
+                      RouteUtil.goTo(context: context, child: ListLang(), routeName: "null");
+                    },
+                    child: Flag(_langTranslate,height: 30,width: 30,)),
                 SizedBox(
                   width: 25,
                 ),
+
                 /*switchingFavorite
                     ? Padding(
                         padding: const EdgeInsets.all(8.0),

@@ -1,8 +1,8 @@
+import 'package:firebase_mlkit_language/firebase_mlkit_language.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:provider/provider.dart';
-import 'package:translator/translator.dart';
 
 class TextTranslator extends StatelessWidget {
   const TextTranslator(this.data,{Key key,this.locale,
@@ -27,15 +27,15 @@ class TextTranslator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final lang = Provider.of<SettingContext>(context).languageCode;
+    final lang = Provider.of<SettingContext>(context,listen: false).languageCodeTranslate;
     return FutureBuilder(
-      future: _translate(),
+      future: _translate(lang),
       builder: (_,snapshot){
         if (!snapshot.hasData){
           return Center(child: CupertinoActivityIndicator(animating: true,));
         }else{
           return Text(
-            data is String ? data : snapshot.data.toString(),
+            snapshot.data,
             style: this.style,
             maxLines: this.maxLines,
             overflow: this.overflow,
@@ -54,13 +54,17 @@ class TextTranslator extends StatelessWidget {
     );
   }
 
-  Future<dynamic> _translate() async {
+  Future<dynamic> _translate(lang) async {
     try {
-      var translate = await data.translate(to: "ko");
-      return translate;
+      // var translate = await data.translate(to: "ko");
+      var translate = await FirebaseLanguage.instance
+          .languageTranslator(
+          SupportedLanguages.French, lang)
+          .processText(data ?? " ");
+      return translate ?? " ";
     } catch (e) {
       print("error transalator $e");
-      return "-1error";
+      return data ?? " ";
     }
   }
 

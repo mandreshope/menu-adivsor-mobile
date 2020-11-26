@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:firebase_mlkit_language/firebase_mlkit_language.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -11,12 +12,18 @@ class AppLocalizations {
 
   static const _AppLocalizationsDelegate delegate = _AppLocalizationsDelegate();
 
-  AppLocalizations(this.locale);
+  static AppLocalizations instance = AppLocalizations();
+
+  // AppLocalizations(this.locale);
+  AppLocalizations({this.locale}){
+    
+  }
 
   /// Helper method to keep the code in the widgets concise
   /// Localizations are accessed using an InheritedWidget "of" syntax
   static AppLocalizations of(BuildContext context) {
-    return Localizations.of<AppLocalizations>(context, AppLocalizations);
+    return instance;
+    // return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
   Future<bool> load() async {
@@ -31,7 +38,8 @@ class AppLocalizations {
     return true;
   }
 
-  String translate(String key) => _localizedStrings[key];
+  String translate(String key) =>
+      _localizedStrings[key];
 }
 
 class _AppLocalizationsDelegate
@@ -39,13 +47,24 @@ class _AppLocalizationsDelegate
   const _AppLocalizationsDelegate();
 
   @override
-  bool isSupported(Locale locale) {
-    return ['en', 'fr'].contains(locale.languageCode);
+  bool isSupported(Locale locale) { 
+    return ['fr','en'].contains(locale.languageCode);
+    return [
+      SupportedLanguages.English,
+    SupportedLanguages.Japanese,
+    SupportedLanguages.Chinese,
+    SupportedLanguages.French,
+    SupportedLanguages.Italian,
+    SupportedLanguages.Spanish,
+    SupportedLanguages.Russian,
+    SupportedLanguages.Korean,
+    SupportedLanguages.Dutch,
+    SupportedLanguages.German,].contains(locale.languageCode);
   }
 
   @override
   Future<AppLocalizations> load(Locale locale) async {
-    AppLocalizations localizations = AppLocalizations(locale);
+    AppLocalizations localizations = AppLocalizations(locale:locale);
     await localizations.load();
     return localizations;
   }

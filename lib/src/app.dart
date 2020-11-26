@@ -1,3 +1,4 @@
+import 'package:firebase_mlkit_language/firebase_mlkit_language.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:menu_advisor/src/pages/splash.dart';
@@ -47,7 +48,7 @@ class _MyAppState extends State<MyApp> {
           theme: theme,
           debugShowCheckedModeBanner: true,
           localizationsDelegates: [
-            AppLocalizations.delegate,
+            // AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
@@ -67,6 +68,7 @@ class _MyAppState extends State<MyApp> {
           supportedLocales: [
             const Locale('en', 'US'),
             const Locale('fr', 'FR'),
+
           ],
           home: Splash(),
         ),

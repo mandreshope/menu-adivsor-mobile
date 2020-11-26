@@ -8,6 +8,7 @@ import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/pages/home.dart';
 import 'package:menu_advisor/src/pages/login.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
+import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
@@ -45,56 +46,37 @@ class _SplashState extends State<Splash> {
         seconds: 4,
       ),
       () async {
-        final AuthContext authContext = Provider.of<AuthContext>(
-          context,
-          listen: false,
-        );
 
-        // Loading user
-        setState(() {
-          loadingUser = true;
-        });
-        authContext.initialized.then((value) {
-          _autoLogin(authContext);
-        }).catchError((onError){
-          _autoLogin(authContext);
-        });
+        _init();
 
-        /*try {
-          await authContext.initialized;
-        } catch (error) {
-          Fluttertoast.showToast(
-            msg: AppLocalizations.of(context).translate('session_expired'),
-          );
-          await authContext.logout();
 
-          RouteUtil.goTo(
-            context: context,
-            child: LoginPage(),
-            routeName: loginRoute,
-            method: RoutingMethod.atTop,
-          );
-        }
-        setState(() {
-          loadingUser = false;
-        });
-
-        if (authContext.currentUser != null)
-          RouteUtil.goTo(
-            routeName: homeRoute,
-            context: context,
-            method: RoutingMethod.replaceLast,
-            child: HomePage(),
-          );
-        else
-          RouteUtil.goTo(
-            context: context,
-            child: LoginPage(),
-            routeName: loginRoute,
-            method: RoutingMethod.replaceLast,
-          );*/
       },
     );
+  }
+
+  _init() async {
+    final AuthContext authContext = Provider.of<AuthContext>(
+      context,
+      listen: false,
+    );
+
+    final SettingContext settingContext = Provider.of<SettingContext>(
+        context,
+        listen: false
+    );
+
+    // Loading user
+    setState(() {
+      loadingUser = true;
+    });
+
+    await settingContext.downloadLanguage();
+
+    authContext.initialized.then((value) {
+      _autoLogin(authContext);
+    }).catchError((onError){
+      _autoLogin(authContext);
+    });
   }
 
   _autoLogin(AuthContext authContext) async {

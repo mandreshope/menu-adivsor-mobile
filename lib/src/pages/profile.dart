@@ -24,12 +24,12 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final List<String> _supportedLanguages = [
+  List<String> _supportedLanguages = [
     'system',
     'fr',
-    'en',
+    'ko',
   ];
-  final List<String> _languages = [
+  List<String> _languages = [
     'system_setting',
     'Français',
     'English',
@@ -41,6 +41,8 @@ class _ProfilePageState extends State<ProfilePage> {
       builder: (_, settingContext, __) {
         String languageCode = settingContext.languageCode;
         bool isSystemSetting = settingContext.isSystemSetting;
+        _languages = settingContext.languages;
+        _supportedLanguages = settingContext.supportedLanguages;
 
         return ScaffoldWithBottomMenu(
           appBar: AppBar(
@@ -197,7 +199,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         DropdownButton<String>(
                           elevation: 16,
                           isExpanded: true,
-                          value: isSystemSetting ? 'system' : languageCode,
+                          value: /*isSystemSetting ? 'system' :*/ languageCode,
                           onChanged: (String languageCode) {
                             SettingContext settingContext = Provider.of<SettingContext>(
                               context,
@@ -225,7 +227,8 @@ class _ProfilePageState extends State<ProfilePage> {
                               DropdownMenuItem<String>(
                                 value: _supportedLanguages[i],
                                 child: TextTranslator(
-                                  i == 0 ? AppLocalizations.of(context).translate(_languages[i]) : _languages[i],
+                                  /*i == 0 ? AppLocalizations.of(context).translate(_languages[i]) : _languages[i]*/
+                                  _languages[i].toUpperCase(),
                                   style: TextStyle(
                                     color: Colors.grey,
                                   ),

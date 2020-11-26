@@ -9,11 +9,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SettingContext extends ChangeNotifier {
   String _languageCode = 'fr';
   Future<void> initialized;
-  List<String> _languageCodes = [
+  List<String> _supportedLanguages = [
+    SupportedLanguages.French,
     SupportedLanguages.English,
     SupportedLanguages.Japanese,
     SupportedLanguages.Chinese,
-    SupportedLanguages.French,
     SupportedLanguages.Italian,
     SupportedLanguages.Spanish,
     SupportedLanguages.Russian,
@@ -23,23 +23,23 @@ class SettingContext extends ChangeNotifier {
   ];
 
   List<String> _languages = [
-    "ANGLAIS",
-    "JAPONAIS",
-    "CHINOIS",
-    "ARABE",
-    "FRANCAIS",
-    "ITALIEN",
-    "ESPAGNOL",
-    "RUSSE",
-    "CORÉEN",
-    "NÉÉRLENDAIS",
-    "ALLEMAND"
+    "Français",
+    "Anglais",
+    "Japonais",
+    "Chinois",
+    "Italien",
+    "Espaniol",
+    "Russe",
+    "Coréen",
+    "Néérlendais",
+    "Allemand"
   ];
 
   get languages => _languages;
-  get languageCodes => _languageCodes;
+  get supportedLanguages => _supportedLanguages;
 
-  String get languageCode => _languageCode;
+  String get languageCodeTranslate => _languageCode;
+  String get languageCode => 'fr';
   /*_languageCode == 'fr'
       ? WidgetsBinding.instance.window.locale.languageCode
       : _languageCode;*/
@@ -79,7 +79,7 @@ class SettingContext extends ChangeNotifier {
   Future<void> downloadLanguage() async  {
       print("download loading...");
       
-      await Future.forEach(_languageCodes, (item) => FirebaseLanguage.instance.modelManager().downloadModel(item));
+      await Future.forEach(_supportedLanguages, (item) => FirebaseLanguage.instance.modelManager().downloadModel(item));
 
      print("download finish...");
   }
