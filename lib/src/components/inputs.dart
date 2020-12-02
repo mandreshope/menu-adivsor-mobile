@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:menu_advisor/src/utils/textFormFieldTranslator.dart';
 
 class PasswordField extends StatefulWidget {
   final FocusNode focusNode;
@@ -41,7 +42,7 @@ class _PasswordFieldState extends State<PasswordField> {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
+    return TextFormFieldTranslator(
       focusNode: widget.focusNode,
       controller: widget.controller,
       keyboardType: widget.keyboardType,

@@ -8,6 +8,7 @@ import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/extensions.dart';
+import 'package:menu_advisor/src/utils/textFormFieldTranslator.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
@@ -55,7 +56,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                             30,
                           ),
                           color: Colors.white,
-                          child: TextFormField(
+                          child: TextFormFieldTranslator(
                             keyboardType: TextInputType.streetAddress,
                             textInputAction: TextInputAction.done,
                             decoration: InputDecoration(

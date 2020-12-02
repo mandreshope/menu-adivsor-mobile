@@ -8,7 +8,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingContext extends ChangeNotifier {
   String _languageCode = 'fr';
+  String _languageCodeRstaurant = '';
   Future<void> initialized;
+
+  bool isRestaurantPage = false;
+
   List<String> _supportedLanguages = [
     SupportedLanguages.French,
     SupportedLanguages.English,
@@ -39,12 +43,29 @@ class SettingContext extends ChangeNotifier {
   get supportedLanguages => _supportedLanguages;
 
   String get languageCodeTranslate => _languageCode;
+  String get languageCodeRestaurantTranslate => _languageCodeRstaurant;
+  
+  String get languageCodeFlag {
+    String code = isRestaurantPage ? _languageCodeRstaurant : _languageCode;
+    switch(code){
+      case "en":
+        return 'us';
+        case 'ja':
+          return 'jp';
+      case 'zh':
+        return 'cn';
+        case 'ko':
+          return 'kr';
+    }
+    return code;
+  }
+  
   String get languageCode => 'fr';
   /*_languageCode == 'fr'
       ? WidgetsBinding.instance.window.locale.languageCode
       : _languageCode;*/
 
-  bool get isSystemSetting => _languageCode == 'system';
+  bool get isSystemSetting => _languageCode == 'fr';
 
   set languageCode(String value) {
     _languageCode = value;
@@ -54,14 +75,23 @@ class SettingContext extends ChangeNotifier {
     });
   }
 
+  set languageCodeRestaurant(String value) {
+    _languageCodeRstaurant = value;
+    notifyListeners();
+    SharedPreferences.getInstance().then((sharedPrefs) {
+      sharedPrefs.setString('languageCodeRestaurant', value);
+    });
+  }
+
   SettingContext() {
     initialized = _loadCurrentUserSettings();
   }
 
   Future<void> _loadCurrentUserSettings() async {
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
-    if (sharedPrefs.containsKey('languageCode')) {
+    if (sharedPrefs.containsKey('languageCode') || sharedPrefs.containsKey('languageCodeRestaurant') ) {
       languageCode = sharedPrefs.getString('languageCode');
+      languageCodeRestaurant = sharedPrefs.getString('languageCodeRestaurant');
       notifyListeners();
     } else {
       await sharedPrefs.setString(
@@ -74,6 +104,7 @@ class SettingContext extends ChangeNotifier {
 
   resetLanguage() {
     languageCode = 'fr';
+    languageCodeRestaurant = '';
   }
 
   Future<void> downloadLanguage() async  {

@@ -17,6 +17,7 @@ import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:menu_advisor/src/utils/textFormFieldTranslator.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
@@ -270,7 +271,7 @@ class _MapPageState extends State<MapPage> {
                     ),
                     SizedBox(width: 10),
                     Expanded(
-                      child: TextFormField(
+                      child: TextFormFieldTranslator(
                         onChanged: _onChanged,
                         decoration: InputDecoration.collapsed(
                           hintText: AppLocalizations.of(context).translate("find_restaurant"),

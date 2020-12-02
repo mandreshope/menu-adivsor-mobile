@@ -1,3 +1,4 @@
+import 'package:firebase_mlkit_language/firebase_mlkit_language.dart';
 import 'package:intl/intl.dart';
 
 
@@ -11,6 +12,21 @@ extension FormatDate on DateTime {
 
 extension ExtensionString on String {
   isValidateEmail() => RegExp(r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(this);
+
+  Future<String> translator(lang) async {
+    try {
+      // var translate = await data.translate(to: "ko");
+      var translate = await FirebaseLanguage.instance
+          .languageTranslator(
+          SupportedLanguages.French, lang)
+          .processText(this ?? " ");
+      return translate ?? " ";
+    } catch (e) {
+      print("error transalator $e");
+      return this ?? " ";
+    }
+  }
+
 }
 
 extension Iterables<E> on Iterable<E> {

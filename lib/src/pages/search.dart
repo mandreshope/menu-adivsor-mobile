@@ -11,6 +11,7 @@ import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
+import 'package:menu_advisor/src/utils/textFormFieldTranslator.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
@@ -210,7 +211,7 @@ class _SearchPageState extends State<SearchPage> {
                     ),
                     SizedBox(width: 10),
                     Expanded(
-                      child: TextFormField(
+                      child: TextFormFieldTranslator(
                         decoration: InputDecoration.collapsed(
                           hintText: AppLocalizations.of(context).translate("find_something"),
                         ),

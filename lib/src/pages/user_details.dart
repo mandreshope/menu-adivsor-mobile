@@ -13,6 +13,7 @@ import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/extensions.dart';
+import 'package:menu_advisor/src/utils/textFormFieldTranslator.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
@@ -80,7 +81,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                   ),
                 ),
                 SizedBox(height: 5),
-                TextFormField(
+                TextFormFieldTranslator(
                   controller: _displayNameController,
                   focusNode: _displayNameFocus,
                   textInputAction: TextInputAction.next,
@@ -102,7 +103,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                   ),
                 ),
                 SizedBox(height: 5),
-                TextFormField(
+                TextFormFieldTranslator(
                   controller: _phoneNumberController,
                   focusNode: _phoneNumberFocus,
                   textInputAction: TextInputAction.next,
@@ -128,7 +129,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                   ),
                 ),
                 SizedBox(height: 5),
-                TextFormField(
+                TextFormFieldTranslator(
                   controller: _emailController,
                   focusNode: _emailFocus,
                   textInputAction: TextInputAction.next,
@@ -156,7 +157,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                     ),
                   ),
                   SizedBox(height: 5),
-                  TextFormField(
+                  TextFormFieldTranslator(
                     controller: _addressController,
                     focusNode: _addressFocus,
                     textInputAction: TextInputAction.next,

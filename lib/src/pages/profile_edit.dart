@@ -4,6 +4,7 @@ import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
+import 'package:menu_advisor/src/utils/textFormFieldTranslator.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
@@ -53,7 +54,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              TextFormField(
+              TextFormFieldTranslator(
                 focusNode: lastnameFocus,
                 controller: lastnameController,
                 keyboardType: TextInputType.name,
@@ -72,7 +73,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
               SizedBox(
                 height: 20,
               ),
-              TextFormField(
+              TextFormFieldTranslator(
                 focusNode: firstnameFocus,
                 controller: firstnameController,
                 keyboardType: TextInputType.name,
@@ -91,7 +92,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
               SizedBox(
                 height: 20,
               ),
-              TextFormField(
+              TextFormFieldTranslator(
                 focusNode: addressFocus,
                 controller: addressController,
                 keyboardType: TextInputType.name,

@@ -9,6 +9,7 @@ import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:menu_advisor/src/utils/textFormFieldTranslator.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
@@ -97,7 +98,7 @@ class _ConfirmEmailPageState extends State<ConfirmEmailPage> with SingleTickerPr
                         onKey: (event) {
                           print(event.character);
                         },
-                        child: TextFormField(
+                        child: TextFormFieldTranslator(
                           focusNode: _codeFocus[i],
                           autofocus: i == 0,
                           keyboardType: TextInputType.number,

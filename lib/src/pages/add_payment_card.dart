@@ -12,6 +12,7 @@ import 'package:menu_advisor/src/services/stripe.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/input_formatters.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:menu_advisor/src/utils/textFormFieldTranslator.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
@@ -82,7 +83,7 @@ class _PaymentCardDetailsPageState extends State<PaymentCardDetailsPage> {
                   ),
                   child: Column(
                     children: [
-                      TextFormField(
+                      TextFormFieldTranslator(
                         focusNode: _ownerNameFocus,
                         controller: _ownerNameController,
                         keyboardType: TextInputType.text,
@@ -99,7 +100,7 @@ class _PaymentCardDetailsPageState extends State<PaymentCardDetailsPage> {
                       SizedBox(
                         height: 20,
                       ),
-                      TextFormField(
+                      TextFormFieldTranslator(
                         focusNode: _cardNumberFocus,
                         controller: _cardNumberController,
                         keyboardType: TextInputType.number,
@@ -121,7 +122,7 @@ class _PaymentCardDetailsPageState extends State<PaymentCardDetailsPage> {
                         children: [
                           Expanded(
                             flex: 3,
-                            child: TextFormField(
+                            child: TextFormFieldTranslator(
                               focusNode: _expirationDateFocus,
                               controller: _expirationDateController,
                               keyboardType: TextInputType.number,
@@ -145,7 +146,7 @@ class _PaymentCardDetailsPageState extends State<PaymentCardDetailsPage> {
                           ),
                           Expanded(
                             flex: 2,
-                            child: TextFormField(
+                            child: TextFormFieldTranslator(
                               focusNode: _cvcFocus,
                               controller: _cvcController,
                               keyboardType: TextInputType.number,
@@ -167,7 +168,7 @@ class _PaymentCardDetailsPageState extends State<PaymentCardDetailsPage> {
                       SizedBox(
                         height: 20,
                       ),
-                      TextFormField(
+                      TextFormFieldTranslator(
                         focusNode: _zipCodeFocus,
                         controller: _zipCodeController,
                         keyboardType: TextInputType.number,

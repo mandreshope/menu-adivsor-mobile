@@ -28,8 +28,11 @@ class TextTranslator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final lang = Provider.of<SettingContext>(context,listen: false).languageCodeTranslate;
+    final langRestaurant = Provider.of<SettingContext>(context,listen: false).languageCodeRestaurantTranslate ?? lang;
+    final isRestaurantPage =  Provider.of<SettingContext>(context,listen: false).isRestaurantPage;
+
     return FutureBuilder(
-      future: _translate(lang),
+      future: _translate( isRestaurantPage ? langRestaurant : lang),
       builder: (_,snapshot){
         if (!snapshot.hasData){
           return Center(child: CupertinoActivityIndicator(animating: true,));

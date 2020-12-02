@@ -172,6 +172,7 @@ class Restaurant {
         menus: (json['menus'] as List).map<String>((e) => e).toList(),
         foods: (json['foods'] as List).map<String>((e) => e).toList(),
         foodTypes: json['foodTypes'] ?? [],
+        phoneNumber: json['phoneNumber'] ?? [],
       );
 }
 

@@ -8,6 +8,7 @@ import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:menu_advisor/src/utils/textFormFieldTranslator.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 import 'package:menu_advisor/src/utils/extensions.dart';
@@ -109,7 +110,7 @@ class _SignupPageState extends State<SignupPage> {
                               ),
                             ),
                             SizedBox(height: 5),
-                            TextFormField(
+                            TextFormFieldTranslator(
                               controller: _firstNameController,
                               focusNode: _firstNameFocus,
                               textInputAction: TextInputAction.next,
@@ -130,7 +131,7 @@ class _SignupPageState extends State<SignupPage> {
                               ),
                             ),
                             SizedBox(height: 5),
-                            TextFormField(
+                            TextFormFieldTranslator(
                               controller: _lastNameController,
                               focusNode: _lastNameFocus,
                               textInputAction: TextInputAction.next,
@@ -151,7 +152,7 @@ class _SignupPageState extends State<SignupPage> {
                               ),
                             ),
                             SizedBox(height: 5),
-                            TextFormField(
+                            TextFormFieldTranslator(
                               controller: _phoneNumberController,
                               focusNode: _phoneNumberFocus,
                               textInputAction: TextInputAction.next,
@@ -175,7 +176,7 @@ class _SignupPageState extends State<SignupPage> {
                               ),
                             ),
                             SizedBox(height: 5),
-                            TextFormField(
+                            TextFormFieldTranslator(
                               controller: _emailController,
                               focusNode: _emailFocus,
                               textInputAction: TextInputAction.next,
