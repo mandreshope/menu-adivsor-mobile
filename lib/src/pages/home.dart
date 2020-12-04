@@ -258,8 +258,12 @@ class _HomePageState extends State<HomePage> {
                         RouteUtil.goTo(
                           context: context,
                           child: SearchPage(
+                            location: {
+                              "coordinates":currentLocation?.coordinates ?? [0,0]
+                            },
                             filters: {
-                              "city":this.city ?? ""
+                              // "city":this.city ?? ""
+                              // 'nearest': 'nearest'
                             },
                           ),
                           routeName: searchRoute,
@@ -301,6 +305,9 @@ class _HomePageState extends State<HomePage> {
                           child: SearchPage(
                             barTitle: 'Découvrir',
                             type: 'food',
+                            location: {
+                              "coordinates":currentLocation?.coordinates ?? [0,0]
+                            },
                             filters: {
                               // 'category': category.id,
                               "searchCategory": "with_price",
@@ -380,9 +387,13 @@ class _HomePageState extends State<HomePage> {
                             context: context,
                             child: SearchPage(
                               type: 'food',
+                              location: {
+                                "coordinates":currentLocation?.coordinates ?? [0,0]
+                              },
                               filters: {
                                 "category": category.id,
-                                "city":this.city ?? ""
+                                // "city":this.city ?? ""
+                                // 'nearest': 'nearest'
                               },
                               showButton: true,
                             ),
@@ -427,7 +438,13 @@ class _HomePageState extends State<HomePage> {
                       context: context,
                       child: SearchPage(
                         type: 'food',
-                        filters: {'searchCategory': 'with_price',"city":this.city ?? ""},
+                        location: {
+                           "coordinates":currentLocation?.coordinates ?? [0,0]
+                        },
+                        filters: {'searchCategory': 'with_price',
+                        // "city":this.city ?? ""
+                        // 'nearest': 'nearest'
+                        },
                       ),
                       routeName: searchRoute,
                     );
@@ -527,8 +544,12 @@ class _HomePageState extends State<HomePage> {
                       context: context,
                       child: SearchPage(
                         type: 'restaurant',
+                        location: {
+                           "coordinates":currentLocation?.coordinates ?? [0,0]
+                        },
                         filters: {
-                          'city':this.city ?? ""
+                          // 'city':this.city ?? ""
+                          // 'nearest': 'nearest'
                         },
                       ),
                       routeName: searchRoute,
@@ -629,10 +650,13 @@ class _HomePageState extends State<HomePage> {
                       context: context,
                       child: SearchPage(
                         type: 'food',
+                        location: {
+                           "coordinates":currentLocation?.coordinates ?? [0,0]
+                        },
                         filters: {
                           // "searchCategory": "with_price",
                           "price.amount":null,
-                          "city":this.city ?? ""
+                          // "city":this.city ?? ""
                         },
                       ),
                       routeName: searchRoute,

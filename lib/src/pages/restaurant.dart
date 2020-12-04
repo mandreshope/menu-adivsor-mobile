@@ -269,6 +269,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
           });
           return false;
         }
+        Provider.of<SettingContext>(context,listen: false).isRestaurantPage = false;
         return true;
       },
       child: Localizations.override(
@@ -835,7 +836,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                   width: 25,
                 ),
 
-                /*switchingFavorite
+                switchingFavorite
                     ? Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Center(
@@ -855,7 +856,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                           isInFavorite ? Icons.favorite : Icons.favorite_border,
                           color: Colors.white,
                         ),
-                      ),*/
+                      ),
               ],
             ),
           )),

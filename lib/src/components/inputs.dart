@@ -42,7 +42,7 @@ class _PasswordFieldState extends State<PasswordField> {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormFieldTranslator(
+    return TextFormField(
       focusNode: widget.focusNode,
       controller: widget.controller,
       keyboardType: widget.keyboardType,

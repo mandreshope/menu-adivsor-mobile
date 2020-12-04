@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/services/api.dart';
@@ -176,4 +177,23 @@ class AuthContext extends ChangeNotifier {
 
     return commands;
   }
+
+  phoneNumber(String phoneNumber) async {
+    
+    await auth.FirebaseAuth.instance.verifyPhoneNumber(
+      phoneNumber: '+261340165387',
+      verificationCompleted: (auth.PhoneAuthCredential credential) {},
+      verificationFailed: (auth.FirebaseAuthException e) {},
+      codeSent: (String verificationId, int resendToken) async {
+        String smsCode = "";
+            // Create a PhoneAuthCredential with the code
+        auth.PhoneAuthCredential phoneAuthCredential = auth.PhoneAuthProvider.credential(verificationId: verificationId, smsCode: smsCode);
+
+        // Sign the user in (or link) with the credential
+          await auth.FirebaseAuth.instance.signInWithCredential(phoneAuthCredential);
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {},
+    );
+  }
+
 }

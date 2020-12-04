@@ -110,7 +110,7 @@ class _SignupPageState extends State<SignupPage> {
                               ),
                             ),
                             SizedBox(height: 5),
-                            TextFormFieldTranslator(
+                            TextFormField(
                               controller: _firstNameController,
                               focusNode: _firstNameFocus,
                               textInputAction: TextInputAction.next,
@@ -131,7 +131,7 @@ class _SignupPageState extends State<SignupPage> {
                               ),
                             ),
                             SizedBox(height: 5),
-                            TextFormFieldTranslator(
+                            TextFormField(
                               controller: _lastNameController,
                               focusNode: _lastNameFocus,
                               textInputAction: TextInputAction.next,
@@ -152,7 +152,7 @@ class _SignupPageState extends State<SignupPage> {
                               ),
                             ),
                             SizedBox(height: 5),
-                            TextFormFieldTranslator(
+                            TextFormField(
                               controller: _phoneNumberController,
                               focusNode: _phoneNumberFocus,
                               textInputAction: TextInputAction.next,
@@ -176,7 +176,7 @@ class _SignupPageState extends State<SignupPage> {
                               ),
                             ),
                             SizedBox(height: 5),
-                            TextFormFieldTranslator(
+                            TextFormField(
                               controller: _emailController,
                               focusNode: _emailFocus,
                               textInputAction: TextInputAction.next,
@@ -315,6 +315,9 @@ class _SignupPageState extends State<SignupPage> {
       });
       AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
 
+
+
+return;
       try {
         var registrationToken = await authContext.signup(
           email: email,

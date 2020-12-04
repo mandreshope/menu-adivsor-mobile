@@ -36,6 +36,7 @@ class Food {
   final dynamic type;
   final List<String> attributes;
   final dynamic options;
+  final bool status;
 
   dynamic optionsSelected;
 
@@ -55,7 +56,8 @@ class Food {
     this.type,
     this.attributes,
     this.options,
-    this.optionsSelected
+    this.optionsSelected,
+    this.status
   });
 
   factory Food.fromJson(Map<String, dynamic> json) => Food(
@@ -67,7 +69,8 @@ class Food {
         price: json.containsKey('price') ? Price.fromJson(json['price']) : null,
         type: json['type'] == null ? null : json['type'] is  Map<String, dynamic> ?  FoodType.fromJson(json['type']) : json['type'] as String,
         attributes: (json['attributes'] as List).map((e) => e.toString()).toList(),
-        options: json['options']
+        options: json['options'],
+        status: json['status']
       );
 
   Map<String, dynamic> toJson() => {
@@ -144,6 +147,7 @@ class Restaurant {
   final List<String> foods;
   final List<dynamic> foodTypes;
   final String phoneNumber;
+  final bool status;
 
   Restaurant({
     this.phoneNumber,
@@ -157,6 +161,7 @@ class Restaurant {
     this.menus = const [],
     this.foods = const [],
     this.foodTypes = const [],
+    this.status
   });
 
   factory Restaurant.fromJson(Map<String, dynamic> json) => Restaurant(
@@ -173,6 +178,7 @@ class Restaurant {
         foods: (json['foods'] as List).map<String>((e) => e).toList(),
         foodTypes: json['foodTypes'] ?? [],
         phoneNumber: json['phoneNumber'] ?? [],
+        status: json['status']
       );
 }
 

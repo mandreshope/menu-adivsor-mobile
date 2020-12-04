@@ -1,5 +1,6 @@
 import 'package:chips_choice/chips_choice.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_balloon_slider/flutter_balloon_slider.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -17,6 +18,7 @@ import 'package:menu_advisor/src/utils/button_item_count_widget.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
+import 'package:wave_slider/wave_slider.dart';
 
 class ConfirmationDialog extends StatelessWidget {
   final String title;
@@ -423,6 +425,7 @@ class SearchSettingDialog extends StatefulWidget {
   final Map<String, dynamic> filters;
   final String type;
   final bool inRestaurant;
+  final int range;
 
   SearchSettingDialog({
     Key key,
@@ -430,6 +433,7 @@ class SearchSettingDialog extends StatefulWidget {
     @required this.filters,
     @required this.type,
     this.inRestaurant = false,
+    this.range = 1
   }) : super(key: key);
 
   @override
@@ -439,11 +443,14 @@ class SearchSettingDialog extends StatefulWidget {
 class _SearchSettingDialogState extends State<SearchSettingDialog> {
   Map<String, dynamic> filters = Map();
   String type;
+  int distanceAround; // 20 km
+  ValueNotifier<double> _slider1Value = ValueNotifier<double>(0.0);
 
   @override
   void initState() {
     super.initState();
 
+    distanceAround = widget.range;
     type = widget.type;
     filters.addAll(widget.filters);
   }
@@ -461,6 +468,55 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+
+            
+            //distan around
+            
+            SizedBox(height: 20,),
+            ValueListenableBuilder(
+              valueListenable: _slider1Value,
+              builder: (__,value,w){
+                return Text(
+                "Max distance : $distanceAround km",
+                 style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                ),);
+              },
+                          
+            ),
+             SizedBox(height: 15,),
+             BalloonSlider(
+                value: widget.range/100,
+                ropeLength: 55,
+                showRope: true,
+                onChangeStart: (val) {},
+                onChanged: (val) {
+                  
+                     distanceAround = (val*100).round();
+                     _slider1Value.value = val;
+                     Provider.of<SettingContext>(context,listen: false).range = distanceAround;
+                     print("$distanceAround km");
+                 
+                },
+                onChangeEnd: (val) {},
+                color: Colors.indigo
+            ),
+            SizedBox(height: 15,),
+            
+              SizedBox(height: 15,),
+            /*WaveSlider(
+              onChanged: (value){
+                setState(() {
+                  distanceAround = value*100;
+                  print("$distanceAround km");
+                });
+                
+              },
+              color: Colors.black,
+              displayTrackball: true,
+              // sliderHeight: 50,
+            ),*/
             TextTranslator(
               AppLocalizations.of(context).translate('search_type'),
               style: TextStyle(
@@ -651,22 +707,22 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                     ),
                   ),
                   ...Provider.of<DataContext>(context)
-                      .attributes
+                      .foodAttributes
                       .map(
                         (e) => Theme(
                           data: ThemeData(
                             brightness: filters.containsKey('attributes') &&
-                                    filters['attributes'] == e.tag['type']
+                                    filters['attributes'] == e.tag
                                 ? Brightness.dark
                                 : Brightness.light,
                             cardColor: filters.containsKey('attributes') &&
-                                    filters['attributes'] == e.tag['type']
+                                    filters['attributes'] == e.tag
                                 ? CRIMSON
                                 : Colors.white,
                           ),
                           child: Card(
                             color: filters.containsKey('attributes') &&
-                                    filters['attributes'] == e.tag['type']
+                                    filters['attributes'] == e.tag
                                 ? CRIMSON
                                 : Colors.white,
                             shape: RoundedRectangleBorder(
@@ -676,7 +732,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                               borderRadius: BorderRadius.circular(50),
                               onTap: () {
                                 setState(() {
-                                  filters['attributes'] = e.tag['type'];
+                                  filters['attributes'] = e.tag;
                                 });
                               },
                               child: Container(
@@ -684,15 +740,15 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Image.asset(
-                                      e.imageUrl['type'],
+                                    Image.network(
+                                      e.imageUrl,
                                       height: 18,
                                     ),
                                     SizedBox(
                                       width: 5,
                                     ),
                                     TextTranslator(
-                                      e.tag['type'],
+                                      e.locales['fr'],
                                     ),
                                   ],
                                 ),
@@ -715,6 +771,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                   {
                     'filters': filters,
                     'type': type,
+                    'range': distanceAround
                   },
                 ),
                 child: TextTranslator(
@@ -774,7 +831,7 @@ class _OptionChoiceDialogState extends State<OptionChoiceDialog> {
                         choiceItems: C2Choice.listFrom(
                           source: options,
                           value: (i, v) => i,
-                          label: (i, v) => v['name'][Provider.of<SettingContext>(context).languageCode],
+                          label: (i, v) => v['name'],
                         ),
                       ),
                     ),

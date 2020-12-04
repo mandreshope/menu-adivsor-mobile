@@ -81,7 +81,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                   ),
                 ),
                 SizedBox(height: 5),
-                TextFormFieldTranslator(
+                TextFormField(
                   controller: _displayNameController,
                   focusNode: _displayNameFocus,
                   textInputAction: TextInputAction.next,
@@ -103,7 +103,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                   ),
                 ),
                 SizedBox(height: 5),
-                TextFormFieldTranslator(
+                TextFormField(
                   controller: _phoneNumberController,
                   focusNode: _phoneNumberFocus,
                   textInputAction: TextInputAction.next,
@@ -129,7 +129,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                   ),
                 ),
                 SizedBox(height: 5),
-                TextFormFieldTranslator(
+                TextFormField(
                   controller: _emailController,
                   focusNode: _emailFocus,
                   textInputAction: TextInputAction.next,
@@ -157,7 +157,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                     ),
                   ),
                   SizedBox(height: 5),
-                  TextFormFieldTranslator(
+                  TextFormField(
                     controller: _addressController,
                     focusNode: _addressFocus,
                     textInputAction: TextInputAction.next,
@@ -183,7 +183,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                           initialDate: deliveryDate ?? DateTime.now(),
                           firstDate: DateTime.now(),
                           lastDate: DateTime.now().add(
-                            Duration(days: 30),
+                            Duration(days: 3),
                           ),
                         );
                         if (date != null) {
@@ -193,7 +193,6 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                                 TimeOfDay(
                                   hour: DateTime.now().hour,
                                   minute: DateTime.now()
-                                      .add(Duration(minutes: 15))
                                       .minute,
                                 ),
                           );
@@ -236,11 +235,14 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                           const EdgeInsets.symmetric(horizontal: 25.0),
                       title: TextTranslator(
                         '${deliveryDate?.dateToString(DATE_FORMATED_ddMMyyyy) ?? ""}    ${deliveryTime?.hour ?? ""} : ${deliveryTime?.minute ?? ""}',
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          color: Colors.black,//CRIMSON.withOpacity(0.9),
+                          fontSize: 20,
+                          fontWeight: FontWeight.w400
+                        ),
                       ),
-                      leading: Container(
-                        width: 1,
-                        height: 1,
-                      ),
+                      leading: Container(width: 1,height: 1,),
                       trailing: null,
                     ),
                   ),

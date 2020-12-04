@@ -8,6 +8,7 @@ import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
+import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
@@ -19,10 +20,11 @@ class SearchPage extends StatefulWidget {
   final String type;
   final Map<String, dynamic> filters;
   final bool showButton;
+  final Map location;
 
   final String barTitle;
 
-  SearchPage({this.type = 'all', this.filters = const {}, this.showButton = false, this.barTitle = 'Rechercher'});
+  SearchPage({this.type = 'all', this.location,this.filters = const {}, this.showButton = false, this.barTitle = 'Rechercher'});
 
   @override
   _SearchPageState createState() => _SearchPageState();
@@ -36,11 +38,13 @@ class _SearchPageState extends State<SearchPage> {
   Timer _timer;
   Map<String, dynamic> filters = Map();
   String type;
+  int range;
 
   @override
   void initState() {
     super.initState();
 
+    range = Provider.of<SettingContext>(context,listen: false).range;
     filters.addAll(widget.filters);
     type = widget.type;
 
@@ -79,6 +83,8 @@ class _SearchPageState extends State<SearchPage> {
         ).languageCode,
         type: type,
         filters: filters,
+        range: range,
+        location: widget.location
       );
       setState(() {
         _searchResults = results;
@@ -228,12 +234,14 @@ class _SearchPageState extends State<SearchPage> {
                               languageCode: Provider.of<SettingContext>(context).languageCode,
                               filters: filters,
                               type: type,
+                              range: Provider.of<SettingContext>(context).range,
                             ),
                           );
                           if (result != null && result['filters'] is Map) {
                             setState(() {
                               filters = result['filters'];
                               type = result['type'];
+                              range = result['range'];
                             });
                             _initSearch();
                           }

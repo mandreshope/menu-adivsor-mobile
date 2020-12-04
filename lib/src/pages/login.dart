@@ -271,6 +271,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   _submitForm() async {
+    
     final String email = _emailController.value.text,
         password = _passwordController.value.text;
 
@@ -304,7 +305,7 @@ class _LoginPageState extends State<LoginPage> {
       context,
       listen: false,
     );
-
+// authContext.phoneNumber("phoneNumber");return;
     try {
       final result = await authContext.login(email.trim(), password,
           isPasswordRemember: isPasswordRemember);

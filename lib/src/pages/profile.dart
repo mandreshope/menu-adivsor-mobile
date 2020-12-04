@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:menu_advisor/src/components/utilities.dart';
+import 'package:menu_advisor/src/pages/cgc.dart';
 import 'package:menu_advisor/src/pages/change_password.dart';
 import 'package:menu_advisor/src/pages/command_history.dart';
 import 'package:menu_advisor/src/pages/favorites.dart';
@@ -354,6 +355,87 @@ class _ProfilePageState extends State<ProfilePage> {
                           onPressed: () {
                             RouteUtil.goTo(
                               context: context,
+                              child: CGV(title: "CGV",),
+                              routeName: "",
+                            );
+                          },
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(40),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 15,
+                          ),
+                          child: TextTranslator(
+                            "CGV",
+                            style: GoogleFonts.raleway(
+                              textStyle: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        RaisedButton(
+                          onPressed: () {
+                            RouteUtil.goTo(
+                              context: context,
+                              child: CGV(title: "Aide",),
+                              routeName: "",
+                            );
+                          },
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(40),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 15,
+                          ),
+                          child: TextTranslator(
+                            "Aide",
+                            style: GoogleFonts.raleway(
+                              textStyle: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        RaisedButton(
+                          onPressed: () {
+                            RouteUtil.goTo(
+                              context: context,
+                              child: CGV(title: "A propos",),
+                              routeName: "",
+                            );
+                          },
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(40),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 15,
+                          ),
+                          child: TextTranslator(
+                            "A propos",
+                            style: GoogleFonts.raleway(
+                              textStyle: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                              ),
+                            ),
+                          ),
+                        ),
+                        /*SizedBox(
+                          height: 20,
+                        ),
+                        RaisedButton(
+                          onPressed: () {
+                            RouteUtil.goTo(
+                              context: context,
                               child: CommandHistoryPage(),
                               routeName: commandHistoryRoute,
                             );
@@ -373,7 +455,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ),
                           ),
-                        ),
+                        ),*/
                       ],
                     ),
                   ),

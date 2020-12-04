@@ -129,7 +129,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                           deliveryDate ?? DateTime.now(),
                                       firstDate: DateTime.now(),
                                       lastDate: DateTime.now().add(
-                                        Duration(days: 30),
+                                        Duration(days: 3),
                                       ),
                                     );
                                     if (date != null) {
@@ -139,7 +139,6 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                             TimeOfDay(
                                               hour: DateTime.now().hour,
                                               minute: DateTime.now()
-                                                  .add(Duration(minutes: 15))
                                                   .minute,
                                             ),
                                       );
@@ -181,6 +180,12 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                       horizontal: 25.0),
                                   title: TextTranslator(
                                     '${deliveryDate?.dateToString(DATE_FORMATED_ddMMyyyy) ?? ""}    ${deliveryTime?.hour ?? ""} : ${deliveryTime?.minute ?? ""}',
+                                  textAlign: TextAlign.left,
+                                    style: TextStyle(
+                                      color: Colors.black,//CRIMSON.withOpacity(0.9),
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w400
+                                    ),
                                   ),
                                   leading: Container(
                                     width: 1,

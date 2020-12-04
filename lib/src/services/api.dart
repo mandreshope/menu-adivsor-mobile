@@ -229,7 +229,7 @@ class Api {
     ).then<List<Food>>((response) {
       if (response.statusCode == 200) {
         List<dynamic> list = jsonDecode(response.body);
-        return list.map((data) => Food.fromJson(data)).toList();
+        return list.map((data) => Food.fromJson(data)).where((element) => element.status).toList();
       }
 
       return Future.error(
@@ -344,8 +344,17 @@ class Api {
     String lang, {
     String type,
     Map<String, dynamic> filters,
+    int range = 20,
+    Map location,
   }) {
-    String searchQuery = '?lang=$lang&q=$query';
+    String searchQuery;
+    
+    if (location == null){
+      searchQuery = '?lang=$lang&q=$query';
+    }else{
+     searchQuery = '?lang=$lang&q=$query&range=$range&location=${jsonEncode(location)}';
+    }
+     
     if (type is String) searchQuery += '&type=$type';
     if (filters != null && filters.length > 0) {
       var filterQuery = 'filter=${jsonEncode(filters)}';
@@ -356,7 +365,7 @@ class Api {
     return http.get('$_apiURL/search$searchQuery').then<List<SearchResult>>((response) {
       if (response.statusCode == 200) {
         List<dynamic> results = jsonDecode(response.body);
-        return results.map((e) => SearchResult.fromJson(e)).toList();
+        return results.map((e) => SearchResult.fromJson(e)).where((element) => element.content['status'] ?? true).toList();
       }
 
       return Future.error(
@@ -519,7 +528,8 @@ class Api {
         return datas.map<Command>((data) => Command.fromJson(data)).toList();
       }
 
-      return Future.error(jsonDecode(response.body));
+      // return Future.error(jsonDecode(response.body));
+      return List();
     });
   }
 

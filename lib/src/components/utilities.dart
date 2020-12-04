@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:menu_advisor/src/pages/command_history.dart';
 import 'package:menu_advisor/src/pages/home.dart';
 import 'package:menu_advisor/src/pages/login.dart';
 import 'package:menu_advisor/src/pages/map.dart';
@@ -137,18 +138,19 @@ class ScaffoldWithBottomMenu extends StatelessWidget {
                         builder: (_) => BagModal(),
                         backgroundColor: Colors.transparent,
                       );*/
-                      if (cartContext.itemCount == 0)
+                      /*if (cartContext.itemCount == 0)
                         Fluttertoast.showToast(
                           msg: AppLocalizations.of(context).translate('empty_cart'),
                         );
-                      else
+                      else*/
                         RouteUtil.goTo(
                           context: context,
-                          child: OrderPage(),
+                          // child: OrderPage(),
+                          child: CommandHistoryPage(),
                           routeName: orderRoute,
                         );
-                    },
-                  ),
+                   },
+                 ),
                 ),
               ),
               Expanded(
