@@ -29,7 +29,7 @@ class TextTranslator extends StatelessWidget {
   Widget build(BuildContext context) {
     final lang = Provider.of<SettingContext>(context,listen: false).languageCodeTranslate;
     final langRestaurant = Provider.of<SettingContext>(context,listen: false).languageCodeRestaurantTranslate ?? lang;
-    final isRestaurantPage =  Provider.of<SettingContext>(context,listen: false).isRestaurantPage;
+    final isRestaurantPage =  Provider.of<SettingContext>(context,listen: true).isRestaurantPage;
 
     return FutureBuilder(
       future: _translate( isRestaurantPage ? langRestaurant : lang),

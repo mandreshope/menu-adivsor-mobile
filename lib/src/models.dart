@@ -35,14 +35,19 @@ class Food {
   final String description;
   final dynamic type;
   final List<String> attributes;
-  final dynamic options;
+  final List<Option> options;
   final bool status;
+  final String title;
+  final int maxOptions;
 
-  dynamic optionsSelected;
+  String message;
+
+  List<Option> optionSelected = List();
 
   List<FoodAttribute> foodAttributes = List();
 
   bool isMenu = false;
+  bool isFoodForMenu = false;
 
   Food({
     @required this.id,
@@ -56,8 +61,11 @@ class Food {
     this.type,
     this.attributes,
     this.options,
-    this.optionsSelected,
-    this.status
+    this.optionSelected,
+    this.status,
+    this.title,
+    this.maxOptions,
+    this.message = ""
   });
 
   factory Food.fromJson(Map<String, dynamic> json) => Food(
@@ -69,15 +77,18 @@ class Food {
         price: json.containsKey('price') ? Price.fromJson(json['price']) : null,
         type: json['type'] == null ? null : json['type'] is  Map<String, dynamic> ?  FoodType.fromJson(json['type']) : json['type'] as String,
         attributes: (json['attributes'] as List).map((e) => e.toString()).toList(),
-        options: json['options'],
-        status: json['status']
+        options: (json['options'] as List).map((e) => Option.fromJson(e)).toList(),
+        status: json['status'],
+        title: json['title'],
+        maxOptions:json['maxOptions'],
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "name": name,
         "category": category.toJson(),
-        "options": optionsSelected
+        if (optionSelected != null)
+        "options": this.optionSelected.map((v) => v.toJson()).toList()
       };
 }
 
@@ -89,8 +100,10 @@ class Menu {
   final List<Food> foods;
   String restaurant;
   Price price;
+  String type;
 
   bool isMenu = true;
+  bool isFoodForMenu = false;
 
   Menu({
     @required this.id,
@@ -99,12 +112,13 @@ class Menu {
     this.imageURL,
     this.description,
     this.restaurant,
-    
+    this.type
   });
 
   _setPrice() {
     price = Price(amount: 0,currency: "€");
     this.foods.forEach((f){
+          f.isFoodForMenu = true;
          if (f.price != null && f.price.amount != null) price.amount += f.price.amount;
         });
         print("prince ${price.amount}");
@@ -120,6 +134,7 @@ class Menu {
         foods: json['foods'] is List ? json['foods']?.map<Food>((data) => Food.fromJson(data))?.toList() ?? [] : [],
         description: json['description'] is Map<String, dynamic> ? json['description']["fr"] : json['description'],
         // restaurant: resto
+        type: json['type'],
       );
       _menu.isMenu = true;
       _menu._setPrice();
@@ -248,12 +263,15 @@ class Command {
   final String commandType;
   final int totalPrice;
   final bool validated;
-  final List<dynamic> items;
+  final bool revoked;
+  List<CommandItem> items;
+  List<CommandItem> menus;
   final DateTime createdAt;
   final String shippingAddress;
   final DateTime shippingTime;
   final bool shipAsSoonAsPossible;
   final int code;
+  dynamic restaurant;
 
   Command({
     this.id,
@@ -261,12 +279,14 @@ class Command {
     this.commandType,
     this.totalPrice,
     this.validated,
+    this.revoked,
     this.items,
     this.createdAt,
     this.shippingAddress,
     this.shippingTime,
     this.shipAsSoonAsPossible,
     this.code,
+    this.restaurant
   });
 
   factory Command.fromJson(Map<String, dynamic> json) => Command(
@@ -275,12 +295,14 @@ class Command {
         commandType: json['commandType'],
         totalPrice: json['totalPrice'],
         validated: json['validated'],
-        items: json['items'],
+        revoked: json['revoked'],
+        items: json['items'] != null ? (json['items'] as List).map((e) => CommandItem.fromJson(e)).toList() : List(),
         createdAt: json['createdAt'] != null ? DateTime.fromMillisecondsSinceEpoch(json['createdAt']) : null,
         shippingAddress: json['shippingAddress'],
         shippingTime: json['shippingTime'] != null ? DateTime.fromMillisecondsSinceEpoch(json['shippingTime']) : null,
         shipAsSoonAsPossible: json['shipAsSoonAsPossible'] ?? false,
         code: json['code'],
+        restaurant: json['restaurant'] is String ? json['restaurant'] : Restaurant.fromJson(json['restaurant'])
       );
 }
 
@@ -369,8 +391,9 @@ class CommandItem {
   int quantity;
   Food food;
   Menu menu;
+  List<Option> options;
 
-  CommandItem({this.sId, this.quantity, this.food,this.menu});
+  CommandItem({this.sId, this.quantity, this.food,this.menu,this.options});
 
   CommandItem.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
@@ -379,6 +402,7 @@ class CommandItem {
     else
       menu = json['item'] != null ? Menu.fromJson(json['item']) : null;
     quantity = json['quantity'];
+    options = json['options'] == null ? List() : (json['options'] as List).map((e) => Option.fromJson(e)).toList();
   }
 
   Map<String, dynamic> toJson() {
@@ -651,6 +675,62 @@ class Language {
     data['code'] = this.code;
     data['name'] = this.name;
     data['nativeName'] = this.nativeName;
+    return data;
+  }
+
+}
+class Option {
+  String sId;
+  List<ItemsOption> items;
+  String title;
+  int maxOptions;
+
+  List<ItemsOption> itemOptionSelected;
+
+  Option({this.sId, this.items, this.title, this.maxOptions,this.itemOptionSelected});
+
+  Option.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    if (json['items'] != null) {
+      items = new List<ItemsOption>();
+      json['items'].forEach((v) {
+        items.add(new ItemsOption.fromJson(v));
+      });
+    }
+    title = json['title'];
+    maxOptions = json['maxOptions'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['_id'] = this.sId;
+    if (this.itemOptionSelected != null) {
+      data['items'] = this.itemOptionSelected.map((v) => v.toJson()).toList();
+    }
+    data['title'] = this.title;
+    data['maxOptions'] = this.maxOptions;
+    return data;
+  }
+}
+
+class ItemsOption {
+  String sId;
+  String name;
+  int price;
+
+  ItemsOption({this.sId, this.name, this.price});
+
+  ItemsOption.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    name = json['name'];
+    price = json['price'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['_id'] = this.sId;
+    data['name'] = this.name;
+    data['price'] = this.price;
     return data;
   }
 }

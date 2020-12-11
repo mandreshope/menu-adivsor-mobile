@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
+import 'package:menu_advisor/src/components/menu_item_food_option.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/constants/date_format.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/food.dart';
 import 'package:menu_advisor/src/pages/restaurant.dart';
+import 'package:menu_advisor/src/pages/summary.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/DataContext.dart';
@@ -137,8 +140,8 @@ class _FoodCardState extends State<FoodCard> {
   @override
   void initState() {
     super.initState();
-
-    api.getRestaurantName(id: widget.food.restaurant).then((res) {
+    var restaurantId = widget.food.restaurant is String ? widget.food.restaurant : widget.food.restaurant['_id'];
+    api.getRestaurantName(id: restaurantId).then((res) {
       if (mounted)
         setState(() {
           restaurantName = res.replaceAll('"', '');
@@ -599,21 +602,27 @@ FadeInImage.assetNetwork(
                   children: [
                     Consumer<CartContext>(
                         builder: (_, cartContext, __) => 
-                        ButtonItemCountWidget(widget.food, onAdded: (value) async {
-                              if (widget.food.options.isNotEmpty && widget.food.optionsSelected == null ){
-                                var optionSelected = await showDialog(
-                                                context: context,
-                                                barrierDismissible: false,
-                                                builder: (_) => OptionChoiceDialog(
-                                                  food: widget.food,
-                                                ),
-                                              );
-                                if (optionSelected != null)
+                        ButtonItemCountWidget(widget.food, 
+                        onAdded: (value) async {
+                            if (widget.food.isMenu){
+                                
+                            }else{
+                                if (widget.food.options.isNotEmpty && widget.food.optionSelected == null ){
+                                  var optionSelected = await showDialog(
+                                                  context: context,
+                                                  barrierDismissible: false,
+                                                  builder: (_) => OptionChoiceDialog(
+                                                    food: widget.food,
+                                                  ),
+                                                );
+                                  if (optionSelected != null)
+                                    cartContext.addItem(widget.food, value);
+                                }else{
                                   cartContext.addItem(widget.food, value);
-                              }else{
-                                cartContext.addItem(widget.food, value);
-                              }
-                            }, onRemoved: (value) {
+                                }
+                            }
+                                
+                        }, onRemoved: (value) {
                               value == 0 ? cartContext.removeItem(widget.food) : cartContext.addItem(widget.food, value);
                             }, itemCount: cartContext.getCount(widget.food), isContains: cartContext.contains(widget.food))
                         ),
@@ -941,26 +950,35 @@ class MenuCard extends StatelessWidget {
                                 elevation: 2,
                                 child: Container(
                                   margin: EdgeInsets.all(15),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Radio(value: menuContext.selectedMenu[entry.key]?.first?.id, groupValue: food.id, onChanged: null,activeColor: CRIMSON,hoverColor: CRIMSON,),
-                                      Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: TextTranslator(food.name),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Radio(value: menuContext.selectedMenu[entry.key]?.first?.id, groupValue: food.id, onChanged: null,activeColor: CRIMSON,hoverColor: CRIMSON,),
+                                          Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: TextTranslator(food.name),
+                                          ),
+
+                                          food?.price?.amount == null ? Text("") : Text("${food.price.amount / 100} €", style: TextStyle(fontWeight: FontWeight.bold)),
+
+                                          /*ButtonItemCountWidget(
+                                            food,
+                                            isMenu: true, onAdded: (value){
+                                              _cartContext.addItem(food, value);
+                                          }, onRemoved: (value){
+                                              value == 0 ? _cartContext.removeItem(food) 
+                                              : _cartContext.addItem(food, value);
+                                          }, itemCount: _cartContext.getCount(food)
+                                          , isContains: _cartContext.contains(food))*/
+                                        ],
                                       ),
-
-                                      food?.price?.amount == null ? Text("") : Text("${food.price.amount / 100} €", style: TextStyle(fontWeight: FontWeight.bold)),
-
-                                      /*ButtonItemCountWidget(
-                                        food,
-                                        isMenu: true, onAdded: (value){
-                                          _cartContext.addItem(food, value);
-                                      }, onRemoved: (value){
-                                          value == 0 ? _cartContext.removeItem(food) 
-                                          : _cartContext.addItem(food, value);
-                                      }, itemCount: _cartContext.getCount(food)
-                                      , isContains: _cartContext.contains(food))*/
+                                      if (menuContext.selectedMenu[entry.key]?.first?.id == food.id)...[
+                                        MenuItemFoodOption(food: food,)
+                                      ]else
+                                        Container()
                                     ],
                                   ),
                                 ),
@@ -1122,15 +1140,23 @@ class _RestaurantCardState extends State<RestaurantCard> {
   }
 }
 
-class BagItem extends StatelessWidget {
+class BagItem extends StatefulWidget {
   final dynamic food;
   int count;
   bool activeDelete;
   String imageTag;
 
-  CartContext _cartContext;
 
   BagItem({Key key, @required this.food, @required this.count, this.activeDelete = true, this.imageTag}) : super(key: key);
+
+  @override
+  _BagItemState createState() => _BagItemState();
+}
+
+class _BagItemState extends State<BagItem> {
+  CartContext _cartContext;
+
+  bool hasMessage = false;
 
   @override
   Widget build(BuildContext context) {
@@ -1164,18 +1190,18 @@ class BagItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               TextTranslator(
-                '$count x ',
+                '${widget.count} x ',
                 style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 20),
               ),
               SizedBox(
                 width: 10,
               ),
-              food.imageURL != null
+              widget.food.imageURL != null
                   ? Hero(
-                      tag: imageTag ?? food.id,
+                      tag: widget.imageTag ?? widget.food.id,
                       child: CircleAvatar(
                         backgroundImage: NetworkImage(
-                          food.imageURL,
+                          widget.food.imageURL,
                         ),
                         onBackgroundImageError: (_, __) {},
                         backgroundColor: Colors.grey,
@@ -1193,19 +1219,19 @@ class BagItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     TextTranslator(
-                      food.name,
+                      widget.food.name,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     TextTranslator(
-                      food?.description ?? "",
-                      style: TextStyle(fontSize: food?.description == null ? 0 : 15, fontWeight: FontWeight.bold, color: Colors.grey[600]),
+                      widget.food?.description ?? "",
+                      style: TextStyle(fontSize: widget.food?.description == null ? 0 : 15, fontWeight: FontWeight.bold, color: Colors.grey[600]),
                     ),
-                    if (food.price?.amount != null)
+                    if (widget.food.price?.amount != null)
                       Text(
-                        '${food.price.amount / 100}€',
+                        '${_cartContext.getTotalPriceFood(widget.food)}€',
                         style: TextStyle(
                           fontSize: 18,
                           color: Colors.grey[600],
@@ -1250,23 +1276,69 @@ class BagItem extends StatelessWidget {
                   );
                 },
               ),*/
+              
               ButtonItemCountWidget(
-                food,
-                itemCount: count,
+                widget.food,
+                itemCount: widget.count,
                 onAdded: (value) {
-                  count = value;
-                  _cartContext.addItem(food, value);
+                  widget.count = value;
+                  _cartContext.addItem(widget.food, value);
                 },
                 onRemoved: (value) {
-                  value == 0 ? _cartContext.removeItem(food) : _cartContext.addItem(food, value);
+                  value == 0 ? _cartContext.removeItem(widget.food) : _cartContext.addItem(widget.food, value);
 
                   if (_cartContext.items.length == 0) RouteUtil.goBack(context: context);
-                  count = value;
+                  widget.count = value;
                 },
-                isContains: _cartContext.contains(food),
+                isContains: _cartContext.contains(widget.food),
                 isFromDelevery: true,
               ),
-              if (activeDelete) ...[
+               SizedBox(
+                  width: 15,
+                ),
+              Stack(
+                  children: [
+                    
+                    CircleButton(
+  
+                    backgroundColor: CRIMSON,
+                    onPressed: (){
+                      showDialog<String>(context: context,
+                      child: MessageDialog(message: widget.food.message,)).then((value) {
+                          print(value);
+                          widget.food.message = value;
+                          if (value.isNotEmpty){
+                            setState(() {
+                              hasMessage = true;
+                            });
+                          }else{
+                            setState(() {
+                              hasMessage = false;
+                            });
+                          }
+                        }   
+                      );
+                    },
+                    child: Icon(Icons.comment,
+                        color: Colors.white,
+                        size: 15,),
+                        
+                  ),
+                  Visibility(
+                    visible: hasMessage,
+                                      child: Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child:  Icon(
+                                        Icons.brightness_1,
+                                        color: Color(0xff62C0AB),
+                                        size: 12,
+                                      )
+                      ),
+                  ),
+                  ],
+              ),
+              if (widget.activeDelete) ...[
                 SizedBox(
                   width: 15,
                 ),
@@ -1275,6 +1347,7 @@ class BagItem extends StatelessWidget {
                   child: Icon(
                     Icons.delete,
                     color: Colors.white,
+                    size: 15,
                   ),
                   onPressed: () async {
                     var result = await showDialog(
@@ -1288,7 +1361,7 @@ class BagItem extends StatelessWidget {
                     if (result is bool && result) {
                       CartContext cartContext = Provider.of<CartContext>(context, listen: false);
 
-                      cartContext.removeItem(food);
+                      cartContext.removeItem(widget.food);
                       if (cartContext.items.length == 0) RouteUtil.goBack(context: context);
                     }
                   },
@@ -1307,24 +1380,18 @@ class CommandHistoryItem extends StatelessWidget {
   final Command command;
   final int position;
 
-  Food food;
+  // Food food;
 
   @override
   Widget build(BuildContext context) {
-    food = Food.fromJson(command.items[0]['item']);
+    // food = Food.fromJson(command.items[0]['item']);
 
     return InkWell(
       onTap: () {
         RouteUtil.goTo(
           context: context,
           child: Material(
-            child: FoodPage(
-              food: food,
-              imageTag: command.id,
-              restaurantName: food.restaurant,
-              fromDelevery: true,
-              modalMode: false,
-            ),
+            child: Summary(commande: command,fromHistory: true,)
           ),
           routeName: foodRoute,
         );
@@ -1338,57 +1405,51 @@ class CommandHistoryItem extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(10),
           child: Row(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              food.imageURL != null
-                  ? Hero(
-                      tag: command.id,
-                      child: CircleAvatar(
-                        backgroundImage: NetworkImage(
-                          food.imageURL,
-                        ),
-                        onBackgroundImageError: (_, __) {},
-                        backgroundColor: Colors.grey,
-                        maxRadius: 20,
-                      ),
-                    )
-                  : Icon(
-                      Icons.fastfood,
-                    ),
-              SizedBox(
-                width: 20,
-              ),
-              TextTranslator(
-                food.name ?? "",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Spacer(),
-              if (food.price?.amount != null)
-                Text(
-                  '${food.price.amount / 100}€',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.grey[600],
-                  ),
-                ),
-              SizedBox(
-                width: 20,
-              ),
-              /*TextTranslator(
-                  '${command.shippingTime?.day ?? ""}/${command.shippingTime?.month ?? ""} - ${command.shippingTime.hour}:${command.shippingTime.minute}',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.grey[600],
-                  ),
-                ),*/
+              TextTranslator('${command.code?.toString()?.padLeft(6,'0')}', style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold)),
+              // SizedBox(width: 15),
+              // Image.network(
+              //   item.imageURL,
+              //   width: 25,
+              // ),
+              // SizedBox(width: 8),
+              _validated(),
+              // Spacer(),
+              Text("${command.totalPrice / 100} €", style: TextStyle(fontSize: 16)),
             ],
           ),
         ),
       ),
     );
   }
+
+  Widget _validated() {
+    Color color;
+    String title = "";
+    if (!command.validated && !command.revoked){
+      title = "En attente";
+      color = Colors.orange;
+    }else if (command.validated){
+      title = "Valider";
+      color = TEAL;
+    }else if (command.revoked){
+      title = "Refuser";
+      color = CRIMSON;
+    }
+
+
+    return Container(
+                      padding: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.horizontal(left: Radius.circular(15), right: Radius.circular(15)),
+                        color: color,
+                      ),
+                      child: TextTranslator(
+                        title,
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12),
+                      ),
+                    );
+  }
+
 }

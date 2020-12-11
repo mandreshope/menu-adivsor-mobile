@@ -8,11 +8,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingContext extends ChangeNotifier {
   String _languageCode = 'fr';
-  String _languageCodeRstaurant = '';
+  String _languageCodeRstaurant = 'fr';
   Future<void> initialized;
   int range = 1;
 
-  bool isRestaurantPage = false;
+  bool _isRestaurantPage = false;
+  
+  set isRestaurantPage(bool value) {
+     _isRestaurantPage = value;
+      notifyListeners();
+  }
+
+  get isRestaurantPage => _isRestaurantPage;
 
   List<String> _supportedLanguages = [
     SupportedLanguages.French,
@@ -105,7 +112,7 @@ class SettingContext extends ChangeNotifier {
 
   resetLanguage() {
     languageCode = 'fr';
-    languageCodeRestaurant = '';
+    languageCodeRestaurant = 'fr';
   }
 
   Future<void> downloadLanguage() async  {

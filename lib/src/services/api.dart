@@ -543,10 +543,21 @@ class Api {
     String shippingAddress,
     bool shipAsSoonAsPossible,
     Map customer,
-    var menu
+    var menu,
   }) async {
     await _refreshTokens();
-
+    print(jsonEncode({
+        'relatedUser': relatedUser,
+        'commandType': commandType,
+        'totalPrice': totalPrice.toString(),
+        'restaurant': restaurant,
+        'items': items,
+        'shippingTime': shippingTime,
+        'shippingAddress': shippingAddress,
+        'shipAsSoonAsPossible': shipAsSoonAsPossible,
+        'customer': customer,
+        'menus':menu,
+      }));
     return http
         .post(
       '$_apiURL/commands',

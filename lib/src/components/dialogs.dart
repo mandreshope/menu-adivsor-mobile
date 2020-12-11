@@ -236,7 +236,7 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
               if (options.isEmpty)
                 Container()
               else ...[
-                Padding(
+               /* Padding(
                   padding: const EdgeInsets.only(left: 25.0),
                   child: TextTranslator("Options"),
                 ),
@@ -247,7 +247,7 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
                     onChanged: (value) {
                       setState(() {
                         optionSelected = value;
-                        widget.food.optionsSelected = options[value];
+                        widget.food.itemOptionSelected = options[value];
                       });
                     },
                     choiceItems: C2Choice.listFrom(
@@ -256,7 +256,7 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
                       label: (i, v) => v['name'][Provider.of<SettingContext>(context).languageCode],
                     ),
                   ),
-                ),
+                ),*/
               ],
               SizedBox(height: 5),
 
@@ -800,8 +800,8 @@ class OptionChoiceDialog extends StatefulWidget {
 
 class _OptionChoiceDialogState extends State<OptionChoiceDialog> {
   int itemCount = 1;
-  dynamic optionSelected;
-  List<dynamic> options = [
+  List<Option> optionSelected = List();
+  List<Option> options = [
   ];
 
   @override
@@ -813,48 +813,183 @@ class _OptionChoiceDialogState extends State<OptionChoiceDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            child: Padding(
-                      padding: const EdgeInsets.only(left: 25.0),
-                      child: ChipsChoice.single(value: optionSelected,
-                        padding: EdgeInsets.zero,
-                        onChanged: (value) {
-                          setState(() {
-                            optionSelected = value;
-                            widget.food.optionsSelected = options[value];
-                          });
+    return WillPopScope(
+      onWillPop: () async{
+        return false;
+      },
+          child: Dialog(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 25),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+              children: [
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: options.length,
+                        itemBuilder: (_,position){
+                          Option option = options[position];
+                            return  Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      SizedBox(height: 15,),
+                                      TextTranslator(option.title,style:TextStyle(color: Colors.black,fontWeight: FontWeight.bold)),
+                                      Container(
+                                        child: Padding(
+                                                  padding: const EdgeInsets.only(left: 25.0),
+                                                  child: ChipsChoice.multiple(
+                                                    value: option.itemOptionSelected,
+                                                    padding: EdgeInsets.zero,
+                                                    onChanged: (value) {
+                                                      // int diff = 
+                                                      setState(() {
+                                                        if (option.itemOptionSelected?.length == option.maxOptions){
+                                                          if (option.itemOptionSelected.length >= value.length ){
+                                                            option.itemOptionSelected = value.cast<ItemsOption>();
+                                                            widget.food.optionSelected = options;
+                                                          }else{
+                                                            print("max options");
+                                                            Fluttertoast.showToast(
+                                                            msg: "maximum selection ${option.title} : ${option.maxOptions}"
+                                                          );
+                                                          }
+                                                          
+                                                        }else{
+                                                          option.itemOptionSelected = value.cast<ItemsOption>();
+                                                            widget.food.optionSelected = options;
+                                                        }
+                                                        
+                                                      });
+                                                    },
+                                                    choiceLabelBuilder: (_){
+                                                      return Row(
+                                                        children: [
+                                                          Text("${_.value.name}"),
+                                                          SizedBox(width: 5,),
+                                                          Container(
+                                                            // padding: EdgeInsets.all(5),
+                                                            decoration: BoxDecoration(
+                                                              shape: BoxShape.circle,
+                                                              // color: _.value.price == 0 ? null : Colors.grey[400]
+                                                            ),
+                                                            child: Text("${_.value.price == 0 ? '': _.value.price/100}${_.value.price == 0 ? '': "€"}",
+                                                            style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),),
+                                                          )
+                                                        ],
+                                                      );
+                                                    },
+                                                    choiceItems: C2Choice.listFrom(
+                                                      meta: (position, item){
+
+                                                      },
+                                                      source: option.items,
+                                                      value: (i, v) => v,
+                                                      label: (i, v) => v.name,
+                                                    ),
+                                                  ),
+                                                ),
+                                      ),
+                                      
+                                    ],
+                                  );
                         },
-                        choiceItems: C2Choice.listFrom(
-                          source: options,
-                          value: (i, v) => i,
-                          label: (i, v) => v['name'],
-                        ),
-                      ),
-                    ),
-          ),
-          RaisedButton(
-                        padding: EdgeInsets.all(8),
-                        color: CRIMSON,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        onPressed: ()=> Navigator.of(context).pop(optionSelected),
-                        child: TextTranslator(
-                                AppLocalizations.of(context)
-                                    .translate("validate"),
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                ),
-                              ),
-                      ),
-        
-        ],
+                ),
+              
+                                          RaisedButton(
+                                              padding: EdgeInsets.all(8),
+                                              color: CRIMSON,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(10),
+                                              ),
+                                              onPressed: ()=> Navigator.of(context).pop(optionSelected),
+                                              child: TextTranslator(
+                                                      AppLocalizations.of(context)
+                                                          .translate("validate"),
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontWeight: FontWeight.bold,
+                                                        fontSize: 12,
+                                                      ),
+                                                    ),
+                                            ),
+              ],
+            ),
+        ),
+      ),
+    );
+  }
+}
+
+class MessageDialog extends StatelessWidget {
+   MessageDialog({Key key,this.message}) : super(key: key);
+   String message;
+
+  TextEditingController _messageController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    _messageController.text = message;
+    return Dialog(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(10))
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+             decoration: BoxDecoration(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+                color: CRIMSON,
+            ),
+              height: 50,
+              width: double.infinity,
+              child: Center(
+                child: Text(
+                  "Message",
+                  textAlign: TextAlign.center,
+                  style:TextStyle(color: Colors.white,fontWeight: FontWeight.bold,
+                  fontSize: 20)),
+              ),
+            ),
+            Container(
+              height: 150,
+              padding: EdgeInsets.symmetric(horizontal: 25),
+              child: TextField(
+                controller: _messageController,
+                keyboardType: TextInputType.multiline,
+                maxLines: null,
+                showCursor: true,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: "Votre message..."
+                ),
+              ),
+            ),
+            InkWell(
+              onTap: (){
+                Navigator.of(context).pop(_messageController.text);
+              },
+                child: Container(
+                height: 50,
+               decoration: BoxDecoration(
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(10)),
+                  color: TEAL,
+              ),
+              child: Center(
+                  child: TextTranslator(
+                    "Envoyer",
+                    textAlign: TextAlign.center,
+                    style:TextStyle(color: Colors.white,fontWeight: FontWeight.bold,
+                    fontSize: 20)),
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

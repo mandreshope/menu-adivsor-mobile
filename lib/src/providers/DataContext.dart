@@ -102,20 +102,18 @@ class DataContext extends ChangeNotifier {
 
     try {
       nearestRestaurants.clear();
-      var _searchResult = await _api.search(
-        "",
-        lang,
-        type: 'restaurant',
+      nearestRestaurants = await _api.getRestaurants(
         filters: {
-          // "searchCategory": "nearest",
+          "searchCategory": "new",
           // "location": location.toString(),
           "city":_city
           // 'NEAREST': 'nearest',
         },
       );
-      _searchResult.take(5).forEach((e) {
-        nearestRestaurants.add(Restaurant.fromJson(e.content));
-      });
+      // _searchResult.take(5).forEach((e) {
+      //   nearestRestaurants.add(Restaurant.fromJson(e.content));
+      // });
+      nearestRestaurants.reversed;
     } catch (error) {
       print(
         "Error while fetching popular restaurants",
@@ -137,7 +135,7 @@ class DataContext extends ChangeNotifier {
         // "",
         lang,
         filters: {
-          "searchCategory": "popular",
+          "searchCategory": "priority",
           // "searchCategory": "with_price",
           // "limit": 5,
           "city":_city ?? ""

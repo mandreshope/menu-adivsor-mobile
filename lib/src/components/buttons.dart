@@ -173,7 +173,7 @@ class OrderButton extends StatelessWidget {
                     width: 10,
                   ),
                   Text(
-                    this.totalPrice == 0 ? "" : '${this.totalPrice} €',
+                    this.totalPrice == 0 ? "" : '${this.totalPrice.toStringAsFixed(2)} €',
                     style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: CRIMSON),
                   ),
                 ],

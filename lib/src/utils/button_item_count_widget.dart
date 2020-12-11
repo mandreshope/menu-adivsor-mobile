@@ -51,12 +51,15 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                   msg: AppLocalizations.of(context)
                       .translate('priceless_and_not_priceless_not_allowed'),
                 );
+                return ;
               } else if (!_cartContext.hasSameOriginAsInBag(widget.food)) {
                 Fluttertoast.showToast(
                   msg: AppLocalizations.of(context)
                       .translate('from_different_origin_not_allowed'),
                 );
+                return ;
               }
+              
             }
 
             widget.onAdded(++widget.itemCount);

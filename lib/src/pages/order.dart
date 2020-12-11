@@ -17,6 +17,7 @@ import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../models.dart';
 
@@ -174,9 +175,16 @@ class _OrderPageState extends State<OrderPage> {
                                         SizedBox(
                                           width: 5,
                                         ),
-                                        TextTranslator(
-                                          "Tel : ${_restaurant.phoneNumber ?? "0"}",
-                                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.black54),
+                                        InkWell(
+                                          onTap: () async {
+                                            if (_restaurant.phoneNumber != null)
+                                            await launch(
+                                                "tel:${_restaurant.phoneNumber}");
+                                          },
+                                             child: TextTranslator(
+                                            "Tel : ${_restaurant.phoneNumber ?? "0"}",
+                                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.black54),
+                                          ),
                                         )
                                       ],
                                     )
@@ -222,7 +230,7 @@ class _OrderPageState extends State<OrderPage> {
                               ),
                             ),
                             Text(
-                              '${cartContext.totalPrice}€',
+                              '${cartContext.totalPrice.toStringAsFixed(2)}€',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18,
@@ -300,7 +308,7 @@ class _OrderPageState extends State<OrderPage> {
             var command = await Api.instance.sendCommand(
               relatedUser: authContext.currentUser?.id ?? null,
               commandType: commandContext.commandType,
-              items: cartContext.items.entries.where((e) => !e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id, 'options': e.key.optionsSelected}).toList(),
+              items: cartContext.items.entries.where((e) => !e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id, 'options': e.key.optionSelected,'comment':e.key.message}).toList(),
               restaurant: cartContext.currentOrigin,
               totalPrice: (cartContext.totalPrice * 100).round(),
               menu: cartContext.items.entries.where((e) => e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),
@@ -377,7 +385,7 @@ class _OrderPageState extends State<OrderPage> {
         var command = await Api.instance.sendCommand(
           relatedUser: authContext.currentUser.id,
           commandType: commandContext.commandType,
-          items: cartContext.items.entries.where((e) => !e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id, 'options': e.key.optionsSelected}).toList(),
+          items: cartContext.items.entries.where((e) => !e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id, 'options': e.key.optionSelected,'comment':e.key.message}).toList(),
           restaurant: cartContext.currentOrigin,
           totalPrice: (cartContext.totalPrice * 100).round(),
         menu: cartContext.items.entries.where((e) => e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),

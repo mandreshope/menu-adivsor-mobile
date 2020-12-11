@@ -100,7 +100,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                           var command = await Api.instance.sendCommand(
                                             relatedUser: authContext.currentUser.id,
                                             commandType: commandContext.commandType,
-                                            items: cartContext.items.entries.where((e) => !e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id,'options': e.key.optionsSelected}).toList(),
+                                            items: cartContext.items.entries.where((e) => !e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id,'options': e.key.optionSelected,'comment':e.key.message}).toList(),
                                             restaurant: cartContext.currentOrigin,
                                             totalPrice: (cartContext.totalPrice * 100).round(),
                                             menu: cartContext.items.entries.where((e) => e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),

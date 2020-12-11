@@ -181,7 +181,7 @@ class _FavoritesPageState extends State<FavoritesPage>
                                   child: FoodCard(
                                     food: e,
                                     imageTag: e.id,
-                                  ),
+                                  )
                                 ),
                               )
                               .toList(),

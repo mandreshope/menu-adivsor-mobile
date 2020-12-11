@@ -37,6 +37,8 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
 
   Api api = Api.instance;
 
+  String commandType = 'delivery';
+
   @override
   void initState() {
     // TODO: implement initState
@@ -50,13 +52,28 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
 
     tabController.addListener(() {
       print(tabController.index);
-      itemScrollController.jumpTo(index: tabController.index);
+      // itemScrollController.jumpTo(index: tabController.index);
+      switch (tabController.index) {
+        case 0:
+          commandType = 'delivery';
+          break;
+        case 1:
+          commandType = 'on_site';
+          break;
+        case 2:
+          commandType = 'takeaway';
+          break;
+        default:
+        commandType = 'delivery';
+          break;
+      }
+      setState(() {});
     });
 
-    itemPositionsListener.itemPositions.addListener(() {
+   /* itemPositionsListener.itemPositions.addListener(() {
       print('Scroll position: ${itemPositionsListener.itemPositions.value.first.index}');
       tabController.animateTo(itemPositionsListener.itemPositions.value.first.index);
-    });
+    });*/
 
     loadData();
 
@@ -138,7 +155,8 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
                     ],
                   ),
                 )
-              : Column(mainAxisSize: MainAxisSize.max, children: [
+              : _renderViewItem(commandType)
+              /*Column(mainAxisSize: MainAxisSize.max, children: [
                   Expanded(
                       child: ScrollablePositionedList.separated(
                     itemScrollController: itemScrollController,
@@ -159,7 +177,7 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
                       child: Divider(),
                     ),
                   )),
-                ]),
+                ]),*/
     );
   }
 
@@ -189,23 +207,34 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
         .toList();
         print(commandTemp);
     return commandTemp.length == 0
-        ? Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.warning,
-                size: 40,
+        ? Padding(
+          padding: const EdgeInsets.only(top:25),
+          child: Align(
+            alignment: Alignment.topCenter,
+                    child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.warning,
+                    size: 40,
+                  ),
+                  TextTranslator(
+                    "Aucun",
+                    style: TextStyle(
+                      fontSize: 22,
+                    ),
+                  ),
+                ],
               ),
-              TextTranslator(
-                "Aucun",
-                style: TextStyle(
-                  fontSize: 22,
-                ),
-              ),
-            ],
-          )
-        : SingleChildScrollView(
+          ),
+        )
+        : ListView.builder(
+          itemCount: commandTemp.length,
+          itemBuilder: (_,position){
+            return CommandHistoryItem(command: commandTemp[position],);
+          });
+        /*SingleChildScrollView(
             child: Column(
               children: [
                 for(var item in commandTemp)
@@ -213,6 +242,6 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
                   CommandHistoryItem(command: item,)
               ]
             ),
-          );
+          );*/
   }
 }

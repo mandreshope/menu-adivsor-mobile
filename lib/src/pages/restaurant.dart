@@ -4,6 +4,7 @@ import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
@@ -17,6 +18,7 @@ import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
+import 'package:menu_advisor/src/utils/map_utils.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textFormFieldTranslator.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
@@ -78,12 +80,15 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
   @override
   void initState() {
     super.initState();
-
-    _lang = Provider.of<SettingContext>(context, listen: false).languageCode;
+    
+     _lang = Provider.of<SettingContext>(context, listen: false).languageCode;
     _langTranslate = Provider.of<SettingContext>(context, listen: false).languageCodeTranslate;
     Provider.of<SettingContext>(context,listen: false).isRestaurantPage = true;
 
-    api
+   
+ 
+
+  api
         .getRestaurant(
       id: widget.restaurant,
       lang: Provider.of<SettingContext>(
@@ -120,7 +125,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
 
       tabController.addListener(() {
         print(tabController.index);
-        itemScrollController.jumpTo(index: tabController.index);
+        // itemScrollController.jumpTo(index: tabController.index);
       });
 
       itemPositionsListener.itemPositions.addListener(() {
@@ -178,6 +183,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
       );
       RouteUtil.goBack(context: context);
     });
+    
   }
 
   void _onChanged(String value) {
@@ -634,6 +640,32 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                           await launch(
                                               "tel:${restaurant.phoneNumber}");
                                       },
+                                    ),
+                                    SizedBox(height: 15,),
+                                    Container(
+                                      margin: EdgeInsets.only(left: 25),
+                                      child: InkWell(
+                                        onTap: () async {
+                                          Position currentPosition = await getCurrentPosition();
+                                          var coordinates = restaurant.location.coordinates;
+                                          MapUtils.openMap(currentPosition.latitude, currentPosition.longitude,
+                                          coordinates.last,coordinates.first);
+                                        },
+                                        child: Container(
+                                              padding: EdgeInsets.all(5),
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.horizontal(left: Radius.circular(15), right: Radius.circular(15)),
+                                                color: Colors.orange,
+                                              ),
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(2.0),
+                                                child: TextTranslator(
+                                                  "Itinéraire",
+                                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14),
+                                                ),
+                                              ),
+                                            )
+                                      ),
                                     )
                                   ],
                                 )
@@ -677,7 +709,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                               AppLocalizations.of(context).translate('a_la_carte').translator(_langTranslate),
                             builder: (_,data){
                             return Tab(
-                              text: data.data,
+                              text: data.data ?? "",
                             );
                           }),
                           
@@ -687,7 +719,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                               "${foodType["name"]['fr'] ?? ""}".translator(_langTranslate),
                             builder: (_,data){
                               return Tab(
-                              text: data.data,
+                              text: data.data ?? "",
                             );
                             }),
                             FutureBuilder<String>(
@@ -695,7 +727,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                               AppLocalizations.of(context).translate('menus').translator(_langTranslate),
                             builder: (_,data){
                               return Tab(
-                              text: data.data,
+                              text: data.data ?? "",
                             );
                             }),
                           
@@ -752,6 +784,9 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                               height: 10,
                             ),
                             _renderMenus(),
+                             SizedBox(
+                              height: 50,
+                            ),
                           ],
                         );
 
@@ -835,7 +870,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                 SizedBox(
                   width: 25,
                 ),
-
+                !showFavoriteButton ? Container(width: 0,height: 0,) :
                 switchingFavorite
                     ? Padding(
                         padding: const EdgeInsets.all(8.0),

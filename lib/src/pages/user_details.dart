@@ -219,7 +219,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                         ),
                         trailing: deliveryDate != null && deliveryTime != null
                             ? Icon(
-                                Icons.check,
+                                Icons.edit_outlined,
                                 color: Colors.green[300],
                               )
                             : null,
@@ -229,7 +229,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                 if (deliveryDate != null) ...[
                   Divider(),
                   Container(
-                    color: Colors.white,
+                    color: CRIMSON,
                     child: ListTile(
                       contentPadding:
                           const EdgeInsets.symmetric(horizontal: 25.0),
@@ -237,7 +237,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                         '${deliveryDate?.dateToString(DATE_FORMATED_ddMMyyyy) ?? ""}    ${deliveryTime?.hour ?? ""} : ${deliveryTime?.minute ?? ""}',
                         textAlign: TextAlign.left,
                         style: TextStyle(
-                          color: Colors.black,//CRIMSON.withOpacity(0.9),
+                          color: Colors.white,//CRIMSON.withOpacity(0.9),
                           fontSize: 20,
                           fontWeight: FontWeight.w400
                         ),
@@ -318,13 +318,13 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
       try {
         var command = await Api.instance.sendCommand(
           commandType: commandContext.commandType,
-          items: cartContext.items.entries.where((e) => !e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),
+          items: cartContext.items.entries.where((e) => !e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id, 'options': e.key.optionSelected,'comment':e.key.message}).toList(),
           restaurant: cartContext.currentOrigin,
           totalPrice: (cartContext.totalPrice * 100).round(),
           customer: {
             'name': _displayNameController.value.text,
             'address': _addressController.value.text,
-            'phoneNumber': _phoneNumberController.value.text,
+            'phoneNumber': "+261"+_phoneNumberController.value.text,
             'email': _emailController.value.text
           },
           shippingTime: commandContext.deliveryDate
@@ -335,7 +335,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
           )
               ?.millisecondsSinceEpoch ??
               null,
-        menu: cartContext.items.entries.where((e) => e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),
+          menu: cartContext.items.entries.where((e) => e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.toJson()}).toList(),
             
         );
         CommandModel cm = CommandModel.fromJson(command);

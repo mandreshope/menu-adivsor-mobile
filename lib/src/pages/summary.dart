@@ -1,20 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:menu_advisor/src/components/buttons.dart';
+import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/pages/splash.dart';
+import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/extensions.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 
 import '../models.dart';
 
-class Summary extends StatelessWidget {
-  Summary({@required this.commande});
+class Summary extends StatefulWidget {
+  Summary({@required this.commande, this.fromHistory = false});
+  dynamic commande;
+  bool fromHistory;
+
+  @override
+  _SummaryState createState() => _SummaryState();
+}
+
+class _SummaryState extends State<Summary> {
   BuildContext context;
-  CommandModel commande;
+
+  bool isLoading = true;
+  bool hasMessage = false;
 
   @override
   Widget build(BuildContext context) {
     this.context = context;
+
+    if (widget.commande.restaurant is String) {
+      Api.instance.getRestaurant(id: widget.commande.restaurant).then((value) 
+     {
+       widget.commande.restaurant = value;
+       setState(() {
+         isLoading = false;
+       });
+       
+     });
+    }else{
+      setState(() {
+         isLoading = false;
+       });
+    }
+
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -22,7 +52,10 @@ class Summary extends StatelessWidget {
             AppLocalizations.of(context).translate('summary'),
           ),
         ),
-        body: SingleChildScrollView(
+        body: isLoading ? Center(
+          child:CircularProgressIndicator()
+        ) :
+         SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
@@ -39,35 +72,26 @@ class Summary extends StatelessWidget {
                 Row(
                   children: [
                     TextTranslator("Commande ID : "),
-                    TextTranslator(commande.code?.toString()?.padLeft(6,'0') ?? "", style: TextStyle(color: CRIMSON, fontWeight: FontWeight.bold, fontSize: 18)),
+                    TextTranslator(widget.commande.code?.toString()?.padLeft(6,'0') ?? "", style: TextStyle(color: CRIMSON, fontWeight: FontWeight.bold, fontSize: 18)),
                     Spacer(),
-                    Container(
-                      padding: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.horizontal(left: Radius.circular(15), right: Radius.circular(15)),
-                        color: Colors.orange,
-                      ),
-                      child: TextTranslator(
-                        "En attente",
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12),
-                      ),
-                    )
+                    _validated()
                   ],
                 ),
                 //end commande id
                 Divider(),
                 // food
-                for (var command in commande.items) _items(command),
+                for (var command in widget.commande.items) _items(command),
                 // Divider(),
                 // menu
-                for (var command in commande.menus) _items(command),
+                if (widget.commande.menus != null)
+                for (var command in widget.commande.menus) _items(command),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: Row(
                     children: [
                       TextTranslator('Total', style: TextStyle(fontSize: 16)),
                       Spacer(),
-                      Text('${commande.totalPrice / 100} €', style: TextStyle(fontSize: 16, color: CRIMSON, fontWeight: FontWeight.bold)),
+                      Text('${widget.commande.totalPrice / 100} €', style: TextStyle(fontSize: 16, color: CRIMSON, fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ),
@@ -78,10 +102,10 @@ class Summary extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       TextTranslator(
-                        AppLocalizations.of(context).translate(commande.commandType ?? 'on_site').toUpperCase(),
+                        AppLocalizations.of(context).translate(widget.commande.commandType ?? 'on_site').toUpperCase(),
                         style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                       ),
-                      TextTranslator('${commande.shippingTime == null ? "" : commande.shippingTime.dateToString("dd/MM/yyyy HH:mm")}')
+                      TextTranslator('${widget.commande.shippingTime == null ? "" : widget.commande.shippingTime.dateToString("dd/MM/yyyy HH:mm")}')
                     ],
                   ),
                 ),
@@ -92,13 +116,15 @@ class Summary extends StatelessWidget {
         ));
   }
 
-  Widget _header() => Padding(
+  _header() {
+    
+    return Padding(
         padding: const EdgeInsets.only(top: 10, bottom: 10),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Image.network(
-              commande.restaurant.imageURL ?? "",
+              widget.commande.restaurant.imageURL ?? "",
               // width: 4 * MediaQuery.of(context).size.width / 7,
               width: MediaQuery.of(context).size.width / 4,
               height: MediaQuery.of(context).size.width / 4,
@@ -112,7 +138,7 @@ class Summary extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 TextTranslator(
-                  commande.restaurant.name,
+                  widget.commande.restaurant.name,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 18,
@@ -120,6 +146,7 @@ class Summary extends StatelessWidget {
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Icon(
                       FontAwesomeIcons.mapMarkerAlt,
@@ -129,11 +156,16 @@ class Summary extends StatelessWidget {
                     SizedBox(
                       width: 5,
                     ),
-                    TextTranslator(
-                      commande.restaurant.address ?? "",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                    Container(
+                      width: MediaQuery.of(context).size.width/2.5,
+                      child: TextTranslator(
+                        widget.commande.restaurant.address ?? "",
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
                     )
                   ],
@@ -157,12 +189,58 @@ class Summary extends StatelessWidget {
                 )
               ],
             )
+            ,
+            Spacer(),
+            widget.fromHistory ? Stack(
+                  children: [
+                    
+                    CircleButton(
+  
+                    backgroundColor: CRIMSON,
+                    onPressed: (){
+                      showDialog<String>(context: context,
+                      child: MessageDialog(message: "",)).then((value) {
+                          print(value);
+                          //widget.food.message = value;
+                          if (value.isNotEmpty){
+                            setState(() {
+                              hasMessage = true;
+                            });
+                          }else{
+                            setState(() {
+                              hasMessage = false;
+                            });
+                          }
+                        }   
+                      );
+                    },
+                    child: Icon(Icons.comment,
+                        color: Colors.white,
+                        size: 15,),
+                        
+                  ),
+                  Visibility(
+                    visible: hasMessage,
+                                      child: Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child:  Icon(
+                                        Icons.brightness_1,
+                                        color: Color(0xff62C0AB),
+                                        size: 12,
+                                      )
+                      ),
+                  ),
+                  ],
+              ) :
+              Container()
           ],
         ),
       );
+  }
 
   Widget _items(CommandItem commandItem) {
-    dynamic item = commandItem.food != null ? commandItem.food : commandItem.menu; 
+    dynamic item = commandItem.food != null ? commandItem.food : commandItem.menu;
     return Column(
       children: [
         Container(
@@ -183,8 +261,82 @@ class Summary extends StatelessWidget {
             ],
           ),
         ),
-        Divider()
+        Divider(),
+        for (Option option in commandItem.options)...[
+        Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SizedBox(width: 150),
+                      TextTranslator('${option.title}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                       SizedBox(width: 5),
+                      // TextTranslator('(x${option.items.length})', style: TextStyle(fontSize: 16)),
+                      /*Image.network(
+                        item.imageURL,
+                        width: 25,
+                      ),*/
+                      // SizedBox(width: 8),
+                     
+                      // Spacer(),
+                      // item.price?.amount == null ? Text("_") : Text("${item.price.amount / 100} €", style: TextStyle(fontSize: 16)),
+                    ],
+                  ),
+                SizedBox(height: 5,),
+                for (ItemsOption itemsOption in option.items)...[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SizedBox(width: 150),
+                      TextTranslator('${itemsOption.name}', style: TextStyle(fontSize: 16)),
+                      Spacer(),
+                      /*Image.network(
+                        item.imageURL,
+                        width: 25,
+                      ),*/
+                      // SizedBox(width: 8),
+                      if (itemsOption.price == 0)
+                        Text("")
+                      else
+                        TextTranslator('${itemsOption.price/100} €', style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
+                      // Spacer(),
+                      // item.price?.amount == null ? Text("_") : Text("${item.price.amount / 100} €", style: TextStyle(fontSize: 16)),
+                    ],
+                  ),
+                 
+                ],
+                 Divider(),
+        ]
+        
       ],
     );
+  }
+  Widget _validated() {
+    Color color;
+    String title = "";
+    if (!widget.commande.validated && !widget.commande.revoked){
+      title = "En attente";
+      color = Colors.orange;
+    }else if (widget.commande.validated){
+      title = "Valider";
+      color = TEAL;
+    }else if (widget.commande.revoked){
+      title = "Refuser";
+      color = CRIMSON;
+    }else{
+      title = "En attente";
+      color = Colors.orange;
+    }
+
+
+    return Container(
+                      padding: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.horizontal(left: Radius.circular(15), right: Radius.circular(15)),
+                        color: color,
+                      ),
+                      child: TextTranslator(
+                        title,
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12),
+                      ),
+                    );
   }
 }
