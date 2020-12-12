@@ -1,20 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/pages/splash.dart';
+import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/extensions.dart';
+import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
+import 'package:provider/provider.dart';
 
 import '../models.dart';
 
 class Summary extends StatefulWidget {
   Summary({@required this.commande, this.fromHistory = false});
-  dynamic commande;
+  Command commande;
   bool fromHistory;
+  
 
   @override
   _SummaryState createState() => _SummaryState();
@@ -25,6 +30,8 @@ class _SummaryState extends State<Summary> {
 
   bool isLoading = true;
   bool hasMessage = false;
+
+  String message = "";
 
   @override
   Widget build(BuildContext context) {
@@ -199,13 +206,42 @@ class _SummaryState extends State<Summary> {
                     backgroundColor: CRIMSON,
                     onPressed: (){
                       showDialog<String>(context: context,
-                      child: MessageDialog(message: "",)).then((value) {
+                      child: MessageDialog(message: message,)).then((value) async {
                           print(value);
                           //widget.food.message = value;
-                          if (value.isNotEmpty){
+                       
+                        if (value.isNotEmpty){
+                             User user =  Provider.of<AuthContext>(
+                              context,
+                              listen: false,
+                            ).currentUser;
+                          Message message = Message(email: user.email,message: value,name: "${user.name.first} ${user.name.last}", phoneNumber: user.phoneNumber,read: false,
+                          target: widget.commande.restaurant.admin);
+                          showDialog(
+                            barrierDismissible: false,
+                            context: context,child: Center(
+                            child: CircularProgressIndicator(
+                                                valueColor: AlwaysStoppedAnimation<Color>(
+                                                  CRIMSON,
+                                                ),
+                                              ),
+                          ));
+                          bool result = await Api.instance.sendMessage(message);
+                          RouteUtil.goBack(context: context);
                             setState(() {
+                              this.message = value;
                               hasMessage = true;
                             });
+                            if (result){
+                                Fluttertoast.showToast(
+                                    msg: "Message envoyé",
+                                  );
+                            }else{
+                                Fluttertoast.showToast(
+                                    msg: "Message non envoyé",
+                                  );
+                            }
+                            
                           }else{
                             setState(() {
                               hasMessage = false;
@@ -221,7 +257,7 @@ class _SummaryState extends State<Summary> {
                   ),
                   Visibility(
                     visible: hasMessage,
-                                      child: Positioned(
+                             child: Positioned(
                         right: 0,
                         bottom: 0,
                         child:  Icon(

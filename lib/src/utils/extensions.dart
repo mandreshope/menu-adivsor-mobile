@@ -1,5 +1,7 @@
 import 'package:firebase_mlkit_language/firebase_mlkit_language.dart';
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
+import 'package:menu_advisor/src/models.dart';
 
 
 extension FormatDate on DateTime {
@@ -34,4 +36,8 @@ extension Iterables<E> on Iterable<E> {
       <K, List<E>>{},
       (Map<K, List<E>> map, E element) =>
           map..putIfAbsent(keyFunction(element), () => <E>[]).add(element));
+}
+
+extension Type on MenuType {
+  String get value => describeEnum(this);
 }

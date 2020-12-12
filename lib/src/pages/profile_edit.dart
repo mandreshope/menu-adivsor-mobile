@@ -17,10 +17,12 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   TextEditingController lastnameController;
   TextEditingController firstnameController;
   TextEditingController addressController;
+  TextEditingController phoneNumberController;
 
   FocusNode lastnameFocus = FocusNode();
   FocusNode firstnameFocus = FocusNode();
   FocusNode addressFocus = FocusNode();
+  FocusNode phoneNumberFocus = FocusNode();
 
   bool changed = false;
   bool inProgress = false;
@@ -37,6 +39,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     lastnameController = TextEditingController(text: authContext.currentUser.name?.last ?? '');
     firstnameController = TextEditingController(text: authContext.currentUser.name?.first ?? '');
     addressController = TextEditingController(text: authContext.currentUser.address ?? '');
+    phoneNumberController = TextEditingController(text: authContext.currentUser.phoneNumber ?? '');
   }
 
   @override
@@ -111,6 +114,25 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
               SizedBox(
                 height: 30,
               ),
+              TextFormFieldTranslator(
+                focusNode: phoneNumberFocus,
+                controller: phoneNumberController,
+                keyboardType: TextInputType.name,
+                textInputAction: TextInputAction.next,
+                decoration: InputDecoration(
+                  labelText: 'Téléphone',
+                ),
+                onChanged: (_) {
+                  _updateChangedState();
+                },
+                onFieldSubmitted: (_) {
+                  phoneNumberFocus.unfocus();
+                  _submitForm();
+                },
+              ),
+              SizedBox(
+                height: 30,
+              ),
               RaisedButton(
                 padding: EdgeInsets.all(15),
                 color: CRIMSON,
@@ -154,7 +176,8 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
         inProgress = true;
       });
 
-      String firstname = firstnameController.value.text, lastname = lastnameController.value.text, address = addressController.value.text;
+      String firstname = firstnameController.value.text, lastname = lastnameController.value.text, address = addressController.value.text,
+      phoneNumber = phoneNumberController.value.text;
 
       try {
         await authContext.updateUserProfile({
@@ -163,6 +186,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
             'last': lastname,
           },
           'address': address,
+          'phoneNumber':phoneNumber
         });
         setState(() {
           inProgress = false;
@@ -186,7 +210,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
       context,
       listen: false,
     );
-    String firstname = firstnameController.value.text, lastname = lastnameController.value.text, address = addressController.value.text;
+    String firstname = firstnameController.value.text, lastname = lastnameController.value.text, address = addressController.value.text, phoneNumber = phoneNumberController.value.text;
 
     User user = authContext.currentUser;
 
@@ -194,7 +218,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
       setState(() {
         changed = true;
       });
-    else if ((user.name.first == firstname && user.name.last == lastname && user.address == address))
+    else if ((user.name.first == firstname && user.name.last == lastname && user.address == address && user.phoneNumber == phoneNumber))
       setState(() {
         changed = false;
       });

@@ -193,9 +193,11 @@ class _HomePageState extends State<HomePage> {
                                     child: Column(
                                       children: [
                                         _renderFoodCategories(),
-                                        _renderPopularFoods(),
                                         _renderNearestRestaurants(),
+                                        
+                                        _renderPopularFoods(), 
                                         _renderOnSiteFoods(),
+                                        _renderBlog()
                                       ],
                                     ),
                                   ),
@@ -335,7 +337,7 @@ class _HomePageState extends State<HomePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SectionTitle(
-            AppLocalizations.of(context).translate("categories"),
+            "Nouveau plat",
           ),
           Consumer<DataContext>(builder: (_, dataContext, __) {
             var foodCategories = dataContext.foodCategories;
@@ -426,7 +428,7 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SectionTitle(
-                AppLocalizations.of(context).translate("populars"),
+                "Plat populaires",
               ),
               Container(
                 margin: const EdgeInsets.only(
@@ -532,7 +534,7 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SectionTitle(
-                AppLocalizations.of(context).translate("nearest_restaurants"),
+                "Nouveau restaurant",
               ),
               Container(
                 margin: const EdgeInsets.only(
@@ -729,4 +731,112 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-}
+
+  Widget _renderBlog() {
+      return Container(
+        width: double.infinity,
+        margin: const EdgeInsets.only(
+          bottom: 30,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SectionTitle(
+                  "Blog",
+                ),
+                Visibility(
+                  visible: false,
+                  child: Container(
+                    margin: const EdgeInsets.only(
+                      right: 30,
+                    ),
+                    child: GestureDetector(
+                      onTap: () {
+                        RouteUtil.goTo(
+                          context: context,
+                          child: SearchPage(
+                            type: 'food',
+                            location: {
+                              "coordinates":currentLocation?.coordinates ?? [0,0]
+                            },
+                            filters: {
+                              // "searchCategory": "with_price",
+                              "price.amount":null,
+                              // "city":this.city ?? ""
+                            },
+                          ),
+                          routeName: searchRoute,
+                        );
+                      },
+                      child: TextTranslator(
+                        AppLocalizations.of(context).translate("see_all"),
+                        style: Theme.of(context).textTheme.caption,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Consumer<DataContext>(
+              builder: (_, dataContext, __) {
+                var blogs = dataContext.blogs;
+                var loading = dataContext.loadingBlog;
+
+                if (loading)
+                  return Container(
+                    height: 200,
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          CRIMSON,
+                        ),
+                      ),
+                    ),
+                  );
+
+                if (blogs.length == 0)
+                  return Container(
+                    height: 200,
+                    child: Center(
+                      child: TextTranslator(
+                        "Acune Blog trouvée",
+                        style: TextStyle(
+                          fontSize: 22,
+                        ),
+                      ),
+                    ),
+                  );
+
+                return SingleChildScrollView(
+                  physics: BouncingScrollPhysics(),
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.only(
+                    left: 20,
+                    right: 20,
+                    bottom: 10,
+                  ),
+                  child: Row(
+                    children: [
+                      for (var blog in blogs)
+                        FadeAnimation(
+                          1,
+                          BlogCard(
+                            blog
+                          )
+                        ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      );
+    }
+  }
+

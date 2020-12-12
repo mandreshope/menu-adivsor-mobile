@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/components/utilities.dart';
+import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/pages/cgc.dart';
 import 'package:menu_advisor/src/pages/change_password.dart';
 import 'package:menu_advisor/src/pages/command_history.dart';
@@ -14,10 +17,13 @@ import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/CommandContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
+import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
+
+import '../models.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -170,6 +176,58 @@ class _ProfilePageState extends State<ProfilePage> {
                                     ),
                                   ),
                                 ),
+                                Positioned(
+                                  left: 10,
+                                  bottom: 10,
+                                  child: FloatingActionButton(
+                                    heroTag: 'message',
+                                    mini: true,
+                                    onPressed: () {
+                                      showDialog<String>(context: context,
+                                                  child: MessageDialog(message: "",)).then((value) async {
+                                                      print(value);
+                                                      //widget.food.message = value;
+                                                  
+                                                    if (value.isNotEmpty){
+                                                        User user =  Provider.of<AuthContext>(
+                                                          context,
+                                                          listen: false,
+                                                        ).currentUser;
+                                                      Message message = Message(email: user.email,message: value,name: "${user.name.first} ${user.name.last}", phoneNumber: user.phoneNumber,read: false,
+                                                      target: null);
+                                                      showDialog(
+                                                        barrierDismissible: false,
+                                                        context: context,child: Center(
+                                                        child: CircularProgressIndicator(
+                                                                            valueColor: AlwaysStoppedAnimation<Color>(
+                                                                              CRIMSON,
+                                                                            ),
+                                                                          ),
+                                                      ));
+                                                      bool result = await Api.instance.sendMessage(message);
+                                                      RouteUtil.goBack(context: context);
+                                                        
+                                                        if (result){
+                                                            Fluttertoast.showToast(
+                                                                msg: "Message envoyé",
+                                                              );
+                                                        }else{
+                                                            Fluttertoast.showToast(
+                                                                msg: "Message non envoyé",
+                                                              );
+                                                        }
+                                                        
+                                                      }else{
+                                                        
+                                                      }
+                                                    }   
+                                                  );
+                                    },
+                                    child: Icon(
+                                      Icons.comment,
+                                    ),
+                                  ),
+                                ),
                               ],
                             )
                           : Container(),
@@ -248,6 +306,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           height: 20,
                         ),
                         RaisedButton(
+
                           onPressed: () {
                             RouteUtil.goTo(
                               context: context,
@@ -259,14 +318,14 @@ class _ProfilePageState extends State<ProfilePage> {
                             borderRadius: BorderRadius.circular(40),
                           ),
                           padding: const EdgeInsets.symmetric(
-                            vertical: 15,
+                            vertical: 8,
                           ),
                           child: TextTranslator(
                             AppLocalizations.of(context).translate('change_password'),
                             style: GoogleFonts.raleway(
                               textStyle: TextStyle(
                                 color: Colors.white,
-                                fontSize: 20,
+                                fontSize: 18,
                               ),
                             ),
                           ),
@@ -280,7 +339,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           style: Theme.of(context).textTheme.headline6,
                         ),*/
                         SizedBox(
-                          height: 20,
+                          height: 5,
                         ),
                         RaisedButton(
                           onPressed: () {
@@ -294,14 +353,14 @@ class _ProfilePageState extends State<ProfilePage> {
                             borderRadius: BorderRadius.circular(40),
                           ),
                           padding: const EdgeInsets.symmetric(
-                            vertical: 15,
+                            vertical: 8,
                           ),
                           child: TextTranslator(
                             AppLocalizations.of(context).translate('manage_cards'),
                             style: GoogleFonts.raleway(
                               textStyle: TextStyle(
                                 color: Colors.white,
-                                fontSize: 20,
+                                fontSize: 18,
                               ),
                             ),
                           ),
@@ -314,7 +373,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           style: Theme.of(context).textTheme.headline6,
                         ),*/
                         SizedBox(
-                          height: 20,
+                          height: 5,
                         ),
                         RaisedButton(
                           onPressed: () {
@@ -328,14 +387,14 @@ class _ProfilePageState extends State<ProfilePage> {
                             borderRadius: BorderRadius.circular(40),
                           ),
                           padding: const EdgeInsets.symmetric(
-                            vertical: 15,
+                            vertical: 8,
                           ),
                           child: TextTranslator(
                             AppLocalizations.of(context).translate('view_favorites'),
                             style: GoogleFonts.raleway(
                               textStyle: TextStyle(
                                 color: Colors.white,
-                                fontSize: 20,
+                                fontSize: 18,
                               ),
                             ),
                           ),
@@ -349,7 +408,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           style: Theme.of(context).textTheme.headline6,
                         ),*/
                         SizedBox(
-                          height: 20,
+                          height: 5,
                         ),
                         RaisedButton(
                           onPressed: () {
@@ -363,20 +422,20 @@ class _ProfilePageState extends State<ProfilePage> {
                             borderRadius: BorderRadius.circular(40),
                           ),
                           padding: const EdgeInsets.symmetric(
-                            vertical: 15,
+                            vertical: 8,
                           ),
                           child: TextTranslator(
                             "CGV",
                             style: GoogleFonts.raleway(
                               textStyle: TextStyle(
                                 color: Colors.white,
-                                fontSize: 20,
+                                fontSize: 18,
                               ),
                             ),
                           ),
                         ),
                         SizedBox(
-                          height: 20,
+                          height: 5,
                         ),
                         RaisedButton(
                           onPressed: () {
@@ -390,20 +449,20 @@ class _ProfilePageState extends State<ProfilePage> {
                             borderRadius: BorderRadius.circular(40),
                           ),
                           padding: const EdgeInsets.symmetric(
-                            vertical: 15,
+                            vertical: 8,
                           ),
                           child: TextTranslator(
                             "Aide",
                             style: GoogleFonts.raleway(
                               textStyle: TextStyle(
                                 color: Colors.white,
-                                fontSize: 20,
+                                fontSize: 18,
                               ),
                             ),
                           ),
                         ),
                         SizedBox(
-                          height: 20,
+                          height: 5,
                         ),
                         RaisedButton(
                           onPressed: () {
@@ -417,14 +476,14 @@ class _ProfilePageState extends State<ProfilePage> {
                             borderRadius: BorderRadius.circular(40),
                           ),
                           padding: const EdgeInsets.symmetric(
-                            vertical: 15,
+                            vertical: 8,
                           ),
                           child: TextTranslator(
                             "A propos",
                             style: GoogleFonts.raleway(
                               textStyle: TextStyle(
                                 color: Colors.white,
-                                fontSize: 20,
+                                fontSize: 18,
                               ),
                             ),
                           ),

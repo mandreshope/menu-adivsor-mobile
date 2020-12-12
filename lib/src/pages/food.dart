@@ -17,6 +17,7 @@ import 'package:menu_advisor/src/utils/button_item_count_widget.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
+import 'package:share/share.dart';
 
 class FoodPage extends StatefulWidget {
   final Food food;
@@ -101,14 +102,18 @@ class _FoodPageState extends State<FoodPage> {
               ),
               centerTitle: true,
               title: TextTranslator(widget.food.name),
-              actions: [],
+              actions: [
+                IconButton(icon: Icon(FontAwesomeIcons.share,color: Colors.white,),
+                    onPressed: (){
+                        Share.share("Menu advisor");
+                    })
+              ],
             ),
             body: mainContent,
           )
         : Scaffold(
             backgroundColor: Colors.white,
             body: SingleChildScrollView(
-
               child: mainContent,
             ),
             

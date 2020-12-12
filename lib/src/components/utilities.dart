@@ -129,7 +129,7 @@ class ScaffoldWithBottomMenu extends StatelessWidget {
                 child: Consumer<CartContext>(
                   builder: (_, cartContext, __) => IconButton(
                     icon: FaIcon(
-                      FontAwesomeIcons.shoppingBag,
+                      FontAwesomeIcons.listAlt,
                       color: Colors.white,
                     ),
                     onPressed: () {
@@ -143,12 +143,22 @@ class ScaffoldWithBottomMenu extends StatelessWidget {
                           msg: AppLocalizations.of(context).translate('empty_cart'),
                         );
                       else*/
+                      AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
+
+                      if (authContext.currentUser != null)
                         RouteUtil.goTo(
                           context: context,
                           // child: OrderPage(),
                           child: CommandHistoryPage(),
                           routeName: orderRoute,
                         );
+                      else
+                        RouteUtil.goTo(
+                          context: context,
+                          child: LoginPage(),
+                          routeName: loginRoute,
+                        );
+
                    },
                  ),
                 ),

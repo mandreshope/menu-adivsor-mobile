@@ -25,6 +25,7 @@ import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 import 'package:menu_advisor/src/utils/extensions.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class CategoryCard extends StatelessWidget {
   final String imageURL;
@@ -857,7 +858,7 @@ class MenuCard extends StatelessWidget {
     CartContext _cartContext = Provider.of<CartContext>(context, listen: false);
     menu.restaurant = restaurant;
     _controller.menu = menu;
-    _controller.foodsGrouped = menu.foods;
+    _controller.foodsGrouped = menu.foods ?? List();
     count = _cartContext.getCount(menu);
 
     return Card(
@@ -911,8 +912,11 @@ class MenuCard extends StatelessWidget {
                     return ButtonItemCountWidget(
                         menu,
                         isMenu: true, onAdded: (value){
-                        _cart.addItem(menu, value);
-                        count = value;
+                          if (value < 2){
+                            _cart.addItem(menu, value);
+                            count = value;
+                          }
+                        
                         }, 
                         onRemoved: (value){
                           value == 0 ? _cart.removeItem(menu) 
@@ -961,8 +965,14 @@ class MenuCard extends StatelessWidget {
                                             alignment: Alignment.centerLeft,
                                             child: TextTranslator(food.name),
                                           ),
-
-                                          food?.price?.amount == null ? Text("") : Text("${food.price.amount / 100} €", style: TextStyle(fontWeight: FontWeight.bold)),
+                                          if (menu.type == MenuType.fixed_price.value)...[
+                                            Text(" ")
+                                          ]else if (menu.type == MenuType.fixed_price.value)...[
+                                            Text(" ")
+                                          ]else...[
+                                            food?.price?.amount == null ? Text("") : Text("${food.price.amount / 100} €", style: TextStyle(fontWeight: FontWeight.bold)),
+                                          ]
+                                            
 
                                           /*ButtonItemCountWidget(
                                             food,
@@ -1452,4 +1462,103 @@ class CommandHistoryItem extends StatelessWidget {
                     );
   }
 
+}
+
+class BlogCard extends StatelessWidget {
+  BlogCard(this.blog);
+  Blog blog;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 4,
+      color: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Container(
+        height: 400,
+        width: 400,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Stack(
+              fit: StackFit.loose,
+                children: [
+                  Container(
+                    height: 190,
+                    width: double.infinity,
+                    child: FadeInImage.assetNetwork(
+                      image: blog.imageURL,
+                      placeholder: 'assets/images/loading.gif',
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  Positioned.fill(
+                    bottom: 0,
+                    left: 0,
+                    child: Container(
+                      height: 50,
+                      width: double.infinity,
+                      // color: Colors.black.withAlpha(150),
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Container(
+                          height: 50,
+                          width: double.infinity,
+                          color: Colors.black.withAlpha(150),
+                          child: Center(
+                            child: TextTranslator(
+                              blog.title,
+                              style: TextStyle(
+                                color:Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                  ))
+                ],
+            ),
+            Padding(
+              padding: EdgeInsets.all(10),
+              child:TextTranslator(
+                blog.description,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                  style:TextStyle(
+                    fontSize: 15
+                )
+              )
+            ),
+            Spacer(),
+            Container(width: double.infinity,height: 1,color:Colors.grey[200]),
+            InkWell(
+              onTap: () async{
+                if (await canLaunch(blog.url))
+                  launch(blog.url);
+              },
+              child: Container(
+                height: 50,
+                child: Center(
+                  child: TextTranslator(
+                    "Acheter maintenant",
+                    style: TextStyle(
+                      fontSize:16,
+                      color: CRIMSON,
+                      fontWeight: FontWeight.bold
+                    )
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
 }

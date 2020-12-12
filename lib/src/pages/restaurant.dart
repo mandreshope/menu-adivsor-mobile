@@ -24,6 +24,7 @@ import 'package:menu_advisor/src/utils/textFormFieldTranslator.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:menu_advisor/src/utils/extensions.dart';
 
@@ -629,8 +630,10 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                             width: 5,
                                           ),
                                           TextTranslator(
-                                            "Tel : ${restaurant.phoneNumber ?? "0"}",
-                                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black54),
+                                            "${restaurant.phoneNumber ?? "0"}",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold, fontSize: 18, color: Colors.blue,
+                                              decoration: TextDecoration.underline,),
                                             
                                           )
                                         ],
@@ -858,6 +861,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
             child: AppBar(
               title: TextTranslator(restaurant.name,),
               actions: [
+
                 InkWell(
                     onTap: (){
                       RouteUtil.goTo(context: context, child: ListLang(), routeName: "null");
@@ -867,9 +871,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                         return Flag(snapshot.languageCodeFlag,height: 30,width: 30,);
                       }
                     )),
-                SizedBox(
-                  width: 25,
-                ),
+
                 !showFavoriteButton ? Container(width: 0,height: 0,) :
                 switchingFavorite
                     ? Padding(
@@ -892,6 +894,10 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                           color: Colors.white,
                         ),
                       ),
+                IconButton(icon: Icon(FontAwesomeIcons.share,color: Colors.white,),
+                    onPressed: (){
+                      Share.share("Menu advisor");
+                    }),
               ],
             ),
           )),

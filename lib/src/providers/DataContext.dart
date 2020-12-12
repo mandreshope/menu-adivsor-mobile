@@ -21,6 +21,9 @@ class DataContext extends ChangeNotifier {
 
   List<FoodAttribute> _foodAttributes = List();
 
+  List<Blog> blogs = List();
+  bool loadingBlog = false;
+
   /*List<Map<String, String>> attributes = [
     {
       'tag': 'allergen_egg',
@@ -69,6 +72,7 @@ class DataContext extends ChangeNotifier {
     loadingNearestRestaurants = true;
     loadingOnSiteFoods = true;
     loadingFoodAttributes = true;
+    loadingBlog = true;
     notifyListeners();
 
     await _fetchNearestRestaurants(location,lang);
@@ -78,6 +82,8 @@ class DataContext extends ChangeNotifier {
     await _fetchPopularFoods(lang);
 
     await _fetchOnSiteFoods(lang);
+
+    await _fetchBlog();
   }
 
   _fetchFoodCategories(String lang) async {
@@ -166,7 +172,7 @@ class DataContext extends ChangeNotifier {
         filters: {
           "searchCategory": "onsite",
           // "limit": 5,
-          "city":_city,
+          // "city":_city,
           // "price.amount":null
         },
       );
@@ -223,5 +229,11 @@ class DataContext extends ChangeNotifier {
   }
 
   List<FoodAttribute> get foodAttributes => _foodAttributes;
-  
+
+  _fetchBlog() async {
+    blogs = await _api.getBlog();
+    loadingBlog = false;
+    notifyListeners();
+  }
+
 }

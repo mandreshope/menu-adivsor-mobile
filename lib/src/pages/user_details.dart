@@ -4,6 +4,7 @@ import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/constants/date_format.dart';
 import 'package:menu_advisor/src/constants/validators.dart';
 import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/pages/confirm_command.dart';
 import 'package:menu_advisor/src/pages/summary.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
@@ -49,7 +50,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
 
       if (authContext.currentUser != null){
       _displayNameController.text = authContext.currentUser.toString();
-      _phoneNumberController.text = authContext.currentUser.phoneNumber;
+      _phoneNumberController.text = authContext.currentUser.phoneNumber.replaceFirst("+33", "");
       _emailController.text = authContext.currentUser.email;
       _addressController.text = authContext.currentUser.address ?? "";
     }
@@ -324,7 +325,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
           customer: {
             'name': _displayNameController.value.text,
             'address': _addressController.value.text,
-            'phoneNumber': "+261"+_phoneNumberController.value.text,
+            'phoneNumber': "+33"+_phoneNumberController.value.text,
             'email': _emailController.value.text
           },
           shippingTime: commandContext.deliveryDate
@@ -338,7 +339,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
           menu: cartContext.items.entries.where((e) => e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.toJson()}).toList(),
             
         );
-        CommandModel cm = CommandModel.fromJson(command);
+        Command cm = Command.fromJson(command);
 
         commandContext.clear();
         cartContext.clear();
@@ -349,8 +350,8 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
         );
         RouteUtil.goTo(
           context: context,
-          child: Summary(
-            commande: cm,
+          child: ConfirmCommand(
+            command: cm,
           ),
           routeName: homeRoute,
           // method: RoutingMethod.atTop,

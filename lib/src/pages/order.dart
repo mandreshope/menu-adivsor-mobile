@@ -3,6 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/pages/confirm_command.dart';
 import 'package:menu_advisor/src/pages/delivery_details.dart';
 import 'package:menu_advisor/src/pages/login.dart';
 import 'package:menu_advisor/src/pages/summary.dart';
@@ -313,7 +314,7 @@ class _OrderPageState extends State<OrderPage> {
               totalPrice: (cartContext.totalPrice * 100).round(),
               menu: cartContext.items.entries.where((e) => e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),
             );
-            CommandModel cm = CommandModel.fromJson(command);
+            Command cm = Command.fromJson(command);
 
             cartContext.clear();
             commandContext.clear();
@@ -391,7 +392,7 @@ class _OrderPageState extends State<OrderPage> {
         menu: cartContext.items.entries.where((e) => e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),
             
         );
-        CommandModel cm = CommandModel.fromJson(command);
+        Command cm = Command.fromJson(command);
 
         cartContext.clear();
         commandContext.clear();
@@ -408,8 +409,8 @@ class _OrderPageState extends State<OrderPage> {
         RouteUtil.goTo(
           context: context,
           child: Summary(
-            commande: cm,
-          ),
+                commande: cm,
+              ),
           routeName: summaryRoute,
           // method: RoutingMethod.atTop,
         );

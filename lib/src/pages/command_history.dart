@@ -92,10 +92,14 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
       context,
       listen: false,
     );
-
+try {
+ 
     this.commands = await authContext.getCommandOfUser(
-      limit: 100,
-    );
+      limit: 500,
+    ); 
+} catch (e) {
+  this.commands = List();
+}
 
     setState(() {
       loading = false;

@@ -664,4 +664,54 @@ Future<List<FoodAttribute>> getFoodAttributes() async {
 
   }
 
+ Future<bool> sendMessage(Message message) async {
+    await _refreshTokens();
+    return http.post(
+      '$_apiURL/messages',
+      body: json.encode(message.toJson()),
+      headers:{
+        'content-type': 'application/json'
+      }
+    ).then((response) {
+       if (response.statusCode == 200) return true;
+      print(jsonDecode(response.body));
+      return false;
+    });
+  }
+
+
+  Future<List<Blog>> getBlog() async {
+    // await _refreshTokens();
+
+    return http.get('$_apiURL/posts', headers: {
+      'Content-Type': 'application/json',
+    }).then<List<Blog>>((response) {
+      if (response.statusCode == 200) {
+        List datas = jsonDecode(response.body);
+        return datas.map<Blog>((data) => Blog.fromJson(data)).toList();
+      }
+      return Future.error(jsonDecode(response.body));
+    });
+  }
+
+  
+Future confirmCommande(String idCommande, String code) async {
+   await _refreshTokens();
+    return http.post(
+      '$_apiURL/commands/$idCommande/confirm',
+      body: json.encode({
+        'code':code
+      }),
+      headers:{
+        'content-type': 'application/json',
+        "authorization": "Bearer $_accessToken",
+      }
+    ).then((response) {
+       if (response.statusCode == 200) return true;
+      print(jsonDecode(response.body));
+      return false;
+    });
 }
+
+}
+
