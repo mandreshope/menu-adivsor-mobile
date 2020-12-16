@@ -266,11 +266,7 @@ class _OrderPageState extends State<OrderPage> {
                     ),
                     color: Colors.teal,
                     child: TextTranslator(
-                      commandContext.commandType == null
-                          ? AppLocalizations.of(context).translate('validate')
-                          : (commandContext.commandType != 'delivery' && authContext.currentUser != null)
-                              ? AppLocalizations.of(context).translate('validate')
-                              : AppLocalizations.of(context).translate('next'),
+                      AppLocalizations.of(context).translate('validate'),
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 20,
