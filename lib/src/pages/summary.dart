@@ -12,6 +12,7 @@ import 'package:menu_advisor/src/utils/extensions.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../models.dart';
 
@@ -177,26 +178,35 @@ class _SummaryState extends State<Summary> {
                     )
                   ],
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Icon(
-                      FontAwesomeIcons.phoneAlt,
-                      size: 15,
-                      color: CRIMSON,
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    TextTranslator(
-                      "Tel : 0",
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black54),
-                    )
-                  ],
-                )
+                InkWell(
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: [
+                                          Icon(
+                                            FontAwesomeIcons.phoneAlt,
+                                            size: 15,
+                                            color: CRIMSON,
+                                          ),
+                                          SizedBox(
+                                            width: 5,
+                                          ),
+                                          TextTranslator(
+                                            "${widget.commande.restaurant.phoneNumber ?? "0"}",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold, fontSize: 18, color: Colors.blue,
+                                              decoration: TextDecoration.underline,),
+                                            
+                                          )
+                                        ],
+                                      ),
+                                      onTap: () async {
+                                        if (widget.commande.restaurant.phoneNumber != null)
+                                          await launch(
+                                              "tel:${widget.commande.restaurant.phoneNumber}");
+                                      },
+                                    ),
               ],
-            )
-            ,
+            ),
             Spacer(),
             widget.fromHistory ? Stack(
                   children: [

@@ -64,7 +64,7 @@ class TextTranslator extends StatelessWidget {
           .languageTranslator(
           SupportedLanguages.French, lang)
           .processText(data ?? " ");
-      return translate ?? " ";
+      return translate.isEmpty ? data : translate;
     } catch (e) {
       print("error transalator $e");
       return data ?? " ";

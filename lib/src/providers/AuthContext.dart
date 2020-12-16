@@ -178,22 +178,48 @@ class AuthContext extends ChangeNotifier {
     return commands;
   }
 
-  phoneNumber(String phoneNumber) async {
+  verifyPhoneNumber(String phoneNumber,{Function verificationCompleted,Function verificationFailed,Function codeSent}) async {
     
     await auth.FirebaseAuth.instance.verifyPhoneNumber(
-      phoneNumber: '+261340165387',
-      verificationCompleted: (auth.PhoneAuthCredential credential) {},
-      verificationFailed: (auth.FirebaseAuthException e) {},
-      codeSent: (String verificationId, int resendToken) async {
-        String smsCode = "";
-            // Create a PhoneAuthCredential with the code
-        auth.PhoneAuthCredential phoneAuthCredential = auth.PhoneAuthProvider.credential(verificationId: verificationId, smsCode: smsCode);
-
-        // Sign the user in (or link) with the credential
-          await auth.FirebaseAuth.instance.signInWithCredential(phoneAuthCredential);
+      phoneNumber: phoneNumber,
+      verificationCompleted: (auth.PhoneAuthCredential credential) async {
+        /*await auth.FirebaseAuth.instance
+              .signInWithCredential(credential)
+              .then((value) async {
+            if (value.user != null) {
+              verificationCompleted();
+            }
+          });*/
       },
-      codeAutoRetrievalTimeout: (String verificationId) {},
-    );
+      verificationFailed: (auth.FirebaseAuthException e) {
+        print(e.code);
+        verificationFailed(e.message);
+      },
+      codeSent: (String verificationId, int resendToken) async {
+        print("verificationId $verificationId");
+        codeSent(verificationId);
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {
+
+      },timeout: Duration(seconds: 60)
+    ).catchError((onError){
+      print(onError);
+    });
   }
+
+ Future verifyFirebaseSms(String verificationId, String code,{@required Function onSucced, @required Function onFailed}) async{
+    
+  await auth.FirebaseAuth.instance
+              .signInWithCredential(auth.PhoneAuthProvider.credential(verificationId: verificationId, smsCode: code,))
+              .then((value) async {
+            if (value.user != null) {
+              print("validate");
+              onSucced();
+            }
+          }).catchError((onError){
+            onFailed(onError);
+          });
+  }
+
 
 }

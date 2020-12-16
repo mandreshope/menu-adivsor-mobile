@@ -68,7 +68,7 @@ class SettingContext extends ChangeNotifier {
     return code;
   }
   
-  String get languageCode => 'fr';
+  String get languageCode => _languageCode ?? 'fr';
   /*_languageCode == 'fr'
       ? WidgetsBinding.instance.window.locale.languageCode
       : _languageCode;*/
@@ -77,10 +77,11 @@ class SettingContext extends ChangeNotifier {
 
   set languageCode(String value) {
     _languageCode = value;
-    notifyListeners();
+    
     SharedPreferences.getInstance().then((sharedPrefs) {
       sharedPrefs.setString('languageCode', value);
     });
+    notifyListeners();
   }
 
   set languageCodeRestaurant(String value) {

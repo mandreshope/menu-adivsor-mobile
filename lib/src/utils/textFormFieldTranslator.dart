@@ -8,7 +8,7 @@ class TextFormFieldTranslator extends StatelessWidget {
   const TextFormFieldTranslator({Key key,this.controller,
   this.focusNode,this.decoration,this.onChanged,this.onFieldSubmitted,
   this.textInputAction,this.keyboardType,this.obscureText,this.validator,
-  this.inputFormatters,this.maxLength,this.autofocus,this.textAlign}) : super(key: key);
+  this.inputFormatters,this.maxLength,this.autofocus,this.textAlign,this.suffixIcon}) : super(key: key);
 
   final FocusNode focusNode;
   final TextEditingController controller;
@@ -23,6 +23,7 @@ class TextFormFieldTranslator extends StatelessWidget {
   final List<TextInputFormatter> inputFormatters;
   final int maxLength;
   final TextAlign textAlign;
+  final Widget suffixIcon;
 
 
   @override
@@ -38,11 +39,10 @@ class TextFormFieldTranslator extends StatelessWidget {
                     textInputAction: textInputAction,
                     obscureText: obscureText ?? false,
                     decoration: decoration.labelText != null ? InputDecoration(
-                      labelText: snapshot.data
+                      labelText: snapshot.data,
+                      suffixIcon: suffixIcon
                     ) : 
-                    InputDecoration.collapsed(
-                          hintText: snapshot.data,
-                        ),
+                    decoration,
                     onChanged: onChanged,
                     onFieldSubmitted: onFieldSubmitted,
                     validator: validator,

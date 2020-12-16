@@ -1417,6 +1417,7 @@ class CommandHistoryItem extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
+              TextTranslator('${command.restaurant.name}'),
               TextTranslator('${command.code?.toString()?.padLeft(6,'0')}', style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold)),
               // SizedBox(width: 15),
               // Image.network(
@@ -1426,7 +1427,8 @@ class CommandHistoryItem extends StatelessWidget {
               // SizedBox(width: 8),
               _validated(),
               // Spacer(),
-              Text("${command.totalPrice / 100} €", style: TextStyle(fontSize: 16)),
+              if (command.shippingTime != null)
+                TextTranslator("${command.shippingTime.dateToString('dd/MM/yy HH:mm')}", style: TextStyle(fontSize: 16)),
             ],
           ),
         ),

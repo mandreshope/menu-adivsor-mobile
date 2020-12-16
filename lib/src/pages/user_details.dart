@@ -4,7 +4,7 @@ import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/constants/date_format.dart';
 import 'package:menu_advisor/src/constants/validators.dart';
 import 'package:menu_advisor/src/models.dart';
-import 'package:menu_advisor/src/pages/confirm_command.dart';
+import 'package:menu_advisor/src/pages/confirm_sms.dart';
 import 'package:menu_advisor/src/pages/summary.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
@@ -325,7 +325,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
           customer: {
             'name': _displayNameController.value.text,
             'address': _addressController.value.text,
-            'phoneNumber': "+33"+_phoneNumberController.value.text,
+            'phoneNumber': "+261"+_phoneNumberController.value.text,
             'email': _emailController.value.text
           },
           shippingTime: commandContext.deliveryDate
@@ -350,7 +350,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
         );
         RouteUtil.goTo(
           context: context,
-          child: ConfirmCommand(
+          child: ConfirmSms(
             command: cm,
           ),
           routeName: homeRoute,

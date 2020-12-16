@@ -337,7 +337,7 @@ class _HomePageState extends State<HomePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SectionTitle(
-            "Nouveau plat",
+            AppLocalizations.of(context).translate("categories"),
           ),
           Consumer<DataContext>(builder: (_, dataContext, __) {
             var foodCategories = dataContext.foodCategories;

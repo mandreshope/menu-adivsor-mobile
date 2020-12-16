@@ -53,7 +53,7 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                     SizedBox(
                       height: 2,
                     ),
-                    TextTranslator(option.title, style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                    TextTranslator('vous avez ${option.maxOptions} ${option.title} à choisir', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
                     Container(
                       child: Padding(
                         padding: const EdgeInsets.only(left: 25.0),
@@ -93,7 +93,7 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                                     // color: _.value.price == 0 ? null : Colors.grey[400]
                                   ),
                                   child: Text(
-                                    "${_.value.price == 0 ? '' : _.value.price}${_.value.price == 0 ? '' : "€"}",
+                                    "${_.value.price == 0 ? '' : _.value.price/100}${_.value.price == 0 ? '' : "€"}",
                                     style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
                                   ),
                                 )

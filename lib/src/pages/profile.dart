@@ -1,3 +1,4 @@
+import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -22,6 +23,7 @@ import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
+import 'package:menu_advisor/src/utils/extensions.dart';
 
 import '../models.dart';
 
@@ -252,13 +254,13 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),*/
 //_profilSettings(),
                         TextTranslator(
-                          "language",
+                          "Langage",
                           style: Theme.of(context).textTheme.headline6,
                         ),
                         DropdownButton<String>(
                           elevation: 16,
                           isExpanded: true,
-                          value: /*isSystemSetting ? 'system' :*/ languageCode,
+                          value: /*isSystemSetting ? 'system' :*/ settingContext.languageCode,
                           onChanged: (String languageCode) {
                             SettingContext settingContext = Provider.of<SettingContext>(
                               context,
@@ -270,29 +272,16 @@ class _ProfilePageState extends State<ProfilePage> {
                           style: TextStyle(
                             color: Colors.grey[700],
                           ),
+
                           items: [
-                            /*for (var i=0;i< settingContext.langs.length;i++) 
-                               DropdownMenuItem<String>(
-                                value: settingContext.langs[i].code,
-                                child: TextTranslator(
-                                  i == 0 ? AppLocalizations.of(context).translate("system_setting") : settingContext.langs[i].name,
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ),
-                            */
                             for (int i = 0; i < _supportedLanguages.length; i++)
                               DropdownMenuItem<String>(
                                 value: _supportedLanguages[i],
-                                child: TextTranslator(
-                                  /*i == 0 ? AppLocalizations.of(context).translate(_languages[i]) : _languages[i]*/
-                                  _languages[i].toUpperCase(),
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                  ),
+                                child: ListTile(
+                                  leading: Flag(_supportedLanguages[i].codeCountry,height: 25,width: 25,),
+                                  title: TextTranslator(_languages[i],),
                                 ),
-                              ),
+                            ),
                           ],
                         ),
                         /*SizedBox(

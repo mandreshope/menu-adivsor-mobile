@@ -42,15 +42,13 @@ class _PasswordFieldState extends State<PasswordField> {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
+    return TextFormFieldTranslator(
       focusNode: widget.focusNode,
       controller: widget.controller,
       keyboardType: widget.keyboardType,
       obscureText: obscureText,
       textInputAction: widget.textInputAction,
-      decoration: InputDecoration(
-        labelText: widget.labelText,
-        suffixIcon: IconButton(
+      suffixIcon: IconButton(
           onPressed: () => setState(() {
             obscureText = !obscureText;
           }),
@@ -58,6 +56,8 @@ class _PasswordFieldState extends State<PasswordField> {
             obscureText ? FontAwesomeIcons.eye : FontAwesomeIcons.eyeSlash,
           ),
         ),
+      decoration: InputDecoration(
+        labelText: widget.labelText,
       ),
       onFieldSubmitted: widget.onFieldSubmitted,
       validator: widget.validator,

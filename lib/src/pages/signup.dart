@@ -3,6 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/components/inputs.dart';
 import 'package:menu_advisor/src/components/logo.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/pages/confirm_sms.dart';
 import 'package:menu_advisor/src/pages/confirm_email.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
@@ -287,7 +288,7 @@ class _SignupPageState extends State<SignupPage> {
 
   _submitForm() async {
     String email = _emailController.value.text,
-        phoneNumber = "+33" + _phoneNumberController.value.text,
+        phoneNumber = "+261" + _phoneNumberController.value.text,
         password = _passwordController.value.text,
         confirmPassword = _confirmPasswordController.value.text,
         firstName = _firstNameController.value.text,
@@ -314,10 +315,6 @@ class _SignupPageState extends State<SignupPage> {
         loading = true;
       });
       AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
-
-
-
-return;
       try {
         var registrationToken = await authContext.signup(
           email: email,
@@ -326,17 +323,26 @@ return;
           lastName: lastName,
           firstName: firstName
         );
-        setState(() {
-          loading = false;
-        });
-        RouteUtil.goTo(
-          context: context,
-          child: ConfirmEmailPage(
-            registrationToken: registrationToken,
-            email: email,
-          ),
-          routeName: confirmEmailRoute,
+        authContext.verifyPhoneNumber(phoneNumber,
+          codeSent: (value){
+            setState(() {
+                      loading = false;
+                    });
+                    RouteUtil.goTo(
+                      context: context,
+                      child: ConfirmSms(
+                        verificationId: value,
+                        isFromSignup: true,
+                        phoneNumber: phoneNumber,
+                      ),
+                      routeName: confirmEmailRoute,
+                    );
+              },
+              verificationFailed: (value){
+                Fluttertoast.showToast(msg: value);
+              }
         );
+        
       } catch (error) {
         setState(() {
           loading = false;
@@ -347,7 +353,7 @@ return;
           );
         else if (error is Map && error.containsKey('details') && (error['details'] as Map<String, dynamic>).containsKey("phoneNumber"))
           Fluttertoast.showToast(
-            msg: AppLocalizations.of(context).translate("phone_number_already_in_use"),
+            msg: "numéro de téléphone déjà utilisé",
           );
         else
           Fluttertoast.showToast(

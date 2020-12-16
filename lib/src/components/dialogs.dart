@@ -832,7 +832,9 @@ class _OptionChoiceDialogState extends State<OptionChoiceDialog> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       SizedBox(height: 15,),
-                                      TextTranslator(option.title,style:TextStyle(color: Colors.black,fontWeight: FontWeight.bold)),
+                                      TextTranslator(
+                                        "Vous avez ${option.maxOptions} choix de ${option.title}",
+                                        style:TextStyle(color: Colors.black,fontWeight: FontWeight.bold)),
                                       Container(
                                         child: Padding(
                                                   padding: const EdgeInsets.only(left: 25.0),

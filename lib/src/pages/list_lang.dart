@@ -4,6 +4,7 @@ import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
+import 'package:menu_advisor/src/utils/extensions.dart';
 
 class ListLang extends StatelessWidget {
   @override
@@ -22,7 +23,7 @@ class ListLang extends StatelessWidget {
           itemBuilder: (_,position){
             String code = _settingContext.supportedLanguages[position];
             return ListTile(
-                leading: Flag(_codeCountry(code),height: 50,width: 50,),
+                leading: Flag(code.codeCountry,height: 50,width: 50,),
                 title: TextTranslator(_settingContext.languages[position],),
                 trailing: Icon(Icons.keyboard_arrow_right),
               onTap: (){
@@ -35,18 +36,5 @@ class ListLang extends StatelessWidget {
     );
   }
 
-  String _codeCountry(String code){
-    switch(code){
-      case "en":
-        return 'us';
-        case 'ja':
-          return 'jp';
-      case 'zh':
-        return 'cn';
-        case 'ko':
-          return 'kr';
-    }
-    return code;
-  }
 
 }

@@ -29,6 +29,20 @@ extension ExtensionString on String {
     }
   }
 
+  String get codeCountry{
+    switch(this){
+      case "en":
+        return 'us';
+        case 'ja':
+          return 'jp';
+      case 'zh':
+        return 'cn';
+        case 'ko':
+          return 'kr';
+    }
+    return this;
+  }
+
 }
 
 extension Iterables<E> on Iterable<E> {

@@ -27,4 +27,4 @@ const String commandHistoryRoute = 'commandHistory';
 const String deliveryDetailsRoute = 'deliveryDetails';
 const String summaryRoute = 'summary';
 const String menuRoute = 'menuPage';
-const String confirmCommandRoute = 'confirmCommand';
+const String ConfirmSmsRoute = 'ConfirmSms';

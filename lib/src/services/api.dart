@@ -695,7 +695,7 @@ Future<List<FoodAttribute>> getFoodAttributes() async {
   }
 
   
-Future confirmCommande(String idCommande, String code) async {
+Future<Map<String,dynamic>> ConfirmSms(String idCommande, String code) async {
    await _refreshTokens();
     return http.post(
       '$_apiURL/commands/$idCommande/confirm',
@@ -707,9 +707,9 @@ Future confirmCommande(String idCommande, String code) async {
         "authorization": "Bearer $_accessToken",
       }
     ).then((response) {
-       if (response.statusCode == 200) return true;
+       if (response.statusCode == 200) return jsonDecode(response.body);
       print(jsonDecode(response.body));
-      return false;
+      return jsonDecode(response.body);
     });
 }
 

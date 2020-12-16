@@ -5,7 +5,7 @@ import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/add_payment_card.dart';
-import 'package:menu_advisor/src/pages/confirm_command.dart';
+import 'package:menu_advisor/src/pages/confirm_sms.dart';
 import 'package:menu_advisor/src/pages/summary.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
@@ -141,7 +141,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
 
                                             RouteUtil.goToAndRemoveUntil(
                                               context: context,
-                                              child: ConfirmCommand(
+                                              child: ConfirmSms(
                                                 command: cm,
                                               ),
                                               routeName: summaryRoute,
