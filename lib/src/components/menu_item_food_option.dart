@@ -53,7 +53,7 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                     SizedBox(
                       height: 2,
                     ),
-                    TextTranslator('vous avez ${option.maxOptions} ${option.title} à choisir', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                    TextTranslator('vous avez ${option.maxOptions} choix de ${option.title}', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
                     Container(
                       child: Padding(
                         padding: const EdgeInsets.only(left: 25.0),

@@ -27,12 +27,12 @@ class CartContext extends ChangeNotifier {
 
   bool addItem(dynamic item, number) {
     if (itemCount == 0 || (hasSamePricingAsInBag(item) && hasSameOriginAsInBag(item))) {
-      _items[item] = number;
-      /*_items.update(
+      // _items[item] = number;
+      _items.update(
         item,
         (value) => number,
         ifAbsent: () => number,
-      );*/
+      );
       currentOrigin = item.isFoodForMenu ? item.restaurant['_id'] : item.restaurant;
       notifyListeners();
       return true;

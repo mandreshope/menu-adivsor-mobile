@@ -1,3 +1,4 @@
+import 'package:copyable/copyable.dart';
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/types.dart';
 
@@ -24,7 +25,7 @@ class FoodCategory {
       };
 }
 
-class Food {
+class Food implements Copyable<Food>{
   final String id;
   final String name;
   final FoodCategory category;
@@ -65,7 +66,10 @@ class Food {
     this.status,
     this.title,
     this.maxOptions,
-    this.message = ""
+    this.message = "",
+    this.foodAttributes,
+    this.isFoodForMenu = false,
+    this.isMenu = false
   });
 
   factory Food.fromJson(Map<String, dynamic> json) => Food(
@@ -90,9 +94,34 @@ class Food {
         if (optionSelected != null)
         "options": this.optionSelected.map((v) => v.toJson()).toList()
       };
+
+  @override
+  Food copy() {
+    // TODO: implement copy
+    return Food(id: this.id, name: this.name, category: this.category,
+     restaurant: this.restaurant, price: this.price,attributes: this.attributes,
+     description: this.description,foodAttributes: this.foodAttributes,
+     imageURL: this.imageURL,isFoodForMenu: this.isFoodForMenu,
+     isMenu: this.isMenu, maxOptions: this.maxOptions,message: this.message,
+     optionSelected: this.optionSelected,options: this.options,ratings: this.ratings,
+     status: this.status,title: this.title,type: this.type);
+  }
+
+  @override
+  Food copyWith() {
+    // TODO: implement copyWith
+    throw UnimplementedError();
+  }
+
+  @override
+  Food copyWithMaster(Food master) {
+    // TODO: implement copyWithMaster
+    throw UnimplementedError();
+  }
+
 }
 
-class Menu {
+class Menu implements Copyable<Menu>{
   final String id;
   final String imageURL;
   final dynamic name;
@@ -116,7 +145,12 @@ class Menu {
     this.imageURL,
     this.description,
     this.restaurant,
-    this.type
+    this.type,
+    this.isFoodForMenu = false,
+    this.isMenu = true,
+    this.message,
+    this.optionSelected,
+    this.price
   });
 
   _setPrice() {
@@ -128,6 +162,7 @@ class Menu {
         print("prince ${price.amount}");
         
   }
+
 
   factory Menu.fromJson(Map<String, dynamic> json,{String resto}) {
     
@@ -152,6 +187,24 @@ class Menu {
         "foods":this.foods.map((v) => v.toJson()).toList(),
         "description":this.description
       };
+
+  @override
+  Menu copy() {
+    // TODO: implement copy
+    return this;
+  }
+
+  @override
+  Menu copyWith() {
+    // TODO: implement copyWith
+    throw UnimplementedError();
+  }
+
+  @override
+  Menu copyWithMaster(Menu master) {
+    // TODO: implement copyWithMaster
+    throw UnimplementedError();
+  }
 }
 
 class Restaurant {

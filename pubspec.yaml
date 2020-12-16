@@ -65,6 +65,7 @@ dependencies:
   map_launcher: ^1.0.0
   share:
   pinput: ^0.2.0
+  copyable: ^0.0.1+2
 
 dev_dependencies:
   flutter_test:

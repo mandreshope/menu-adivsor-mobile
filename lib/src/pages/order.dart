@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/pages/confirm_sms.dart';
@@ -244,35 +245,66 @@ class _OrderPageState extends State<OrderPage> {
               Padding(
                 padding: const EdgeInsets.all(15),
                 child: Consumer3<CommandContext, AuthContext, CartContext>(
-                  builder: (_, commandContext, authContext, cartContext, __) => FlatButton(
-                    onPressed: () async {
-                      // _command(commandContext, authContext, cartContext);
-                      if (cartContext.pricelessItems) {
-                        commandContext.commandType = 'on_site';
-                        _command(commandContext, authContext, cartContext);
-                      } else {
-                        showModalBottomSheet(
-                            context: context,
-                            builder: (_) {
-                              return _commandType();
-                            });
-                      }
-                    },
-                    padding: const EdgeInsets.all(
-                      20.0,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    color: Colors.teal,
-                    child: TextTranslator(
-                      AppLocalizations.of(context).translate('validate'),
-                      style: TextStyle(
+                  builder: (_, commandContext, authContext, cartContext, __) => 
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width - 100,
+                        child: FlatButton(
+                          onPressed: () async {
+                            // _command(commandContext, authContext, cartContext);
+                            if (cartContext.pricelessItems) {
+                              commandContext.commandType = 'on_site';
+                              _command(commandContext, authContext, cartContext);
+                            } else {
+                              showModalBottomSheet(
+                                  context: context,
+                                  builder: (_) {
+                                    return _commandType();
+                                  });
+                            }
+                          },
+                          padding: const EdgeInsets.all(
+                            20.0,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          color: Colors.teal,
+                          child: TextTranslator(
+                            AppLocalizations.of(context).translate('validate'),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                  Spacer(),
+                  InkWell(
+                    
+                    child: Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: CRIMSON
+                      ),
+                      child: Icon(
+                        Icons.delete,
                         color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                        size: 25,
                       ),
                     ),
+                    onTap: () async {
+                      cartContext.clear();
+                      RouteUtil.goBack(context: context);
+                    },
+                  ),
+
+                    ],
                   ),
                 ),
               ),
