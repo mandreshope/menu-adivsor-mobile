@@ -168,7 +168,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
       }
       foods.forEach((key, value) {
         value.forEach((element) {
-          element.attributes.forEach((att) async {
+          element.attributes?.forEach((att) async {
             element.foodAttributes.add(await api.getFoodAttribute(id:att));
           });
         });

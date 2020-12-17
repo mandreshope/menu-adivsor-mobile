@@ -518,7 +518,8 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                              Container(
                                padding: EdgeInsets.only(bottom: expanded ? 30 : 0),
                                height: expanded ? 56 : 20,
-                               child: ListView(
+                               child: 
+                               /*ListView(
                                 // spacing: expanded ? 5 : 5,
                                 // runSpacing: 5,
                                 scrollDirection: Axis.horizontal,
@@ -581,7 +582,8 @@ FadeInImage.assetNetwork(
                                       ),
                                     )
                                     .toList(),
-                            ),
+                            ),*/
+                            Container()
                              ),
                           // ),
                         ],

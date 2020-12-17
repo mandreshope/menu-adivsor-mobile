@@ -17,6 +17,8 @@ import 'package:menu_advisor/src/utils/extensions.dart';
 import 'package:menu_advisor/src/utils/textFormFieldTranslator.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_rounded_date_picker/rounded_picker.dart';
 
 class UserDetailsPage extends StatefulWidget {
   @override
@@ -179,16 +181,16 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                     color: Colors.white,
                     child: InkWell(
                       onTap: () async {
-                        var date = await showDatePicker(
+                        var date = await showRoundedDatePicker(
                           context: context,
                           initialDate: deliveryDate ?? DateTime.now(),
-                          firstDate: DateTime.now(),
+                          firstDate: DateTime.now().add(Duration(hours: -8)),
                           lastDate: DateTime.now().add(
                             Duration(days: 3),
                           ),
                         );
                         if (date != null) {
-                          var time = await showTimePicker(
+                          var time = await showRoundedTimePicker(
                             context: context,
                             initialTime: deliveryTime ??
                                 TimeOfDay(

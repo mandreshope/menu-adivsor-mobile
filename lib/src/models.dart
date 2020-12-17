@@ -98,13 +98,26 @@ class Food implements Copyable<Food>{
   @override
   Food copy() {
     // TODO: implement copy
-    return Food(id: this.id, name: this.name, category: this.category,
-     restaurant: this.restaurant, price: this.price,attributes: this.attributes,
-     description: this.description,foodAttributes: this.foodAttributes,
-     imageURL: this.imageURL,isFoodForMenu: this.isFoodForMenu,
-     isMenu: this.isMenu, maxOptions: this.maxOptions,message: this.message,
-     optionSelected: this.optionSelected,options: this.options,ratings: this.ratings,
-     status: this.status,title: this.title,type: this.type);
+    return Food(
+      id: this.id, 
+      name: this.name, 
+      category: this.category,
+     restaurant: this.restaurant, 
+     price: this.price,
+     attributes: this.attributes,
+     description: this.description,
+     foodAttributes: this.foodAttributes,
+     imageURL: this.imageURL,
+     isFoodForMenu: this.isFoodForMenu,
+     isMenu: this.isMenu, 
+     maxOptions: this.maxOptions,
+     message: this.message,
+     optionSelected: this.optionSelected,
+     options: this.options,
+     ratings: this.ratings,
+     status: this.status,
+     title: this.title,
+     type: this.type);
   }
 
   @override

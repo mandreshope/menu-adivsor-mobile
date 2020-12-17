@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_rounded_date_picker/rounded_picker.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/constants/date_format.dart';
 import 'package:menu_advisor/src/pages/payment_card_list.dart';
@@ -123,35 +124,34 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                 color: Colors.transparent,
                                 child: InkWell(
                                   onTap: () async {
-                                    var date = await showDatePicker(
-                                      context: context,
-                                      initialDate:
-                                          deliveryDate ?? DateTime.now(),
-                                      firstDate: DateTime.now(),
-                                      lastDate: DateTime.now().add(
-                                        Duration(days: 3),
-                                      ),
-                                    );
-                                    if (date != null) {
-                                      var time = await showTimePicker(
+                                    var date = await showRoundedDatePicker(
                                         context: context,
-                                        initialTime: deliveryTime ??
-                                            TimeOfDay(
-                                              hour: DateTime.now().hour,
-                                              minute: DateTime.now()
-                                                  .minute,
-                                            ),
+                                        initialDate: deliveryDate ?? DateTime.now(),
+                                        firstDate: DateTime.now().add(Duration(hours: -8)),
+                                        lastDate: DateTime.now().add(
+                                          Duration(days: 3),
+                                        ),
                                       );
+                                      if (date != null) {
+                                        var time = await showRoundedTimePicker(
+                                          context: context,
+                                          initialTime: deliveryTime ??
+                                              TimeOfDay(
+                                                hour: DateTime.now().hour,
+                                                minute: DateTime.now()
+                                                    .minute,
+                                              ),
+                                        );
 
-                                      if (time != null) {
-                                        commandContext.deliveryDate = date;
-                                        commandContext.deliveryTime = time;
+                                        if (time != null) {
+                                          commandContext.deliveryDate = date;
+                                          commandContext.deliveryTime = time;
 
-                                        setState(() {
-                                          deliveryDate = date;
-                                          deliveryTime = time;
-                                        });
-                                      }
+                                          setState(() {
+                                            deliveryDate = date;
+                                            deliveryTime = time;
+                                          });
+                                        }
                                     }
                                   },
                                   child: ListTile(
@@ -166,7 +166,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                     trailing: deliveryDate != null &&
                                             deliveryTime != null
                                         ? Icon(
-                                            Icons.check,
+                                            Icons.edit_outlined,
                                             color: Colors.green[300],
                                           )
                                         : null,
@@ -175,25 +175,25 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                               ),
                               if (deliveryDate != null) ...[
                                 Divider(),
-                                ListTile(
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 25.0),
-                                  title: TextTranslator(
-                                    '${deliveryDate?.dateToString(DATE_FORMATED_ddMMyyyy) ?? ""}    ${deliveryTime?.hour ?? ""} : ${deliveryTime?.minute ?? ""}',
-                                  textAlign: TextAlign.left,
-                                    style: TextStyle(
-                                      color: Colors.black,//CRIMSON.withOpacity(0.9),
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w400
+                                Container(
+                                  color: CRIMSON,
+                                  child: ListTile(
+                                    contentPadding:
+                                        const EdgeInsets.symmetric(horizontal: 25.0),
+                                    title: TextTranslator(
+                                      '${deliveryDate?.dateToString(DATE_FORMATED_ddMMyyyy) ?? ""}    ${deliveryTime?.hour ?? ""} : ${deliveryTime?.minute ?? ""}',
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                        color: Colors.white,//CRIMSON.withOpacity(0.9),
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w400
+                                      ),
                                     ),
+                                    leading: Container(width: 1,height: 1,),
+                                    trailing: null,
                                   ),
-                                  leading: Container(
-                                    width: 1,
-                                    height: 1,
-                                  ),
-                                  trailing: null,
                                 ),
-                              ]
+                              ],
                             ],
                           ),
                         ),

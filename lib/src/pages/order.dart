@@ -36,6 +36,8 @@ class _OrderPageState extends State<OrderPage> {
 
  bool isRestaurantLoading = true;
 
+  TextEditingController _messageController = TextEditingController();
+
   @override
   void initState() {
     // TODO: implement initState
@@ -82,15 +84,20 @@ class _OrderPageState extends State<OrderPage> {
                   child: Consumer<CartContext>(
                     builder: (_, cartContext, __) {
                       final List<Widget> list = [];
+                      String id = "-1";
                       cartContext.items.forEach(
-                        (food, count) {
+                        (food) {
                           //if (food.price != null)
-                          list.add(
-                            BagItem(
-                              food: food,
-                              count: count,
-                            ),
-                          );
+                          if (food.id != id){
+                            id = food.id;
+                            list.add(
+                              BagItem(
+                                food: food,
+                                count: cartContext.getCount(food),
+                              ),
+                            );
+                          }
+                            
                         },
                       );
 
@@ -198,15 +205,49 @@ class _OrderPageState extends State<OrderPage> {
                           
                           Padding(
                             padding: const EdgeInsets.all(10.0),
-                            child: TextTranslator(
-                              AppLocalizations.of(context).translate('all_items'),
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                TextTranslator(
+                                  AppLocalizations.of(context).translate('all_items'),
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                InkWell(
+                                  child: Icon(Icons.delete,color: Colors.grey,),
+                                  onTap: (){
+                                    cartContext.clear();
+                                    RouteUtil.goBack(context: context);
+                                  },
+                                )
+                              ],
                             ),
                           ),
                           ...list,
+                          Divider(),
+                          Card(
+                            elevation: 2.0,
+                            margin: const EdgeInsets.all(10.0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                              child: Container(
+                              height: 150,
+                              padding: EdgeInsets.symmetric(horizontal: 25),
+                              child: TextFormField(
+                                controller: _messageController,
+                                keyboardType: TextInputType.multiline,
+                                maxLines: null,
+                                showCursor: true,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: "Votre commentaire..."
+                                ),
+                              ),
+                            ),
+                          ),
                         ],
                       );
                     },
@@ -246,10 +287,7 @@ class _OrderPageState extends State<OrderPage> {
                 padding: const EdgeInsets.all(15),
                 child: Consumer3<CommandContext, AuthContext, CartContext>(
                   builder: (_, commandContext, authContext, cartContext, __) => 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Container(
+                  Container(
                         width: MediaQuery.of(context).size.width - 100,
                         child: FlatButton(
                           onPressed: () async {
@@ -282,8 +320,8 @@ class _OrderPageState extends State<OrderPage> {
                           ),
                         ),
                       ),
-                  Spacer(),
-                  InkWell(
+                  // Spacer(),
+                  /*InkWell(
                     
                     child: Container(
                       width: 60,
@@ -293,21 +331,20 @@ class _OrderPageState extends State<OrderPage> {
                         color: CRIMSON
                       ),
                       child: Icon(
-                        Icons.delete,
+                        Icons.comment,
                         color: Colors.white,
                         size: 25,
                       ),
                     ),
                     onTap: () async {
-                      cartContext.clear();
-                      RouteUtil.goBack(context: context);
+                      // sendComment
                     },
-                  ),
+                  ),*/
 
-                    ],
+                    
                   ),
                 ),
-              ),
+              
             ],
           ),
           if (sendingCommand)
