@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cupertino_datetime_picker/flutter_cupertino_datetime_picker.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/constants/date_format.dart';
@@ -181,7 +183,30 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                     color: Colors.white,
                     child: InkWell(
                       onTap: () async {
-                        var date = await showRoundedDatePicker(
+                        DatePicker.showDatePicker(context,
+                        locale: DateTimePickerLocale.fr,
+                        dateFormat: "dd-MMMM-yyyy,HH:mm",
+                        initialDateTime: deliveryDate ?? DateTime.now(),
+                        maxDateTime: DateTime.now().add(
+                            Duration(days: 3),
+                          ),
+                        minDateTime: DateTime.now(),
+                        onCancel: (){
+
+                        },
+                        onConfirm: (date,val){
+                          
+                            commandContext.deliveryDate = date;
+                            commandContext.deliveryTime = TimeOfDay.fromDateTime(date);
+                          
+                          setState(() {
+                              deliveryDate = date;
+                              deliveryTime = TimeOfDay.fromDateTime(date);
+                            });
+                          
+                        },pickerMode: DateTimePickerMode.datetime
+                        );
+                        /*var date = await showRoundedDatePicker(
                           context: context,
                           initialDate: deliveryDate ?? DateTime.now(),
                           firstDate: DateTime.now().add(Duration(hours: -8)),
@@ -209,7 +234,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                               deliveryTime = time;
                             });
                           }
-                        }
+                        }*/
                       },
                       child: ListTile(
                         contentPadding:
@@ -320,6 +345,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
       });
       try {
         var command = await Api.instance.sendCommand(
+          comment: cartContext.comment,
           commandType: commandContext.commandType,
           items: cartContext.items.entries.where((e) => !e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id, 'options': e.key.optionSelected,'comment':e.key.message}).toList(),
           restaurant: cartContext.currentOrigin,
@@ -327,7 +353,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
           customer: {
             'name': _displayNameController.value.text,
             'address': _addressController.value.text,
-            'phoneNumber': "+261"+_phoneNumberController.value.text,
+            'phoneNumber': "+33"+_phoneNumberController.value.text,
             'email': _emailController.value.text
           },
           shippingTime: commandContext.deliveryDate
@@ -338,7 +364,15 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
           )
               ?.millisecondsSinceEpoch ??
               null,
-          menu: cartContext.items.entries.where((e) => e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.toJson()}).toList(),
+          menu: cartContext.items.entries.where(
+                (e) => e.key.isMenu).map(
+                  (e) => 
+                  {
+                    'quantity': e.value, 
+                    'item': e.key.id, 
+                    'foods': 
+                [cartContext.foodMenuSelected]
+              }).toList(),
             
         );
         Command cm = Command.fromJson(command);

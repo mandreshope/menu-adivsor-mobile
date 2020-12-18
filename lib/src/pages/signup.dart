@@ -288,7 +288,7 @@ class _SignupPageState extends State<SignupPage> {
 
   _submitForm() async {
     String email = _emailController.value.text,
-        phoneNumber = "+261" + _phoneNumberController.value.text,
+        phoneNumber = "+33" + _phoneNumberController.value.text,
         password = _passwordController.value.text,
         confirmPassword = _confirmPasswordController.value.text,
         firstName = _firstNameController.value.text,

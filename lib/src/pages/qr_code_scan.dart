@@ -116,11 +116,14 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
       });
       List<String> datas = scanData.split('/');
       String restaurantId = datas[datas.length - 2];
+      
+      bool withPrice = !scanData.contains("?option");
 
       RouteUtil.goTo(
         context: context,
         child: RestaurantPage(
           restaurant: restaurantId,
+          withPrice: withPrice,
         ),
         routeName: restaurantRoute,
         method: RoutingMethod.replaceLast,

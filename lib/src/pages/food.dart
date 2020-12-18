@@ -80,8 +80,12 @@ class _FoodPageState extends State<FoodPage> {
             ) !=
             null;
 
-    DataContext dataContext = Provider.of<DataContext>(context,listen: false);
-    dataContext.fetchFoodAttributes(widget.food.attributes);
+      DataContext dataContext = Provider.of<DataContext>(context,listen: false);
+    // dataContext.fetchFoodAttributes(widget.food.attributes);
+      dataContext.attributes = widget.food.attributes;
+      // setState(() {
+        
+      // });
     });
 
   }
@@ -236,8 +240,8 @@ class _FoodPageState extends State<FoodPage> {
                         ? Consumer<DataContext>(
                             builder: (_, dataContext, __) {
                               
-                            return !dataContext.loadingFoodAttributes
-                                ? Padding(
+                            return /*!dataContext.loadingFoodAttributes
+                                ?*/ Padding(
                                     padding: const EdgeInsets.only(
                                       left: 5.0,
                                     ),
@@ -263,7 +267,7 @@ class _FoodPageState extends State<FoodPage> {
                                                           ...[
                                                             FadeInImage.assetNetwork(
                                                               placeholder: 'assets/images/loading.gif',
-                                                              image: attribute.imageUrl,
+                                                              image: attribute.imageURL,
                                                               height: 14,
                                                             ),
                                                             SizedBox(
@@ -284,11 +288,11 @@ class _FoodPageState extends State<FoodPage> {
                                           )
                                           .toList(),
                                     ),
-                                  )
-                                : CircularProgressIndicator(
+                                  );
+                                /*: CircularProgressIndicator(
                                     valueColor: AlwaysStoppedAnimation<Color>(
                                     CRIMSON,
-                                  ));})
+                                  ));*/})
                         : Padding(
                             padding: const EdgeInsets.only(
                               left: 20.0,
@@ -522,7 +526,7 @@ class _FoodPageState extends State<FoodPage> {
                     ),
                   
                   ],
-                  _cartContext.contains(widget.food) ? SizedBox(height: 50,) : Container()
+                  _cartContext.contains(widget.food) ? SizedBox(height: 95,) : Container()
                 ],
                 
               ),

@@ -98,9 +98,10 @@ class CircleButton extends StatelessWidget {
 }
 
 class OrderButton extends StatelessWidget {
-  const OrderButton({Key key, this.totalPrice, this.fromModal = false}) : super(key: key);
+  const OrderButton({Key key, this.totalPrice, this.fromModal = false,this.withPrice = true}) : super(key: key);
   final double totalPrice;
   final bool fromModal;
+  final bool withPrice;
 
   @override
   Widget build(BuildContext context) {
@@ -148,12 +149,14 @@ class OrderButton extends StatelessWidget {
                                             count: count,
                                             activeDelete: false,
                                             imageTag: '${food.id}$position',
+                                            withPrice: withPrice,
                                           );
                                         }),
                                   ),
                                   OrderButton(
                                     totalPrice: _cartContext.totalPrice  ?? 0,
                                     fromModal: true,
+                                    withPrice: withPrice,
                                   )
                                 ],
                               );
@@ -173,7 +176,7 @@ class OrderButton extends StatelessWidget {
                     width: 10,
                   ),
                   Text(
-                    this.totalPrice == 0 ? "" : '${this.totalPrice.toStringAsFixed(2)} €',
+                    !withPrice ? "" : this.totalPrice == 0 ? "" : '${this.totalPrice.toStringAsFixed(2)} €',
                     style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: CRIMSON),
                   ),
                 ],
@@ -187,7 +190,9 @@ class OrderButton extends StatelessWidget {
               onPressed: () {
                   RouteUtil.goTo(
                     context: context,
-                    child: OrderPage(),
+                    child: OrderPage(
+                      withPrice: withPrice,
+                    ),
                     routeName: orderRoute,
                   );
               },

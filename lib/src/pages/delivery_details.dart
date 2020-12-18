@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_cupertino_datetime_picker/flutter_cupertino_datetime_picker.dart';
 import 'package:flutter_rounded_date_picker/rounded_picker.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/constants/date_format.dart';
@@ -124,7 +125,30 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                 color: Colors.transparent,
                                 child: InkWell(
                                   onTap: () async {
-                                    var date = await showRoundedDatePicker(
+                                    DatePicker.showDatePicker(context,
+                                        locale: DateTimePickerLocale.fr,
+                                        dateFormat: "dd-MMMM-yyyy,HH:mm",
+                                        initialDateTime: deliveryDate ?? DateTime.now(),
+                                        maxDateTime: DateTime.now().add(
+                                            Duration(days: 3),
+                                          ),
+                                        minDateTime: DateTime.now(),
+                                        onCancel: (){
+
+                                        },
+                                        onConfirm: (date,val){
+                                          
+                                            commandContext.deliveryDate = date;
+                                            commandContext.deliveryTime = TimeOfDay.fromDateTime(date);
+                                          
+                                          setState(() {
+                                              deliveryDate = date;
+                                              deliveryTime = TimeOfDay.fromDateTime(date);
+                                            });
+                                          
+                                        },pickerMode: DateTimePickerMode.datetime
+                                        );
+                                    /*var date = await showRoundedDatePicker(
                                         context: context,
                                         initialDate: deliveryDate ?? DateTime.now(),
                                         firstDate: DateTime.now().add(Duration(hours: -8)),
@@ -152,7 +176,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                             deliveryTime = time;
                                           });
                                         }
-                                    }
+                                    }*/
                                   },
                                   child: ListTile(
                                     contentPadding: const EdgeInsets.symmetric(

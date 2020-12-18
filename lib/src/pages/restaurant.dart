@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
@@ -32,10 +33,12 @@ import 'order.dart';
 
 class RestaurantPage extends StatefulWidget {
   final String restaurant;
+  final bool withPrice;
 
   const RestaurantPage({
     Key key,
     this.restaurant,
+    this.withPrice = true
   }) : super(key: key);
 
   @override
@@ -168,9 +171,10 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
       }
       foods.forEach((key, value) {
         value.forEach((element) {
-          element.attributes?.forEach((att) async {
-            element.foodAttributes.add(await api.getFoodAttribute(id:att));
-          });
+          /*element.attributes?.forEach((att) async {
+            element.foodAttributes.add(att);
+          });*/
+          element.foodAttributes = element.attributes;
         });
       });
 
@@ -304,7 +308,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                     Icon(Icons.add),
                     Consumer<SettingContext>(
                       builder: (context, snapshot,w) {
-                        return Flag(snapshot.languageCodeFlag, height: 50,width: 50,);
+                        return Flag(snapshot.languageCodeFlag ?? 'fr', height: 50,width: 50,);
                       }
                     )
                   ],
@@ -442,6 +446,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                               ),
                               child: RestaurantCard(
                                 restaurant: Restaurant.fromJson(e.content),
+                                withPrice: widget.withPrice,
                               ),
                             );
                           else if (e.type.toString() == 'SearchResultType.food')
@@ -451,6 +456,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                               ),
                               child: FoodCard(
                                 food: Food.fromJson(e.content),
+                                withPrice: widget.withPrice,
                               ),
                             );
                           else if (e.type.toString() == 'SearchResultType.menu')
@@ -460,6 +466,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                               ),
                               child: MenuCard(
                                 lang: _lang,
+                                withPrice: widget.withPrice,
                                 menu: Menu.fromJson(e.content,resto: widget.restaurant),
                               ),
                             );
@@ -846,6 +853,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                   if (cartContext.itemCount > 0) {
                     return OrderButton(
                       totalPrice: cartContext.totalPrice,
+                      withPrice: widget.withPrice,
                     );
                   } else {
                     return SizedBox();
@@ -962,6 +970,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                           menu: e,
                           lang: _lang,
                           restaurant: widget.restaurant,
+                          withPrice: widget.withPrice,
                         ),
                       )
                       .toList(),
@@ -999,6 +1008,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                   .map(
                     (food) => RestaurantFoodCard(
                       food: food,
+                      withPrice: widget.withPrice,
                     ),
                   )
                   .toList(),

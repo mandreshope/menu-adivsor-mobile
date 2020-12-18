@@ -544,9 +544,10 @@ class Api {
     bool shipAsSoonAsPossible,
     Map customer,
     var menu,
+    String comment
   }) async {
     await _refreshTokens();
-    print(jsonEncode({
+    var post = jsonEncode({
         'relatedUser': relatedUser,
         'commandType': commandType,
         'totalPrice': totalPrice.toString(),
@@ -557,7 +558,9 @@ class Api {
         'shipAsSoonAsPossible': shipAsSoonAsPossible,
         'customer': customer,
         'menus':menu,
-      }));
+        'comment':comment
+      });
+    print(post);
     return http
         .post(
       '$_apiURL/commands',

@@ -741,14 +741,14 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Image.network(
-                                      e.imageUrl,
+                                      e.imageURL,
                                       height: 18,
                                     ),
                                     SizedBox(
                                       width: 5,
                                     ),
                                     TextTranslator(
-                                      e.locales['fr'],
+                                      e.locales,
                                     ),
                                   ],
                                 ),

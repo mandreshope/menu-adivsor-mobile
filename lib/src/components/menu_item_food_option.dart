@@ -10,9 +10,11 @@ import 'package:provider/provider.dart';
 import '../models.dart';
 
 class MenuItemFoodOption extends StatefulWidget {
-  MenuItemFoodOption({@required this.food,this.idOption});
+  MenuItemFoodOption({@required this.food,this.idOption,this.menu,this.withPrice = true});
   Food food;
   String idOption;
+  Menu menu;
+  bool withPrice;
 
   @override
   _MenuItemFoodOptionState createState() => _MenuItemFoodOptionState();
@@ -66,16 +68,26 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                               if (option.itemOptionSelected?.length == option.maxOptions) {
                                 if (option.itemOptionSelected.length >= value.length) {
                                   option.itemOptionSelected = value.cast<ItemsOption>();
-                                  widget.food.optionSelected = optionSelected;
-                                  _cartContext.addItem(widget.food, 1,true);
+                                  widget.menu.optionSelected = options;
+                                  widget.food.optionSelected = options;
+                                  _cartContext.addOption(widget.menu, options);
+                                  
+                                  
+                                  // _cartContext.addItem(widget.menu, 1,true);
+                                  _cartContext.refresh();
                                 } else {
                                   print("max options");
                                   Fluttertoast.showToast(msg: "maximum selection ${option.title} : ${option.maxOptions}");
                                 }
                               } else {
                                 option.itemOptionSelected = value.cast<ItemsOption>();
+                                widget.menu.optionSelected = options;
                                 widget.food.optionSelected = options;
-                                _cartContext.addItem(widget.food, 1,true);
+                                _cartContext.addOption(widget.menu, options);
+                                
+                                
+                                // _cartContext.addItem(widget.menu, 1,true);
+                                _cartContext.refresh();
                               }
                             });
                           },
@@ -92,7 +104,9 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                                     shape: BoxShape.circle,
                                     // color: _.value.price == 0 ? null : Colors.grey[400]
                                   ),
-                                  child: Text(
+                                  child: 
+                                  !widget.withPrice ? Text("") : 
+                                  Text(
                                     "${_.value.price == 0 ? '' : _.value.price/100}${_.value.price == 0 ? '' : "€"}",
                                     style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
                                   ),

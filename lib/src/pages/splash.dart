@@ -12,6 +12,7 @@ import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -164,8 +165,19 @@ class _SplashState extends State<Splash> {
                   AnimatedOpacity(
                     opacity: loadingUser ? 1 : 0,
                     duration: Duration(milliseconds: 200),
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
+                        ),
+                        SizedBox(height: 15,),
+                        TextTranslator("Chargement des données...",style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 15,
+
+                        ),)
+                      ],
                     ),
                   ),
                 ],

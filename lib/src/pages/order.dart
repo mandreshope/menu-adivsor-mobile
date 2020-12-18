@@ -24,6 +24,8 @@ import 'package:url_launcher/url_launcher.dart';
 import '../models.dart';
 
 class OrderPage extends StatefulWidget {
+  final bool withPrice;
+  OrderPage({this.withPrice = true});
   @override
   _OrderPageState createState() => _OrderPageState();
 }
@@ -35,6 +37,7 @@ class _OrderPageState extends State<OrderPage> {
  Api _api = Api.instance;
 
  bool isRestaurantLoading = true;
+ TextEditingController comment = TextEditingController();
 
   TextEditingController _messageController = TextEditingController();
 
@@ -94,6 +97,7 @@ class _OrderPageState extends State<OrderPage> {
                               BagItem(
                                 food: food,
                                 count: count,
+                                withPrice: widget.withPrice,
                               ),
                             );
                           }
@@ -254,6 +258,34 @@ class _OrderPageState extends State<OrderPage> {
                   ),
                 ),
               ),
+              if (widget.withPrice)...[
+                Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            TextTranslator(
+                              'Frais de livraison : ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.normal,
+                                fontSize: 18,
+                                color: Colors.grey
+                              ),
+                            ),
+                            Text(
+                              _restaurant?.priceDelevery == null ? "" : '${_restaurant?.priceDelevery/100 ?? ''}€',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                                color: Colors.grey
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
               Consumer<CartContext>(
                 builder: (_, cartContext, __) => cartContext.pricelessItems
                     ? Container()
@@ -273,7 +305,7 @@ class _OrderPageState extends State<OrderPage> {
                               ),
                             ),
                             Text(
-                              '${cartContext.totalPrice.toStringAsFixed(2)}€',
+                              _restaurant?.priceDelevery == null ? '${cartContext.totalPrice.toStringAsFixed(2)}€' : '${(cartContext.totalPrice + (_restaurant?.priceDelevery/100)).toStringAsFixed(2)}€',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18,
@@ -283,6 +315,8 @@ class _OrderPageState extends State<OrderPage> {
                         ),
                       ),
               ),
+              
+              ],
               Padding(
                 padding: const EdgeInsets.all(15),
                 child: Consumer3<CommandContext, AuthContext, CartContext>(
@@ -292,7 +326,7 @@ class _OrderPageState extends State<OrderPage> {
                         child: FlatButton(
                           onPressed: () async {
                             // _command(commandContext, authContext, cartContext);
-                            if (cartContext.pricelessItems) {
+                            if (cartContext.pricelessItems || !widget.withPrice) {
                               commandContext.commandType = 'on_site';
                               _command(commandContext, authContext, cartContext);
                             } else {
@@ -362,6 +396,7 @@ class _OrderPageState extends State<OrderPage> {
   }
 
   _command(commandContext, authContext, CartContext cartContext) async {
+    cartContext.comment = _messageController.text;
     if (authContext.currentUser == null) {
       if (commandContext.commandType != 'delivery') {
         if (commandContext.commandType == 'on_site') {
@@ -372,12 +407,22 @@ class _OrderPageState extends State<OrderPage> {
             });
 
             var command = await Api.instance.sendCommand(
+              comment: cartContext.comment,
               relatedUser: authContext.currentUser?.id ?? null,
               commandType: commandContext.commandType,
-              items: cartContext.items.entries.where((e) => !e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id, 'options': cartContext.options[e.key.id].expand((element) => element).toList(),'comment':e.key.message}).toList(),
+              items: cartContext.items.entries.where((e) => !e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id, 'options': cartContext.options[e.key.id] != null ? cartContext.options[e.key.id].expand((element) => element).toList() : [],'comment':e.key.message}).toList(),
               restaurant: cartContext.currentOrigin,
               totalPrice: (cartContext.totalPrice * 100).round(),
-              menu: cartContext.items.entries.where((e) => e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),
+              menu: 
+              cartContext.items.entries.where(
+                (e) => e.key.isMenu).map(
+                  (e) => 
+                  {
+                    'quantity': e.value, 
+                    'item': e.key.id, 
+                    'foods': 
+                [cartContext.foodMenuSelected]
+              }).toList(),
             );
             Command cm = Command.fromJson(command);
 
@@ -449,13 +494,21 @@ class _OrderPageState extends State<OrderPage> {
         });
 
         var command = await Api.instance.sendCommand(
+          comment: cartContext.comment,
           relatedUser: authContext.currentUser.id,
           commandType: commandContext.commandType,
           items: cartContext.items.entries.where((e) => !e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id, 'options': e.key.optionSelected,'comment':e.key.message}).toList(),
           restaurant: cartContext.currentOrigin,
           totalPrice: (cartContext.totalPrice * 100).round(),
-        menu: cartContext.items.entries.where((e) => e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),
-            
+        menu: cartContext.items.entries.where(
+                (e) => e.key.isMenu).map(
+                  (e) => 
+                  {
+                    'quantity': e.value, 
+                    'item': e.key.id, 
+                    'foods': 
+                [cartContext.foodMenuSelected]
+              })
         );
         Command cm = Command.fromJson(command);
 

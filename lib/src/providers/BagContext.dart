@@ -8,6 +8,14 @@ class CartContext extends ChangeNotifier {
   Map<String, List<List<Option>>> _options = Map();
   String _currentOrigin;
   Queue q = Queue();
+  String comment = "";
+
+  Food _foodMenuSelected;
+  set foodMenuSelected(value) { 
+    _foodMenuSelected = value;
+   _foodMenuSelected.isMenu = true;  
+   }
+  get foodMenuSelected => _foodMenuSelected;
 
   String get currentOrigin => _currentOrigin;
 
@@ -59,7 +67,7 @@ class CartContext extends ChangeNotifier {
   }
   
   Map<dynamic, int> get items => _items;
-  Map<dynamic, List<List<Option>>> get options => options;
+  Map<dynamic, List<List<Option>>> get options => _options;
 
   int get itemCount => _items.length;
 
@@ -72,9 +80,24 @@ class CartContext extends ChangeNotifier {
          if (f.price != null && f.price.amount != null) totalPrice += f.price.amount / 100 * count;
         });
       }else*/
-      if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100* count;
-      /*if (food.isMenu){
+      if (food.isMenu){
+        if (food.type == "per_food"){
+          if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100* count;
+        }else if(food.type == "priceless"){
+
+        }else if (food.type == "fixed_price"){
+          if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100* count;
+        }
         
+        
+      }else{
+          if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100* count;
+      }
+      
+      /*if (food.isMenu){
+        if (per_food)
+        priceless
+        fixed_price
       }else{
         food.options?.forEach((option){
         option.itemOptionSelected?.forEach((itemOption) {
@@ -109,14 +132,15 @@ class CartContext extends ChangeNotifier {
   void removeItem(dynamic food) {
     _items.removeWhere((key, _) { 
       if(key.id == food.id){
-        if (food.isMenu){
+        //if (food.isMenu){
 
-        }else{
+        //}else{
           key.optionSelected?.forEach((itemOption) {
           itemOption.itemOptionSelected?.clear();
         
-          });
-        }
+         });
+      _options[key.id].clear();
+       // }
          return true;
       } 
       return false;
@@ -153,24 +177,51 @@ class CartContext extends ChangeNotifier {
             if(item.price != null) totalPrice += (item.price.toDouble()/100);
           });
         
-      });
+      if (per_food)
+              priceless
+              fixed_price
+
+            });
+            }
+      });*/
+
+      if (food.isMenu){
+              if (food.type == "per_food"){
+
+      if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100* count;
+
+              }else if(food.type == "priceless"){
+
+              }else if (food.type == "fixed_price"){
+
+      if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100* count;
+
+              }
+        
+        
+      }else{
+
+        if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100*count;
+
       }
-    });*/
+
     List<List<Option>> _values = _options[food.id];
     if (_values != null){
+      
     List<Option> _temp = _values.expand((element) => element).toList();
     _temp.forEach((option) {
       option.itemOptionSelected?.forEach((itemOption) {
         if(itemOption.price != null) totalPrice += itemOption.price/100;
       });
-    });}
+    });
+  }
 
-    totalPrice += (food.price?.amount == null ? 00 : food.price.amount / 100)*count;
+    //totalPrice += (food.price?.amount == null ? 00 : food.price.amount / 100)*count;
 
     return (totalPrice);
     
   }
-
+  
   
   Food getFood(dynamic food) {
     var f;
@@ -187,6 +238,8 @@ class CartContext extends ChangeNotifier {
     _items.clear();
     _currentOrigin = null;
     _options.clear();
+    comment = "";
+    _foodMenuSelected = null;
     notifyListeners();
   }
 
@@ -194,11 +247,19 @@ class CartContext extends ChangeNotifier {
     if (_options[item.id] == null) {
       _options[item.id] = List();
     }
-    _options[item.id].add(options.map((e) => Option.copy(e)).toList());
+    if (item.isMenu)
+      _options[item.id] = [options.map((e) => Option.copy(e)).toList()];
+    else
+      _options[item.id].add(options.map((e) => Option.copy(e)).toList());
   }
 
   void removeOption(dynamic item) {
     _options[item.id].removeLast();
   }
+
+  void refresh(){
+    notifyListeners();
+  }
+
 
 }

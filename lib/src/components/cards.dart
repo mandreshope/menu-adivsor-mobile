@@ -124,10 +124,11 @@ class FoodCard extends StatefulWidget {
   final Food food;
   final bool minified;
   final String imageTag;
+  final  bool withPrice;
 
   final bool showButton;
 
-  const FoodCard({Key key, @required this.food, this.minified = false, this.imageTag, this.showButton = false}) : super(key: key);
+  const FoodCard({Key key, @required this.food, this.minified = false, this.imageTag, this.showButton = false,this.withPrice = true}) : super(key: key);
 
   @override
   _FoodCardState createState() => _FoodCardState();
@@ -241,7 +242,7 @@ class _FoodCardState extends State<FoodCard> {
                                 if (widget.food.price != null && widget.food.price?.amount != null) ...[
                                   SizedBox(height: 5),
                                   Text(
-                                    "${widget.food.price.amount / 100}€",
+                                    widget.withPrice ? "${widget.food.price.amount / 100}€" : "",
                                     style: TextStyle(
                                       fontSize: 21,
                                       color: Colors.yellow[700],
@@ -411,10 +412,12 @@ class _FoodCardState extends State<FoodCard> {
 
 class RestaurantFoodCard extends StatefulWidget {
   final Food food;
+  final bool withPrice;
 
   const RestaurantFoodCard({
     Key key,
     this.food,
+    this.withPrice
   }) : super(key: key);
 
   @override
@@ -436,11 +439,12 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () async {
-        if (!expanded)
-          setState(() {
-            expanded = true;
-          });
-        else {
+        //if (!expanded){}
+          // setState(() {
+          //   expanded = true;
+          // });
+      
+        //else {
           /*var result = await showDialog(
             context: context,
             builder: (_) => Container(
@@ -465,7 +469,7 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
             ),
             routeName: foodRoute,
           );
-        }
+        //}
         
       },
       child: Card(
@@ -513,83 +517,92 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                           SizedBox(
                             height: 5,
                           ),
-                          // Consumer<DataContext>(
-                          //   builder: (_, dataContext, __) =>
-                             Container(
-                               padding: EdgeInsets.only(bottom: expanded ? 30 : 0),
-                               height: expanded ? 56 : 20,
-                               child: 
-                               /*ListView(
-                                // spacing: expanded ? 5 : 5,
-                                // runSpacing: 5,
-                                scrollDirection: Axis.horizontal,
-                                children: widget.food.foodAttributes
-                                    .map(
-                                      (attribute) => Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 5),
-                                        child: FittedBox(
-                                          child: Card(
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(
-                                                20,
+                          Consumer<DataContext>(
+                            builder: (_, dataContext, __) =>
+                             InkWell(
+                               onTap: (){
+                                  setState(() {
+                                    expanded = true;
+                                  });
+                               },
+                                child: Container(
+                                 padding: EdgeInsets.only(bottom: expanded ? 30 : 0),
+                                 height: expanded ? 56 : 20,
+                                 child: 
+                                 ListView(
+                                  // spacing: expanded ? 5 : 5,
+                                  // runSpacing: 5,
+                                  scrollDirection: Axis.horizontal,
+                                  children: widget.food.foodAttributes
+                                      .map(
+                                        (attribute) => Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 5),
+                                          child: FittedBox(
+                                            child: Card(
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(
+                                                  20,
+                                                ),
                                               ),
-                                            ),
-                                            elevation: expanded ? 4.0 : 0.0,
-                                            margin: EdgeInsets.zero,
-                                            child: Padding(
-                                              padding: expanded
-                                                  ? const EdgeInsets.all(
-                                                      8,
-                                                    )
-                                                  : const EdgeInsets.symmetric(
-                                                      vertical: 8,
-                                                      horizontal: 4,
-                                                    ),
-                                              child: Builder(
-                                                builder: (_) {
-                                                  // var attribute = dataContext.attributes.firstWhere(
-                                                  //   (element) => element['tag'] == e,
-                                                  //   orElse: null,
-                                                  // );
+                                              elevation: expanded ? 4.0 : 0.0,
+                                              margin: EdgeInsets.zero,
+                                              child: Padding(
+                                                padding: expanded
+                                                    ? const EdgeInsets.all(
+                                                        8,
+                                                      )
+                                                    : const EdgeInsets.symmetric(
+                                                        vertical: 8,
+                                                        horizontal: 4,
+                                                      ),
+                                                child: Builder(
+                                                  builder: (_) {
+                                                    // var attribute = dataContext.attributes.firstWhere(
+                                                    //   (element) => element['tag'] == e,
+                                                    //   orElse: null,
+                                                    // );
 
-                                                  return Row(
-                                                    children: [
-                                                     // for (var attribute in dataContext.attributes)
-                                                     ...[
+                                                    return Row(
+                                                      children: [
+                                                       // for (var attribute in dataContext.attributes)
+                                                       ...[
 FadeInImage.assetNetwork(
-                                                          placeholder: 'assets/images/loading.gif',
-                                                          image:  attribute.imageUrl,
-                                                          height: 14,
-                                                        ),
-                                                        if (expanded)
-                                                          SizedBox(
-                                                            width: 5,
+                                                            placeholder: 'assets/images/loading.gif',
+                                                            image:  attribute.imageURL,
+                                                            height: 14,
                                                           ),
+                                                          if (expanded)
+                                                            SizedBox(
+                                                              width: 5,
+                                                            ),
 
-                                                      if (expanded)
-                                                        TextTranslator(
-                                                          attribute.tag,
-                                                        ),
-                                                      ]
+                                                        if (expanded)
+                                                          TextTranslator(
+                                                            attribute.tag,
+                                                          ),
+                                                        ]
 
-                                                    ],
-                                                  );
-                                                },
+                                                      ],
+                                                    );
+                                                  },
+                                                ),
                                               ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    )
-                                    .toList(),
-                            ),*/
-                            Container()
+                                      )
+                                      .toList(),
+                            ),
+                               ),
+                             )
+                            // Container()
                              ),
                           // ),
                         ],
                       ],
                     ),
                   ),
+                  !widget.withPrice ? Text("") :
                   widget.food.price?.amount == null ? Text("") : Text('${widget.food.price.amount / 100}€'),
                 ],
               ),
@@ -846,12 +859,14 @@ class MenuCard extends StatelessWidget {
   final String lang;
   final String restaurant;
   int count = 0;
+  final bool withPrice;
 
   MenuCard({
     Key key,
     @required this.menu,
     @required this.lang,
-    this.restaurant
+    this.restaurant,
+    this.withPrice
   }) : super(key: key);
 
   @override
@@ -905,6 +920,13 @@ class MenuCard extends StatelessWidget {
                         menu.description ?? "",
                         style: TextStyle(),
                       ),
+                      SizedBox(height: 10,),
+                      TextTranslator(
+                        withPrice ?  "${menu.price.amount/100 ?? ""}€" : " ",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold
+                        ),
+                      ),
 
                     ],
                   ),
@@ -951,6 +973,7 @@ class MenuCard extends StatelessWidget {
                             return InkWell(
                               onTap: (){
                                 menuContext.select(entry.key, food);
+                                _cartContext.foodMenuSelected = food;
                               },
                                 child: Card(
                                 elevation: 2,
@@ -962,7 +985,16 @@ class MenuCard extends StatelessWidget {
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Radio(value: menuContext.selectedMenu[entry.key]?.first?.id, groupValue: food.id, onChanged: null,activeColor: CRIMSON,hoverColor: CRIMSON,),
+                                          Radio<String>(
+                                            value: menuContext.selectedMenu[entry.key]?.first?.id, 
+                                            groupValue: food.id, 
+                                            onChanged: (value){
+                                              print("food selected");
+                                              _cartContext.foodMenuSelected = food;
+                                            },
+                                            activeColor: CRIMSON,
+                                            hoverColor: CRIMSON,
+                                          ),
                                           Align(
                                             alignment: Alignment.centerLeft,
                                             child: TextTranslator(food.name),
@@ -988,7 +1020,7 @@ class MenuCard extends StatelessWidget {
                                         ],
                                       ),
                                       if (menuContext.selectedMenu[entry.key]?.first?.id == food.id)...[
-                                        MenuItemFoodOption(food: food,)
+                                        MenuItemFoodOption(food: food,menu: menu,withPrice: withPrice,)
                                       ]else
                                         Container()
                                     ],
@@ -1013,8 +1045,9 @@ class MenuCard extends StatelessWidget {
 class RestaurantCard extends StatefulWidget {
   final Restaurant restaurant;
   final bool fromHome;
+  final bool withPrice;
 
-  const RestaurantCard({Key key, @required this.restaurant, this.fromHome = false}) : super(key: key);
+  const RestaurantCard({Key key, @required this.restaurant, this.fromHome = false,this.withPrice = true}) : super(key: key);
 
   @override
   _RestaurantCardState createState() => _RestaurantCardState();
@@ -1157,9 +1190,10 @@ class BagItem extends StatefulWidget {
   int count;
   bool activeDelete;
   String imageTag;
+  bool withPrice;
 
 
-  BagItem({Key key, @required this.food, @required this.count, this.activeDelete = true, this.imageTag}) : super(key: key);
+  BagItem({Key key, @required this.food, @required this.count, this.activeDelete = true, this.imageTag,this.withPrice = true}) : super(key: key);
 
   @override
   _BagItemState createState() => _BagItemState();
@@ -1243,7 +1277,7 @@ class _BagItemState extends State<BagItem> {
                     ),
                     if (widget.food.price?.amount != null)
                       Text(
-                        '${_cartContext.getTotalPriceFood(widget.food)}€',
+                        !widget.withPrice ? "" : '${_cartContext.getTotalPriceFood(widget.food)}€',
                         style: TextStyle(
                           fontSize: 18,
                           color: Colors.grey[600],
@@ -1305,7 +1339,7 @@ class _BagItemState extends State<BagItem> {
                 isContains: _cartContext.contains(widget.food),
                 isFromDelevery: true,
               ),
-               SizedBox(
+              /* SizedBox(
                   width: 15,
                 ),
               Stack(
@@ -1349,7 +1383,7 @@ class _BagItemState extends State<BagItem> {
                       ),
                   ),
                   ],
-              ),
+              ),*/
               if (widget.activeDelete) ...[
                 SizedBox(
                   width: 15,
@@ -1482,7 +1516,7 @@ class BlogCard extends StatelessWidget {
       ),
       child: Container(
         height: 400,
-        width: 400,
+        width: MediaQuery.of(context).size.width - 50,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,

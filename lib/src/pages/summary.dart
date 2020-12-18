@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -308,6 +309,7 @@ class _SummaryState extends State<Summary> {
           ),
         ),
         Divider(),
+        if (item is Food)
         for (Option option in commandItem.options)...[
         Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -351,7 +353,10 @@ class _SummaryState extends State<Summary> {
                 ],
                  Divider(),
         ]
-        
+        else
+        for (FoodSelectedFromCommandMenu food in commandItem.foodMenuSelected)...[
+           _renderMenus(food)
+        ]
       ],
     );
   }
@@ -385,4 +390,61 @@ class _SummaryState extends State<Summary> {
                       ),
                     );
   }
+
+ Widget _renderMenus(FoodSelectedFromCommandMenu item) {
+       return Padding(
+         padding: const EdgeInsets.only(left: 80),
+         child: Column(
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(width: 15),
+                    Image.network(
+                      item.food.imageURL,
+                      width: 25,
+                    ),
+                    SizedBox(width: 8),
+                    TextTranslator('${item.food.name}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    Spacer(),
+                    item.food.price?.amount == null ? Text("_") : Text("${item.food.price.amount / 100} €", style: TextStyle(fontSize: 16)),
+                  ],
+                ),
+              ),
+              Divider(),
+              for (Option option in item.options)...[
+              Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            SizedBox(width: 150),
+                            TextTranslator('${option.title}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                             SizedBox(width: 5),
+                             ],
+                        ),
+                      SizedBox(height: 5,),
+                      for (ItemsOption itemsOption in option.items)...[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            SizedBox(width: 150),
+                            TextTranslator('${itemsOption.name}', style: TextStyle(fontSize: 16)),
+                            Spacer(),
+                            if (itemsOption.price == 0)
+                              Text("")
+                            else
+                              TextTranslator('${itemsOption.price/100} €', style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
+                            ],
+                        ),
+                       
+                      ],
+                       Divider(),
+              ]
+
+            ],
+          ),
+       );
+ }
+
 }

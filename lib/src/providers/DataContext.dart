@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/services/api.dart';
@@ -207,12 +209,13 @@ class DataContext extends ChangeNotifier {
   }
 
   fetchFoodAttributes(List<String> id) async {
-    loadingFoodAttributes = true;
-    notifyListeners();
+    /*loadingFoodAttributes = true;
+    notifyListeners();*/
     try {
       attributes.clear();
       id.forEach((element) async {
-        attributes.add(await _api.getFoodAttribute(id: element));
+        String e = element.replaceFirst("_", "");
+        attributes.add(FoodAttribute.fromJson(jsonDecode(e)));
       });
     }catch (error) {
       print(
@@ -220,7 +223,7 @@ class DataContext extends ChangeNotifier {
       );
       print('$error');
     }
-    loadingFoodAttributes = false;
+   loadingFoodAttributes = false;
     notifyListeners();
   }
 
