@@ -235,6 +235,8 @@ class Restaurant {
   final bool status;
   final String admin;
 
+  String priceDelevery;
+
   Restaurant({
     this.phoneNumber,
     @required this.id,
@@ -768,6 +770,14 @@ class Option {
   List<ItemsOption> itemOptionSelected;
 
   Option({this.sId, this.items, this.title, this.maxOptions,this.itemOptionSelected});
+
+  factory Option.copy(Option o) => Option(
+    itemOptionSelected: o.itemOptionSelected,
+    items: o.items,
+    maxOptions: o.maxOptions,
+    sId: o.sId,
+    title: o.title
+  );
 
   Option.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];

@@ -1,9 +1,13 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/models.dart';
 
 class CartContext extends ChangeNotifier {
   Map<dynamic, int> _items = Map();
+  Map<String, List<List<Option>>> _options = Map();
   String _currentOrigin;
+  Queue q = Queue();
 
   String get currentOrigin => _currentOrigin;
 
@@ -25,7 +29,7 @@ class CartContext extends ChangeNotifier {
   bool hasSamePricingAsInBag(dynamic item) => 
   (pricelessItems && (item.price == null || item.price.amount == null)) || (!pricelessItems && item.price != null && item.price.amount != null);
 
-  bool addItem(dynamic item, number) {
+  bool addItem(dynamic item, number,bool isAdd) {
     if (itemCount == 0 || (hasSamePricingAsInBag(item) && hasSameOriginAsInBag(item))) {
       // _items[item] = number;
       _items.update(
@@ -33,6 +37,8 @@ class CartContext extends ChangeNotifier {
         (value) => number,
         ifAbsent: () => number,
       );
+      if (item.optionSelected != null)
+        isAdd ? addOption(item, item.optionSelected) : removeOption(item);
       currentOrigin = item.isFoodForMenu ? item.restaurant['_id'] : item.restaurant;
       notifyListeners();
       return true;
@@ -53,6 +59,7 @@ class CartContext extends ChangeNotifier {
   }
   
   Map<dynamic, int> get items => _items;
+  Map<dynamic, List<List<Option>>> get options => options;
 
   int get itemCount => _items.length;
 
@@ -66,7 +73,7 @@ class CartContext extends ChangeNotifier {
         });
       }else*/
       if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100* count;
-      if (food.isMenu){
+      /*if (food.isMenu){
         
       }else{
         food.options?.forEach((option){
@@ -75,11 +82,17 @@ class CartContext extends ChangeNotifier {
       });
       });
 
-      }
+    }*/
       
       
     });
     
+    List<Option> _temp = _options.values.expand((element) => element).toList().expand((element) => element).toList();
+    _temp.forEach((option) {
+      option.itemOptionSelected?.forEach((itemOption) {
+        if(itemOption.price != null) totalPrice += itemOption.price/100;
+      });
+    });
     
     return totalPrice;
   }
@@ -130,9 +143,9 @@ class CartContext extends ChangeNotifier {
 
   double getTotalPriceFood(dynamic food){
     double totalPrice = 0;
-    int count = getCount(food);
+    int count = _items[food];
 // return 15.2;
-    _items.forEach((key, value) {
+    /*_items.forEach((key, value) {
       
       if (key.id == food.id) {
         key.optionSelected?.forEach((itemOption) {
@@ -142,7 +155,15 @@ class CartContext extends ChangeNotifier {
         
       });
       }
-    });
+    });*/
+    List<List<Option>> _values = _options[food.id];
+    if (_values != null){
+    List<Option> _temp = _values.expand((element) => element).toList();
+    _temp.forEach((option) {
+      option.itemOptionSelected?.forEach((itemOption) {
+        if(itemOption.price != null) totalPrice += itemOption.price/100;
+      });
+    });}
 
     totalPrice += (food.price?.amount == null ? 00 : food.price.amount / 100)*count;
 
@@ -165,6 +186,19 @@ class CartContext extends ChangeNotifier {
   void clear() {
     _items.clear();
     _currentOrigin = null;
+    _options.clear();
     notifyListeners();
   }
+
+  void addOption(dynamic item, List<Option> options) {
+    if (_options[item.id] == null) {
+      _options[item.id] = List();
+    }
+    _options[item.id].add(options.map((e) => Option.copy(e)).toList());
+  }
+
+  void removeOption(dynamic item) {
+    _options[item.id].removeLast();
+  }
+
 }

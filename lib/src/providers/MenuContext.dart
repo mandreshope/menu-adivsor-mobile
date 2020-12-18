@@ -18,7 +18,7 @@ class MenuContext extends ChangeNotifier {
   get foodsGrouped => _foodsGrouped;
 
   select(String entry, food) {
-    var val = selectedMenu[entry]?.first;
+    
     selectedMenu[entry] = [food];
 
     if (_foodsGrouped.length == selectedMenu.length) {

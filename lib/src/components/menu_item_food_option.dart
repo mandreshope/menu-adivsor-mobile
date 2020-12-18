@@ -67,7 +67,7 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                                 if (option.itemOptionSelected.length >= value.length) {
                                   option.itemOptionSelected = value.cast<ItemsOption>();
                                   widget.food.optionSelected = optionSelected;
-                                  _cartContext.addItem(widget.food, 1);
+                                  _cartContext.addItem(widget.food, 1,true);
                                 } else {
                                   print("max options");
                                   Fluttertoast.showToast(msg: "maximum selection ${option.title} : ${option.maxOptions}");
@@ -75,7 +75,7 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                               } else {
                                 option.itemOptionSelected = value.cast<ItemsOption>();
                                 widget.food.optionSelected = options;
-                                _cartContext.addItem(widget.food, 1);
+                                _cartContext.addItem(widget.food, 1,true);
                               }
                             });
                           },

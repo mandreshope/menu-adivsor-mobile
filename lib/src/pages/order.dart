@@ -86,14 +86,14 @@ class _OrderPageState extends State<OrderPage> {
                       final List<Widget> list = [];
                       String id = "-1";
                       cartContext.items.forEach(
-                        (food) {
+                        (food,count) {
                           //if (food.price != null)
                           if (food.id != id){
                             id = food.id;
                             list.add(
                               BagItem(
                                 food: food,
-                                count: cartContext.getCount(food),
+                                count: count,
                               ),
                             );
                           }
@@ -374,7 +374,7 @@ class _OrderPageState extends State<OrderPage> {
             var command = await Api.instance.sendCommand(
               relatedUser: authContext.currentUser?.id ?? null,
               commandType: commandContext.commandType,
-              items: cartContext.items.entries.where((e) => !e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id, 'options': e.key.optionSelected,'comment':e.key.message}).toList(),
+              items: cartContext.items.entries.where((e) => !e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id, 'options': cartContext.options[e.key.id].expand((element) => element).toList(),'comment':e.key.message}).toList(),
               restaurant: cartContext.currentOrigin,
               totalPrice: (cartContext.totalPrice * 100).round(),
               menu: cartContext.items.entries.where((e) => e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id}).toList(),

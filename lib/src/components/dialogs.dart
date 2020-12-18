@@ -325,7 +325,7 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
                               if (cartContext.contains(widget.food))
                                 cartContext.setCount(widget.food, itemCount);
                               else
-                                cartContext.addItem(widget.food, itemCount);
+                                cartContext.addItem(widget.food, itemCount,true);
 
                               Navigator.of(context).pop(true);
                             }

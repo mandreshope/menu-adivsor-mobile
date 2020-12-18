@@ -34,7 +34,7 @@ class FoodPage extends StatefulWidget {
 
 class _FoodPageState extends State<FoodPage> {
   bool isInFavorite = false;
-  bool showFavorite = true;
+  bool showFavorite = false;
   Api api = Api.instance;
   bool loading = true;
   String restaurantName;
@@ -331,14 +331,14 @@ class _FoodPageState extends State<FoodPage> {
                                                   ),
                                                 );
                                   if (optionSelected != null)
-                                    cartContext.addItem(widget.food, value);
+                                    cartContext.addItem(widget.food, value,true);
                                 }else{
-                                  cartContext.addItem(widget.food, value);
+                                  cartContext.addItem(widget.food, value,true);
                                 }
                                   
                                 }, 
                                 onRemoved: (value) {
-                                  value == 0 ? cartContext.removeItem(widget.food) : cartContext.addItem(widget.food, value);
+                                  value == 0 ? cartContext.removeItem(widget.food) : cartContext.addItem(widget.food, value,false);
                                 }, 
                                 itemCount: cartContext.getCount(widget.food), 
                                 isContains: cartContext.contains(widget.food)))
@@ -412,105 +412,108 @@ class _FoodPageState extends State<FoodPage> {
                             ),
                           ],
                           Expanded(
-                            child: Consumer<CartContext>(
-                              builder: (_, cartContext, __) => Column(
-                                children: [
-                                  RaisedButton(
-                                    padding: EdgeInsets.all(20),
-                                    color: cartContext.contains(widget.food)
-                                        ? Colors.teal
-                                        : CRIMSON,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    onPressed: () async {
-                                      if ((cartContext.itemCount == 0) ||
-                                          (cartContext.hasSamePricingAsInBag(
-                                                  widget.food) &&
-                                              cartContext.hasSameOriginAsInBag(
-                                                  widget.food))) {
-                                        if (cartContext.contains(widget.food)) {
-                                          var result = await showDialog(
-                                            context: context,
-                                            builder: (_) => ConfirmationDialog(
-                                              title: AppLocalizations.of(context)
-                                                  .translate(
-                                                      'confirm_remove_from_cart_title'),
-                                              content: AppLocalizations.of(context)
-                                                  .translate(
-                                                      'confirm_remove_from_cart_content'),
-                                            ),
-                                          );
-
-                                          if (result is bool && result) {
-                                            cartContext.removeItem(widget.food);
-                                            setState(() {
-                                              itemCount = 1;
-                                            });
-                                            RouteUtil.goBack(context: context);
-                                          }
-                                        } else {
-                                          /*bool result = await showDialog<bool>(
+                            child: Container(
+                              child: Consumer<CartContext>(
+                                builder: (_, cartContext, __) => Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    RaisedButton(
+                                      padding: EdgeInsets.all(20),
+                                      color: cartContext.contains(widget.food)
+                                          ? Colors.teal
+                                          : CRIMSON,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      onPressed: () async {
+                                        if ((cartContext.itemCount == 0) ||
+                                            (cartContext.hasSamePricingAsInBag(
+                                                    widget.food) &&
+                                                cartContext.hasSameOriginAsInBag(
+                                                    widget.food))) {
+                                          if (cartContext.contains(widget.food)) {
+                                            var result = await showDialog(
                                               context: context,
-                                              builder: (_) => AddToBagDialog(
-                                                food: widget.food,
+                                              builder: (_) => ConfirmationDialog(
+                                                title: AppLocalizations.of(context)
+                                                    .translate(
+                                                        'confirm_remove_from_cart_title'),
+                                                content: AppLocalizations.of(context)
+                                                    .translate(
+                                                        'confirm_remove_from_cart_content'),
                                               ),
                                             );
-                                            if (result is bool && result) {}*/
-                                         /* if (cartContext.contains(widget.food))
-                                            cartContext.setCount(
-                                                widget.food, itemCount);
-                                          else
-                                            cartContext.addItem(
-                                                widget.food, itemCount);*/
-                                                if (widget.food.options.isNotEmpty){
-                                                  var optionSelected = await showDialog(
-                                                                  context: context,
-                                                                  barrierDismissible: false,
-                                                                  builder: (_) => OptionChoiceDialog(
-                                                                    food: widget.food,
-                                                                  ),
-                                                                );
-                                                  if (optionSelected != null)
-                                                    cartContext.addItem(widget.food, itemCount);
-                                                }else{
-                                                  cartContext.addItem(widget.food, itemCount);
-                                                }
 
-                                          /*Navigator.of(context).pop(true);*/
-                                          
+                                            if (result is bool && result) {
+                                              cartContext.removeItem(widget.food);
+                                              setState(() {
+                                                itemCount = 1;
+                                              });
+                                              RouteUtil.goBack(context: context);
+                                            }
+                                          } else {
+                                            /*bool result = await showDialog<bool>(
+                                                context: context,
+                                                builder: (_) => AddToBagDialog(
+                                                  food: widget.food,
+                                                ),
+                                              );
+                                              if (result is bool && result) {}*/
+                                           /* if (cartContext.contains(widget.food))
+                                              cartContext.setCount(
+                                                  widget.food, itemCount);
+                                            else
+                                              cartContext.addItem(
+                                                  widget.food, itemCount);*/
+                                                  if (widget.food.options.isNotEmpty){
+                                                    var optionSelected = await showDialog(
+                                                                    context: context,
+                                                                    barrierDismissible: false,
+                                                                    builder: (_) => OptionChoiceDialog(
+                                                                      food: widget.food,
+                                                                    ),
+                                                                  );
+                                                    if (optionSelected != null)
+                                                      cartContext.addItem(widget.food, itemCount,true);
+                                                  }else{
+                                                    cartContext.addItem(widget.food, itemCount,true);
+                                                  }
+
+                                            /*Navigator.of(context).pop(true);*/
+                                            
+                                          }
+                                        } else if (!cartContext
+                                            .hasSamePricingAsInBag(widget.food)) {
+                                          Fluttertoast.showToast(
+                                            msg: AppLocalizations.of(context).translate(
+                                                'priceless_and_not_priceless_not_allowed'),
+                                          );
+                                        } else if (!cartContext
+                                            .hasSameOriginAsInBag(widget.food)) {
+                                          Fluttertoast.showToast(
+                                            msg: AppLocalizations.of(context).translate(
+                                                'from_different_origin_not_allowed'),
+                                          );
                                         }
-                                      } else if (!cartContext
-                                          .hasSamePricingAsInBag(widget.food)) {
-                                        Fluttertoast.showToast(
-                                          msg: AppLocalizations.of(context).translate(
-                                              'priceless_and_not_priceless_not_allowed'),
-                                        );
-                                      } else if (!cartContext
-                                          .hasSameOriginAsInBag(widget.food)) {
-                                        Fluttertoast.showToast(
-                                          msg: AppLocalizations.of(context).translate(
-                                              'from_different_origin_not_allowed'),
-                                        );
-                                      }
-                                    },
-                                    child: TextTranslator(
-                                      cartContext.contains(widget.food)
-                                          ? AppLocalizations.of(context)
-                                              .translate('remove_from_cart')
-                                          : AppLocalizations.of(context)
-                                              .translate("add_to_cart"),
-                                      overflow: TextOverflow.ellipsis,
-                                      softWrap: false,
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 20,
+                                      },
+                                      child: TextTranslator(
+                                        cartContext.contains(widget.food)
+                                            ? AppLocalizations.of(context)
+                                                .translate('remove_from_cart')
+                                            : AppLocalizations.of(context)
+                                                .translate("add_to_cart"),
+                                        overflow: TextOverflow.ellipsis,
+                                        softWrap: false,
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  cartContext.contains(widget.food) ? SizedBox(height: 50,) : Container()
-                                ],
+                                    //cartContext.contains(widget.food) ? SizedBox(height: 50,) : Container()
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -519,8 +522,9 @@ class _FoodPageState extends State<FoodPage> {
                     ),
                   
                   ],
-
+                  _cartContext.contains(widget.food) ? SizedBox(height: 50,) : Container()
                 ],
+                
               ),
             ),
             Positioned(

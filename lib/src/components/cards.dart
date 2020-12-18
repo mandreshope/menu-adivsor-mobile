@@ -268,10 +268,10 @@ class _FoodCardState extends State<FoodCard> {
                                       isContains: cartContext.contains(widget.food),
                                       itemCount: cartContext.getCount(widget.food),
                                       onAdded: (value) {
-                                        cartContext.addItem(widget.food, value);
+                                        cartContext.addItem(widget.food, value,true);
                                       },
                                       onRemoved: (value) {
-                                        value == 0 ? cartContext.removeItem(widget.food) : cartContext.addItem(widget.food, value);
+                                        value == 0 ? cartContext.removeItem(widget.food) : cartContext.addItem(widget.food, value,false);
                                       },
                                     );
                                   return RawMaterialButton(
@@ -619,14 +619,14 @@ FadeInImage.assetNetwork(
                                                   ),
                                                 );
                                   if (optionSelected != null)
-                                    cartContext.addItem(widget.food, value);
+                                    cartContext.addItem(widget.food, value,true);
                                 }else{
-                                  cartContext.addItem(widget.food, value);
+                                  cartContext.addItem(widget.food, value,true);
                                 }
                             }
                                 
                         }, onRemoved: (value) {
-                              value == 0 ? cartContext.removeItem(widget.food) : cartContext.addItem(widget.food, value);
+                              value == 0 ? cartContext.removeItem(widget.food) : cartContext.addItem(widget.food, value,true);
                             }, itemCount: cartContext.getCount(widget.food), isContains: cartContext.contains(widget.food))
                         ),
                   ],
@@ -766,9 +766,9 @@ class _DrinkCardState extends State<DrinkCard> {
                   children: [
                     Consumer<CartContext>(
                         builder: (_, cartContext, __) => ButtonItemCountWidget(widget.food, onAdded: (value) {
-                              cartContext.addItem(widget.food, value);
+                              cartContext.addItem(widget.food, value,true);
                             }, onRemoved: (value) {
-                              value == 0 ? cartContext.removeItem(widget.food) : cartContext.addItem(widget.food, value);
+                              value == 0 ? cartContext.removeItem(widget.food) : cartContext.addItem(widget.food, value,false);
                             }, itemCount: cartContext.getCount(widget.food), isContains: cartContext.contains(widget.food))
 
                         /*RawMaterialButton(
@@ -915,14 +915,14 @@ class MenuCard extends StatelessWidget {
                         menu,
                         isMenu: true, onAdded: (value){
                           if (value < 2){
-                            _cart.addItem(menu, value);
+                            _cart.addItem(menu, value,true);
                             count = value;
                           }
                         
                         }, 
                         onRemoved: (value){
                           value == 0 ? _cart.removeItem(menu) 
-                          : _cart.addItem(menu, value);
+                          : _cart.addItem(menu, value,false);
                           count = value;
 
                         }, itemCount: count
@@ -1294,10 +1294,10 @@ class _BagItemState extends State<BagItem> {
                 itemCount: widget.count,
                 onAdded: (value) {
                   widget.count = value;
-                  _cartContext.addItem(widget.food, value);
+                  _cartContext.addItem(widget.food, value,true);
                 },
                 onRemoved: (value) {
-                  value == 0 ? _cartContext.removeItem(widget.food) : _cartContext.addItem(widget.food, value);
+                  value == 0 ? _cartContext.removeItem(widget.food) : _cartContext.addItem(widget.food, value,false);
 
                   if (_cartContext.items.length == 0) RouteUtil.goBack(context: context);
                   widget.count = value;
