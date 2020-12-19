@@ -177,6 +177,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                     ),
                   ),
                 ],
+                _date(),
                 SizedBox(height: 25),
                 if (commandContext.commandType == 'takeaway')
                   Material(
@@ -409,4 +410,37 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
       Fluttertoast.showToast(msg: 'Compléter les informations');
     }
   }
+
+  Widget _date() {
+    DateTime now = DateTime.now();
+    deliveryDate = now.add(Duration(days: 0));
+    return DropdownButton<DateTime>(
+                          elevation: 16,
+                          isExpanded: true,
+                          value:  deliveryDate,
+                          onChanged: (DateTime date) {
+
+                            setState(() {
+                               deliveryDate = date;
+                            });
+                             
+
+                          },
+                          style: TextStyle(
+                            color: Colors.grey[700],
+                          ),
+
+                          items: [
+                            for (int i = 0; i < 4; i++)
+                              DropdownMenuItem<DateTime>(
+                                value: now.add(Duration(days: i)),
+                                child: TextTranslator(
+                                  i == 0 ? "Aujourd'hui" :
+                                  i == 1 ? "Demain" :
+                                  "${now.add(Duration(days: i)).dateToString("dd MMMM")}")
+                            ),
+                          ],
+                        );
+  }
+
 }

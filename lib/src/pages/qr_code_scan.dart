@@ -3,10 +3,12 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/pages/restaurant.dart';
+import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
+import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class QRCodeScanPage extends StatefulWidget {
@@ -19,9 +21,11 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
   QRViewController controller;
   bool flashOn = false;
   bool loading = false;
+  CartContext _cartContext;
 
   @override
   Widget build(BuildContext context) {
+    _cartContext = Provider.of<CartContext>(context,listen: false);
     return Scaffold(
       appBar: AppBar(
         title: TextTranslator("Scan code QR"),
@@ -101,6 +105,17 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
 
   void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;
+   /*bool withPrice = !"https://preprod-api.clicar.fr/restaurants/5fde0bc875e5035bf72a8efe/qrcode.png".contains("?option");
+    _cartContext.withPrice = withPrice;
+    RouteUtil.goTo(
+        context: context,
+        child: RestaurantPage(
+          restaurant: "5fde0bc875e5035bf72a8efe",
+          withPrice: withPrice,
+        ),
+        routeName: restaurantRoute,
+        method: RoutingMethod.replaceLast,
+      );*/
     controller.scannedDataStream.listen((String scanData) async {
       controller.pauseCamera();
       if (!scanData.startsWith(RegExp(r'https://(www\.|)preprod-api.clicar.fr/restaurants/'))) {
@@ -118,7 +133,8 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
       String restaurantId = datas[datas.length - 2];
       
       bool withPrice = !scanData.contains("?option");
-
+      _cartContext.withPrice = withPrice;
+      
       RouteUtil.goTo(
         context: context,
         child: RestaurantPage(

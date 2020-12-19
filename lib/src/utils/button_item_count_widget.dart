@@ -2,21 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
+import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
+import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
 class ButtonItemCountWidget extends StatefulWidget {
-  ButtonItemCountWidget(this.food,
-      {@required this.onAdded,
-      @required this.onRemoved,
-      @required this.itemCount,
-      this.isFromDelevery = false,
-      @required this.isContains = false,
-      this.isMenu = false})
+  ButtonItemCountWidget(this.food, {@required this.onAdded,this.withPrice = true, @required this.onRemoved, @required this.itemCount, this.isFromDelevery = false, @required this.isContains = false, this.isMenu = false,this.fromRestaurant = false})
       : super();
   Function onAdded;
   Function onRemoved;
@@ -25,6 +21,8 @@ class ButtonItemCountWidget extends StatefulWidget {
   bool isContains;
   dynamic food;
   bool isMenu;
+  bool fromRestaurant;
+  bool withPrice;
 
   @override
   _ButtonItemCountWidgetState createState() => _ButtonItemCountWidgetState();
@@ -37,6 +35,8 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
   void initState() {
     super.initState();
     _cartContext = Provider.of<CartContext>(context, listen: false);
+    // widget.itemCount = _cartContext.getCount(widget.food);
+    // widget.isContains = _cartContext.contains(widget.food);
   }
 
   @override
@@ -44,25 +44,36 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
     if (!widget.isContains)
       return CircleButton(
           backgroundColor: TEAL,
-          onPressed: () {
+          onPressed: () async {
             if (_cartContext.itemCount != 0) {
               if (!_cartContext.hasSamePricingAsInBag(widget.food)) {
                 Fluttertoast.showToast(
-                  msg: AppLocalizations.of(context)
-                      .translate('priceless_and_not_priceless_not_allowed'),
+                  msg: AppLocalizations.of(context).translate('priceless_and_not_priceless_not_allowed'),
                 );
-                return ;
+                return;
               } else if (!_cartContext.hasSameOriginAsInBag(widget.food)) {
                 Fluttertoast.showToast(
-                  msg: AppLocalizations.of(context)
-                      .translate('from_different_origin_not_allowed'),
+                  msg: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
                 );
-                return ;
+                return;
               }
-              
             }
 
-            widget.onAdded(++widget.itemCount);
+            // widget.onAdded(++widget.itemCount);
+            int value = ++widget.itemCount;
+            if (widget.food.options.isNotEmpty) {
+              var optionSelected = await showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (_) => OptionChoiceDialog(
+                  food: widget.food,
+                  withPrice: widget.withPrice,
+                ),
+              );
+              if (optionSelected != null) _cartContext.addItem(widget.food, value, true);
+            } else {
+              _cartContext.addItem(widget.food, value, true);
+            }
           },
           child: FaIcon(
             FontAwesomeIcons.plus,
@@ -77,8 +88,7 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
           )),
       padding: EdgeInsets.symmetric(vertical: 2),
       child: Padding(
-        padding:
-            EdgeInsets.symmetric(horizontal: widget.isFromDelevery ? 0 : 0),
+        padding: EdgeInsets.symmetric(horizontal: widget.isFromDelevery ? 0 : 0),
         child: Row(
           children: [
             RoundedButton(
@@ -90,8 +100,26 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                 color: Colors.white,
                 size: 12,
               ),
-              onPressed: () {
-                widget.onRemoved(--widget.itemCount);
+              onPressed: () async {
+                // widget.onRemoved(--widget.itemCount);
+                int value = --widget.itemCount;
+                if (value <= 0) {
+                  var result = await showDialog(
+                    context: context,
+                    builder: (_) => ConfirmationDialog(
+                      title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
+                      content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
+                    ),
+                  );
+
+                  if (result is bool && result) {
+                    _cartContext.removeItem(widget.food);
+                    if (!widget.fromRestaurant)
+                      RouteUtil.goBack(context: context);
+                  }
+                } else {
+                  _cartContext.addItem(widget.food, value, false);
+                }
               },
             ),
             Padding(
@@ -122,8 +150,23 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                 color: Colors.white,
                 size: widget.isFromDelevery ? 12 : 12,
               ),
-              onPressed: () {
-                widget.onAdded(++widget.itemCount);
+              onPressed: () async {
+                if (widget.food.isMenu) return;
+                int value = ++widget.itemCount;
+                if (widget.food.options.isNotEmpty) {
+                  var optionSelected = await showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (_) => OptionChoiceDialog(
+                      food: widget.food,
+                      withPrice: widget.withPrice,
+                    ),
+                  );
+                  if (optionSelected != null) _cartContext.addItem(widget.food, value, true);
+                } else {
+                  _cartContext.addItem(widget.food, value, true);
+                }
+                // widget.onAdded();
               },
             ),
           ],

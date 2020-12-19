@@ -242,7 +242,7 @@ class _FoodCardState extends State<FoodCard> {
                                 if (widget.food.price != null && widget.food.price?.amount != null) ...[
                                   SizedBox(height: 5),
                                   Text(
-                                    widget.withPrice ? "${widget.food.price.amount / 100}€" : "",
+                                    Provider.of<CartContext>(context).withPrice ? "${widget.food.price.amount / 100}€" : "",
                                     style: TextStyle(
                                       fontSize: 21,
                                       color: Colors.yellow[700],
@@ -437,6 +437,7 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
 
   @override
   Widget build(BuildContext context) {
+    CartContext _cartContext = Provider.of<CartContext>(context,listen: false);
     return InkWell(
       onTap: () async {
         //if (!expanded){}
@@ -602,7 +603,7 @@ FadeInImage.assetNetwork(
                       ],
                     ),
                   ),
-                  !widget.withPrice ? Text("") :
+                  !_cartContext.withPrice ? Text("") :
                   widget.food.price?.amount == null ? Text("") : Text('${widget.food.price.amount / 100}€'),
                 ],
               ),
@@ -619,6 +620,8 @@ FadeInImage.assetNetwork(
                     Consumer<CartContext>(
                         builder: (_, cartContext, __) => 
                         ButtonItemCountWidget(widget.food, 
+                        fromRestaurant: true,
+                        withPrice: widget.withPrice,
                         onAdded: (value) async {
                             if (widget.food.isMenu){
                                 
@@ -629,6 +632,7 @@ FadeInImage.assetNetwork(
                                                   barrierDismissible: false,
                                                   builder: (_) => OptionChoiceDialog(
                                                     food: widget.food,
+                                                    withPrice: widget.withPrice,
                                                   ),
                                                 );
                                   if (optionSelected != null)
@@ -935,6 +939,7 @@ class MenuCard extends StatelessWidget {
                   builder: (_, _cart,__) {
                     return ButtonItemCountWidget(
                         menu,
+                        fromRestaurant: true,
                         isMenu: true, onAdded: (value){
                           if (value < 2){
                             _cart.addItem(menu, value,true);
@@ -1277,7 +1282,7 @@ class _BagItemState extends State<BagItem> {
                     ),
                     if (widget.food.price?.amount != null)
                       Text(
-                        !widget.withPrice ? "" : '${_cartContext.getTotalPriceFood(widget.food)}€',
+                        !_cartContext.withPrice ? "" : '${_cartContext.getTotalPriceFood(widget.food)}€',
                         style: TextStyle(
                           fontSize: 18,
                           color: Colors.grey[600],

@@ -9,6 +9,7 @@ class CartContext extends ChangeNotifier {
   String _currentOrigin;
   Queue q = Queue();
   String comment = "";
+  bool withPrice = true;
 
   Food _foodMenuSelected;
   set foodMenuSelected(value) { 
@@ -139,7 +140,7 @@ class CartContext extends ChangeNotifier {
           itemOption.itemOptionSelected?.clear();
         
          });
-      _options[key.id].clear();
+      _options[key.id]?.clear();
        // }
          return true;
       } 

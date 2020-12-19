@@ -80,7 +80,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
   bool _canScrollListRestaurant = false;
 
   String _langTranslate;
-
+int range;
   @override
   void initState() {
     super.initState();
@@ -88,7 +88,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
      _lang = Provider.of<SettingContext>(context, listen: false).languageCode;
     _langTranslate = Provider.of<SettingContext>(context, listen: false).languageCodeTranslate;
     Provider.of<SettingContext>(context,listen: false).isRestaurantPage = true;
-
+range = Provider.of<SettingContext>(context,listen: false).range;
    
  
 
@@ -129,7 +129,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
 
       tabController.addListener(() {
         print(tabController.index);
-        // itemScrollController.jumpTo(index: tabController.index);
+        itemScrollController.jumpTo(index: tabController.index);
       });
 
       itemPositionsListener.itemPositions.addListener(() {
@@ -223,6 +223,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
         searchValue,
         _lang,
         type: type,
+        range: range,
         filters: {
           'restaurant': restaurant.id,
         },
@@ -281,6 +282,8 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
           return false;
         }
         Provider.of<SettingContext>(context,listen: false).isRestaurantPage = false;
+        Provider.of<CartContext>(context,listen: false).withPrice = true;
+        
         return true;
       },
       child: Localizations.override(
@@ -303,7 +306,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
           ),*/
           appBar: _isSearching
               ? AppBar(
-                  title: TextTranslator(restaurant.name,),
+                  title: TextTranslator(restaurant.name ?? "",),
                   actions: [
                     Icon(Icons.add),
                     Consumer<SettingContext>(
@@ -525,12 +528,14 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                           inRestaurant: true,
                           filters: filters,
                           type: type,
+                          range: Provider.of<SettingContext>(context).range,
                         ),
                       );
                       if (filters is Map && filters.entries.length > 0) {
                         setState(() {
                           filters = result['filters'];
                           type = result['type'];
+                          range = result['range'];
                         });
                         _initSearch();
                       }
@@ -652,30 +657,49 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                       },
                                     ),
                                     SizedBox(height: 15,),
-                                    Container(
-                                      margin: EdgeInsets.only(left: 25),
-                                      child: InkWell(
-                                        onTap: () async {
-                                          Position currentPosition = await getCurrentPosition();
-                                          var coordinates = restaurant.location.coordinates;
-                                          MapUtils.openMap(currentPosition.latitude, currentPosition.longitude,
-                                          coordinates.last,coordinates.first);
-                                        },
-                                        child: Container(
-                                              padding: EdgeInsets.all(5),
-                                              decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.horizontal(left: Radius.circular(15), right: Radius.circular(15)),
-                                                color: Colors.orange,
-                                              ),
-                                              child: Padding(
-                                                padding: const EdgeInsets.all(2.0),
-                                                child: TextTranslator(
-                                                  "Itinéraire",
-                                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14),
-                                                ),
-                                              ),
-                                            )
-                                      ),
+                                    Row(
+                                      children: [
+                                        Container(
+                                          margin: EdgeInsets.only(left: 25),
+                                          child: InkWell(
+                                            onTap: () async {
+                                              Position currentPosition = await getCurrentPosition();
+                                              var coordinates = restaurant.location.coordinates;
+                                              MapUtils.openMap(currentPosition.latitude, currentPosition.longitude,
+                                              coordinates.last,coordinates.first);
+                                            },
+                                            child: Container(
+                                                  padding: EdgeInsets.all(5),
+                                                  decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.horizontal(left: Radius.circular(15), right: Radius.circular(15)),
+                                                    color: Colors.orange,
+                                                  ),
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.all(2.0),
+                                                    child: TextTranslator(
+                                                      "Itinéraire",
+                                                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14),
+                                                    ),
+                                                  ),
+                                                )
+                                          ),
+                                        ),
+                                        SizedBox(width: 20,),
+                                        CircleAvatar(
+                                          backgroundColor: Colors.orange,
+                                          radius: 15,
+                                          child: IconButton(
+                                            icon: Icon(
+                                              Icons.search,
+                                              color: Colors.white,
+                                              size: 15,), 
+                                              onPressed: (){
+                                                setState(() {
+                                                  _isSearching = true;
+                                                });
+                                              }))
+                                      ],
+
                                     )
                                   ],
                                 )

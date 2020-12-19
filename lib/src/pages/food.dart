@@ -172,7 +172,8 @@ class _FoodPageState extends State<FoodPage> {
                         if (widget.food.price != null && widget.food.price?.amount != null)
                           Positioned(
                             right: 25,
-                            child: Text(
+                            child: 
+                            !_cartContext.withPrice ? Text("") : Text(
                               '${widget.food.price.amount / 100} €',
                               style: TextStyle(
                                 fontSize: 20,
@@ -326,7 +327,7 @@ class _FoodPageState extends State<FoodPage> {
                             builder: (_, cartContext, __) => 
                             ButtonItemCountWidget(widget.food, 
                             onAdded: (value) async {
-                                if (widget.food.options.isNotEmpty){
+                                /*if (widget.food.options.isNotEmpty){
                                   var optionSelected = await showDialog(
                                                   context: context,
                                                   barrierDismissible: false,
@@ -339,10 +340,10 @@ class _FoodPageState extends State<FoodPage> {
                                 }else{
                                   cartContext.addItem(widget.food, value,true);
                                 }
-                                  
+                                  */
                                 }, 
                                 onRemoved: (value) {
-                                  value == 0 ? cartContext.removeItem(widget.food) : cartContext.addItem(widget.food, value,false);
+                                  // value == 0 ? cartContext.removeItem(widget.food) : cartContext.addItem(widget.food, value,false);
                                 }, 
                                 itemCount: cartContext.getCount(widget.food), 
                                 isContains: cartContext.contains(widget.food)))

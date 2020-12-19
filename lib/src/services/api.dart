@@ -277,6 +277,7 @@ class Api {
         '$_apiURL/restaurants/$id?lang=$lang',
         headers: {
           "authorization": "Bearer $_accessToken",
+          'content-type': 'application/json'
         },
       ).then<Restaurant>((response) {
         if (response.statusCode == 200) return Restaurant.fromJson(jsonDecode(response.body));
@@ -350,7 +351,7 @@ class Api {
     String searchQuery;
     
     if (location == null){
-      searchQuery = '?lang=$lang&q=$query';
+      searchQuery = '?lang=$lang&q=$query&range=$range';
     }else{
      searchQuery = '?lang=$lang&q=$query&range=$range&location=${jsonEncode(location)}';
     }
@@ -448,7 +449,7 @@ class Api {
         (response) {
           if (response.statusCode == 200) {
             List<dynamic> datas = jsonDecode(response.body);
-            return datas.map<Menu>((e) => Menu.fromJson(e)).toList();
+            return datas.map<Menu>((e) => Menu.fromJson(e,fromCommand: true)).toList();
           }
 
           return Future.error(

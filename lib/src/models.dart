@@ -35,7 +35,7 @@ class Food implements Copyable<Food>{
   final dynamic restaurant;
   final String description;
   final dynamic type;
-  final List<FoodAttribute> attributes;
+  final List<dynamic> attributes;
   List<Option> options;
   final bool status;
   final String title;
@@ -72,7 +72,7 @@ class Food implements Copyable<Food>{
     this.isMenu = false
   });
 
-  factory Food.fromJson(Map<String, dynamic> json) => Food(
+  factory Food.fromJson(Map<String, dynamic> json,{bool fromCommande = false}) => Food(
         id: json['_id'],
         name: json['name'] is Map<String, dynamic> ? json['name']["fr"] : json['name'],
         imageURL: json['imageURL'],
@@ -80,7 +80,7 @@ class Food implements Copyable<Food>{
         restaurant: json['restaurant'],
         price: json.containsKey('price') ? Price.fromJson(json['price']) : null,
         type: json['type'] == null ? null : json['type'] is  Map<String, dynamic> ?  FoodType.fromJson(json['type']) : json['type'] as String,
-        attributes: (json['attributes'] as List).map((e) => FoodAttribute.fromJson(e)).toList(),
+        attributes: fromCommande ? List() : (json['attributes'] as List).map((e) => FoodAttribute.fromJson(e)).toList(),
         options: (json['options'] as List).map((e) => Option.fromJson(e)).toList(),
         status: json['status'],
         title: json['title'],
@@ -157,6 +157,7 @@ class Menu implements Copyable<Menu>{
   bool isFoodForMenu = false;
 
   String message;
+  List<Option> options = List();
 
   List<Option> optionSelected = List();
 
@@ -186,13 +187,13 @@ class Menu implements Copyable<Menu>{
   }
 
 
-  factory Menu.fromJson(Map<String, dynamic> json,{String resto}) {
+  factory Menu.fromJson(Map<String, dynamic> json,{String resto,bool fromCommand = false}) {
     
     Menu _menu = Menu(
         id: json['_id'],
         name: json['name'] is Map<String, dynamic> ? json['name']["fr"] : json['name'],
         imageURL: json['imageURL'],
-        foods: json['foods'] is List ? json['foods']?.map<Food>((data) => Food.fromJson(data))?.toList() ?? [] : [],
+        foods: json['foods'] is List ? json['foods']?.map<Food>((data) => Food.fromJson(data,fromCommande: fromCommand))?.toList() ?? [] : [],
         description: json['description'] is Map<String, dynamic> ? json['description']["fr"] : json['description'],
         // restaurant: resto
         type: json['type'],
@@ -493,7 +494,7 @@ class CommandItem {
     if (json['item'] is String)
       food = json['item'];
     if (isMenu){
- menu = json['item'] != null ? Menu.fromJson(json['item']) : null;
+ menu = json['item'] != null ? Menu.fromJson(json['item'],fromCommand: true) : null;
  /*if (json['foods'] != null)
           foods = json['foods'] is List ? json['foods']?.map<Food>((data)
             {
@@ -508,9 +509,9 @@ class CommandItem {
 
     }else{
 
-          food = json['item'] != null ? Food.fromJson(json['item']) : null;
+          food = json['item'] != null ? Food.fromJson(json['item'],fromCommande: true) : null;
         if (json['foods'] != null)
-          foods = json['foods'] is List ? json['foods']?.map<Food>((data) => Food.fromJson(data))?.toList() ?? [] : [];
+          foods = json['foods'] is List ? json['foods']?.map<Food>((data) => Food.fromJson(data,fromCommande: true))?.toList() ?? [] : [];
 options = json['options'] == null ? List() : (json['options'] as List).map((e) => Option.fromJson(e)).toList();
 
     }

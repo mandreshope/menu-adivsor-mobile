@@ -136,6 +136,29 @@ class OrderButton extends StatelessWidget {
                             return Consumer<CartContext>(builder: (_, _cartContext, __) {
                               return Column(
                                 children: [
+                                  Container(
+                                    margin: EdgeInsets.only(left: 10,right: 10,top:15),
+                            padding: const EdgeInsets.all(5.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                TextTranslator(
+                                  "Vider panier",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                InkWell(
+                                  child: Icon(Icons.delete,color: Colors.grey,),
+                                  onTap: (){
+                                    _cartContext.clear();
+                                    RouteUtil.goBack(context: context);
+                                  },
+                                )
+                              ],
+                            ),
+                          ),
                                   Expanded(
                                     child: ListView.builder(
                                         itemCount: _cartContext.items.length,
@@ -176,7 +199,7 @@ class OrderButton extends StatelessWidget {
                     width: 10,
                   ),
                   Text(
-                    !withPrice ? "" : this.totalPrice == 0 ? "" : '${this.totalPrice.toStringAsFixed(2)} €',
+                    !Provider.of<CartContext>(context,listen: false).withPrice ? "" : this.totalPrice == 0 ? "" : '${this.totalPrice.toStringAsFixed(2)} €',
                     style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: CRIMSON),
                   ),
                 ],

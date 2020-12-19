@@ -210,7 +210,11 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
         borderRadius: BorderRadius.circular(10),
       ),
       child: Consumer<CartContext>(
-        builder: (_, cartContext, __) => Container(
+        builder: (_, cartContext, __) 
+{
+  if (cartContext.contains(widget.food))
+      itemCount = cartContext.getCount(widget.food);
+       return  Container(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -337,7 +341,8 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
               ),
             ],
           ),
-        ),
+        );
+}     
       ),
     );
   }
@@ -791,8 +796,9 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
 
 
 class OptionChoiceDialog extends StatefulWidget {
-  OptionChoiceDialog({this.food});
+  OptionChoiceDialog({this.food,this.withPrice = true});
   Food food;
+  bool withPrice;
 
   @override
   _OptionChoiceDialogState createState() => _OptionChoiceDialogState();
@@ -813,6 +819,7 @@ class _OptionChoiceDialogState extends State<OptionChoiceDialog> {
 
   @override
   Widget build(BuildContext context) {
+    CartContext _cartContext = Provider.of<CartContext>(context,listen: false);
     return WillPopScope(
       onWillPop: () async{
         return false;
@@ -873,7 +880,7 @@ class _OptionChoiceDialogState extends State<OptionChoiceDialog> {
                                                               shape: BoxShape.circle,
                                                               // color: _.value.price == 0 ? null : Colors.grey[400]
                                                             ),
-                                                            child: Text("${_.value.price == 0 ? '': _.value.price/100}${_.value.price == 0 ? '': "€"}",
+                                                            child: !_cartContext.withPrice ? Text("") : Text("${_.value.price == 0 ? '': _.value.price/100}${_.value.price == 0 ? '': "€"}",
                                                             style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),),
                                                           )
                                                         ],
