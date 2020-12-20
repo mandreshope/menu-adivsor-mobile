@@ -119,6 +119,20 @@ class _SummaryState extends State<Summary> {
                   ),
                 ),
                 Divider(),
+                SizedBox(height: 30,),
+                TextTranslator("Commentaire",
+                  style:TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    decoration: TextDecoration.underline
+
+                  ),
+                  
+                ),
+                SizedBox(height: 5,),
+                _renderComment(widget.commande.comment),
+                SizedBox(height: 50,)
               ],
             ),
           ),
@@ -446,5 +460,18 @@ class _SummaryState extends State<Summary> {
           ),
        );
  }
+
+Widget _renderComment(String comment) => Container(
+  padding: EdgeInsets.all(15),
+  child: TextTranslator(comment,
+    style:TextStyle(
+      fontSize: 18,
+      fontWeight: FontWeight.w300,
+      color: Colors.grey,
+      fontStyle: FontStyle.normal
+    ),
+    textAlign: TextAlign.justify,
+  ),
+);
 
 }

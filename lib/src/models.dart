@@ -361,6 +361,7 @@ class Command {
   final bool shipAsSoonAsPossible;
   final int code;
   dynamic restaurant;
+  String comment;
 
   Command({
     this.id,
@@ -376,7 +377,8 @@ class Command {
     this.shippingTime,
     this.shipAsSoonAsPossible,
     this.code,
-    this.restaurant
+    this.restaurant,
+    this.comment
   });
 
   factory Command.fromJson(Map<String, dynamic> json) => Command(
@@ -393,7 +395,9 @@ class Command {
         shippingTime: json['shippingTime'] != null ? DateTime.fromMillisecondsSinceEpoch(json['shippingTime']) : null,
         shipAsSoonAsPossible: json['shipAsSoonAsPossible'] ?? false,
         code: json['code'],
-        restaurant: json['restaurant'] is String ? json['restaurant'] : Restaurant.fromJson(json['restaurant'])
+        comment: json['comment'] ?? " ",
+        restaurant: json['restaurant'] is String ? json['restaurant'] : Restaurant.fromJson(json['restaurant'],
+        )
       );
 }
 
