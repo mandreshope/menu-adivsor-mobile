@@ -579,7 +579,8 @@ class Api {
         'shippingAddress': shippingAddress,
         'shipAsSoonAsPossible': shipAsSoonAsPossible,
         'customer': customer,
-        'menus':menu
+        'menus':menu,
+        'comment':comment
       }),
     )
         .then<Map>((response) {
