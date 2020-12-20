@@ -12,6 +12,7 @@ import 'package:menu_advisor/src/pages/user_details.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/CommandContext.dart';
+import 'package:menu_advisor/src/providers/MenuContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
@@ -421,13 +422,14 @@ class _OrderPageState extends State<OrderPage> {
                     'quantity': e.value, 
                     'item': e.key.id, 
                     'foods': 
-                [cartContext.foodMenuSelected]
+                cartContext.foodMenuSelecteds
               }).toList(),
             );
             Command cm = Command.fromJson(command);
 
             cartContext.clear();
             commandContext.clear();
+            Provider.of<MenuContext>(context,listen: false).clear();
             Fluttertoast.showToast(
               msg: AppLocalizations.of(context).translate('success'),
             );
@@ -497,23 +499,25 @@ class _OrderPageState extends State<OrderPage> {
           comment: cartContext.comment,
           relatedUser: authContext.currentUser.id,
           commandType: commandContext.commandType,
-          items: cartContext.items.entries.where((e) => !e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id, 'options': e.key.optionSelected,'comment':e.key.message}).toList(),
+          items: cartContext.items.entries.where((e) => !e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id, 'options': cartContext.options[e.key.id] != null ? cartContext.options[e.key.id].expand((element) => element).toList() : [],'comment':e.key.message}).toList(),
           restaurant: cartContext.currentOrigin,
           totalPrice: (cartContext.totalPrice * 100).round(),
         menu: cartContext.items.entries.where(
-                (e) => e.key.isMenu).map(
+                (e) => 
+                e.key.isMenu).map(
                   (e) => 
                   {
                     'quantity': e.value, 
                     'item': e.key.id, 
                     'foods': 
-                [cartContext.foodMenuSelected]
-              })
+                cartContext.foodMenuSelecteds
+              }).toList()
         );
         Command cm = Command.fromJson(command);
 
         cartContext.clear();
         commandContext.clear();
+        Provider.of<MenuContext>(context,listen: false).clear();
         Fluttertoast.showToast(
           msg: AppLocalizations.of(context).translate('success'),
         );
@@ -530,7 +534,7 @@ class _OrderPageState extends State<OrderPage> {
                 commande: cm,
               ),
           routeName: summaryRoute,
-          // method: RoutingMethod.atTop,
+          method: RoutingMethod.replaceLast,
         );
       } catch (error) {
         setState(() {

@@ -977,8 +977,12 @@ class MenuCard extends StatelessWidget {
                           builder: (context, menuContext,w) {
                             return InkWell(
                               onTap: (){
-                                menuContext.select(entry.key, food);
-                                _cartContext.foodMenuSelected = food;
+                                if (_cartContext.contains(menu)){
+                                _cartContext.setFoodMenuSelected(entry.key,food);
+                                menuContext.select(_cartContext,entry.key, food);
+                                }else{
+                                  Fluttertoast.showToast(msg: "Veuillez ajouter le menu dans le panier");
+                                }
                               },
                                 child: Card(
                                 elevation: 2,
@@ -995,7 +999,8 @@ class MenuCard extends StatelessWidget {
                                             groupValue: food.id, 
                                             onChanged: (value){
                                               print("food selected");
-                                              _cartContext.foodMenuSelected = food;
+                                              if (_cartContext.contains(menu))
+                                              _cartContext.foodMenuSelected[entry.key] = food;
                                             },
                                             activeColor: CRIMSON,
                                             hoverColor: CRIMSON,
@@ -1025,7 +1030,7 @@ class MenuCard extends StatelessWidget {
                                         ],
                                       ),
                                       if (menuContext.selectedMenu[entry.key]?.first?.id == food.id)...[
-                                        MenuItemFoodOption(food: food,menu: menu,withPrice: withPrice,)
+                                        MenuItemFoodOption(food: food,menu: menu,withPrice: withPrice,subMenu:entry.key)
                                       ]else
                                         Container()
                                     ],

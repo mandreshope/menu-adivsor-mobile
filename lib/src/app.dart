@@ -66,8 +66,8 @@ class _MyAppState extends State<MyApp> {
             return supportedLocales.first;
           },
           supportedLocales: [
-            const Locale('en', 'US'),
             const Locale('fr', 'FR'),
+            const Locale('en', 'US'),
             const Locale('th', 'TH'),
           ],
           home: Splash(),

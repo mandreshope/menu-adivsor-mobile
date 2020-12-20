@@ -52,7 +52,7 @@ class _FoodPageState extends State<FoodPage> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       api
         .getRestaurant(
-      id: widget.food.restaurant,
+      id: (widget.food.restaurant is String) ? widget.food.restaurant : widget.food.restaurant['_id'] ,
       lang: Provider.of<SettingContext>(
         context,
         listen: false,

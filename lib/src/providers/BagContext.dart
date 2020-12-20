@@ -11,12 +11,24 @@ class CartContext extends ChangeNotifier {
   String comment = "";
   bool withPrice = true;
 
-  Food _foodMenuSelected;
-  set foodMenuSelected(value) { 
-    _foodMenuSelected = value;
-   _foodMenuSelected.isMenu = true;  
-   }
-  get foodMenuSelected => _foodMenuSelected;
+  Map<String,Food> _foodMenuSelected = Map();
+
+  // Food _foodMenuSelected;
+  setFoodMenuSelected(String key, value) { 
+    _foodMenuSelected[key] = value;
+   _foodMenuSelected[key].isMenu = true;  
+  }
+
+  Map<String,Food> get foodMenuSelected => _foodMenuSelected;
+  List<Food> get foodMenuSelecteds {
+    List<Food> foods = List();
+    _foodMenuSelected.forEach((key, value) {
+      foods.add(value);
+    });
+
+    return foods;
+
+  }
 
   String get currentOrigin => _currentOrigin;
 
@@ -33,7 +45,7 @@ class CartContext extends ChangeNotifier {
   }
 
   bool hasSameOriginAsInBag(dynamic item) => 
-  currentOrigin == null || item.restaurant == currentOrigin;
+  currentOrigin == null || ((item.restaurant is String) ? item.restaurant : item.restaurant['_id']) == currentOrigin;
 
   bool hasSamePricingAsInBag(dynamic item) => 
   (pricelessItems && (item.price == null || item.price.amount == null)) || (!pricelessItems && item.price != null && item.price.amount != null);
@@ -48,7 +60,7 @@ class CartContext extends ChangeNotifier {
       );
       if (item.optionSelected != null)
         isAdd ? addOption(item, item.optionSelected) : removeOption(item);
-      currentOrigin = item.isFoodForMenu ? item.restaurant['_id'] : item.restaurant;
+      currentOrigin = (item.restaurant is String) ? item.restaurant : item.restaurant['_id'] ;
       notifyListeners();
       return true;
     }
@@ -240,17 +252,20 @@ class CartContext extends ChangeNotifier {
     _currentOrigin = null;
     _options.clear();
     comment = "";
-    _foodMenuSelected = null;
+    _foodMenuSelected.clear();
     notifyListeners();
   }
 
-  void addOption(dynamic item, List<Option> options) {
+  void addOption(dynamic item, List<Option> options,{String key}) {
     if (_options[item.id] == null) {
       _options[item.id] = List();
     }
-    if (item.isMenu)
+    if (item.isMenu){
+      if (_foodMenuSelected != null && key != null){
+      _foodMenuSelected[key].optionSelected = options.map((e) => Option.copy(e)).toList();
       _options[item.id] = [options.map((e) => Option.copy(e)).toList()];
-    else
+      }
+    }else
       _options[item.id].add(options.map((e) => Option.copy(e)).toList());
   }
 

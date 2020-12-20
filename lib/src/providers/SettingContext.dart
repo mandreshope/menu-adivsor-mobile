@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:firebase_mlkit_language/firebase_mlkit_language.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -78,7 +79,7 @@ class SettingContext extends ChangeNotifier {
 
   set languageCode(String value) {
     _languageCode = value;
-    
+    Intl.defaultLocale = value;
     SharedPreferences.getInstance().then((sharedPrefs) {
       sharedPrefs.setString('languageCode', value);
     });

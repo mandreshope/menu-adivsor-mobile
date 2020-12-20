@@ -10,11 +10,12 @@ import 'package:provider/provider.dart';
 import '../models.dart';
 
 class MenuItemFoodOption extends StatefulWidget {
-  MenuItemFoodOption({@required this.food,this.idOption,this.menu,this.withPrice = true});
+  MenuItemFoodOption({@required this.food,this.idOption,this.menu,this.withPrice = true,this.subMenu});
   Food food;
   String idOption;
   Menu menu;
   bool withPrice;
+  String subMenu;
 
   @override
   _MenuItemFoodOptionState createState() => _MenuItemFoodOptionState();
@@ -70,7 +71,7 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                                   option.itemOptionSelected = value.cast<ItemsOption>();
                                   widget.menu.optionSelected = options;
                                   widget.food.optionSelected = options;
-                                  _cartContext.addOption(widget.menu, options);
+                                  _cartContext.addOption(widget.menu, options,key: widget.subMenu);
                                   
                                   
                                   // _cartContext.addItem(widget.menu, 1,true);
@@ -83,7 +84,7 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                                 option.itemOptionSelected = value.cast<ItemsOption>();
                                 widget.menu.optionSelected = options;
                                 widget.food.optionSelected = options;
-                                _cartContext.addOption(widget.menu, options);
+                                _cartContext.addOption(widget.menu, options,key: widget.subMenu);
                                 
                                 
                                 // _cartContext.addItem(widget.menu, 1,true);

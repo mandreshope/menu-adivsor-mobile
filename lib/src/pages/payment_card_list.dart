@@ -10,6 +10,7 @@ import 'package:menu_advisor/src/pages/summary.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/CommandContext.dart';
+import 'package:menu_advisor/src/providers/MenuContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/services/stripe.dart';
@@ -102,7 +103,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                             comment: cartContext.comment,
                                             relatedUser: authContext.currentUser.id,
                                             commandType: commandContext.commandType,
-                                            items: cartContext.items.entries.where((e) => !e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id,'options': e.key.optionSelected,'comment':e.key.message}).toList(),
+                                            items: cartContext.items.entries.where((e) => !e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id, 'options': cartContext.options[e.key.id] != null ? cartContext.options[e.key.id].expand((element) => element).toList() : [],'comment':e.key.message}).toList(),
                                             restaurant: cartContext.currentOrigin,
                                             totalPrice: (cartContext.totalPrice * 100).round(),
                                             menu:cartContext.items.entries.where(
@@ -112,7 +113,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                                       'quantity': e.value, 
                                                       'item': e.key.id, 
                                                       'foods': 
-                                                  [cartContext.foodMenuSelected]
+                                                  cartContext.foodMenuSelecteds
                                                 }),shippingAddress: commandContext.deliveryAddress,
                                             shipAsSoonAsPossible: commandContext.deliveryDate == null && commandContext.deliveryTime == null,
                                             shippingTime: commandContext.deliveryDate
@@ -146,6 +147,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                               context,
                                               listen: false,
                                             ).clear();
+                                            Provider.of<MenuContext>(context,listen: false).clear();
 
                                             RouteUtil.goToAndRemoveUntil(
                                               context: context,

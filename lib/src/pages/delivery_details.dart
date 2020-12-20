@@ -23,6 +23,15 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
   DateTime deliveryDate;
   TimeOfDay deliveryTime;
   GlobalKey<FormState> formKey = GlobalKey();
+  DateTime now = DateTime.now();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    deliveryDate =  now.add(Duration(days: 0));
+    deliveryTime = TimeOfDay(hour: now.hour,minute: 00);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -125,6 +134,12 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                 color: Colors.transparent,
                                 child: InkWell(
                                   onTap: () async {
+                                    setState(() {
+                                      deliveryDate =  now.add(Duration(days: 0));
+                                      deliveryTime = TimeOfDay(hour: now.hour,minute: 00);
+                                    });
+                                    
+                                    return;
                                     DatePicker.showDatePicker(context,
                                         locale: DateTimePickerLocale.fr,
                                         dateFormat: "dd-MMMM-yyyy,HH:mm",
@@ -190,7 +205,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                     trailing: deliveryDate != null &&
                                             deliveryTime != null
                                         ? Icon(
-                                            Icons.edit_outlined,
+                                            Icons.check,
                                             color: Colors.green[300],
                                           )
                                         : null,
@@ -198,26 +213,35 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                 ),
                               ),
                               if (deliveryDate != null) ...[
-                                Divider(),
-                                Container(
-                                  color: CRIMSON,
-                                  child: ListTile(
-                                    contentPadding:
-                                        const EdgeInsets.symmetric(horizontal: 25.0),
-                                    title: TextTranslator(
-                                      '${deliveryDate?.dateToString(DATE_FORMATED_ddMMyyyy) ?? ""}    ${deliveryTime?.hour ?? ""} : ${deliveryTime?.minute ?? ""}',
-                                      textAlign: TextAlign.left,
-                                      style: TextStyle(
-                                        color: Colors.white,//CRIMSON.withOpacity(0.9),
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w400
-                                      ),
-                                    ),
-                                    leading: Container(width: 1,height: 1,),
-                                    trailing: null,
-                                  ),
-                                ),
-                              ],
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    _datePicker(),
+                                    _timePicker(),
+                                  ],
+                                ),  
+                  // Divider(),
+                  // Divider(),
+                  
+                  /*Container(
+                    color: CRIMSON,
+                    child: ListTile(
+                      contentPadding:
+                          const EdgeInsets.symmetric(horizontal: 25.0),
+                      title: TextTranslator(
+                        '${deliveryDate?.dateToString(DATE_FORMATED_ddMMyyyy) ?? ""}    ${deliveryTime?.hour ?? ""} : ${deliveryTime?.minute ?? ""}',
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          color: Colors.white,//CRIMSON.withOpacity(0.9),
+                          fontSize: 20,
+                          fontWeight: FontWeight.w400
+                        ),
+                      ),
+                      leading: Container(width: 1,height: 1,),
+                      trailing: null,
+                    ),
+                  ),*/
+                 ],
                             ],
                           ),
                         ),
@@ -271,4 +295,128 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
       ),
     );
   }
+
+  Widget _datePicker() {
+   
+    return Card(
+      elevation: 1,
+      color: CRIMSON,
+      margin: EdgeInsets.all(0),
+        child: Container(
+        height: 40,
+        width: MediaQuery.of(context).size.width/2-10,
+        padding: EdgeInsets.symmetric(horizontal: 15),
+        
+        child: Center(
+          child: DropdownButton<DateTime>(
+                                elevation: 16,
+                                isExpanded: true,
+                                isDense: true,
+                                value:  deliveryDate,
+                                onChanged: (DateTime date) {
+
+                                  setState(() {
+                                     deliveryDate = date;
+                                  });
+                                   
+
+                                },
+                                style: TextStyle(
+                                  color: Colors.grey[700],
+                                  decoration: TextDecoration.none
+                                ),
+                                underline: Container(),
+                                selectedItemBuilder: (_){
+                                  return List.generate(24, (index) => TextTranslator(
+                                        index == 0 ? "Aujourd'hui" :
+                                        index == 1 ? "Demain" :
+                                        "${now.add(Duration(days: index)).dateToString("EE dd MMM")}",
+                                         style: TextStyle(
+                                          fontSize: 18,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600
+                                        )
+                                        )
+                                        );
+                                },
+                                iconEnabledColor: Colors.white,
+                                iconDisabledColor: Colors.white,
+                                items: [
+                                  for (int i = 0; i < 4; i++)
+                                    DropdownMenuItem<DateTime>(
+                                      value: now.add(Duration(days: i)),
+                                      child: TextTranslator(
+                                        i == 0 ? "Aujourd'hui" :
+                                        i == 1 ? "Demain" :
+                                        "${now.add(Duration(days: i)).dateToString("EE dd MMMM")}",
+                                         style: TextStyle(
+                                          fontSize: 20
+                                        ),)
+                                  ),
+                                ],
+                              ),
+        ),
+      ),
+    );
+  }
+
+  Widget _timePicker() {
+    return Card(
+        elevation: 1,
+        margin: EdgeInsets.all(0),
+        child: Container(
+        height: 40,
+        width: MediaQuery.of(context).size.width/2-25,
+        color: CRIMSON,
+        padding: EdgeInsets.symmetric(horizontal: 15),
+        child: Center(
+          child: DropdownButton<TimeOfDay>(
+                                // offsetAmount: MediaQuery.of(context).size.height/2 - 50,
+                                elevation: 0,
+                                isDense: true,
+                                isExpanded: true,
+                                value:  deliveryTime,
+                                
+                                selectedItemBuilder: (_){
+                                  return List.generate(24, (index) => TextTranslator(
+                                        "${TimeOfDay(hour: index, minute: 00).format(context)}",
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600
+                                        ),
+                                        ));
+                                },
+                                onChanged: (TimeOfDay time) {
+
+                                  setState(() {
+                                     deliveryTime = time;
+                                  });
+                                   
+
+                                },
+                                iconEnabledColor: Colors.white,
+                                iconDisabledColor: Colors.white,
+                                style: TextStyle(
+                                  color: Colors.grey[700],
+                                ),
+                                underline: Container(),
+                                items: [
+                                  for (int i = 0; i < 24; i++)
+                                    DropdownMenuItem<TimeOfDay>(
+                                      value: TimeOfDay(hour: i, minute: 00),
+                                      child: TextTranslator(
+                                        "${TimeOfDay(hour: i, minute: 00).format(context)}",
+                                        style: TextStyle(
+                                          fontSize: 20
+                                        ),
+                                        )
+                                  ),
+                                ],
+                              ),
+        ),
+      ),
+    );
+  }
+
 }

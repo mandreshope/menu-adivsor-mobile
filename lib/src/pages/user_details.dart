@@ -11,6 +11,7 @@ import 'package:menu_advisor/src/pages/summary.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/CommandContext.dart';
+import 'package:menu_advisor/src/providers/MenuContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
@@ -21,7 +22,7 @@ import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_rounded_date_picker/rounded_picker.dart';
-
+import 'package:menu_advisor/src/components/customDropDown.dart' as drop;
 class UserDetailsPage extends StatefulWidget {
   @override
   _UserDetailsPageState createState() => _UserDetailsPageState();
@@ -44,6 +45,8 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
   TimeOfDay deliveryTime;
 
   bool sendingCommand = false;
+   DateTime now = DateTime.now();
+    
 
   @override
   void initState() {
@@ -58,7 +61,8 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
       _emailController.text = authContext.currentUser.email;
       _addressController.text = authContext.currentUser.address ?? "";
     }
-
+    deliveryDate =  now.add(Duration(days: 0));
+    deliveryTime = TimeOfDay(hour: now.hour,minute: 00);
   }
 
   @override
@@ -78,6 +82,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
             autovalidateMode: AutovalidateMode.onUserInteraction,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.max,
               children: [
                 TextTranslator(
                   AppLocalizations.of(context).translate("your_name"),
@@ -177,13 +182,13 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                     ),
                   ),
                 ],
-                _date(),
                 SizedBox(height: 25),
                 if (commandContext.commandType == 'takeaway')
                   Material(
                     color: Colors.white,
                     child: InkWell(
                       onTap: () async {
+                        return;
                         DatePicker.showDatePicker(context,
                         locale: DateTimePickerLocale.fr,
                         dateFormat: "dd-MMMM-yyyy,HH:mm",
@@ -246,18 +251,26 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                         leading: Icon(
                           Icons.calendar_today_outlined,
                         ),
-                        trailing: deliveryDate != null && deliveryTime != null
+                        trailing: /*deliveryDate != null && deliveryTime != null
                             ? Icon(
                                 Icons.edit_outlined,
                                 color: Colors.green[300],
                               )
-                            : null,
+                            :*/ null,
                       ),
                     ),
                   ),
-                if (deliveryDate != null) ...[
-                  Divider(),
-                  Container(
+                // if (deliveryDate != null) ...[
+                  // Divider(),
+                  SizedBox(height: 5,),
+                  Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _datePicker(),
+                    _timePicker(),
+                  ],
+                ),  
+                  /*Container(
                     color: CRIMSON,
                     child: ListTile(
                       contentPadding:
@@ -274,8 +287,8 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                       leading: Container(width: 1,height: 1,),
                       trailing: null,
                     ),
-                  ),
-                ],
+                  ),*/
+                // ],
                 Spacer(),
                 FlatButton(
                   color: CRIMSON,
@@ -348,7 +361,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
         var command = await Api.instance.sendCommand(
           comment: cartContext.comment,
           commandType: commandContext.commandType,
-          items: cartContext.items.entries.where((e) => !e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id, 'options': e.key.optionSelected,'comment':e.key.message}).toList(),
+          items: cartContext.items.entries.where((e) => !e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id, 'options': cartContext.options[e.key.id] != null ? cartContext.options[e.key.id].expand((element) => element).toList() : [],'comment':e.key.message}).toList(),
           restaurant: cartContext.currentOrigin,
           totalPrice: (cartContext.totalPrice * 100).round(),
           customer: {
@@ -372,7 +385,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                     'quantity': e.value, 
                     'item': e.key.id, 
                     'foods': 
-                [cartContext.foodMenuSelected]
+                cartContext.foodMenuSelecteds
               }).toList(),
             
         );
@@ -380,7 +393,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
 
         commandContext.clear();
         cartContext.clear();
-
+        Provider.of<MenuContext>(context,listen: false).clear();
         Fluttertoast.showToast(
           msg:
               'Votre a été bien reçu. Nous vous enverrons un email de confirmation.',
@@ -411,36 +424,123 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
     }
   }
 
-  Widget _date() {
-    DateTime now = DateTime.now();
-    deliveryDate = now.add(Duration(days: 0));
-    return DropdownButton<DateTime>(
-                          elevation: 16,
-                          isExpanded: true,
-                          value:  deliveryDate,
-                          onChanged: (DateTime date) {
+  Widget _datePicker() {
+   
+    return Card(
+      elevation: 1,
+      margin: EdgeInsets.all(0),
+        child: Container(
+        height: 40,
+        width: MediaQuery.of(context).size.width/2-25,
+        padding: EdgeInsets.symmetric(horizontal: 15),
+        
+        child: Center(
+          child: DropdownButton<DateTime>(
+                                elevation: 16,
+                                isExpanded: true,
+                                isDense: true,
+                                value:  deliveryDate,
+                                onChanged: (DateTime date) {
 
-                            setState(() {
-                               deliveryDate = date;
-                            });
-                             
+                                  setState(() {
+                                     deliveryDate = date;
+                                  });
+                                   
 
-                          },
-                          style: TextStyle(
-                            color: Colors.grey[700],
-                          ),
+                                },
+                                style: TextStyle(
+                                  color: Colors.grey[700],
+                                  decoration: TextDecoration.none
+                                ),
+                                underline: Container(),
+                                selectedItemBuilder: (_){
+                                  return List.generate(24, (index) => TextTranslator(
+                                        index == 0 ? "Aujourd'hui" :
+                                        index == 1 ? "Demain" :
+                                        "${now.add(Duration(days: index)).dateToString("EE dd MMM")}",
+                                         style: TextStyle(
+                                          fontSize: 18,
+                                          color: CRIMSON,
+                                          fontWeight: FontWeight.w600
+                                        )
+                                        )
+                                        );
+                                },
 
-                          items: [
-                            for (int i = 0; i < 4; i++)
-                              DropdownMenuItem<DateTime>(
-                                value: now.add(Duration(days: i)),
-                                child: TextTranslator(
-                                  i == 0 ? "Aujourd'hui" :
-                                  i == 1 ? "Demain" :
-                                  "${now.add(Duration(days: i)).dateToString("dd MMMM")}")
-                            ),
-                          ],
-                        );
+                                items: [
+                                  for (int i = 0; i < 4; i++)
+                                    DropdownMenuItem<DateTime>(
+                                      value: now.add(Duration(days: i)),
+                                      child: TextTranslator(
+                                        i == 0 ? "Aujourd'hui" :
+                                        i == 1 ? "Demain" :
+                                        "${now.add(Duration(days: i)).dateToString("EE dd MMMM")}",
+                                         style: TextStyle(
+                                          fontSize: 20
+                                        ),)
+                                  ),
+                                ],
+                              ),
+        ),
+      ),
+    );
+  }
+
+  Widget _timePicker() {
+    return Card(
+        elevation: 1,
+        margin: EdgeInsets.all(0),
+        child: Container(
+        height: 40,
+        width: MediaQuery.of(context).size.width/2-25,
+        // color: Colors.orange,
+        padding: EdgeInsets.symmetric(horizontal: 15),
+        child: Center(
+          child: DropdownButton<TimeOfDay>(
+                                // offsetAmount: MediaQuery.of(context).size.height/2 - 50,
+                                elevation: 0,
+                                isDense: true,
+                                isExpanded: true,
+                                value:  deliveryTime,
+                                
+                                selectedItemBuilder: (_){
+                                  return List.generate(24, (index) => TextTranslator(
+                                        "${TimeOfDay(hour: index, minute: 00).format(context)}",
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          color: CRIMSON,
+                                          fontWeight: FontWeight.w600
+                                        ),
+                                        ));
+                                },
+                                onChanged: (TimeOfDay time) {
+
+                                  setState(() {
+                                     deliveryTime = time;
+                                  });
+                                   
+
+                                },
+                                style: TextStyle(
+                                  color: Colors.grey[700],
+                                ),
+                                underline: Container(),
+                                items: [
+                                  for (int i = 0; i < 24; i++)
+                                    DropdownMenuItem<TimeOfDay>(
+                                      value: TimeOfDay(hour: i, minute: 00),
+                                      child: TextTranslator(
+                                        "${TimeOfDay(hour: i, minute: 00).format(context)}",
+                                        style: TextStyle(
+                                          fontSize: 20
+                                        ),
+                                        )
+                                  ),
+                                ],
+                              ),
+        ),
+      ),
+    );
   }
 
 }
