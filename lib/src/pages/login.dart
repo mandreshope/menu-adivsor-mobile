@@ -154,11 +154,11 @@ class _LoginPageState extends State<LoginPage> {
                         TextFormFieldTranslator(
                           focusNode: _emailFocus,
                           controller: _emailController,
-                          keyboardType: TextInputType.emailAddress,
+                          keyboardType: TextInputType.phone,
                           textInputAction: TextInputAction.next,
                           decoration: InputDecoration(
-                            labelText: AppLocalizations.of(context)
-                                .translate("mail_address_placeholder"),
+                            labelText: "Votre numéro de téléphone",
+                             prefixText: "+33",
                           ),
                           onFieldSubmitted: (_) {
                             _emailFocus.unfocus();
@@ -316,7 +316,7 @@ class _LoginPageState extends State<LoginPage> {
 
   _submitForm() async {
     
-    final String email = _emailController.value.text,
+    final String email = "+33"+_emailController.value.text,
         password = _passwordController.value.text;
 
     if (email.isEmpty || password.isEmpty) {
@@ -328,14 +328,14 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    if (!email.isValidateEmail()){
+    /*if (!email.isValidateEmail()){
       Fluttertoast.showToast(
         msg: AppLocalizations.of(context).translate("invalid_email"),
         backgroundColor: CRIMSON,
         textColor: Colors.white,
       );
       return;
-    }
+    }*/
 
     setState(() {
       loading = true;

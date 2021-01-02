@@ -97,6 +97,15 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
                 ),
               ),
             ),
+            Center(
+                  child: Container(
+                    width: MediaQuery.of(context).size.width / 1.2,
+                    height: MediaQuery.of(context).size.width / 1.2,
+                    decoration: BoxDecoration(
+                        color: Colors.blue.withAlpha(50),
+                        border: Border.all(color: Colors.blue, width: 1)),
+                  ),
+                ),
           ],
         ),
       ),

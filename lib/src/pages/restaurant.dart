@@ -614,21 +614,32 @@ range = Provider.of<SettingContext>(context,listen: false).range;
                                         SizedBox(
                                           width: 5,
                                         ),
-                                        Container(
-                                          width: (MediaQuery.of(context).size.width / 2)- 10,
-                                          child: TextTranslator(
-                                            restaurant.address,
-                                            
-                                            maxLines: 3,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 18,
+                                        InkWell(
+                                            onTap: () async {
+                                              Position currentPosition = await getCurrentPosition();
+                                              var coordinates = restaurant.location.coordinates;
+                                              MapUtils.openMap(currentPosition.latitude, currentPosition.longitude,
+                                              coordinates.last,coordinates.first);
+                                            },
+                                            child: Container(
+                                            width: (MediaQuery.of(context).size.width / 2)- 10,
+                                            child: TextTranslator(
+                                              restaurant.address,
+                                              
+                                              maxLines: 3,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                color: Colors.blue,
+                                                fontSize: 18,
+                                                decoration: TextDecoration.underline
+                                              ),
                                             ),
                                           ),
                                         )
                                       ],
                                     ),
+                                    SizedBox(height: 15,),
                                     InkWell(
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.start,
@@ -659,29 +670,33 @@ range = Provider.of<SettingContext>(context,listen: false).range;
                                     SizedBox(height: 15,),
                                     Row(
                                       children: [
-                                        Container(
-                                          margin: EdgeInsets.only(left: 25),
-                                          child: InkWell(
-                                            onTap: () async {
-                                              Position currentPosition = await getCurrentPosition();
-                                              var coordinates = restaurant.location.coordinates;
-                                              MapUtils.openMap(currentPosition.latitude, currentPosition.longitude,
-                                              coordinates.last,coordinates.first);
-                                            },
+                                        //bouton itineraire
+                                        Visibility(
+                                            visible: false,
                                             child: Container(
-                                                  padding: EdgeInsets.all(5),
-                                                  decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.horizontal(left: Radius.circular(15), right: Radius.circular(15)),
-                                                    color: Colors.orange,
-                                                  ),
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.all(2.0),
-                                                    child: TextTranslator(
-                                                      "Itinéraire",
-                                                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14),
+                                            margin: EdgeInsets.only(left: 25),
+                                            child: InkWell(
+                                              onTap: () async {
+                                                Position currentPosition = await getCurrentPosition();
+                                                var coordinates = restaurant.location.coordinates;
+                                                MapUtils.openMap(currentPosition.latitude, currentPosition.longitude,
+                                                coordinates.last,coordinates.first);
+                                              },
+                                              child: Container(
+                                                    padding: EdgeInsets.all(5),
+                                                    decoration: BoxDecoration(
+                                                      borderRadius: BorderRadius.horizontal(left: Radius.circular(15), right: Radius.circular(15)),
+                                                      color: Colors.orange,
                                                     ),
-                                                  ),
-                                                )
+                                                    child: Padding(
+                                                      padding: const EdgeInsets.all(2.0),
+                                                      child: TextTranslator(
+                                                        "Itinéraire",
+                                                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14),
+                                                      ),
+                                                    ),
+                                                  )
+                                            ),
                                           ),
                                         ),
                                         SizedBox(width: 20,),

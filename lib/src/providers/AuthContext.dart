@@ -58,6 +58,7 @@ class AuthContext extends ChangeNotifier {
         currentUser = user;
         if (isPasswordRemember) {
           await sharedPrefs.setString('email', email);
+          await sharedPrefs.setString('phoneNumber', email);
           await sharedPrefs.setString('password', password);
         }
         notifyListeners();

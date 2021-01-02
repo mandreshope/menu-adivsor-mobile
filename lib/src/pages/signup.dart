@@ -220,6 +220,7 @@ class _SignupPageState extends State<SignupPage> {
                               decoration: InputDecoration(
                                 contentPadding: EdgeInsets.symmetric(horizontal: 10),
                               ),
+                              labelText: "",
                             ),
                             SizedBox(height: 10),
                             TextTranslator(
@@ -242,6 +243,7 @@ class _SignupPageState extends State<SignupPage> {
                               decoration: InputDecoration(
                                 contentPadding: EdgeInsets.symmetric(horizontal: 10),
                               ),
+                              labelText: "",
                             ),
                             SizedBox(height: 30),
                             RaisedButton(
@@ -288,7 +290,7 @@ class _SignupPageState extends State<SignupPage> {
 
   _submitForm() async {
     String email = _emailController.value.text,
-        phoneNumber = "+33" + _phoneNumberController.value.text,
+        phoneNumber = "+261" + _phoneNumberController.value.text,
         password = _passwordController.value.text,
         confirmPassword = _confirmPasswordController.value.text,
         firstName = _firstNameController.value.text,

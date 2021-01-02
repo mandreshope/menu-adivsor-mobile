@@ -126,7 +126,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       height: 10,
                                     ),
                                     TextTranslator(
-                                      authContext.currentUser.email,
+                                      authContext.currentUser.phoneNumber,
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                       ),

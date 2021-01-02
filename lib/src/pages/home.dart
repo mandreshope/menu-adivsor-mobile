@@ -820,7 +820,7 @@ class _HomePageState extends State<HomePage> {
                     right: 20,
                     bottom: 10,
                   ),
-                  child: Row(
+                  child: Column(
                     children: [
                       for (var blog in blogs)
                         FadeAnimation(

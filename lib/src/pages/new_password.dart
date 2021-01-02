@@ -128,6 +128,7 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
                                 EdgeInsets.symmetric(horizontal: 10),
                           ),
                           validator: Validators.required(context),
+                          labelText: "",
                         ),
                         SizedBox(height: 10),
                         TextTranslator(
@@ -153,6 +154,7 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
                                 EdgeInsets.symmetric(horizontal: 10),
                           ),
                           validator: Validators.required(context),
+                          labelText: "",
                         ),
                         SizedBox(height: 30),
                         RaisedButton(
