@@ -68,27 +68,16 @@ class _MapPolylinePageState extends State<MapPolylinePage> {
 
   Future<void> addInitPosAndDestPosMarker() async {
     setState(() {
-      String initPosMarkerId = 'initPos';
       String destPosMarkerId = 'destPos';
-      _markers.addAll([
-        Marker(
-          // This marker id can be anything that uniquely identifies each marker.
-          markerId: MarkerId(initPosMarkerId),
-          position: LatLng(_initialPosition.latitude, _initialPosition.longitude,),
-          infoWindow: InfoWindow(
-          ),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
+      _markers.add(Marker(
+        // This marker id can be anything that uniquely identifies each marker.
+        markerId: MarkerId(destPosMarkerId),
+        position: LatLng(_destinationPosition.latitude, _destinationPosition.longitude,),
+        infoWindow: InfoWindow(
+          title: 'destination'
         ),
-        Marker(
-          // This marker id can be anything that uniquely identifies each marker.
-          markerId: MarkerId(destPosMarkerId),
-          position: LatLng(_destinationPosition.latitude, _destinationPosition.longitude,),
-          infoWindow: InfoWindow(
-            title: 'destination'
-          ),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
-        )
-      ]);
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
+      ));
     });
   }
 
