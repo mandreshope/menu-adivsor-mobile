@@ -18,7 +18,7 @@
         <!-- google maps config -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAUqHj0R8M8Oslaz_vtaANY-cCEPmpV7c8"/>
+            android:value="AIzaSyBu8U8tbY6BlxJezbjt8g3Lzi4k1I75iYw"/>
         <!-- google maps config -->
         <activity
             android:name=".MainActivity"

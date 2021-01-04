@@ -38,15 +38,11 @@ class _MapPageState extends State<MapPage> {
   //google maps 
   Completer<GoogleMapController> _mapController = Completer();
 
-  static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
-    zoom: 14.4746,
-  );
-
   static final _center = LatLng(37.43296265331129, -122.08832357078792);
 
   final Set<Marker> _markers = {};
   
+  // ignore: unused_field
   LatLng _lastMapPosition = _center;
 
   void _onCameraMove(CameraPosition position) {
@@ -66,17 +62,6 @@ class _MapPageState extends State<MapPage> {
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
       ));
     });
-    // var map = await _mapController.future;
-    // map.animateCamera(
-    //   CameraUpdate.newCameraPosition(
-    //     CameraPosition( target: LatLng(
-    //       _currentPosition.latitude,
-    //       _currentPosition.longitude,
-    //     ), zoom: 15)
-    //   ))
-    // .catchError((onError) {
-
-    // });
   }
 
   void addAllRestaurantsMarkers() {
@@ -120,7 +105,7 @@ class _MapPageState extends State<MapPage> {
   void _updateLocation(Timer timer) async {
     if (!mounted) return;
 
-    Position position = await getCurrentPosition();
+    Position position = await Geolocator.getCurrentPosition();
     print('Current position: ${position.latitude},${position.longitude}');
 
     if (!mounted) return;
@@ -134,8 +119,8 @@ class _MapPageState extends State<MapPage> {
   }
 
   void _checkForLocationPermission() async {
-    LocationPermission result = await checkPermission();
-    if (result == LocationPermission.denied) await requestPermission();
+    LocationPermission result = await Geolocator.checkPermission();
+    if (result == LocationPermission.denied) await Geolocator.requestPermission();
 
     _updateLocation(_updateLocationInterval);
   }
@@ -225,7 +210,10 @@ class _MapPageState extends State<MapPage> {
             _currentPosition != null
                 ? GoogleMap(
                     mapType: MapType.normal,
-                    initialCameraPosition: _kGooglePlex,
+                    initialCameraPosition: CameraPosition(
+                      target: LatLng(_currentPosition.latitude, _currentPosition.longitude),
+                      zoom: 14.4746,
+                    ),
                     zoomControlsEnabled: false,
                     onCameraMove: _onCameraMove,
                     markers:_markers,
