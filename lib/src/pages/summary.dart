@@ -100,7 +100,7 @@ class _SummaryState extends State<Summary> {
                     children: [
                       TextTranslator('Total', style: TextStyle(fontSize: 16)),
                       Spacer(),
-                      Text('${widget.commande.totalPrice / 100} €', style: TextStyle(fontSize: 16, color: CRIMSON, fontWeight: FontWeight.bold)),
+                      widget.commande.priceless ? Text(" ") : Text('${widget.commande.totalPrice / 100} €', style: TextStyle(fontSize: 16, color: CRIMSON, fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ),
@@ -318,7 +318,7 @@ class _SummaryState extends State<Summary> {
               SizedBox(width: 8),
               TextTranslator('${item.name}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               Spacer(),
-              item.price?.amount == null ? Text("_") : Text("${item.price.amount / 100} €", style: TextStyle(fontSize: 16)),
+              widget.commande.priceless ? Text(" ") : item.price?.amount == null ? Text("_") : Text("${item.price.amount / 100} €", style: TextStyle(fontSize: 16)),
             ],
           ),
         ),
@@ -355,7 +355,7 @@ class _SummaryState extends State<Summary> {
                         width: 25,
                       ),*/
                       // SizedBox(width: 8),
-                      if (itemsOption.price == 0)
+                      if (itemsOption.price == 0 || widget.commande.priceless)
                         Text("")
                       else
                         TextTranslator('${itemsOption.price/100} €', style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
@@ -423,7 +423,7 @@ class _SummaryState extends State<Summary> {
                     SizedBox(width: 8),
                     TextTranslator('${item.food.name}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                     Spacer(),
-                    item.food.price?.amount == null ? Text("_") : Text("${item.food.price.amount / 100} €", style: TextStyle(fontSize: 16)),
+                    widget.commande.priceless ? Text(" ") : item.food.price?.amount == null ? Text("_") : Text("${item.food.price.amount / 100} €", style: TextStyle(fontSize: 16)),
                   ],
                 ),
               ),
@@ -445,7 +445,7 @@ class _SummaryState extends State<Summary> {
                             SizedBox(width: 150),
                             TextTranslator('${itemsOption.name}', style: TextStyle(fontSize: 16)),
                             Spacer(),
-                            if (itemsOption.price == 0)
+                            if (itemsOption.price == 0 || widget.commande.priceless)
                               Text("")
                             else
                               TextTranslator('${itemsOption.price/100} €', style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
