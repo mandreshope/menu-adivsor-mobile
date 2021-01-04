@@ -657,7 +657,8 @@ class _HomePageState extends State<HomePage> {
                         },
                         filters: {
                           // "searchCategory": "with_price",
-                          "price.amount":null,
+                          // "price.amount":null,
+                          "searchCategory": "onsite"
                           // "city":this.city ?? ""
                         },
                       ),
@@ -766,7 +767,8 @@ class _HomePageState extends State<HomePage> {
                             },
                             filters: {
                               // "searchCategory": "with_price",
-                              "price.amount":null,
+                              // "price.amount":null,
+                              "searchCategory": "onsite"
                               // "city":this.city ?? ""
                             },
                           ),

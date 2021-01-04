@@ -957,7 +957,7 @@ class MessageDialog extends StatelessWidget {
               height: 50,
               width: double.infinity,
               child: Center(
-                child: Text(
+                child: TextTranslator(
                   "Message",
                   textAlign: TextAlign.center,
                   style:TextStyle(color: Colors.white,fontWeight: FontWeight.bold,
@@ -991,6 +991,95 @@ class MessageDialog extends StatelessWidget {
               child: Center(
                   child: TextTranslator(
                     "Envoyer",
+                    textAlign: TextAlign.center,
+                    style:TextStyle(color: Colors.white,fontWeight: FontWeight.bold,
+                    fontSize: 20)),
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SheduleDialog extends StatelessWidget {
+   SheduleDialog({Key key,this.openingTimes}) : super(key: key);
+   List<OpeningTimes> openingTimes;
+
+  
+
+  @override
+  Widget build(BuildContext context) {
+    
+    return Dialog(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(10))
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+             decoration: BoxDecoration(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+                color: CRIMSON,
+            ),
+              height: 50,
+              width: double.infinity,
+              child: Center(
+                child: TextTranslator(
+                  "Horaires",
+                  textAlign: TextAlign.center,
+                  style:TextStyle(color: Colors.white,fontWeight: FontWeight.bold,
+                  fontSize: 20)),
+              ),
+            ),
+            Container(
+              // height: 150,
+              padding: EdgeInsets.all(25),
+              child: ListView.builder(
+                                        itemCount: openingTimes.length,
+                                        shrinkWrap: true,
+                                        itemBuilder: (_,position){
+                                        OpeningTimes op = openingTimes[position];
+                                        return Column(
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                TextTranslator("${op.day}",
+                                                style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.normal)),
+                                                TextTranslator(
+                                                  "${op.openings.first.begin.hour.toString()?.padLeft(2,'0')} : ${op.openings.first.begin.minute.toString()?.padLeft(2,'0')}  -  ${op.openings.last.end.hour.toString()?.padLeft(2,'0')} : ${op.openings.last.end.minute.toString()?.padLeft(2,'0')}",
+                                                  style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.normal),
+                                                  
+                                                ),
+                                              ],
+                                            ),
+                                            Divider()
+                                          ],
+                                        );
+                                      }),
+            ),
+            InkWell(
+              onTap: (){
+                Navigator.of(context).pop();
+              },
+                child: Container(
+                height: 50,
+               decoration: BoxDecoration(
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(10)),
+                  color: TEAL,
+              ),
+              child: Center(
+                  child: TextTranslator(
+                    "Férmer",
                     textAlign: TextAlign.center,
                     style:TextStyle(color: Colors.white,fontWeight: FontWeight.bold,
                     fontSize: 20)),

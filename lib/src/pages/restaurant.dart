@@ -722,23 +722,37 @@ range = Provider.of<SettingContext>(context,listen: false).range;
                             ),
                           ),
                           Divider(),
-                          Container(
-                            margin: EdgeInsets.symmetric(horizontal: 20),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.access_time,
-                                  color: CRIMSON,
-                                ),
-                                SizedBox(
-                                  width: 25,
-                                ),
-                                TextTranslator(
-                                  "De 09:00 à 20:00",
-                                  style: TextStyle(fontSize: 18, color: CRIMSON, fontWeight: FontWeight.normal),
-                                  
-                                ),
-                              ],
+                          InkWell(
+                            onTap: (){
+                              showDialog(context: context,
+                                builder: (_){
+                                  return SheduleDialog(openingTimes: restaurant.openingTimes,);
+                                }
+                              );
+                            },
+                              child: Container(
+                              margin: EdgeInsets.symmetric(horizontal: 20),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.access_time,
+                                    color: CRIMSON,
+                                  ),
+                                  SizedBox(
+                                    width: 25,
+                                  ),
+                                  TextTranslator(
+                                    "Horaires",
+                                    style: TextStyle(fontSize: 18, color: CRIMSON, fontWeight: FontWeight.w600),
+                                    
+                                  ),
+                                  Spacer(),
+                                  Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: CRIMSON,
+                                  )
+                                ],
+                              ),
                             ),
                           ),
                           SizedBox(

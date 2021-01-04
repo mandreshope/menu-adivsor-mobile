@@ -246,6 +246,8 @@ class Restaurant {
   final String phoneNumber;
   final bool status;
   final String admin;
+  final bool delivery;
+  final List<OpeningTimes> openingTimes;
 
   int priceDelevery;
 
@@ -263,7 +265,9 @@ class Restaurant {
     this.foodTypes = const [],
     this.status,
     this.admin,
-    this.priceDelevery
+    this.priceDelevery,
+    this.delivery,
+    this.openingTimes
   });
 
   factory Restaurant.fromJson(Map<String, dynamic> json) => Restaurant(
@@ -282,7 +286,9 @@ class Restaurant {
         phoneNumber: json['phoneNumber'] ?? [],
         status: json['status'],
         admin: json['admin'],
-        priceDelevery:json['deliveryPrice']['amount']
+        priceDelevery:json['deliveryPrice']['amount'],
+        delivery:json['delivery'] ?? true,
+        openingTimes: (json['openingTimes'] != null) ? (json['openingTimes'] as List).map<OpeningTimes>((e) => OpeningTimes.fromJson(e)).toList() : List() 
       );
 }
 
@@ -362,6 +368,7 @@ class Command {
   final int code;
   dynamic restaurant;
   String comment;
+  final bool priceless;
 
   Command({
     this.id,
@@ -378,7 +385,8 @@ class Command {
     this.shipAsSoonAsPossible,
     this.code,
     this.restaurant,
-    this.comment
+    this.comment,
+    this.priceless
   });
 
   factory Command.fromJson(Map<String, dynamic> json) => Command(
@@ -396,8 +404,9 @@ class Command {
         shipAsSoonAsPossible: json['shipAsSoonAsPossible'] ?? false,
         code: json['code'],
         comment: json['comment'] ?? " ",
-        restaurant: json['restaurant'] is String ? json['restaurant'] : Restaurant.fromJson(json['restaurant'],
-        )
+        restaurant: json['restaurant'] is String ? json['restaurant'] : Restaurant.fromJson(json['restaurant']
+        ),
+        priceless: json['priceless'] ?? false
       );
 }
 
@@ -981,3 +990,79 @@ class Blog {
 
   
 }
+
+// schedule restaurant
+class OpeningTimes {
+  String sId;
+  String day;
+  List<Openings> openings;
+
+  OpeningTimes({this.sId, this.day, this.openings});
+
+  OpeningTimes.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    day = json['day'];
+    if (json['openings'] != null) {
+      openings = new List<Openings>();
+      json['openings'].forEach((v) {
+        openings.add(new Openings.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['_id'] = this.sId;
+    data['day'] = this.day;
+    if (this.openings != null) {
+      data['openings'] = this.openings.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class Openings {
+  Begin begin;
+  Begin end;
+  String sId;
+
+  Openings({this.begin, this.end, this.sId});
+
+  Openings.fromJson(Map<String, dynamic> json) {
+    begin = json['begin'] != null ? new Begin.fromJson(json['begin']) : null;
+    end = json['end'] != null ? new Begin.fromJson(json['end']) : null;
+    sId = json['_id'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.begin != null) {
+      data['begin'] = this.begin.toJson();
+    }
+    if (this.end != null) {
+      data['end'] = this.end.toJson();
+    }
+    data['_id'] = this.sId;
+    return data;
+  }
+}
+
+class Begin {
+  int hour;
+  int minute;
+
+  Begin({this.hour, this.minute});
+
+  Begin.fromJson(Map<String, dynamic> json) {
+    hour = json['hour'];
+    minute = json['minute'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['hour'] = this.hour;
+    data['minute'] = this.minute;
+    return data;
+  }
+}
+// end schedule 

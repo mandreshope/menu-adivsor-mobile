@@ -221,6 +221,8 @@ class Api {
       }
     }
 
+    print(query);
+
     return http.get(
       '$_apiURL/foods$query',
       headers: {
@@ -545,7 +547,8 @@ class Api {
     bool shipAsSoonAsPossible,
     Map customer,
     var menu,
-    String comment
+    String comment,
+    bool priceless
   }) async {
     await _refreshTokens();
     var post = jsonEncode({
@@ -559,7 +562,8 @@ class Api {
         'shipAsSoonAsPossible': shipAsSoonAsPossible,
         'customer': customer,
         'menus':menu,
-        'comment':comment
+        'comment':comment,
+        'priceless':priceless
       });
     print(post);
     return http
@@ -569,19 +573,7 @@ class Api {
         'authorization': 'Bearer $_accessToken',
         'Content-type': 'application/json',
       },
-      body: jsonEncode({
-        'relatedUser': relatedUser,
-        'commandType': commandType,
-        'totalPrice': totalPrice.toString(),
-        'restaurant': restaurant,
-        'items': items,
-        'shippingTime': shippingTime,
-        'shippingAddress': shippingAddress,
-        'shipAsSoonAsPossible': shipAsSoonAsPossible,
-        'customer': customer,
-        'menus':menu,
-        'comment':comment
-      }),
+      body: post,
     )
         .then<Map>((response) {
       if (response.statusCode != 200)
