@@ -1,17 +1,18 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/list_lang.dart';
+import 'package:menu_advisor/src/pages/map_polyline.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
@@ -28,8 +29,6 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:menu_advisor/src/utils/extensions.dart';
-
-import 'order.dart';
 
 class RestaurantPage extends StatefulWidget {
   final String restaurant;
@@ -618,8 +617,16 @@ range = Provider.of<SettingContext>(context,listen: false).range;
                                             onTap: () async {
                                               Position currentPosition = await getCurrentPosition();
                                               var coordinates = restaurant.location.coordinates;
-                                              MapUtils.openMap(currentPosition.latitude, currentPosition.longitude,
-                                              coordinates.last,coordinates.first);
+                                              // MapUtils.openMap(currentPosition.latitude, currentPosition.longitude,
+                                              // coordinates.last,coordinates.first);
+                                              RouteUtil.goTo(
+                                                context: context,
+                                                child: MapPolylinePage(
+                                                  initialPosition: LatLng(currentPosition.latitude, currentPosition.longitude),
+                                                  destinationPosition: LatLng(coordinates.last, coordinates.first),
+                                                ),
+                                                routeName: restaurantRoute,
+                                              );
                                             },
                                             child: Container(
                                             width: (MediaQuery.of(context).size.width / 2)- 10,

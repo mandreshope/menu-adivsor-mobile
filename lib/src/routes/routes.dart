@@ -9,6 +9,7 @@ const String qrRoute = 'qrcode-scan';
 const String signupRoute = 'signup';
 const String discoverRoute = 'discover';
 const String mapRoute = 'map';
+const String mapPolylineRoute = 'mapPolyline';
 const String orderRoute = 'order';
 const String confirmEmailRoute = 'confirmEmail';
 const String confirmPhoneNumberRoute = 'confirmPhoneNumber';
