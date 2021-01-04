@@ -139,8 +139,8 @@ class _MapPolylinePageState extends State<MapPolylinePage> {
       jointType: JointType.round,
       geodesic: true,
       polylineId: id,
-      width: 3,
-      color: const Color(0xFF457cdb),
+      width: 5,
+      color: const Color(0xffda143c),
       points: polylineCoordinates
     );
     setState(() {
