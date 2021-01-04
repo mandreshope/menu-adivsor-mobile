@@ -15,6 +15,11 @@
         android:label="Menu advisor"
         android:icon="@mipmap/ic_launcher"
         android:requestLegacyExternalStorage="true">
+        <!-- google maps config -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAUqHj0R8M8Oslaz_vtaANY-cCEPmpV7c8"/>
+        <!-- google maps config -->
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
