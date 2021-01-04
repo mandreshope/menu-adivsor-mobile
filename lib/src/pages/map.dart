@@ -55,9 +55,10 @@ class _MapPageState extends State<MapPage> {
 
   Future<void> addMyPosMarker() async {
     setState(() {
+      String myPosMarkerId = 'myPos';
       _markers.add(Marker(
         // This marker id can be anything that uniquely identifies each marker.
-        markerId: MarkerId(_lastMapPosition.toString()),
+        markerId: MarkerId(myPosMarkerId),
         position: LatLng(_currentPosition.latitude, _currentPosition.longitude,),
         infoWindow: InfoWindow(
           title: AppLocalizations.of(context).translate('you'),
