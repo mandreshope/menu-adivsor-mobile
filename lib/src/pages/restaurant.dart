@@ -936,7 +936,7 @@ range = Provider.of<SettingContext>(context,listen: false).range;
                     },
                     child: Consumer<SettingContext>(
                       builder: (context, snapshot,w) {
-                        return Flag(snapshot.languageCodeFlag,height: 30,width: 30,);
+                        return Flag(snapshot?.languageCodeFlag ?? 'fr',height: 30,width: 30,);
                       }
                     )),
 

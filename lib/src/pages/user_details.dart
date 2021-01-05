@@ -46,6 +46,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
 
   bool sendingCommand = false;
    DateTime now = DateTime.now();
+   Restaurant _restaurant;
     
 
   @override
@@ -61,13 +62,15 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
       _emailController.text = authContext.currentUser.email;
       _addressController.text = authContext.currentUser.address ?? "";
     }
+
     deliveryDate =  now.add(Duration(days: 0));
     deliveryTime = TimeOfDay(hour: now.hour,minute: 00);
+
   }
 
   @override
   Widget build(BuildContext context) {
-    
+    _restaurant = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       appBar: AppBar(
         title: TextTranslator(

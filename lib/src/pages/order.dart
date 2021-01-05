@@ -461,12 +461,14 @@ class _OrderPageState extends State<OrderPage> {
             context: context,
             child: UserDetailsPage(),
             routeName: userDetailsRoute,
+            arguments: _restaurant
           );
         } else {
           RouteUtil.goTo(
             context: context,
             child: UserDetailsPage(),
             routeName: userDetailsRoute,
+              arguments: _restaurant
           );
         }
       } else {
@@ -482,12 +484,14 @@ class _OrderPageState extends State<OrderPage> {
         context: context,
         child: DeliveryDetailsPage(),
         routeName: loginRoute,
+          arguments: _restaurant
       );
     } else if (commandContext.commandType == 'takeaway') {
       RouteUtil.goTo(
         context: context,
         child: UserDetailsPage(),
         routeName: userDetailsRoute,
+          arguments: _restaurant
       );
     } else if (commandContext.commandType == 'on_site' /* || commandContext.commandType == 'takeaway'*/) {
       try {
