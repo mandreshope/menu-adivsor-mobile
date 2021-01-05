@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/services/api.dart';
@@ -179,48 +178,48 @@ class AuthContext extends ChangeNotifier {
     return commands;
   }
 
-  verifyPhoneNumber(String phoneNumber,{Function verificationCompleted,Function verificationFailed,Function codeSent}) async {
+//   verifyPhoneNumber(String phoneNumber,{Function verificationCompleted,Function verificationFailed,Function codeSent}) async {
     
-    await auth.FirebaseAuth.instance.verifyPhoneNumber(
-      phoneNumber: phoneNumber,
-      verificationCompleted: (auth.PhoneAuthCredential credential) async {
-        /*await auth.FirebaseAuth.instance
-              .signInWithCredential(credential)
-              .then((value) async {
-            if (value.user != null) {
-              verificationCompleted();
-            }
-          });*/
-      },
-      verificationFailed: (auth.FirebaseAuthException e) {
-        print(e.code);
-        verificationFailed(e.message);
-      },
-      codeSent: (String verificationId, int resendToken) async {
-        print("verificationId $verificationId");
-        codeSent(verificationId);
-      },
-      codeAutoRetrievalTimeout: (String verificationId) {
+//     await auth.FirebaseAuth.instance.verifyPhoneNumber(
+//       phoneNumber: phoneNumber,
+//       verificationCompleted: (auth.PhoneAuthCredential credential) async {
+//         /*await auth.FirebaseAuth.instance
+//               .signInWithCredential(credential)
+//               .then((value) async {
+//             if (value.user != null) {
+//               verificationCompleted();
+//             }
+//           });*/
+//       },
+//       verificationFailed: (auth.FirebaseAuthException e) {
+//         print(e.code);
+//         verificationFailed(e.message);
+//       },
+//       codeSent: (String verificationId, int resendToken) async {
+//         print("verificationId $verificationId");
+//         codeSent(verificationId);
+//       },
+//       codeAutoRetrievalTimeout: (String verificationId) {
 
-      },timeout: Duration(seconds: 60)
-    ).catchError((onError){
-      print(onError);
-    });
-  }
+//       },timeout: Duration(seconds: 60)
+//     ).catchError((onError){
+//       print(onError);
+//     });
+//   }
 
- Future verifyFirebaseSms(String verificationId, String code,{@required Function onSucced, @required Function onFailed}) async{
+//  Future verifyFirebaseSms(String verificationId, String code,{@required Function onSucced, @required Function onFailed}) async{
     
-  await auth.FirebaseAuth.instance
-              .signInWithCredential(auth.PhoneAuthProvider.credential(verificationId: verificationId, smsCode: code,))
-              .then((value) async {
-            if (value.user != null) {
-              print("validate");
-              onSucced();
-            }
-          }).catchError((onError){
-            onFailed(onError);
-          });
-  }
+//   await auth.FirebaseAuth.instance
+//               .signInWithCredential(auth.PhoneAuthProvider.credential(verificationId: verificationId, smsCode: code,))
+//               .then((value) async {
+//             if (value.user != null) {
+//               print("validate");
+//               onSucced();
+//             }
+//           }).catchError((onError){
+//             onFailed(onError);
+//           });
+//   }
 
 
 }

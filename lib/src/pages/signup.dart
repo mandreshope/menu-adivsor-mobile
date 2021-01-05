@@ -4,12 +4,10 @@ import 'package:menu_advisor/src/components/inputs.dart';
 import 'package:menu_advisor/src/components/logo.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/pages/confirm_sms.dart';
-import 'package:menu_advisor/src/pages/confirm_email.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
-import 'package:menu_advisor/src/utils/textFormFieldTranslator.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 import 'package:menu_advisor/src/utils/extensions.dart';
@@ -325,25 +323,25 @@ class _SignupPageState extends State<SignupPage> {
           lastName: lastName,
           firstName: firstName
         );
-        authContext.verifyPhoneNumber(phoneNumber,
-          codeSent: (value){
-            setState(() {
-                      loading = false;
-                    });
-                    RouteUtil.goTo(
-                      context: context,
-                      child: ConfirmSms(
-                        verificationId: value,
-                        isFromSignup: true,
-                        phoneNumber: phoneNumber,
-                      ),
-                      routeName: confirmEmailRoute,
-                    );
-              },
-              verificationFailed: (value){
-                Fluttertoast.showToast(msg: value);
-              }
-        );
+        // authContext.verifyPhoneNumber(phoneNumber,
+        //   codeSent: (value){
+        //     setState(() {
+        //               loading = false;
+        //             });
+        //             RouteUtil.goTo(
+        //               context: context,
+        //               child: ConfirmSms(
+        //                 verificationId: value,
+        //                 isFromSignup: true,
+        //                 phoneNumber: phoneNumber,
+        //               ),
+        //               routeName: confirmEmailRoute,
+        //             );
+        //       },
+        //       verificationFailed: (value){
+        //         Fluttertoast.showToast(msg: value);
+        //       }
+        // );
         
       } catch (error) {
         setState(() {
