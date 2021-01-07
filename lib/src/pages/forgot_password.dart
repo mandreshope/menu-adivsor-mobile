@@ -105,17 +105,16 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         TextFormFieldTranslator(
                           focusNode: _emailFocus,
                           controller: _emailController,
-                          keyboardType: TextInputType.emailAddress,
+                          keyboardType: TextInputType.phone,
                           textInputAction: TextInputAction.next,
                           decoration: InputDecoration(
-                            labelText: AppLocalizations.of(context)
-                                .translate("mail_address_placeholder"),
+                            labelText: "Votre numéro de téléphone",
+                             prefixText: "+33",
                           ),
                           onFieldSubmitted: (_) {
                             _emailFocus.unfocus();
                             _submitForm();
                           },
-                          validator: Validators.required(context),
                         ),
                         SizedBox(height: 15),
                         RaisedButton(
@@ -161,9 +160,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   _submitForm() async {
     FormState formState = _formKey.currentState;
-
     if (formState.validate()) {
-      final String email = _emailController.value.text;
+      final String email = "+261"+_emailController.value.text;
 
       setState(() {
         loading = true;
@@ -190,10 +188,15 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       } catch (error) {
         print(error);
         Fluttertoast.showToast(
-          msg: AppLocalizations.of(context).translate("invalid_email"),
+          msg: error,
           backgroundColor: CRIMSON,
           textColor: Colors.white,
         );
+        // Fluttertoast.showToast(
+        //   msg: AppLocalizations.of(context).translate("invalid_email"),
+        //   backgroundColor: CRIMSON,
+        //   textColor: Colors.white,
+        // );
       } finally {
         setState(() {
           loading = false;

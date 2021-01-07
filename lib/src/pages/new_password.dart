@@ -81,7 +81,7 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
                       children: [
                         TextTranslator(
                           AppLocalizations.of(context)
-                              .translate("enter_code")
+                              .translate("enter_code_sms")
                               .replaceFirst('*', widget.email),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
@@ -206,14 +206,14 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
       String newPassword = _passwordController.value.text;
       String confirmNewPassword = _confirmPasswordController.value.text;
 
-      if (_codeController.value.text.length != 4) {
-        setState(() {
-          loading = false;
-        });
-        return Fluttertoast.showToast(
-          msg: AppLocalizations.of(context).translate('invalid_code'),
-        );
-      }
+      // if (_codeController.value.text.length != 4) {
+      //   setState(() {
+      //     loading = false;
+      //   });
+      //   return Fluttertoast.showToast(
+      //     msg: AppLocalizations.of(context).translate('invalid_code'),
+      //   );
+      // }
 
       if (newPassword != confirmNewPassword) {
         setState(() {

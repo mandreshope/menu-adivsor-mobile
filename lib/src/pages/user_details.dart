@@ -18,12 +18,9 @@ import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/extensions.dart';
-import 'package:menu_advisor/src/utils/textFormFieldTranslator.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_rounded_date_picker/rounded_picker.dart';
-import 'package:menu_advisor/src/components/customDropDown.dart' as drop;
+// import 'package:menu_advisor/src/components/customDropDown.dart' as drop;
 class UserDetailsPage extends StatefulWidget {
   @override
   _UserDetailsPageState createState() => _UserDetailsPageState();

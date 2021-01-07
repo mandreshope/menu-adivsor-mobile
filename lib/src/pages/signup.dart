@@ -316,12 +316,22 @@ class _SignupPageState extends State<SignupPage> {
       });
       AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
       try {
-        var registrationToken = await authContext.signup(
+        await authContext.signup(
           email: email,
           phoneNumber: phoneNumber,
           password: password,
           lastName: lastName,
           firstName: firstName
+        );
+        RouteUtil.goTo(
+          context: context,
+          child: ConfirmSms(
+            // verificationId: value,
+            isFromSignup: true,
+            phoneNumber: phoneNumber,
+            password: password,
+          ),
+          routeName: confirmEmailRoute,
         );
         // authContext.verifyPhoneNumber(phoneNumber,
         //   codeSent: (value){

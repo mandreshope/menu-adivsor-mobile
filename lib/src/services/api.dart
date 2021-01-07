@@ -168,9 +168,33 @@ class Api {
       if (response.statusCode == 200) {
         Map<String, dynamic> data = jsonDecode(response.body);
         String registrationToken = data['token'];
+        accessToken = registrationToken;
         return registrationToken;
       }
 
+      return Future.error(
+        jsonDecode(response.body),
+      );
+    });
+  }
+
+  Future confirmPhoneNumber({
+    String code,
+  }) {  
+    return http.post(
+      '$_apiURL/users/confirm-account',
+      body: jsonEncode({
+        'token': _accessToken,
+        'code': code,
+      }),
+      headers:{
+        'content-type': 'application/json'
+      }
+    ).then((response) {
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = jsonDecode(response.body);
+        return data;
+      }
       return Future.error(
         jsonDecode(response.body),
       );
@@ -387,8 +411,8 @@ class Api {
         );
       });
 
-  Future<String> resetPassword(String email) => http.post('$_apiURL/users/reset-password', body: {
-        'email': email,
+  Future<String> resetPassword(String phoneNumber) => http.post('$_apiURL/users/reset-password', body: {
+        'phoneNumber': phoneNumber,
       }).then<String>((response) {
         if (response.statusCode == 200) {
           Map<String, dynamic> data = jsonDecode(response.body);

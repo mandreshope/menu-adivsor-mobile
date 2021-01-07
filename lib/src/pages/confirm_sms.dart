@@ -3,21 +3,24 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/summary.dart';
+import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:pinput/pin_put/pin_put.dart';
+import 'package:provider/provider.dart';
 
 import 'home.dart';
 
 // ignore: must_be_immutable
 class ConfirmSms extends StatefulWidget {
-  ConfirmSms({Key key, this.command, this.verificationId, this.isFromSignup = false, this.phoneNumber}) : super(key: key);
+  ConfirmSms({Key key, this.command, this.verificationId, this.isFromSignup = false, this.phoneNumber, this.password}) : super(key: key);
   Command command;
   String verificationId;
   bool isFromSignup;
   String phoneNumber;
+  String password;
   @override
   _ConfirmSmsState createState() => _ConfirmSmsState();
 }
@@ -139,8 +142,12 @@ class _ConfirmSmsState extends State<ConfirmSms> {
   }
 
   _submit(String pin) async {
+    print(widget.phoneNumber);
     if (widget.isFromSignup) {
+      AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
       try {
+        await authContext.confirmPhoneNumber(code: pin);
+        await authContext.login(widget.phoneNumber, widget.password);
         // await Provider.of<AuthContext>(context, listen: false).verifyFirebaseSms(widget.verificationId, pin,
         //  onSucced: () {
         //   print("success");
@@ -164,15 +171,17 @@ class _ConfirmSmsState extends State<ConfirmSms> {
         //   }
         // });
       } catch (e) {
-        print(e);
-        switch (e.code) {
-            case "session-expired":
+        print(e['message']);
+        switch (e['message']) {
+            case "session expired":
               Fluttertoast.showToast(msg: "Le code SMS a expiré. Veuillez renvoyer le code de vérification pour réessayer.");
               break;
-            case "invalid-verification-code":
+            case "Invalid confirmation code":
               Fluttertoast.showToast(msg: "Invalide sms code");
               break;
             default:
+              Fluttertoast.showToast(msg: "Une erreur est se reproduise");
+              break;
           }
       }
     } else {

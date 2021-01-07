@@ -178,6 +178,10 @@ class AuthContext extends ChangeNotifier {
     return commands;
   }
 
+  confirmPhoneNumber({String code}) {
+    return _api.confirmPhoneNumber(code: code);
+  }
+
 //   verifyPhoneNumber(String phoneNumber,{Function verificationCompleted,Function verificationFailed,Function codeSent}) async {
     
 //     await auth.FirebaseAuth.instance.verifyPhoneNumber(
