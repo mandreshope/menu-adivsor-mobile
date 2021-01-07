@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cupertino_datetime_picker/flutter_cupertino_datetime_picker.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/constants/date_format.dart';
 import 'package:menu_advisor/src/constants/validators.dart';
@@ -400,7 +401,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
         Provider.of<MenuContext>(context,listen: false).clear();
         Fluttertoast.showToast(
           msg:
-              'Votre a été bien reçu. Nous vous enverrons un email de confirmation.',
+              'Votre commande a été bien reçu. Nous vous enverrons un email de confirmation.',
         );
         RouteUtil.goTo(
           context: context,
@@ -445,9 +446,17 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                                 isDense: true,
                                 value:  deliveryDate,
                                 onChanged: (DateTime date) {
-
+                                  String dayName =  DateFormat.EEEE('fr_FR').format(date);
                                   setState(() {
-                                     deliveryDate = date;
+                                    print(dayName);
+                                    if(_restaurant.openingTimes.where((v) =>v.day.toLowerCase() == dayName).isNotEmpty) {
+                                      print('ouvert');
+                                      deliveryDate = date;
+                                    }else {
+                                      print('fermé');
+                                      Fluttertoast.showToast(msg: 'Le restaurant est fermé');
+                                    }
+                                     
                                   });
                                    
 
@@ -506,19 +515,39 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                                 isDense: true,
                                 isExpanded: true,
                                 value:  deliveryTime,
-                                
                                 selectedItemBuilder: (_){
-                                  return List.generate(24, (index) => TextTranslator(
-                                        "${TimeOfDay(hour: index, minute: 00).format(context)}",
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          color: CRIMSON,
-                                          fontWeight: FontWeight.w600
-                                        ),
-                                        ));
+                                  return [
+                                    for (int i = 0; i < 24; i++)...[
+                                      if((DateTime.now().hour == TimeOfDay(hour: i, minute: 00).hour) 
+                                      && DateTime.now().hour >= TimeOfDay(hour: i, minute: 00).hour)
+                                      DropdownMenuItem<TimeOfDay>(
+                                        value: TimeOfDay(hour: i, minute: 00),
+                                        child: TextTranslator(
+                                          "${TimeOfDay(hour: i, minute: (DateTime.now().add(Duration(minutes: 15)).minute)).format(context)}",
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            color: CRIMSON,
+                                            fontWeight: FontWeight.w600
+                                          ),
+                                        )
+                                      ),
+                                      if(DateTime.now().hour < TimeOfDay(hour: i, minute: 00).hour)
+                                      DropdownMenuItem<TimeOfDay>(
+                                        value: TimeOfDay(hour: i, minute: 00),
+                                        child: TextTranslator(
+                                          "${TimeOfDay(hour: i, minute: 00).format(context)}",
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            color: CRIMSON,
+                                            fontWeight: FontWeight.w600
+                                          ),
+                                        )
+                                      ),
+                                    ]
+                                  ];
                                 },
                                 onChanged: (TimeOfDay time) {
-
+                                  print(time);
                                   setState(() {
                                      deliveryTime = time;
                                   });
@@ -530,7 +559,19 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                                 ),
                                 underline: Container(),
                                 items: [
-                                  for (int i = 0; i < 24; i++)
+                                  for (int i = 0; i < 24; i++)...[
+                                    if((DateTime.now().hour == TimeOfDay(hour: i, minute: 00).hour) 
+                                    && DateTime.now().hour >= TimeOfDay(hour: i, minute: 00).hour)
+                                    DropdownMenuItem<TimeOfDay>(
+                                      value: TimeOfDay(hour: i, minute: 00),
+                                      child: TextTranslator(
+                                        "${TimeOfDay(hour: i, minute: (DateTime.now().add(Duration(minutes: 15)).minute)).format(context)}",
+                                        style: TextStyle(
+                                          fontSize: 20
+                                        ),
+                                      )
+                                    ),
+                                    if(DateTime.now().hour < TimeOfDay(hour: i, minute: 00).hour)
                                     DropdownMenuItem<TimeOfDay>(
                                       value: TimeOfDay(hour: i, minute: 00),
                                       child: TextTranslator(
@@ -538,8 +579,9 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                                         style: TextStyle(
                                           fontSize: 20
                                         ),
-                                        )
-                                  ),
+                                      )
+                                    ),
+                                  ]
                                 ],
                               ),
         ),

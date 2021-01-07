@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cupertino_datetime_picker/flutter_cupertino_datetime_picker.dart';
 import 'package:flutter_rounded_date_picker/rounded_picker.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/constants/date_format.dart';
 import 'package:menu_advisor/src/pages/payment_card_list.dart';
@@ -14,6 +16,8 @@ import 'package:menu_advisor/src/utils/textFormFieldTranslator.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
+import '../models.dart';
+
 class DeliveryDetailsPage extends StatefulWidget {
   @override
   _DeliveryDetailsPageState createState() => _DeliveryDetailsPageState();
@@ -25,6 +29,8 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
   GlobalKey<FormState> formKey = GlobalKey();
   DateTime now = DateTime.now();
 
+  Restaurant _restaurant;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -35,6 +41,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    _restaurant = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -314,9 +321,17 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                 isDense: true,
                                 value:  deliveryDate,
                                 onChanged: (DateTime date) {
-
+                                  String dayName =  DateFormat.EEEE('fr_FR').format(date);
                                   setState(() {
-                                     deliveryDate = date;
+                                    print(dayName);
+                                    if(_restaurant.openingTimes.where((v) =>v.day.toLowerCase() == dayName).isNotEmpty) {
+                                      print('ouvert');
+                                      deliveryDate = date;
+                                    }else {
+                                      print('fermé');
+                                      Fluttertoast.showToast(msg: 'Le restaurant est fermé');
+                                    }
+                                     
                                   });
                                    
 
@@ -378,6 +393,35 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                 value:  deliveryTime,
                                 
                                 selectedItemBuilder: (_){
+                                  return [
+                                    for (int i = 0; i < 24; i++)...[
+                                      if((DateTime.now().hour == TimeOfDay(hour: i, minute: 00).hour) 
+                                      && DateTime.now().hour >= TimeOfDay(hour: i, minute: 00).hour)
+                                      DropdownMenuItem<TimeOfDay>(
+                                        value: TimeOfDay(hour: i, minute: 00),
+                                        child: TextTranslator(
+                                          "${TimeOfDay(hour: i, minute: (DateTime.now().add(Duration(minutes: 15)).minute)).format(context)}",
+                                          style:TextStyle(
+                                            fontSize: 18,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600
+                                          ),
+                                        )
+                                      ),
+                                      if(DateTime.now().hour < TimeOfDay(hour: i, minute: 00).hour)
+                                      DropdownMenuItem<TimeOfDay>(
+                                        value: TimeOfDay(hour: i, minute: 00),
+                                        child: TextTranslator(
+                                          "${TimeOfDay(hour: i, minute: 00).format(context)}",
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600
+                                          ),
+                                        )
+                                      ),
+                                    ]
+                                  ];
                                   return List.generate(24, (index) => TextTranslator(
                                         "${TimeOfDay(hour: index, minute: 00).format(context)}",
                                         style: TextStyle(
@@ -402,7 +446,19 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                 ),
                                 underline: Container(),
                                 items: [
-                                  for (int i = 0; i < 24; i++)
+                                  for (int i = 0; i < 24; i++)...[
+                                    if((DateTime.now().hour == TimeOfDay(hour: i, minute: 00).hour) 
+                                    && DateTime.now().hour >= TimeOfDay(hour: i, minute: 00).hour)
+                                    DropdownMenuItem<TimeOfDay>(
+                                      value: TimeOfDay(hour: i, minute: 00),
+                                      child: TextTranslator(
+                                        "${TimeOfDay(hour: i, minute: (DateTime.now().add(Duration(minutes: 15)).minute)).format(context)}",
+                                        style: TextStyle(
+                                          fontSize: 20
+                                        ),
+                                      )
+                                    ),
+                                    if(DateTime.now().hour < TimeOfDay(hour: i, minute: 00).hour)
                                     DropdownMenuItem<TimeOfDay>(
                                       value: TimeOfDay(hour: i, minute: 00),
                                       child: TextTranslator(
@@ -410,8 +466,9 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                         style: TextStyle(
                                           fontSize: 20
                                         ),
-                                        )
-                                  ),
+                                      )
+                                    ),
+                                  ]
                                 ],
                               ),
         ),
