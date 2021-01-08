@@ -543,10 +543,18 @@ class Api {
     User user, {
     int limit,
     int offset = 0,
+        String commandType,
   }) async {
     await _refreshTokens();
+  String filter;
 
-    return http.get('$_apiURL/commands?filter={"relatedUser": "${user.id}"}&offset=$offset${limit != null ? '&limit=$limit' : ''}', headers: {
+  if (commandType != null){
+    filter = 'filter={"relatedUser": "${user.id}","commandType":$commandType}';
+  }else{
+    filter = 'filter={"relatedUser": "${user.id}"}';
+  }
+  print('$_apiURL/commands?$filter&offset=$offset${limit != null ? '&limit=$limit' : ''}');
+    return http.get('$_apiURL/commands?$filter&offset=$offset${limit != null ? '&limit=$limit' : ''}', headers: {
       'authorization': 'Bearer $_accessToken',
       'Content-Type': 'application/json',
     }).then<List<Command>>((response) {

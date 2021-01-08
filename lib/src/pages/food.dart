@@ -72,7 +72,7 @@ class _FoodPageState extends State<FoodPage> {
     });
 
     AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
-    if (authContext.currentUser == null) showFavorite = false;
+    if (authContext.currentUser == null) showFavorite = false; else showFavorite = true;
     isInFavorite = authContext.currentUser != null &&
         authContext.currentUser.favoriteFoods.firstWhere(
               (element) => element == widget.food.id,

@@ -914,7 +914,7 @@ class MenuCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       TextTranslator(
-                        menu.name,
+                        menu.name ?? "",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18
@@ -926,7 +926,7 @@ class MenuCard extends StatelessWidget {
                       ),
                       SizedBox(height: 10,),
                       TextTranslator(
-                        withPrice ?  "${menu.price.amount/100 ?? ""}€" : " ",
+                        Provider.of<CartContext>(context).withPrice ?  "${menu.price.amount/100 ?? ""}€" : " ",
                         style: TextStyle(
                           fontWeight: FontWeight.bold
                         ),

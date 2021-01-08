@@ -80,7 +80,7 @@ class Food implements Copyable<Food>{
         restaurant: json['restaurant'],
         price: json.containsKey('price') ? Price.fromJson(json['price']) : null,
         type: json['type'] == null ? null : json['type'] is  Map<String, dynamic> ?  FoodType.fromJson(json['type']) : json['type'] as String,
-        attributes: fromCommande ? List() : (json['attributes'] as List).map((e) => FoodAttribute.fromJson(e)).toList(),
+        attributes: fromCommande ? List() : (json['attributes'] as List).map((e) => (e is String) ? e : FoodAttribute.fromJson(e)).toList(),
         options: (json['options'] as List).map((e) => Option.fromJson(e)).toList(),
         status: json['status'],
         title: json['title'],
@@ -187,11 +187,11 @@ class Menu implements Copyable<Menu>{
   }
 
 
-  factory Menu.fromJson(Map<String, dynamic> json,{String resto,bool fromCommand = false}) {
+  factory Menu. fromJson(Map<String, dynamic> json,{String resto,bool fromCommand = false}) {
     
     Menu _menu = Menu(
         id: json['_id'],
-        name: json['name'] is Map<String, dynamic> ? json['name']["fr"] : json['name'],
+        name: json['name'] == null ? "" : json['name'] is Map<String, dynamic> ? json['name']["fr"] : json['name'],
         imageURL: json['imageURL'],
         foods: json['foods'] is List ? json['foods']?.map<Food>((data) => Food.fromJson(data,fromCommande: fromCommand))?.toList() ?? [] : [],
         description: json['description'] is Map<String, dynamic> ? json['description']["fr"] : json['description'],
@@ -398,9 +398,9 @@ class Command {
         revoked: json['revoked'],
         items: json['items'] != null ? (json['items'] as List).map((e) => CommandItem.fromJson(e)).toList() : List(),
         menus: json['menus'] != null ? (json['menus'] as List).map((e) => CommandItem.fromJson(e,isMenu: true)).toList() : List(),
-        createdAt: json['createdAt'] != null ? DateTime.fromMillisecondsSinceEpoch(json['createdAt']) : null,
+        createdAt: json['createdAt'] != null ? (json['createdAt'] is String) ? DateTime.parse(json['createdAt']) : DateTime.fromMillisecondsSinceEpoch(json['createdAt']) : null,
         shippingAddress: json['shippingAddress'],
-        shippingTime: json['shippingTime'] != null ? DateTime.fromMillisecondsSinceEpoch(json['shippingTime']) : null,
+        shippingTime: json['shippingTime'] != null ? ( json['shippingTime'] is String) ? DateTime.parse( json['shippingTime']) : DateTime.fromMillisecondsSinceEpoch(json['shippingTime']) : null,
         shipAsSoonAsPossible: json['shipAsSoonAsPossible'] ?? false,
         code: json['code'],
         comment: json['comment'] ?? " ",
@@ -886,7 +886,7 @@ class ItemsOption {
 
   ItemsOption.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
-    name = json['name'];
+    name = json['name'] ?? "";
     price = json['price'];
   }
 

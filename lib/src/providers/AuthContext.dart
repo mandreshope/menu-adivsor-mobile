@@ -172,8 +172,15 @@ class AuthContext extends ChangeNotifier {
   Future<List<Command>> getCommandOfUser({
     int limit,
     int offset = 0,
+    String commandType
   }) async {
-    List<Command> commands = await _api.getCommandOfUser(currentUser,limit: limit,offset: offset);
+    List<Command> commands;
+    if (commandType != null){
+      commands = await _api.getCommandOfUser(currentUser,limit: limit,offset: offset,commandType: commandType);
+    }else{
+      commands = await _api.getCommandOfUser(currentUser,limit: limit,offset: offset);
+    }
+
 
     return commands;
   }

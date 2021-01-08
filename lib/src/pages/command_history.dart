@@ -12,6 +12,7 @@ import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:menu_advisor/src/utils/extensions.dart';
 
 class CommandHistoryPage extends StatefulWidget {
   @override
@@ -31,7 +32,7 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
   List<Food> foodOnSite = List();
   List<Food> foodOnTakeaway = List();
 
-  Map<String, dynamic> commandByType = Map();
+  Map<String, List<Command>> commandByType = Map();
 
   bool loading = true;
 
@@ -67,22 +68,26 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
         commandType = 'delivery';
           break;
       }
+
       setState(() {});
     });
-
+    loadData(null);
    /* itemPositionsListener.itemPositions.addListener(() {
       print('Scroll position: ${itemPositionsListener.itemPositions.value.first.index}');
       tabController.animateTo(itemPositionsListener.itemPositions.value.first.index);
     });*/
 
-    loadData();
+
 
     // setState(() {
     //   loading = false;
     // });
   }
 
-  loadData() async {
+  loadData(String commandType) async {
+    setState(() {
+      loading = true;
+    });
     SettingContext settingContext = Provider.of<SettingContext>(
       context,
       listen: false,
@@ -96,10 +101,15 @@ try {
  
     this.commands = await authContext.getCommandOfUser(
       limit: 500,
+      commandType: commandType
     ); 
 } catch (e) {
   this.commands = List();
 }
+
+    commandByType = this.commands.groupBy((c) =>
+        c.createdAt.day.toString().padLeft(2,"0") +"/"+ c.createdAt.month.toString().padLeft(2,"0")+"/"+ c.createdAt.year.toString()
+    );
 
     setState(() {
       loading = false;
