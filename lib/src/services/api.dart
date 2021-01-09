@@ -601,7 +601,7 @@ class Api {
       print(post);
       return http
           .post(
-        'http://192.168.88.30:8080/commands',
+        '$_apiURL/commands',
         headers: {
           'authorization': 'Bearer $_accessToken',
           'Content-type': 'application/json',
