@@ -12,10 +12,11 @@ import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
 class ButtonItemCountWidget extends StatefulWidget {
-  ButtonItemCountWidget(this.food, {@required this.onAdded,this.withPrice = true, @required this.onRemoved, @required this.itemCount, this.isFromDelevery = false, @required this.isContains = false, this.isMenu = false,this.fromRestaurant = false})
+  ButtonItemCountWidget(this.food, {@required this.onAdded,this.onPressed,this.withPrice = true,@required this.onRemoved, @required this.itemCount, this.isFromDelevery = false, @required this.isContains = false, this.isMenu = false,this.fromRestaurant = false})
       : super();
   Function onAdded;
   Function onRemoved;
+  Function onPressed;
   int itemCount;
   bool isFromDelevery;
   bool isContains;
@@ -24,12 +25,14 @@ class ButtonItemCountWidget extends StatefulWidget {
   bool fromRestaurant;
   bool withPrice;
 
+
   @override
   _ButtonItemCountWidgetState createState() => _ButtonItemCountWidgetState();
 }
 
 class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
   CartContext _cartContext;
+  bool showOptions = false;
 
   @override
   void initState() {
@@ -45,6 +48,11 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
       return CircleButton(
           backgroundColor: TEAL,
           onPressed: () async {
+            if (!showOptions && widget.onPressed != null) {
+              showOptions = true;
+              widget.onPressed(true);
+              return;
+            }
             if (_cartContext.itemCount != 0) {
               if (!_cartContext.hasSamePricingAsInBag(widget.food)) {
                 Fluttertoast.showToast(
@@ -61,7 +69,7 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
 
             // widget.onAdded(++widget.itemCount);
             int value = ++widget.itemCount;
-            if (widget.food.options.isNotEmpty) {
+            /*if (widget.food.options.isNotEmpty) {
               var optionSelected = await showDialog(
                 context: context,
                 barrierDismissible: false,
@@ -71,9 +79,10 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                 ),
               );
               if (optionSelected != null) _cartContext.addItem(widget.food, value, true);
-            } else {
+            } else {*/
               _cartContext.addItem(widget.food, value, true);
-            }
+            //}
+
           },
           child: FaIcon(
             FontAwesomeIcons.plus,
@@ -120,6 +129,10 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                 } else {
                   _cartContext.addItem(widget.food, value, false);
                 }
+                if (value <= 0) {
+                  showOptions = false;
+                  widget.onPressed(false);
+                }
               },
             ),
             Padding(
@@ -153,7 +166,7 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
               onPressed: () async {
                 if (widget.food.isMenu) return;
                 int value = ++widget.itemCount;
-                if (widget.food.options.isNotEmpty) {
+                /*if (widget.food.options.isNotEmpty) {
                   var optionSelected = await showDialog(
                     context: context,
                     barrierDismissible: false,
@@ -163,9 +176,9 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                     ),
                   );
                   if (optionSelected != null) _cartContext.addItem(widget.food, value, true);
-                } else {
+                } else {*/
                   _cartContext.addItem(widget.food, value, true);
-                }
+               // }
                 // widget.onAdded();
               },
             ),

@@ -1,3 +1,4 @@
+import 'package:chips_choice/chips_choice.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -41,6 +42,8 @@ class _FoodPageState extends State<FoodPage> {
   bool switchingFavorite = false;
   int itemCount = 1;
   CartContext _cartContext;
+  List<Option> options = [
+  ];
 
   @override
   void initState() {
@@ -86,6 +89,7 @@ class _FoodPageState extends State<FoodPage> {
       // setState(() {
         
       // });
+      options = widget.food.options;
     });
 
   }
@@ -172,7 +176,7 @@ class _FoodPageState extends State<FoodPage> {
                         if (widget.food.price != null && widget.food.price?.amount != null)
                           Positioned(
                             right: 25,
-                            child: 
+                            child:
                             !_cartContext.withPrice ? Text("") : Text(
                               '${widget.food.price.amount / 100} €',
                               style: TextStyle(
@@ -240,7 +244,7 @@ class _FoodPageState extends State<FoodPage> {
                     child: widget.food.attributes.length > 0
                         ? Consumer<DataContext>(
                             builder: (_, dataContext, __) {
-                              
+
                             return /*!dataContext.loadingFoodAttributes
                                 ?*/ Padding(
                                     padding: const EdgeInsets.only(
@@ -264,7 +268,7 @@ class _FoodPageState extends State<FoodPage> {
                                                       return Row(
                                                         children: [
                                                           if (dataContext.attributes != null)
-                                                          //for (var attribute in dataContext.attributes) 
+                                                          //for (var attribute in dataContext.attributes)
                                                           ...[
                                                             FadeInImage.assetNetwork(
                                                               placeholder: 'assets/images/loading.gif',
@@ -308,6 +312,119 @@ class _FoodPageState extends State<FoodPage> {
                           ),
                   ),
 
+                  // options
+                  SizedBox(height: 25,),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 25),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: options.length,
+                          itemBuilder: (_,position){
+                            Option option = options[position];
+                            return  Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(height: 15,),
+                                TextTranslator(
+                                    "Vous avez ${option.maxOptions} choix de ${option.title}",
+                                    style:TextStyle(color: Colors.black,fontWeight: FontWeight.bold)),
+                                Container(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 25.0),
+                                    child: ChipsChoice.multiple(
+                                      value: option.itemOptionSelected,
+                                      padding: EdgeInsets.zero,
+                                      // wrapped: true,
+                                      // textDirection: TextDirection.ltr,
+                                      direction: Axis.horizontal,
+                                      onChanged: (value) {
+                                        // int diff =
+                                        setState(() {
+                                          if (option.itemOptionSelected?.length == option.maxOptions){
+                                            if (option.itemOptionSelected.length >= value.length ){
+                                              option.itemOptionSelected = value.cast<ItemsOption>();
+                                              widget.food.optionSelected = options;
+                                            }else{
+                                              print("max options");
+                                              Fluttertoast.showToast(
+                                                  msg: "maximum selection ${option.title} : ${option.maxOptions}"
+                                              );
+                                            }
+
+                                          }else{
+                                            option.itemOptionSelected = value.cast<ItemsOption>();
+                                            widget.food.optionSelected = options;
+                                          }
+
+                                        });
+                                      },
+                                      choiceLabelBuilder: (_){
+                                        return Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            FadeInImage.assetNetwork(
+                                              placeholder: 'assets/images/loading.gif',
+                                              image: _.value.imageUrl,
+                                              height: 14,
+                                            ),
+                                            SizedBox(
+                                              width: 5,
+                                            ),
+                                            Text("${_.value.name}"),
+                                            SizedBox(width: 5,),
+                                            Container(
+                                              // padding: EdgeInsets.all(5),
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                // color: _.value.price == 0 ? null : Colors.grey[400]
+                                              ),
+                                              child: !_cartContext.withPrice || _.value.price.amount == null ? Text("") : Text("${_.value.price.amount == 0 ? '': _.value.price.amount/100}${_.value.price.amount == 0 ? '': "€"}",
+                                                style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),),
+                                            )
+                                          ],
+                                        );
+                                      },
+                                      choiceItems: C2Choice.listFrom(
+                                        meta: (position, item){
+
+                                        },
+                                        source: option.items,
+                                        value: (i, v) => v,
+                                        label: (i, v) => v.name,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+
+                              ],
+                            );
+                          },
+                        ),
+
+                        /*RaisedButton(
+                          padding: EdgeInsets.all(8),
+                          color: CRIMSON,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          onPressed: ()=> Navigator.of(context).pop(optionSelected),
+                          child: TextTranslator(
+                            AppLocalizations.of(context)
+                                .translate("validate"),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),*/
+                      ],
+                    ),
+                  ),
                   // Text("test"),
 
                   if (!widget.fromDelevery) ...[
@@ -321,11 +438,11 @@ class _FoodPageState extends State<FoodPage> {
                       children: [
                         if (showFavorite)
                           SizedBox(
-                            width: 30,
+                            width: 20,
                           ),
                         Consumer<CartContext>(
-                            builder: (_, cartContext, __) => 
-                            ButtonItemCountWidget(widget.food, 
+                            builder: (_, cartContext, __) =>
+                            ButtonItemCountWidget(widget.food,
                             onAdded: (value) async {
                                 /*if (widget.food.options.isNotEmpty){
                                   var optionSelected = await showDialog(
@@ -341,15 +458,16 @@ class _FoodPageState extends State<FoodPage> {
                                   cartContext.addItem(widget.food, value,true);
                                 }
                                   */
-                                }, 
+                              cartContext.addItem(widget.food, value,true);
+                                },
                                 onRemoved: (value) {
-                                  // value == 0 ? cartContext.removeItem(widget.food) : cartContext.addItem(widget.food, value,false);
-                                }, 
-                                itemCount: cartContext.getCount(widget.food), 
+                                  value == 0 ? cartContext.removeItem(widget.food) : cartContext.addItem(widget.food, value,false);
+                                },
+                                itemCount: cartContext.getCount(widget.food),
                                 isContains: cartContext.contains(widget.food)))
                       ],
                     ),
-                    
+
                     Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 30,
@@ -470,7 +588,7 @@ class _FoodPageState extends State<FoodPage> {
                                             else
                                               cartContext.addItem(
                                                   widget.food, itemCount);*/
-                                                  if (widget.food.options.isNotEmpty){
+                                                 /* if (widget.food.options.isNotEmpty){
                                                     var optionSelected = await showDialog(
                                                                     context: context,
                                                                     barrierDismissible: false,
@@ -480,12 +598,13 @@ class _FoodPageState extends State<FoodPage> {
                                                                   );
                                                     if (optionSelected != null)
                                                       cartContext.addItem(widget.food, itemCount,true);
-                                                  }else{
+                                                  }else{*/
+
                                                     cartContext.addItem(widget.food, itemCount,true);
-                                                  }
+                                                  //}
 
                                             /*Navigator.of(context).pop(true);*/
-                                            
+
                                           }
                                         } else if (!cartContext
                                             .hasSamePricingAsInBag(widget.food)) {
@@ -525,11 +644,14 @@ class _FoodPageState extends State<FoodPage> {
                         ],
                       ),
                     ),
-                  
+
                   ],
-                  _cartContext.contains(widget.food) ? SizedBox(height: 95,) : Container()
+                  Consumer<CartContext>(
+                    builder: (_,cartContext,__) => cartContext.contains(widget.food) ? SizedBox(height: 95,) : Container(),
+                  )
+
                 ],
-                
+
               ),
             ),
             Positioned(
@@ -539,7 +661,7 @@ class _FoodPageState extends State<FoodPage> {
                 child: Consumer<CartContext>(
                   builder: (_, cartContext, __) => cartContext.contains(widget.food)
                       ? OrderButton(
-                          totalPrice: cartContext.getTotalPriceFood(widget.food),
+                          totalPrice: cartContext.getTotalPriceFood(widget.food) ?? 0,
                         )
                       : SizedBox(),
                 )),

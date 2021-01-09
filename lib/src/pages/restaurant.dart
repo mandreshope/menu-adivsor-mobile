@@ -79,7 +79,9 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
   bool _canScrollListRestaurant = false;
 
   String _langTranslate;
-int range;
+  int range;
+
+
   @override
   void initState() {
     super.initState();
@@ -123,17 +125,17 @@ range = Provider.of<SettingContext>(context,listen: false).range;
       tabController = TabController(
         vsync: this,
         initialIndex: 0,
-        length: 2 + restaurant.foodTypes.length,
+        length: 2 /*+ restaurant.foodTypes.length*/,
       );
 
       tabController.addListener(() {
         print(tabController.index);
-        itemScrollController.jumpTo(index: tabController.index);
+        // itemScrollController.jumpTo(index: tabController.index);
       });
 
       itemPositionsListener.itemPositions.addListener(() {
         print('Scroll position: ${itemPositionsListener.itemPositions.value.first.index}');
-        tabController.animateTo(itemPositionsListener.itemPositions.value.first.index);
+        // tabController.animateTo(itemPositionsListener.itemPositions.value.first.index);
 
         //print("_scrollController.offset ${_scrollController.offset}");
         /*if (_scrollController.offset >= 215) {
@@ -173,7 +175,7 @@ range = Provider.of<SettingContext>(context,listen: false).range;
           /*element.attributes?.forEach((att) async {
             element.foodAttributes.add(att);
           });*/
-          element.foodAttributes = element.attributes;
+          element.foodAttributes = List();//element.attributes;
         });
       });
 
@@ -783,7 +785,7 @@ range = Provider.of<SettingContext>(context,listen: false).range;
                             );
                           }),
                           
-                          for (var foodType in restaurant.foodTypes)
+                          /*for (var foodType in restaurant.foodTypes)
                             FutureBuilder<String>(
                             future: 
                               "${foodType["name"]['fr'] ?? ""}".translator(_langTranslate),
@@ -791,7 +793,7 @@ range = Provider.of<SettingContext>(context,listen: false).range;
                               return Tab(
                               text: data.data ?? "",
                             );
-                            }),
+                            }),*/
                             FutureBuilder<String>(
                             future: 
                               AppLocalizations.of(context).translate('menus').translator(_langTranslate),
@@ -818,7 +820,7 @@ range = Provider.of<SettingContext>(context,listen: false).range;
                   child: ScrollablePositionedList.separated(
                     itemScrollController: itemScrollController,
                     itemPositionsListener: itemPositionsListener,
-                    itemCount: 2 + restaurant.foodTypes.length,
+                    itemCount: 2/* + restaurant.foodTypes.length*/,
                     padding: const EdgeInsets.symmetric(horizontal: 0,vertical: 20),
                     physics: _canScrollListRestaurant ? AlwaysScrollableScrollPhysics() : NeverScrollableScrollPhysics(),
                     itemBuilder: (_, index) {
@@ -835,7 +837,7 @@ range = Provider.of<SettingContext>(context,listen: false).range;
                           ),
                         );
 
-                      if (index == restaurant.foodTypes.length + 1)
+                      /*if (index == /*restaurant.foodTypes.length + */1)
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
@@ -853,12 +855,13 @@ range = Provider.of<SettingContext>(context,listen: false).range;
                             SizedBox(
                               height: 10,
                             ),
+
                             _renderMenus(),
                              SizedBox(
                               height: 50,
                             ),
                           ],
-                        );
+                        );*/
 
                       /*if (index == 3 + restaurant.foodTypes.length - 1)
                         return Column(

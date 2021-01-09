@@ -858,7 +858,8 @@ class Option {
     if (json['items'] != null) {
       items = new List<ItemsOption>();
       json['items'].forEach((v) {
-        items.add(new ItemsOption.fromJson(v));
+        if (!(v is String))
+        items.add(ItemsOption.fromJson(v));
       });
     }
     title = json['title'];
@@ -880,21 +881,23 @@ class Option {
 class ItemsOption {
   String sId;
   String name;
-  int price;
+  Price price;
+  String imageUrl;
 
-  ItemsOption({this.sId, this.name, this.price});
+  ItemsOption({this.sId, this.name, this.price,this.imageUrl});
 
   ItemsOption.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
     name = json['name'] ?? "";
-    price = json['price'];
+    price = Price.fromJson(json);
+    imageUrl = json['imageURL'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['_id'] = this.sId;
     data['name'] = this.name;
-    data['price'] = this.price;
+    data['price'] = this.price.toJson();
     return data;
   }
 }

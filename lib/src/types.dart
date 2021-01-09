@@ -38,6 +38,11 @@ class Price {
         amount: json['amount'],
         currency: json['currency'],
       );
+   Map<String, dynamic> toJson() => {
+     'amount': amount,
+     'currency': currency,
+   };
+
 }
 
 class UserName {

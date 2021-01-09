@@ -376,7 +376,7 @@ class Api {
   }) {
     String searchQuery;
     
-    if (location == null){
+    if (location != null){
       searchQuery = '?lang=$lang&q=$query&range=$range';
     }else{
      searchQuery = '?lang=$lang&q=$query&range=$range&location=${jsonEncode(location)}';
@@ -583,7 +583,8 @@ class Api {
     bool priceless
   }) async {
     await _refreshTokens();
-    var post = jsonEncode({
+    try{
+      var post = jsonEncode({
         'relatedUser': relatedUser,
         'commandType': commandType,
         'totalPrice': totalPrice.toString(),
@@ -597,24 +598,28 @@ class Api {
         'comment':comment,
         'priceless':priceless
       });
-    print(post);
-    return http
-        .post(
-      '$_apiURL/commands',
-      headers: {
-        'authorization': 'Bearer $_accessToken',
-        'Content-type': 'application/json',
-      },
-      body: post,
-    )
-        .then<Map>((response) {
-      if (response.statusCode != 200)
-        return Future.error(
-          jsonDecode(response.body),
-        );
+      print(post);
+      return http
+          .post(
+        'http://192.168.88.30:8080/commands',
+        headers: {
+          'authorization': 'Bearer $_accessToken',
+          'Content-type': 'application/json',
+        },
+        body: post,
+      )
+          .then<Map>((response) {
+        if (response.statusCode != 200)
+          return Future.error(
+            jsonDecode(response.body),
+          );
 
-      return jsonDecode(response.body);
-    });
+        return jsonDecode(response.body);
+      });
+    } catch (error){
+      print(error);
+    }
+
   }
 
   Future setCommandToPayedStatus({

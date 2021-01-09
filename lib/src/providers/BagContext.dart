@@ -126,7 +126,7 @@ class CartContext extends ChangeNotifier {
     List<Option> _temp = _options.values.expand((element) => element).toList().expand((element) => element).toList();
     _temp.forEach((option) {
       option.itemOptionSelected?.forEach((itemOption) {
-        if(itemOption.price != null) totalPrice += itemOption.price/100;
+        if(itemOption.price != null && itemOption.price.amount != null) totalPrice += itemOption.price.amount/100;
       });
     });
     
@@ -224,7 +224,7 @@ class CartContext extends ChangeNotifier {
     List<Option> _temp = _values.expand((element) => element).toList();
     _temp.forEach((option) {
       option.itemOptionSelected?.forEach((itemOption) {
-        if(itemOption.price != null) totalPrice += itemOption.price/100;
+        if(itemOption.price != null && itemOption.price.amount != null) totalPrice += itemOption.price.amount/100;
       });
     });
   }

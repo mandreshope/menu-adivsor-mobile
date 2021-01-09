@@ -50,7 +50,7 @@ class DataContext extends ChangeNotifier {
     },
   ];*/
 
-  List<FoodAttribute> attributes = List();
+  List<dynamic> attributes = List();
   bool loadingFoodAttributes = false;
 
   final Api _api = Api.instance;
