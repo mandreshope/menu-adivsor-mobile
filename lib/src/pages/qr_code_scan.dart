@@ -9,7 +9,8 @@ import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
+// import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:qrcode/qrcode.dart';
 
 class QRCodeScanPage extends StatefulWidget {
   @override
@@ -18,10 +19,17 @@ class QRCodeScanPage extends StatefulWidget {
 
 class _QRCodeScanPageState extends State<QRCodeScanPage> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  QRViewController controller;
+  QRCaptureController controller = QRCaptureController();
   bool flashOn = false;
   bool loading = false;
   CartContext _cartContext;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _onQRViewCreated(controller);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,12 +43,12 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            QRView(
+            QRCaptureView(
               key: qrKey,
-              onQRViewCreated: _onQRViewCreated,
-              overlay: RoundedRectangleBorder(
+              controller: controller,
+              /*overlay: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
-              ),
+              ),*/
             ),
             Container(
               color: Colors.black45,
@@ -73,7 +81,12 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
                   flashOn ? Icons.flash_on : Icons.flash_off,
                 ),
                 onPressed: () {
-                  controller.toggleFlash();
+                  // controller.toggleFlash();
+                  if (flashOn) {
+                    controller.torchMode = CaptureTorchMode.off;
+                  } else {
+                    controller.torchMode = CaptureTorchMode.on;
+                  }
                   setState(() {
                     flashOn = !flashOn;
                   });
@@ -112,7 +125,7 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
     );
   }
 
-  void _onQRViewCreated(QRViewController controller) {
+  void _onQRViewCreated(QRCaptureController controller) {
     this.controller = controller;
    /*bool withPrice = !"https://preprod-api.clicar.fr/restaurants/5fde0bc875e5035bf72a8efe/qrcode.png".contains("?option");
     _cartContext.withPrice = withPrice;
@@ -125,13 +138,13 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
         routeName: restaurantRoute,
         method: RoutingMethod.replaceLast,
       );*/
-    controller.scannedDataStream.listen((String scanData) async {
-      controller.pauseCamera();
+    controller.onCapture((String scanData) async {
+      controller.pause();
       if (!scanData.startsWith(RegExp(r'https://(www\.|)preprod-api.clicar.fr/restaurants/'))) {
         Fluttertoast.showToast(
           msg: AppLocalizations.of(context).translate('invalid_qr_code'),
         );
-        controller.resumeCamera();
+        controller.resume();
         return;
       }
 
@@ -158,7 +171,7 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
 
   @override
   void dispose() {
-    controller?.dispose();
+    controller?.pause();
     super.dispose();
   }
 }

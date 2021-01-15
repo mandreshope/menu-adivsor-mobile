@@ -1,5 +1,6 @@
 import 'package:chips_choice/chips_choice.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_collapse/flutter_collapse.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
@@ -44,6 +45,7 @@ class _FoodPageState extends State<FoodPage> {
   CartContext _cartContext;
   List<Option> options = [
   ];
+  bool collaspse = true;
 
   @override
   void initState() {
@@ -279,7 +281,7 @@ class _FoodPageState extends State<FoodPage> {
                                                               width: 5,
                                                             ),
                                                             TextTranslator(
-                                                              attribute.tag,
+                                                              attribute.locales,
                                                             ),
                                                           ]
                                                           else TextTranslator("")
@@ -313,7 +315,7 @@ class _FoodPageState extends State<FoodPage> {
                   ),
 
                   // options
-                  SizedBox(height: 25,),
+                  SizedBox(height: 15,),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 25),
                     child: Column(
@@ -329,76 +331,154 @@ class _FoodPageState extends State<FoodPage> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 SizedBox(height: 15,),
-                                TextTranslator(
-                                    "Vous avez ${option.maxOptions} choix de ${option.title}",
-                                    style:TextStyle(color: Colors.black,fontWeight: FontWeight.bold)),
-                                Container(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 25.0),
-                                    child: ChipsChoice.multiple(
-                                      value: option.itemOptionSelected,
-                                      padding: EdgeInsets.zero,
-                                      // wrapped: true,
-                                      // textDirection: TextDirection.ltr,
-                                      direction: Axis.horizontal,
-                                      onChanged: (value) {
-                                        // int diff =
-                                        setState(() {
-                                          if (option.itemOptionSelected?.length == option.maxOptions){
-                                            if (option.itemOptionSelected.length >= value.length ){
+                                Collapse(
+                                  title: TextTranslator(
+                                      "Vous avez ${option.maxOptions} choix de ${option.title}",
+                                      style:TextStyle(color: Colors.black,fontWeight: FontWeight.bold)),
+                                  body: Container(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(0),
+                                      child: ChipsChoice.multiple(
+                                        value: option.itemOptionSelected,
+                                        choiceStyle: C2ChoiceStyle(
+                                        borderColor: Colors.transparent,
+                                          disabledColor: Colors.white,borderRadius: BorderRadius.zero
+                                      ),
+                                        padding: EdgeInsets.zero,
+                                        // wrapped: true,
+                                        // textDirection: TextDirection.ltr,
+                                        direction: Axis.vertical,
+                                        onChanged: (value) {
+                                          // int diff =
+                                          setState(() {
+                                            if (option.itemOptionSelected?.length == option.maxOptions){
+                                              if (option.itemOptionSelected.length >= value.length ){
+                                                option.itemOptionSelected = value.cast<ItemsOption>();
+                                                widget.food.optionSelected = options;
+                                              }else{
+                                                print("max options");
+                                                Fluttertoast.showToast(
+                                                    msg: "maximum selection ${option.title} : ${option.maxOptions}"
+                                                );
+                                              }
+
+                                            }else{
                                               option.itemOptionSelected = value.cast<ItemsOption>();
                                               widget.food.optionSelected = options;
-                                            }else{
-                                              print("max options");
-                                              Fluttertoast.showToast(
-                                                  msg: "maximum selection ${option.title} : ${option.maxOptions}"
-                                              );
                                             }
 
-                                          }else{
-                                            option.itemOptionSelected = value.cast<ItemsOption>();
-                                            widget.food.optionSelected = options;
-                                          }
+                                          });
+                                        },
+                                        choiceLabelBuilder: (_){
+                                          return Row(
+                                            mainAxisSize: MainAxisSize.max,
+                                            children: [
 
-                                        });
-                                      },
-                                      choiceLabelBuilder: (_){
-                                        return Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            FadeInImage.assetNetwork(
-                                              placeholder: 'assets/images/loading.gif',
-                                              image: _.value.imageUrl,
-                                              height: 14,
-                                            ),
-                                            SizedBox(
-                                              width: 5,
-                                            ),
-                                            Text("${_.value.name}"),
-                                            SizedBox(width: 5,),
-                                            Container(
-                                              // padding: EdgeInsets.all(5),
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                // color: _.value.price == 0 ? null : Colors.grey[400]
+                                              _.selected ? Icon(Icons.check_circle,color:CRIMSON) :
+                                              Icon(Icons.radio_button_unchecked,color: CRIMSON,),
+
+                                              if (_.value.quantity == 0)...[
+
+                                              ]else...[
+
+                                              ],
+                                              ClipRRect(
+                                                borderRadius: BorderRadius.circular(50),
+                                                child: FadeInImage.assetNetwork(
+                                                  placeholder: 'assets/images/loading.gif',
+                                                  image: _.value.imageUrl,
+                                                  height: 50,
+                                                  width: 50,
+                                                  fit: BoxFit.cover,
+
+                                                ),
                                               ),
-                                              child: !_cartContext.withPrice || _.value.price.amount == null ? Text("") : Text("${_.value.price.amount == 0 ? '': _.value.price.amount/100}${_.value.price.amount == 0 ? '': "€"}",
-                                                style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),),
-                                            )
-                                          ],
+                                              SizedBox(
+                                                width: 5,
+                                              ),
+                                              Text("${_.value.name}"),
+                                              SizedBox(width: 5,),
+                                              Container(
+                                                padding: EdgeInsets.all(5),
+                                                decoration: BoxDecoration(
+                                                  // shape: BoxShape.circle,
+                                                  // color: _.value.price == 0 ? null : Colors.grey[400]
+                                                ),
+                                                child: !_cartContext.withPrice || _.value.price.amount == null ? Text("") : Text("${_.value.price.amount == 0 ? '': _.value.price.amount/100}${_.value.price.amount == 0 ? '': "€"}",
+                                                  style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),),
+                                              )
+                                            ],
+                                          );
+                                        },
+                                        choiceItems: C2Choice.listFrom(
+                                          meta: (position, item){
+
+                                          },
+                                          source: option.items,
+                                          value: (i, v) => v,
+                                          label: (i, v) => v.name,
+                                        ),
+                                        choiceBuilder: (_){
+
+                                        return InkWell(
+                                          onTap: (){
+                                            _.select(!_.selected);
+                                          },
+                                          child: Container(
+                                            color: _.selected ? CRIMSON : Colors.grey.withAlpha(1),
+                                            padding: EdgeInsets.symmetric(horizontal: 25,vertical: 5),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.max,
+                                              children: [
+                                                // _.selected ?
+                                                    // Container()
+                                                if (_.value.quantity == 0)...[
+
+                                                ]else...[
+
+                                                ],
+                                                // IconButton(icon: Icons.min, onPressed: null)
+                                                ClipRRect(
+                                                  borderRadius: BorderRadius.circular(50),
+                                                  child: FadeInImage.assetNetwork(
+                                                    placeholder: 'assets/images/loading.gif',
+                                                    image: _.value.imageUrl,
+                                                    height: 50,
+                                                    width: 50,
+                                                    fit: BoxFit.cover,
+
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: 5,
+                                                ),
+                                                Text("${_.value.name}"),
+                                                SizedBox(width: 5,),
+                                                Container(
+                                                  padding: EdgeInsets.all(5),
+                                                  decoration: BoxDecoration(
+                                                    // shape: BoxShape.circle,
+                                                    // color: _.value.price == 0 ? null : Colors.grey[400]
+                                                  ),
+                                                  child: !_cartContext.withPrice || _.value.price.amount == null ? Text("") : Text("${_.value.price.amount == 0 ? '': _.value.price.amount/100}${_.value.price.amount == 0 ? '': "€"}",
+                                                    style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),),
+                                                )
+                                              ],
+                                            ),
+                                          ),
                                         );
                                       },
-                                      choiceItems: C2Choice.listFrom(
-                                        meta: (position, item){
-
-                                        },
-                                        source: option.items,
-                                        value: (i, v) => v,
-                                        label: (i, v) => v.name,
                                       ),
                                     ),
                                   ),
-                                ),
+                                  value: collaspse,
+                                  onChange: (value){
+                                    setState(() {
+                                      collaspse = value;
+                                    });
+
+                                  },
+                                )
 
                               ],
                             );
@@ -661,7 +741,7 @@ class _FoodPageState extends State<FoodPage> {
                 child: Consumer<CartContext>(
                   builder: (_, cartContext, __) => cartContext.contains(widget.food)
                       ? OrderButton(
-                          totalPrice: cartContext.getTotalPriceFood(widget.food) ?? 0,
+                          totalPrice: _cartContext.getTotalPriceFood(widget.food),
                         )
                       : SizedBox(),
                 )),

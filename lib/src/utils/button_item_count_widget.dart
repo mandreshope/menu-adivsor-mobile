@@ -5,14 +5,16 @@ import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/pages/food.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
+import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
 class ButtonItemCountWidget extends StatefulWidget {
-  ButtonItemCountWidget(this.food, {@required this.onAdded,this.onPressed,this.withPrice = true,@required this.onRemoved, @required this.itemCount, this.isFromDelevery = false, @required this.isContains = false, this.isMenu = false,this.fromRestaurant = false})
+  ButtonItemCountWidget(this.food, {@required this.onAdded,this.options,this.onPressed,this.withPrice = true,@required this.onRemoved, @required this.itemCount, this.isFromDelevery = false, @required this.isContains = false, this.isMenu = false,this.fromRestaurant = false})
       : super();
   Function onAdded;
   Function onRemoved;
@@ -24,6 +26,7 @@ class ButtonItemCountWidget extends StatefulWidget {
   bool isMenu;
   bool fromRestaurant;
   bool withPrice;
+  List<Option> options;
 
 
   @override
@@ -48,9 +51,17 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
       return CircleButton(
           backgroundColor: TEAL,
           onPressed: () async {
-            if (!showOptions && widget.onPressed != null) {
-              showOptions = true;
-              widget.onPressed(true);
+            if (widget.fromRestaurant && widget.food.options.length > 0) {
+              RouteUtil.goTo(
+                context: context,
+                child: Material(
+                  child: FoodPage(
+                    food: widget.food,
+                    imageTag: widget.food.id,
+                  ),
+                ),
+                routeName: foodRoute,
+              );
               return;
             }
             if (_cartContext.itemCount != 0) {
@@ -109,7 +120,7 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                 color: Colors.white,
                 size: 12,
               ),
-              onPressed: () async {
+              onPressed: () async { // onRemove
                 // widget.onRemoved(--widget.itemCount);
                 int value = --widget.itemCount;
                 if (value <= 0) {
@@ -129,10 +140,10 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                 } else {
                   _cartContext.addItem(widget.food, value, false);
                 }
-                if (value <= 0) {
-                  showOptions = false;
-                  widget.onPressed(false);
-                }
+                // if (value <= 0) {
+                //   showOptions = false;
+                //   widget.onPressed(false);
+                // }
               },
             ),
             Padding(
@@ -164,6 +175,19 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                 size: widget.isFromDelevery ? 12 : 12,
               ),
               onPressed: () async {
+                if (widget.fromRestaurant && widget.food.options.length > 0) {
+                  RouteUtil.goTo(
+                    context: context,
+                    child: Material(
+                      child: FoodPage(
+                        food: widget.food,
+                        imageTag: widget.food.id,
+                      ),
+                    ),
+                    routeName: foodRoute,
+                  );
+                  return;
+                }
                 if (widget.food.isMenu) return;
                 int value = ++widget.itemCount;
                 /*if (widget.food.options.isNotEmpty) {

@@ -180,7 +180,7 @@ class CartContext extends ChangeNotifier {
 
   double getTotalPriceFood(dynamic food){
     double totalPrice = 0;
-    int count = _items[food];
+    int count = _items[food] ?? 1;
 // return 15.2;
     /*_items.forEach((key, value) {
       
@@ -201,20 +201,20 @@ class CartContext extends ChangeNotifier {
       if (food.isMenu){
               if (food.type == "per_food"){
 
-      if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100* count;
+      if (food.price != null && food.price.amount != null) totalPrice += (food.price.amount / 100)* count;
 
               }else if(food.type == "priceless"){
 
               }else if (food.type == "fixed_price"){
 
-      if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100* count;
+      if (food.price != null && food.price.amount != null) totalPrice += (food.price.amount / 100)* count;
 
               }
         
         
       }else{
 
-        if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100*count;
+        if (food.price != null && food.price.amount != null) totalPrice += (food.price.amount / 100)*count;
 
       }
 
@@ -224,12 +224,12 @@ class CartContext extends ChangeNotifier {
     List<Option> _temp = _values.expand((element) => element).toList();
     _temp.forEach((option) {
       option.itemOptionSelected?.forEach((itemOption) {
-        if(itemOption.price != null && itemOption.price.amount != null) totalPrice += itemOption.price.amount/100;
+        if(itemOption.price != null && itemOption.price.amount != null) totalPrice += itemOption.price.amount.toDouble()/100;
       });
     });
   }
 
-    //totalPrice += (food.price?.amount == null ? 00 : food.price.amount / 100)*count;
+    // totalPrice += (food.price?.amount == null ? 00 : food.price.amount / 100)*count;
 
     return (totalPrice);
     

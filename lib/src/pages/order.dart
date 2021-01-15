@@ -586,7 +586,7 @@ class _OrderPageState extends State<OrderPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      if (!cartContext.pricelessItems)
+                      if (!cartContext.pricelessItems || _restaurant.delivery)
                         Theme(
                           data: ThemeData(
                             cardColor: commandContext.commandType == 'delivery' ? CRIMSON : Colors.white,

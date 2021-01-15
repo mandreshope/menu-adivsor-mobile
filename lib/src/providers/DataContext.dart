@@ -25,6 +25,7 @@ class DataContext extends ChangeNotifier {
 
   List<Blog> blogs = List();
   bool loadingBlog = false;
+  bool isAllAttribute = false;
 
   /*List<Map<String, String>> attributes = [
     {
@@ -50,7 +51,7 @@ class DataContext extends ChangeNotifier {
     },
   ];*/
 
-  List<dynamic> attributes = List();
+  List<FoodAttribute> attributes = List();
   bool loadingFoodAttributes = false;
 
   final Api _api = Api.instance;

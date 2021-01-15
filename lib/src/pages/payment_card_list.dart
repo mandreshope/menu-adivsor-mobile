@@ -103,8 +103,30 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                             comment: cartContext.comment,
                                             relatedUser: authContext.currentUser.id,
                                             commandType: commandContext.commandType,
-                                            items: cartContext.items.entries.where((e) => !e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id, 'options': cartContext.options[e.key.id] != null ? cartContext.options[e.key.id].expand((element) => element).toList() : [],'comment':e.key.message}).toList(),
-                                            restaurant: cartContext.currentOrigin,
+                                            items: cartContext
+                                                      .items.entries
+                                                      .where(
+                                                          (e) => !e.key.isMenu)
+                                                      .map((e) => {
+                                                            'quantity': e.value,
+                                                            'item': e.key.id,
+                                                            'options': cartContext
+                                                                            .options[
+                                                                        e.key
+                                                                            .id] !=
+                                                                    null
+                                                                ? cartContext
+                                                                    .options[e
+                                                                        .key.id]
+                                                                    .expand((element) =>
+                                                                        element)
+                                                                    .toList()
+                                                                : [],
+                                                            'comment':
+                                                                e.key.message
+                                                          })
+                                                      .toList(),
+                                                  restaurant: cartContext.currentOrigin,
                                             totalPrice: (cartContext.totalPrice * 100).round(),
                                             menu:cartContext.items.entries.where(
                                                   (e) => e.key.isMenu).map(

@@ -549,7 +549,7 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                                   // spacing: expanded ? 5 : 5,
                                   // runSpacing: 5,
                                   scrollDirection: Axis.horizontal,
-                                  children: widget.food.foodAttributes
+                                  children: widget.food.attributes
                                       .map(
                                         (attribute) => Padding(
                                           padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -594,7 +594,7 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
 
                                                         if (expanded)
                                                           TextTranslator(
-                                                            attribute.tag,
+                                                            attribute.locales,
                                                           ),
                                                         ]
 
@@ -618,7 +618,7 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
 
                         // options
                         // options
-                        if (showOptions)...[
+                      /*  if (showOptions)...[
                           // SizedBox(height: 25,),
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 25),
@@ -733,7 +733,7 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
 
                         ]
 
-
+*/
                       ],
                     ),
                   ),
@@ -752,16 +752,11 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Consumer<CartContext>(
-                        builder: (_, cartContext, __) => 
+                        builder: (_, cartContext, __) =>
                         ButtonItemCountWidget(widget.food,
                         fromRestaurant: true,
                         withPrice: widget.withPrice,
-                        onPressed: (value){
-                          setState(() {
-                            this.showOptions = value;
-                          });
 
-                        },
                         onAdded: (value) async {
                             if (widget.food.isMenu){
 
@@ -1381,193 +1376,333 @@ class _BagItemState extends State<BagItem> {
         ),
         child: Container(
           padding: const EdgeInsets.all(10),
-          child: Row(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.center,
+          child: Column(
             children: [
-              TextTranslator(
-                '${widget.count} x ',
-                style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 20),
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              widget.food.imageURL != null
-                  ? Hero(
-                      tag: widget.imageTag ?? widget.food.id,
-                      child: CircleAvatar(
-                        backgroundImage: NetworkImage(
-                          widget.food.imageURL,
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  TextTranslator(
+                    '${widget.count} x ',
+                    style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 20),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  widget.food.imageURL != null
+                      ? Hero(
+                          tag: widget.imageTag ?? widget.food.id,
+                          child: CircleAvatar(
+                            backgroundImage: NetworkImage(
+                              widget.food.imageURL,
+                            ),
+                            onBackgroundImageError: (_, __) {},
+                            backgroundColor: Colors.grey,
+                            maxRadius: 20,
+                          ),
+                        )
+                      : Icon(
+                          Icons.fastfood,
                         ),
-                        onBackgroundImageError: (_, __) {},
-                        backgroundColor: Colors.grey,
-                        maxRadius: 20,
-                      ),
-                    )
-                  : Icon(
-                      Icons.fastfood,
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        TextTranslator(
+                          widget.food.name,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextTranslator(
+                          widget.food?.description ?? "",
+                          style: TextStyle(fontSize: widget.food?.description == null ? 0 : 15, fontWeight: FontWeight.bold, color: Colors.grey[600]),
+                        ),
+                        if (widget.food.price?.amount != null)
+                          Text(
+                            !_cartContext.withPrice ? "" : '${_cartContext.getTotalPriceFood(widget.food)}€',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                      ],
                     ),
-              SizedBox(
-                width: 10,
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TextTranslator(
-                      widget.food.name,
+                  ),
+                  /*if (food.price.amount != null)
+                          TextTranslator(
+                            '${food.price.amount / 100}€',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.grey[600],
+                            ),
+                          ),*/
+                  /*Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.grey[200],
+                    ),
+                    padding: const EdgeInsets.all(15.0),
+                    child: TextTranslator(
+                      '$count',
                       style: TextStyle(
-                        fontSize: 18,
+                        color: CRIMSON,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    TextTranslator(
-                      widget.food?.description ?? "",
-                      style: TextStyle(fontSize: widget.food?.description == null ? 0 : 15, fontWeight: FontWeight.bold, color: Colors.grey[600]),
+                  ),*/
+                  /* IconButton(
+                    icon: Icon(
+                      Icons.edit,
+                      color: Colors.teal,
                     ),
-                    if (widget.food.price?.amount != null)
-                      Text(
-                        !_cartContext.withPrice ? "" : '${_cartContext.getTotalPriceFood(widget.food)}€',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.grey[600],
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        child: AddToBagDialog(
+                          food: food,
                         ),
-                      ),
-                  ],
-                ),
-              ),
-              /*if (food.price.amount != null)
-                      TextTranslator(
-                        '${food.price.amount / 100}€',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.grey[600],
-                        ),
-                      ),*/
-              /*Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.grey[200],
-                ),
-                padding: const EdgeInsets.all(15.0),
-                child: TextTranslator(
-                  '$count',
-                  style: TextStyle(
-                    color: CRIMSON,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),*/
-              /* IconButton(
-                icon: Icon(
-                  Icons.edit,
-                  color: Colors.teal,
-                ),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    child: AddToBagDialog(
-                      food: food,
-                    ),
-                  );
-                },
-              ),*/
-              
-              ButtonItemCountWidget(
-                widget.food,
-                itemCount: widget.count,
-                onAdded: (value) {
-                  widget.count = value;
-                  _cartContext.addItem(widget.food, value,true);
-                },
-                onRemoved: (value) {
-                  value == 0 ? _cartContext.removeItem(widget.food) : _cartContext.addItem(widget.food, value,false);
-
-                  if (_cartContext.items.length == 0) RouteUtil.goBack(context: context);
-                  widget.count = value;
-                },
-                isContains: _cartContext.contains(widget.food),
-                isFromDelevery: true,
-              ),
-              /* SizedBox(
-                  width: 15,
-                ),
-              Stack(
-                  children: [
-                    
-                    CircleButton(
-  
-                    backgroundColor: CRIMSON,
-                    onPressed: (){
-                      showDialog<String>(context: context,
-                      child: MessageDialog(message: widget.food.message,)).then((value) {
-                          print(value);
-                          widget.food.message = value;
-                          if (value.isNotEmpty){
-                            setState(() {
-                              hasMessage = true;
-                            });
-                          }else{
-                            setState(() {
-                              hasMessage = false;
-                            });
-                          }
-                        }   
                       );
                     },
-                    child: Icon(Icons.comment,
+                  ),*/
+
+                  ButtonItemCountWidget(
+                    widget.food,
+                    itemCount: widget.count,
+                    onAdded: (value) {
+                      widget.count = value;
+                      _cartContext.addItem(widget.food, value,true);
+                    },
+                    onRemoved: (value) {
+                      value == 0 ? _cartContext.removeItem(widget.food) : _cartContext.addItem(widget.food, value,false);
+
+                      if (_cartContext.items.length == 0) RouteUtil.goBack(context: context);
+                      widget.count = value;
+                    },
+                    isContains: _cartContext.contains(widget.food),
+                    isFromDelevery: true,
+                  ),
+                  /* SizedBox(
+                      width: 15,
+                    ),
+                  Stack(
+                      children: [
+
+                        CircleButton(
+
+                        backgroundColor: CRIMSON,
+                        onPressed: (){
+                          showDialog<String>(context: context,
+                          child: MessageDialog(message: widget.food.message,)).then((value) {
+                              print(value);
+                              widget.food.message = value;
+                              if (value.isNotEmpty){
+                                setState(() {
+                                  hasMessage = true;
+                                });
+                              }else{
+                                setState(() {
+                                  hasMessage = false;
+                                });
+                              }
+                            }
+                          );
+                        },
+                        child: Icon(Icons.comment,
+                            color: Colors.white,
+                            size: 15,),
+
+                      ),
+                      Visibility(
+                        visible: hasMessage,
+                                          child: Positioned(
+                            right: 0,
+                            bottom: 0,
+                            child:  Icon(
+                                            Icons.brightness_1,
+                                            color: Color(0xff62C0AB),
+                                            size: 12,
+                                          )
+                          ),
+                      ),
+                      ],
+                  ),*/
+                  if (widget.activeDelete) ...[
+                    SizedBox(
+                      width: 15,
+                    ),
+                    CircleButton(
+                      backgroundColor: CRIMSON,
+                      child: Icon(
+                        Icons.delete,
                         color: Colors.white,
-                        size: 15,),
-                        
-                  ),
-                  Visibility(
-                    visible: hasMessage,
-                                      child: Positioned(
-                        right: 0,
-                        bottom: 0,
-                        child:  Icon(
-                                        Icons.brightness_1,
-                                        color: Color(0xff62C0AB),
-                                        size: 12,
-                                      )
+                        size: 15,
                       ),
-                  ),
-                  ],
-              ),*/
-              if (widget.activeDelete) ...[
-                SizedBox(
-                  width: 15,
-                ),
-                CircleButton(
-                  backgroundColor: CRIMSON,
-                  child: Icon(
-                    Icons.delete,
-                    color: Colors.white,
-                    size: 15,
-                  ),
-                  onPressed: () async {
-                    var result = await showDialog(
-                      context: context,
-                      child: ConfirmationDialog(
-                        title: AppLocalizations.of(context).translate('remove_item_confirmation_title'),
-                        content: AppLocalizations.of(context).translate('remove_item_confirmation_content'),
-                      ),
-                    );
+                      onPressed: () async {
+                        var result = await showDialog(
+                          context: context,
+                          child: ConfirmationDialog(
+                            title: AppLocalizations.of(context).translate('remove_item_confirmation_title'),
+                            content: AppLocalizations.of(context).translate('remove_item_confirmation_content'),
+                          ),
+                        );
 
-                    if (result is bool && result) {
-                      CartContext cartContext = Provider.of<CartContext>(context, listen: false);
+                        if (result is bool && result) {
+                          CartContext cartContext = Provider.of<CartContext>(context, listen: false);
 
-                      cartContext.removeItem(widget.food);
-                      if (cartContext.items.length == 0) RouteUtil.goBack(context: context);
-                    }
-                  },
-                ),
+                          cartContext.removeItem(widget.food);
+                          if (cartContext.items.length == 0) RouteUtil.goBack(context: context);
+                        }
+                      },
+                    ),
+                  ]
+                ],
+              ),
+              //
+              if (_cartContext.options[widget.food.id] != null)...[
+                Divider(),
+                _options(),
               ]
+
+                  // Divider(),
+
             ],
           ),
         ),
       ),
     );
+  }
+  Widget _options() {
+    // int i = 0;
+    List<Option> options = _cartContext.options[widget.food.id]
+        .expand((element) => element)
+        .toList();
+    var o = _cartContext.options[widget.food.id];
+    return Container(
+      // margin: EdgeInsets.only(left: MediaQuery.of(context).size.width/4),
+      child: Column(
+        children: [
+          for (int a=0;a<o.length;a++)...[
+            Container(
+              padding: EdgeInsets.only(top:15,bottom: 15,left: MediaQuery.of(context).size.width/2.5,right: 25),
+              color: a%2 == 0 ? Colors.grey.withAlpha(20) : Colors.white,
+              child: Column(
+                children: [
+                  for (Option option in o[a])...[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SizedBox(width: 15),
+                        TextTranslator('${option.title}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,color: Colors.black,decoration: TextDecoration.underline)),
+                        SizedBox(width: 5),
+                      ],
+                    ),
+                    SizedBox(height: 15,),
+                    for (ItemsOption itemsOption in option.itemOptionSelected)...[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(width: 15),
+                          TextTranslator('${itemsOption.name}', style: TextStyle(fontSize: 16)),
+                          Spacer(),
+                          /*Image.network(
+                          item.imageURL,
+                          width: 25,
+                        ),*/
+                          // SizedBox(width: 8),
+                          if (itemsOption.price == 0 || widget.withPrice)
+                            Text("50")
+                          else
+                            itemsOption.price.amount == null ? Text("") : TextTranslator('${itemsOption.price.amount/100} €', style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
+                          // Spacer(),
+                          // item.price?.amount == null ? Text("_") : Text("${item.price.amount / 100} €", style: TextStyle(fontSize: 16)),
+                        ],
+                      ),
+
+                    ],
+                    // Divider(),
+                  ]
+                ],
+              ),
+            ),
+            // Divider()
+          ]
+        ],
+      ),
+    );
+    // for (int a=0;a<o.length;a++){
+      return Container(
+        child: Column(
+          children: [
+
+            for (int i = 0; i < options.length;i++) ...[
+
+              Container(
+                color: (((i)%o.length-2))%o.length == 0 ? CRIMSON : Colors.green,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(width: 150),
+                    TextTranslator('${options[i].title}',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold)),
+                    SizedBox(width: 5),
+                    // TextTranslator('(x${option.items.length})', style: TextStyle(fontSize: 16)),
+                    /*Image.network(
+                            item.imageURL,
+                            width: 25,
+                          ),*/
+                    // SizedBox(width: 8),
+
+                    // Spacer(),
+                    // item.price?.amount == null ? Text("_") : Text("${item.price.amount / 100} €", style: TextStyle(fontSize: 16)),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              for (ItemsOption itemsOption
+              in options[i].itemOptionSelected) ...[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(width: 150),
+                    TextTranslator('${itemsOption.name}',
+                        style: TextStyle(fontSize: 16)),
+                    Spacer(),
+                    /*Image.network(
+                          item.imageURL,
+                          width: 25,
+                        ),*/
+                    // SizedBox(width: 8),
+                    if (itemsOption.price == 0 || !widget.withPrice)
+                      Text("")
+                    else
+                      itemsOption.price.amount == null
+                          ? Text("")
+                          : TextTranslator(
+                          '${itemsOption.price.amount / 100} €',
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.normal)),
+                    // Spacer(),
+                    // item.price?.amount == null ? Text("_") : Text("${item.price.amount / 100} €", style: TextStyle(fontSize: 16)),
+                  ],
+                ),
+              ],
+              Divider(),
+            ]
+          ],
+        ),
+      );
+
+    // }
+
   }
 }
 

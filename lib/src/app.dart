@@ -7,6 +7,7 @@ import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/CommandContext.dart';
 import 'package:menu_advisor/src/providers/DataContext.dart';
 import 'package:menu_advisor/src/providers/MenuContext.dart';
+import 'package:menu_advisor/src/providers/RestaurantContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/theme.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
@@ -40,6 +41,9 @@ class _MyAppState extends State<MyApp> {
         ),
         ChangeNotifierProvider(
           create: (_) => MenuContext(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => RestaurantContext(),
         )
       ],
       child: Consumer<SettingContext>(

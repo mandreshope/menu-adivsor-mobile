@@ -120,7 +120,7 @@ class _ConfirmSmsState extends State<ConfirmSms> {
       width: 250,
       height: 75,
       child: PinPut(
-        fieldsCount: widget.isFromSignup ? 6 : 4,
+        fieldsCount: widget.isFromSignup ? 4 : 4,
         eachFieldHeight: 50.0,
         onSubmit: (String pin) async {
           _submit(pin);

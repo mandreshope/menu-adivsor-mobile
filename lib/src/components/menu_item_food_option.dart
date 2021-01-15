@@ -47,6 +47,7 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
             Divider(),
             ListView.builder(
               shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
               itemCount: options.length,
               itemBuilder: (_, position) {
                 Option option = options[position];

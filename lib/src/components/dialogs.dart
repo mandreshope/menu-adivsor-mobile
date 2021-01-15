@@ -1092,3 +1092,140 @@ class SheduleDialog extends StatelessWidget {
     );
   }
 }
+
+class AtributesDialog extends StatefulWidget {
+
+  @override
+  _AtributesDialogState createState() => _AtributesDialogState();
+}
+
+class _AtributesDialogState extends State<AtributesDialog> {
+  List<FoodAttribute> attributes;
+  DataContext dataContext;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    dataContext = Provider.of<DataContext>(context,listen: false);
+    attributes = dataContext.foodAttributes;
+    // isAllAttribute = dataContext.isAllAttribute;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Dialog(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: CRIMSON,
+            ),
+            height: 50,
+            width: double.infinity,
+            child: Center(
+              child: TextTranslator(
+                  "Filtre allergènes",
+                  textAlign: TextAlign.center,
+                  style:TextStyle(color: Colors.white,fontWeight: FontWeight.bold,
+                      fontSize: 20)),
+            ),
+          ),
+          ListTile(
+            onTap: (){
+              setState(() {
+                dataContext.isAllAttribute = !dataContext.isAllAttribute;
+              });
+            },
+            title: Row(
+              children: [
+                Checkbox(value: dataContext.isAllAttribute, onChanged: (value){
+                  setState(() {
+                    dataContext.isAllAttribute = value;
+                  });
+                },
+                  checkColor: Colors.white,
+                  hoverColor: CRIMSON,
+                  activeColor: CRIMSON,),
+                SizedBox(width: 5,),
+                SizedBox(width: 10,),
+                TextTranslator("Tous les Allergènes",
+                style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
+              ],
+            ),
+          ),
+          SizedBox(height: 20,),
+          Padding(
+            padding: EdgeInsets.only(left: 35),
+            child: TextTranslator("Avec les allergènes : ",style:TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold)),
+          ),
+          Divider(),
+          Expanded(
+            child: ListView.builder(
+                itemCount: attributes.length,
+                itemBuilder: (_,position){
+                  FoodAttribute att = attributes[position];
+                  return ListTile(
+                    onTap: (){
+                      setState(() {
+                        att.isChecked = !att.isChecked;
+                        dataContext.isAllAttribute = false;
+                      });
+                    },
+                    title: Row(
+                      children: [
+                        Checkbox(value: att.isChecked, onChanged: (value){
+                          setState(() {
+                            att.isChecked = value;
+                            dataContext.isAllAttribute = false;
+                          });
+                        },
+                        checkColor: Colors.white,
+                        hoverColor: CRIMSON,
+                        activeColor: CRIMSON,),
+                        FadeInImage.assetNetwork(
+                          placeholder: 'assets/images/loading.gif',
+                          image:  att.imageURL,
+                          height: 14,
+                        ),
+                        SizedBox(width: 5,),
+                        SizedBox(width: 10,),
+                        TextTranslator(att.locales),
+                      ],
+                    ),
+                  );
+                }
+            ),
+          ),
+          InkWell(
+            onTap: (){
+              List<FoodAttribute> selectedAttributes = List();
+
+              selectedAttributes = dataContext.isAllAttribute ? attributes : attributes.where((element) => element.isChecked).toList();
+
+              Navigator.of(context).pop(selectedAttributes);
+            },
+            child: Container(
+              height: 50,
+              decoration: BoxDecoration(
+                color: TEAL,
+              ),
+              child: Center(
+                child: TextTranslator(
+                    "Valider",
+                    textAlign: TextAlign.center,
+                    style:TextStyle(color: Colors.white,fontWeight: FontWeight.bold,
+                        fontSize: 20)),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}

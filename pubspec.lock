@@ -237,6 +237,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.0"
+  flutter_collapse:
+    dependency: "direct main"
+    description:
+      name: flutter_collapse
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.1"
   flutter_credit_card:
     dependency: "direct main"
     description:
@@ -651,13 +658,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.3.0"
-  qr_code_scanner:
+  qrcode:
     dependency: "direct main"
     description:
-      name: qr_code_scanner
+      name: qrcode
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.13"
+    version: "1.0.4"
   quiver:
     dependency: transitive
     description:

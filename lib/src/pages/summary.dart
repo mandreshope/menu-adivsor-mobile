@@ -302,6 +302,8 @@ class _SummaryState extends State<Summary> {
 
   Widget _items(CommandItem commandItem) {
     dynamic item = commandItem.food != null ? commandItem.food : commandItem.menu;
+    List<Option> options = commandItem.options;
+    int quantity = commandItem.quantity;
     return Column(
       children: [
         Container(
@@ -324,26 +326,33 @@ class _SummaryState extends State<Summary> {
         ),
         Divider(),
         if (item is Food)
-        for (Option option in commandItem.options)...[
-        Row(
+        for (int i = 0; i < options.length; i++)...[
+          Container(
+            // color: (options.length/quantity) <   ? Colors.grey.withAlpha(100) : Colors.white,
+            padding: EdgeInsets.only(top:15,bottom: 15,left: MediaQuery.of(context).size.width/2.5,right: 25),
+            child: Column(
+              children: [
+                Container(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      SizedBox(width: 150),
-                      TextTranslator('${option.title}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                       SizedBox(width: 5),
+                      // SizedBox(width: 150),
+                      TextTranslator('${options[i].title}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      SizedBox(width: 5),
                       // TextTranslator('(x${option.items.length})', style: TextStyle(fontSize: 16)),
                       /*Image.network(
-                        item.imageURL,
-                        width: 25,
-                      ),*/
+                          item.imageURL,
+                          width: 25,
+                        ),*/
                       // SizedBox(width: 8),
-                     
+
                       // Spacer(),
                       // item.price?.amount == null ? Text("_") : Text("${item.price.amount / 100} €", style: TextStyle(fontSize: 16)),
                     ],
                   ),
+                ),
                 SizedBox(height: 5,),
-                for (ItemsOption itemsOption in option.items)...[
+                for (ItemsOption itemsOption in options[i].items)...[
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -363,9 +372,13 @@ class _SummaryState extends State<Summary> {
                       // item.price?.amount == null ? Text("_") : Text("${item.price.amount / 100} €", style: TextStyle(fontSize: 16)),
                     ],
                   ),
-                 
+
                 ],
-                 Divider(),
+
+              ],
+            ),
+          ),
+          Divider(),
         ]
         else
         for (FoodSelectedFromCommandMenu food in commandItem.foodMenuSelected)...[
@@ -473,5 +486,134 @@ Widget _renderComment(String comment) => Container(
     textAlign: TextAlign.justify,
   ),
 );
+
+  /*Widget _options() {
+    // int i = 0;
+    List<Option> options = _cartContext.options[widget.food.id]
+        .expand((element) => element)
+        .toList();
+    var o = _cartContext.options[widget.food.id];
+    return Container(
+      margin: EdgeInsets.only(left: MediaQuery.of(context).size.width/4),
+      child: Column(
+        children: [
+          for (int a=0;a<o.length;a++)...[
+            Container(
+              padding: EdgeInsets.only(top:15,bottom: 15),
+              color: a%2 == 0 ? Colors.grey.withAlpha(50) : Colors.white,
+              child: Column(
+                children: [
+                  for (Option option in o[a])...[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SizedBox(width: 15),
+                        TextTranslator('${option.title}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,color: Colors.black,decoration: TextDecoration.underline)),
+                        SizedBox(width: 5),
+                      ],
+                    ),
+                    SizedBox(height: 15,),
+                    for (ItemsOption itemsOption in option.itemOptionSelected)...[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(width: 15),
+                          TextTranslator('${itemsOption.name}', style: TextStyle(fontSize: 16)),
+                          Spacer(),
+                          /*Image.network(
+                          item.imageURL,
+                          width: 25,
+                        ),*/
+                          // SizedBox(width: 8),
+                          if (itemsOption.price == 0 || widget.withPrice)
+                            Text("")
+                          else
+                            itemsOption.price.amount == null ? Text("") : TextTranslator('${itemsOption.price.amount/100} €', style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
+                          // Spacer(),
+                          // item.price?.amount == null ? Text("_") : Text("${item.price.amount / 100} €", style: TextStyle(fontSize: 16)),
+                        ],
+                      ),
+
+                    ],
+                    // Divider(),
+                  ]
+                ],
+              ),
+            ),
+            // Divider()
+          ]
+        ],
+      ),
+    );
+    // for (int a=0;a<o.length;a++){
+    return Container(
+      child: Column(
+        children: [
+
+          for (int i = 0; i < options.length;i++) ...[
+
+            Container(
+              color: (((i)%o.length-2))%o.length == 0 ? CRIMSON : Colors.green,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  SizedBox(width: 150),
+                  TextTranslator('${options[i].title}',
+                      style: TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold)),
+                  SizedBox(width: 5),
+                  // TextTranslator('(x${option.items.length})', style: TextStyle(fontSize: 16)),
+                  /*Image.network(
+                            item.imageURL,
+                            width: 25,
+                          ),*/
+                  // SizedBox(width: 8),
+
+                  // Spacer(),
+                  // item.price?.amount == null ? Text("_") : Text("${item.price.amount / 100} €", style: TextStyle(fontSize: 16)),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            for (ItemsOption itemsOption
+            in options[i].itemOptionSelected) ...[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  SizedBox(width: 150),
+                  TextTranslator('${itemsOption.name}',
+                      style: TextStyle(fontSize: 16)),
+                  Spacer(),
+                  /*Image.network(
+                          item.imageURL,
+                          width: 25,
+                        ),*/
+                  // SizedBox(width: 8),
+                  if (itemsOption.price == 0 || !widget.withPrice)
+                    Text("")
+                  else
+                    itemsOption.price.amount == null
+                        ? Text("")
+                        : TextTranslator(
+                        '${itemsOption.price.amount / 100} €',
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.normal)),
+                  // Spacer(),
+                  // item.price?.amount == null ? Text("_") : Text("${item.price.amount / 100} €", style: TextStyle(fontSize: 16)),
+                ],
+              ),
+            ],
+            Divider(),
+          ]
+        ],
+      ),
+    );
+
+    // }
+
+  }*/
 
 }

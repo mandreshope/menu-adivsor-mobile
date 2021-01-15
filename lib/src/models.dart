@@ -35,7 +35,7 @@ class Food implements Copyable<Food>{
   final dynamic restaurant;
   final String description;
   final dynamic type;
-  final List<dynamic> attributes;
+  final List<FoodAttribute> attributes;
   List<Option> options;
   final bool status;
   final String title;
@@ -80,7 +80,7 @@ class Food implements Copyable<Food>{
         restaurant: json['restaurant'],
         price: json.containsKey('price') ? Price.fromJson(json['price']) : null,
         type: json['type'] == null ? null : json['type'] is  Map<String, dynamic> ?  FoodType.fromJson(json['type']) : json['type'] as String,
-        attributes: fromCommande ? List() : (json['attributes'] as List).map((e) => (e is String) ? e : FoodAttribute.fromJson(e)).toList(),
+        attributes: fromCommande ? List() : (json['attributes'] as List).map((e) => (e is String) ? FoodAttribute() : FoodAttribute.fromJson(e)).toList(),
         options: (json['options'] as List).map((e) => Option.fromJson(e)).toList(),
         status: json['status'],
         title: json['title'],
@@ -589,6 +589,8 @@ class FoodAttribute {
   String imageURL;
   int iV;
 
+  bool isChecked = false;
+
   FoodAttribute({this.sId, this.tag, this.locales, this.imageURL, this.iV});
 
   FoodAttribute.fromJson(Map<String, dynamic> json) {
@@ -883,14 +885,19 @@ class ItemsOption {
   String name;
   Price price;
   String imageUrl;
+  int quantity = 0;
+  ItemsOption item;
 
-  ItemsOption({this.sId, this.name, this.price,this.imageUrl});
+  ItemsOption({this.sId, this.name, this.price,this.imageUrl,this.quantity,this.item});
 
   ItemsOption.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
     name = json['name'] ?? "";
     price = Price.fromJson(json);
     imageUrl = json['imageURL'];
+    quantity = json['quantity'];
+    if (json['item'] != null)
+    item = ItemsOption.fromJson(json['item']);
   }
 
   Map<String, dynamic> toJson() {
@@ -898,6 +905,11 @@ class ItemsOption {
     data['_id'] = this.sId;
     data['name'] = this.name;
     data['price'] = this.price.toJson();
+    data['item'] = {
+      data['_id'] = this.sId,
+      data['name'] = this.name,
+      data['price'] = this.price.toJson(),
+    };
     return data;
   }
 }
