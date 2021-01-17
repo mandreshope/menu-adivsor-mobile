@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_collapse/flutter_collapse.dart';
 import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/food.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
+import 'package:menu_advisor/src/providers/HistoryContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
@@ -28,22 +30,26 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
 
   List<Command> commands = List();
 
-  List<Food> foodDelivery = List();
-  List<Food> foodOnSite = List();
-  List<Food> foodOnTakeaway = List();
+  List<Command> commandDelivery = List();
+  List<Command> commandOnSite = List();
+  List<Command> commandOnTakeaway = List();
 
   Map<String, List<Command>> commandByType = Map();
+  Map<String, bool> commandByTypeValue = Map();
+  // List<bool> commandByTypeValue = List();
 
   bool loading = true;
 
   Api api = Api.instance;
 
   String commandType = 'delivery';
-
+  HistoryContext _historyContext;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    _historyContext = Provider.of<HistoryContext>(context,listen: false);
 
     tabController = TabController(
       vsync: this,
@@ -107,9 +113,13 @@ try {
   this.commands = List();
 }
 
-    commandByType = this.commands.groupBy((c) =>
+   /* commandByType = this.commands.groupBy((c) =>
         c.createdAt.day.toString().padLeft(2,"0") +"/"+ c.createdAt.month.toString().padLeft(2,"0")+"/"+ c.createdAt.year.toString()
-    );
+      );
+
+    commandByType.forEach((key, value) {
+      commandByTypeValue[key] = false;
+    });*/
 
     setState(() {
       loading = false;
@@ -220,7 +230,20 @@ try {
         
         .toList();
         print(commandTemp);
-    return commandTemp.length == 0
+
+
+    commandByType = commandTemp.groupBy((c) =>
+      c.createdAt.month.toString().padLeft(2,"0").month +" "+ c.createdAt.year.toString()
+    );
+
+    commandByTypeValue.clear();
+    commandByType.forEach((key, value) {
+      commandByTypeValue[key] = false;
+      // commandByTypeValue.add(false);
+    });
+    _historyContext.commandByTypeValue = commandByTypeValue;
+
+    return commandByType.length == 0
         ? Padding(
           padding: const EdgeInsets.only(top:25),
           child: Align(
@@ -243,11 +266,51 @@ try {
               ),
           ),
         )
-        : ListView.builder(
-          itemCount: commandTemp.length,
+        : SingleChildScrollView(
+          child: Consumer<HistoryContext>(
+            builder: (context, snapshot,w) {
+              return Column(
+                   children: [
+                     ...commandByType.entries.map((e) =>
+                         Collapse(
+                           value: snapshot.commandByTypeValue[e.key],
+                           onChange: (value){
+                             print(value);
+                               snapshot.setCollapse(e.key, value);
+                           },
+                           title: TextTranslator(
+                               e.key,
+                             style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),
+                           ),
+                           body: ListView.builder(
+                                shrinkWrap: true,
+                               itemCount: commandByType[e.key].length,
+                               physics: NeverScrollableScrollPhysics(),
+                               itemBuilder: (_,position){
+                                 return CommandHistoryItem(command: commandByType[e.key][position],);
+                               }),
+                         )
+                     ).toList()
+                   ],
+              );
+            }
+          ),
+        );
+
+    /*ListView.builder(
+          itemCount: commandByType.length,
           itemBuilder: (_,position){
+            return Collapse(
+              value: commandByTypeValue[position],
+              onChange: (value){
+                // setState(() {
+                  commandByTypeValue[position] = value;
+                // });
+              },
+              title: commandByType,
+            );
             return CommandHistoryItem(command: commandTemp[position],);
-          });
+          });*/
         /*SingleChildScrollView(
             child: Column(
               children: [

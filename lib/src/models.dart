@@ -492,7 +492,7 @@ class CommandModel {
 
 class CommandItem {
   String sId;
-  int quantity;
+  int quantity = 0;
   dynamic food;
   Menu menu;
   List<Option> options;
@@ -528,7 +528,7 @@ class CommandItem {
 options = json['options'] == null ? List() : (json['options'] as List).map((e) => Option.fromJson(e)).toList();
 
     }
-            quantity = json['quantity'];
+            quantity = json['quantity'] ?? 0;
         
     
   }
@@ -902,13 +902,15 @@ class ItemsOption {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['_id'] = this.sId;
-    data['name'] = this.name;
-    data['price'] = this.price.toJson();
-    data['item'] = {
-      data['_id'] = this.sId,
-      data['name'] = this.name,
-      data['price'] = this.price.toJson(),
+    // data['_id'] = this.sId;
+    // data['name'] = this.name;
+    // data['price'] = this.price.toJson();
+    data['quantity'] = this.quantity;
+   data['item'] =
+   {
+      "_id": this.sId,
+      'name': this.name,
+      'price': this.price.toJson(),
     };
     return data;
   }

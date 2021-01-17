@@ -139,7 +139,8 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
       _segmentChilder = Map();
 
       for (int i=0; i< restaurant.foodTypes.length; i++){
-        _segmentChilder[i] = _segmentWidget(restaurant.foodTypes[i]['tag']);
+        // if (restaurant.foodTypes[i]['tag'] != 'drink')
+          _segmentChilder[i] = _segmentWidget(restaurant.foodTypes[i]['name']['fr']);
       }
 
       tabController.addListener(() {
@@ -968,7 +969,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                 Padding(
                                   padding: const EdgeInsets.only(left: 15),
                                   child: TextTranslator(
-                                    restaurant.foodTypes[index - 1]["name"][Provider.of<SettingContext>(context).languageCode] ?? "",
+                                    restaurant.foodTypes[index - 1]["name"]["fr"] ?? "",
                                     style: TextStyle(
                                       fontSize: 18,
                                     ),
@@ -1255,7 +1256,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
       builder: (_,restaurantContext,w){
         return Padding(
 
-          padding: EdgeInsets.symmetric(horizontal: 150),
+          padding: EdgeInsets.symmetric(horizontal: 150,vertical: 25),
           child: CupertinoSegmentedControl(
             children: _segmentChilder, onValueChanged: (index) {
             restaurantContext.currentIndex = index;
@@ -1274,18 +1275,18 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
   }
 
   Widget _segmentWidget(String title) => Container(
-    width: 250,
+    width: 350,
     height: 45,
-    padding: EdgeInsets.symmetric(horizontal: 15),
+    // padding: EdgeInsets.symmetric(horizontal: 15),
     decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5)
     ),
     // padding: EdgeInsets.only(left: 12, right: 12),
     child: Center(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15),
+        padding: const EdgeInsets.symmetric(horizontal: 2),
         child: TextTranslator(title,style:TextStyle(
-          color: Colors.white
+          color: Colors.black
         )),
       ),
     ),

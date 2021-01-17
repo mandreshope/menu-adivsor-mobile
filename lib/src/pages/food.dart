@@ -11,6 +11,7 @@ import 'package:menu_advisor/src/pages/restaurant.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/DataContext.dart';
+import 'package:menu_advisor/src/providers/OptionContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
@@ -113,10 +114,62 @@ class _FoodPageState extends State<FoodPage> {
               centerTitle: true,
               title: TextTranslator(widget.food.name),
               actions: [
+                showFavorite ? IconButton(
+                  onPressed: !switchingFavorite
+                      ? () async {
+                    AuthContext authContext =
+                    Provider.of<AuthContext>(
+                      context,
+                      listen: false,
+                    );
+
+                    setState(() {
+                      switchingFavorite = true;
+                    });
+                    if (!isInFavorite)
+                      await authContext
+                          .addToFavoriteFoods(widget.food);
+                    else
+                      await authContext
+                          .removeFromFavoriteFoods(widget.food);
+                    setState(() {
+                      switchingFavorite = false;
+                      isInFavorite = !isInFavorite;
+                    });
+                    Fluttertoast.showToast(
+                      msg: AppLocalizations.of(context)
+                          .translate(
+                        isInFavorite
+                            ? 'added_to_favorite'
+                            : 'removed_from_favorite',
+                      ),
+                    );
+                  }
+                      : null,
+                  icon: !switchingFavorite
+                      ? Icon(
+                    isInFavorite
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                  )
+                      : SizedBox(
+                    width: 15,
+                    height: 15,
+                    child: FittedBox(
+                      child: CircularProgressIndicator(
+                        valueColor:
+                        AlwaysStoppedAnimation<Color>(
+                          Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ) : Container(),
                 IconButton(icon: Icon(FontAwesomeIcons.share,color: Colors.white,),
                     onPressed: (){
                         Share.share("Menu advisor");
-                    })
+                    }),
+
               ],
             ),
             body: mainContent,
@@ -374,14 +427,13 @@ class _FoodPageState extends State<FoodPage> {
                                             mainAxisSize: MainAxisSize.max,
                                             children: [
 
-                                              _.selected ? Icon(Icons.check_circle,color:CRIMSON) :
+                                              // _.selected ? Icon(Icons.check_circle,color:CRIMSON,size: 15,) :
                                               Icon(Icons.radio_button_unchecked,color: CRIMSON,),
-
-                                              if (_.value.quantity == 0)...[
+                                              /*if (_.value.quantity == 0)...[
 
                                               ]else...[
 
-                                              ],
+                                              ],*/
                                               ClipRRect(
                                                 borderRadius: BorderRadius.circular(50),
                                                 child: FadeInImage.assetNetwork(
@@ -420,52 +472,92 @@ class _FoodPageState extends State<FoodPage> {
                                         ),
                                         choiceBuilder: (_){
 
-                                        return InkWell(
-                                          onTap: (){
-                                            _.select(!_.selected);
-                                          },
-                                          child: Container(
-                                            color: _.selected ? CRIMSON : Colors.grey.withAlpha(1),
-                                            padding: EdgeInsets.symmetric(horizontal: 25,vertical: 5),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.max,
-                                              children: [
-                                                // _.selected ?
-                                                    // Container()
-                                                if (_.value.quantity == 0)...[
+                                        return Consumer<OptionContext>(
+                                          builder: (context, snapshot,w) {
+                                            return Container(
+                                                // color: _.selected ? CRIMSON : Colors.grey.withAlpha(1),
+                                                padding: EdgeInsets.symmetric(horizontal: 5,vertical: 10),
+                                                child: Row(
+                                                  mainAxisSize: MainAxisSize.max,
+                                                  children: [
+                                                    !_.selected ?
+                                                    IconButton(
+                                                        icon: Icon(Icons.add_circle_outlined,color: Colors.grey,size: 25),
+                                                    onPressed: (){
+                                                      _.value.quantity = 1;
+                                                      _.select(!_.selected);
+                                                    },)
+                                                     :
+                                                    //button incrementation
+                                                    Container(
+                                                      padding: EdgeInsets.only(left: 0),
+                                                      // width: 50,
+                                                      child: Row(
+                                                        mainAxisSize: MainAxisSize.min,
+                                                        children: [
+                                                          IconButton(
+                                                              icon: Icon(Icons.remove_circle,color:CRIMSON,size: 35,), onPressed: (){
 
-                                                ]else...[
+                                                           if (_.value.quantity <= 1) {
+                                                             _.value.quantity = 0;
+                                                              _.select(false);
+                                                          }
+                                                            _.value.quantity --;
+                                                           snapshot.refresh();
+                                                          }),
+                                                          SizedBox(width: 2,),
+                                                          Text("${_.value.quantity ?? ""}",style: TextStyle(
+                                                            fontSize: 20
+                                                          ),),
+                                                          SizedBox(width: 2,),
+                                                          IconButton(
+                                                              icon: Icon(Icons.add_circle_outlined,color:CRIMSON,size: 35), onPressed: (){
+                                                            _.value.quantity ++;
+                                                            snapshot.refresh();
+                                                            // _.select(true);
+                                                          }),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    // Icon(Icons.radio_button_unchecked,color: CRIMSON,size: 35),
+                                                    if (_.value.quantity == 0)...[
 
-                                                ],
-                                                // IconButton(icon: Icons.min, onPressed: null)
-                                                ClipRRect(
-                                                  borderRadius: BorderRadius.circular(50),
-                                                  child: FadeInImage.assetNetwork(
-                                                    placeholder: 'assets/images/loading.gif',
-                                                    image: _.value.imageUrl,
-                                                    height: 50,
-                                                    width: 50,
-                                                    fit: BoxFit.cover,
+                                                    ]else...[
 
-                                                  ),
+                                                    ],
+
+                                                    SizedBox(width: 10,),
+                                                    ClipRRect(
+                                                      borderRadius: BorderRadius.circular(50),
+                                                      child: FadeInImage.assetNetwork(
+                                                        placeholder: 'assets/images/loading.gif',
+                                                        image: _.value.imageUrl,
+                                                        height: 50,
+                                                        width: 50,
+                                                        fit: BoxFit.cover,
+
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 5,
+                                                    ),
+                                                    Text("${_.value.name}"),
+                                                    SizedBox(width: 5,),
+                                                    Container(
+                                                      padding: EdgeInsets.all(5),
+                                                      decoration: BoxDecoration(
+                                                        // shape: BoxShape.circle,
+                                                        // color: _.value.price == 0 ? null : Colors.grey[400]
+                                                      ),
+                                                      child: !_cartContext.withPrice || _.value.price.amount == null ? Text("") : Text("${_.value.price.amount == 0 ? '': _.value.price.amount/100}${_.value.price.amount == 0 ? '': "€"}",
+                                                        style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),),
+                                                    ),
+                                                    Spacer(),
+                                                  ],
                                                 ),
-                                                SizedBox(
-                                                  width: 5,
-                                                ),
-                                                Text("${_.value.name}"),
-                                                SizedBox(width: 5,),
-                                                Container(
-                                                  padding: EdgeInsets.all(5),
-                                                  decoration: BoxDecoration(
-                                                    // shape: BoxShape.circle,
-                                                    // color: _.value.price == 0 ? null : Colors.grey[400]
-                                                  ),
-                                                  child: !_cartContext.withPrice || _.value.price.amount == null ? Text("") : Text("${_.value.price.amount == 0 ? '': _.value.price.amount/100}${_.value.price.amount == 0 ? '': "€"}",
-                                                    style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),),
-                                                )
-                                              ],
-                                            ),
-                                          ),
+
+                                            );
+                                          }
                                         );
                                       },
                                       ),
@@ -516,10 +608,10 @@ class _FoodPageState extends State<FoodPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        if (showFavorite)
+                       /* if (showFavorite)
                           SizedBox(
                             width: 20,
-                          ),
+                          ),*/
                         Consumer<CartContext>(
                             builder: (_, cartContext, __) =>
                             ButtonItemCountWidget(widget.food,
@@ -558,7 +650,7 @@ class _FoodPageState extends State<FoodPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          if (showFavorite) ...[
+                         /* if (showFavorite) ...[
                             FloatingActionButton(
                               onPressed: !switchingFavorite
                                   ? () async {
@@ -613,7 +705,7 @@ class _FoodPageState extends State<FoodPage> {
                             SizedBox(
                               width: 10,
                             ),
-                          ],
+                          ],*/
                           Expanded(
                             child: Container(
                               child: Consumer<CartContext>(

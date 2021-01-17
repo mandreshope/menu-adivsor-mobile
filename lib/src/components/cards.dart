@@ -1615,7 +1615,7 @@ class _BagItemState extends State<BagItem> {
                         ),*/
                           // SizedBox(width: 8),
                           if (itemsOption.price == 0 || widget.withPrice)
-                            Text("50")
+                            Text("")
                           else
                             itemsOption.price.amount == null ? Text("") : TextTranslator('${itemsOption.price.amount/100} €', style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
                           // Spacer(),
@@ -1748,8 +1748,16 @@ class CommandHistoryItem extends StatelessWidget {
               // SizedBox(width: 8),
               _validated(),
               // Spacer(),
-              if (command.shippingTime != null)
-                TextTranslator("${command.shippingTime.dateToString('dd/MM/yy HH:mm')}", style: TextStyle(fontSize: 16)),
+              Column(
+                children: [
+                  TextTranslator("${command.createdAt.dateToString('dd/MM/yy HH:mm')}", style: TextStyle(fontSize: 16)),
+                  if (command.shippingTime != null)
+                    TextTranslator("${command.shippingTime.dateToString('dd/MM/yy HH:mm')}", style: TextStyle(fontSize: 16)),
+
+                ],
+              )
+              // if (command.createdAt != null)
+
             ],
           ),
         ),

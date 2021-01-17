@@ -6,7 +6,9 @@ import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/CommandContext.dart';
 import 'package:menu_advisor/src/providers/DataContext.dart';
+import 'package:menu_advisor/src/providers/HistoryContext.dart';
 import 'package:menu_advisor/src/providers/MenuContext.dart';
+import 'package:menu_advisor/src/providers/OptionContext.dart';
 import 'package:menu_advisor/src/providers/RestaurantContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/theme.dart';
@@ -43,7 +45,13 @@ class _MyAppState extends State<MyApp> {
           create: (_) => MenuContext(),
         ),
         ChangeNotifierProvider(
+          create: (_) => OptionContext(),
+        ),
+        ChangeNotifierProvider(
           create: (_) => RestaurantContext(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => HistoryContext(),
         )
       ],
       child: Consumer<SettingContext>(

@@ -89,7 +89,8 @@ class _SummaryState extends State<Summary> {
                 //end commande id
                 Divider(),
                 // food
-                for (var command in widget.commande.items) _items(command),
+                for (var command in widget.commande.items)
+                  _items(command),
                 // Divider(),
                 // menu
                 if (widget.commande.menus != null)
@@ -356,18 +357,18 @@ class _SummaryState extends State<Summary> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      SizedBox(width: 150),
-                      TextTranslator('${itemsOption.name}', style: TextStyle(fontSize: 16)),
+                      // SizedBox(width: 150),
+                      TextTranslator('${itemsOption.item.name}', style: TextStyle(fontSize: 16)),
                       Spacer(),
                       /*Image.network(
                         item.imageURL,
                         width: 25,
                       ),*/
                       // SizedBox(width: 8),
-                      if (itemsOption.price == 0 || widget.commande.priceless)
+                      if (itemsOption.item.price == 0 || widget.commande.priceless)
                         Text("")
                       else
-                        itemsOption.price.amount == null ? Text("") : TextTranslator('${itemsOption.price.amount/100} €', style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
+                        itemsOption.item.price.amount == null ? Text("") : TextTranslator('${itemsOption.item.price.amount/100} €', style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
                       // Spacer(),
                       // item.price?.amount == null ? Text("_") : Text("${item.price.amount / 100} €", style: TextStyle(fontSize: 16)),
                     ],
@@ -456,12 +457,12 @@ class _SummaryState extends State<Summary> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             SizedBox(width: 150),
-                            TextTranslator('${itemsOption.name}', style: TextStyle(fontSize: 16)),
+                            TextTranslator('${itemsOption.item.name}', style: TextStyle(fontSize: 16)),
                             Spacer(),
-                            if (itemsOption.price == 0 || widget.commande.priceless)
+                            if (itemsOption.item.price == 0 || widget.commande.priceless)
                               Text("")
                             else
-                              itemsOption.price.amount == null ? Text("") : TextTranslator('${itemsOption.price.amount/100} €', style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
+                              itemsOption.item.price.amount == null ? Text("") : TextTranslator('${itemsOption.item.price.amount/100} €', style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
                             ],
                         ),
                        
