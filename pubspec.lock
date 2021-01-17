@@ -707,6 +707,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.8"
+  segment_control:
+    dependency: "direct main"
+    description:
+      name: segment_control
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.0"
   share:
     dependency: "direct main"
     description:

@@ -29,6 +29,7 @@ import 'package:menu_advisor/src/utils/textFormFieldTranslator.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:segment_control/segment_control.dart';
 import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:menu_advisor/src/utils/extensions.dart';
@@ -87,6 +88,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
   List<Menu> menus;
 
   Map<int, Widget> _segmentChilder;
+  List<String> _foodTypes = List();
 
   RestaurantContext _restaurantContext;
 
@@ -138,9 +140,13 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
 
       _segmentChilder = Map();
 
+      _foodTypes.clear();
       for (int i=0; i< restaurant.foodTypes.length; i++){
-        // if (restaurant.foodTypes[i]['tag'] != 'drink')
+        if (restaurant.foodTypes[i]['tag'] != 'drink'){
+          _foodTypes.add(restaurant.foodTypes[i]['name']['fr']);
           _segmentChilder[i] = _segmentWidget(restaurant.foodTypes[i]['name']['fr']);
+        }
+
       }
 
       tabController.addListener(() {
@@ -1256,18 +1262,54 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
       builder: (_,restaurantContext,w){
         return Padding(
 
-          padding: EdgeInsets.symmetric(horizontal: 150,vertical: 25),
-          child: CupertinoSegmentedControl(
+          padding: EdgeInsets.symmetric(horizontal: 25,vertical: 5),
+          child: _segmentChilder.length < 2 ?
+          Container(
+            // width: 350,
+            height: 45,
+            // padding: EdgeInsets.symmetric(horizontal: 15),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+              color: CRIMSON
+            ),
+            // padding: EdgeInsets.only(left: 12, right: 12),
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25),
+                child: TextTranslator(restaurant.foodTypes.first['name']['fr'],style:TextStyle(
+                    color: Colors.white,
+                  fontWeight: FontWeight.bold
+                )),
+              ),
+            ),
+          )
+              : SegmentControl(
+            tabs: _foodTypes,
+            // width: 300,
+            selected: (_i, _s) {
+              restaurantContext.currentIndex = _i;
+              itemScrollController.jumpTo(index: _i);
+            },
+            radius: 5,
+            normalBackgroundColor: Color(0xffEDEDED),
+            activeBackgroundColor: CRIMSON,
+            borderColor: CRIMSON,
+            normalTitleStyle: TextStyle(fontSize: 14, color: CRIMSON,fontWeight: FontWeight.bold),
+            activeTitleStyle: TextStyle(fontSize: 16, color: Colors.white,fontWeight: FontWeight.bold),
+            height: 45,
+          )
+
+          /*CupertinoSegmentedControl(
             children: _segmentChilder, onValueChanged: (index) {
             restaurantContext.currentIndex = index;
             itemScrollController.jumpTo(index: index);
           },
             unselectedColor: Color(0xffEDEDED),
-            padding: EdgeInsets.symmetric(horizontal: 15),
+            padding: EdgeInsets.symmetric(horizontal: 0),
             selectedColor: CRIMSON,
             borderColor: CRIMSON,
             groupValue: restaurantContext.currentIndex,
-          )
+          )*/
         );
       },
     );
@@ -1284,9 +1326,10 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
     // padding: EdgeInsets.only(left: 12, right: 12),
     child: Center(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 25),
         child: TextTranslator(title,style:TextStyle(
-          color: Colors.black
+          color: Colors.white,
+          fontWeight: FontWeight.bold
         )),
       ),
     ),

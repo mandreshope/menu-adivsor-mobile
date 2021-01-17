@@ -236,6 +236,8 @@ try {
       c.createdAt.month.toString().padLeft(2,"0").month +" "+ c.createdAt.year.toString()
     );
 
+
+
     commandByTypeValue.clear();
     commandByType.forEach((key, value) {
       commandByTypeValue[key] = false;
@@ -271,26 +273,35 @@ try {
             builder: (context, snapshot,w) {
               return Column(
                    children: [
-                     ...commandByType.entries.map((e) =>
-                         Collapse(
-                           value: snapshot.commandByTypeValue[e.key],
-                           onChange: (value){
-                             print(value);
-                               snapshot.setCollapse(e.key, value);
-                           },
-                           title: TextTranslator(
-                               e.key,
-                             style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),
-                           ),
-                           body: ListView.builder(
-                                shrinkWrap: true,
-                               itemCount: commandByType[e.key].length,
-                               physics: NeverScrollableScrollPhysics(),
-                               itemBuilder: (_,position){
-                                 return CommandHistoryItem(command: commandByType[e.key][position],);
-                               }),
-                         )
-                     ).toList()
+                     ...commandByType.entries.map((e) {
+
+                       Map<String, List<Command>> tempSemaine = Map();
+
+                       // tempSemaine = e.value.groupBy((g) =>
+                       //     g.createdAt.
+                       // );
+
+                       return Collapse(
+                         value: snapshot.commandByTypeValue[e.key],
+                         onChange: (value) {
+                           print(value);
+                           snapshot.setCollapse(e.key, value);
+                         },
+                         title: TextTranslator(
+                           e.key,
+                           style: TextStyle(fontSize: 18, fontWeight: FontWeight
+                               .bold),
+                         ),
+                         body: ListView.builder(
+                             shrinkWrap: true,
+                             itemCount: commandByType[e.key].length,
+                             physics: NeverScrollableScrollPhysics(),
+                             itemBuilder: (_, position) {
+                               return CommandHistoryItem(
+                                 command: commandByType[e.key][position],);
+                             }),
+                       );
+                     }).toList()
                    ],
               );
             }

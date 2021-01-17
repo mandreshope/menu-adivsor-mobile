@@ -74,6 +74,7 @@ dependencies:
   sortedmap: ^0.4.2+1
   material_segmented_control: ^2.1.1+1
   flutter_collapse: ^0.1.1
+  segment_control: ^0.1.0
 
 dev_dependencies:
   flutter_test:
