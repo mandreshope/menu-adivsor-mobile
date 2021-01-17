@@ -1080,10 +1080,10 @@ class MenuCard extends StatelessWidget {
                             _cart.addItem(menu, value,true);
                             count = value;
                           }
-                        
-                        }, 
+
+                        },
                         onRemoved: (value){
-                          value == 0 ? _cart.removeItem(menu) 
+                          value == 0 ? _cart.removeItem(menu)
                           : _cart.addItem(menu, value,false);
                           count = value;
 
@@ -1115,6 +1115,17 @@ class MenuCard extends StatelessWidget {
                                 if (_cartContext.contains(menu)){
                                 _cartContext.setFoodMenuSelected(entry.key,food);
                                 menuContext.select(_cartContext,entry.key, food);
+                                RouteUtil.goTo(
+                                  context: context,
+                                  child: FoodPage(
+                                    food: food,
+                                    imageTag: food.id,
+                                    fromMenu: true,
+                                    subMenu:entry.key,
+                                    restaurantName: menu.restaurant,
+                                  ),
+                                  routeName: foodRoute,
+                                );
                                 }else{
                                   Fluttertoast.showToast(msg: "Veuillez ajouter le menu dans le panier");
                                 }
@@ -1130,12 +1141,13 @@ class MenuCard extends StatelessWidget {
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
                                           Radio<String>(
-                                            value: menuContext.selectedMenu[entry.key]?.first?.id, 
-                                            groupValue: food.id, 
+                                            value: menuContext.selectedMenu[entry.key]?.first?.id,
+                                            groupValue: food.id,
                                             onChanged: (value){
                                               print("food selected");
                                               if (_cartContext.contains(menu))
                                               _cartContext.foodMenuSelected[entry.key] = food;
+
                                             },
                                             activeColor: CRIMSON,
                                             hoverColor: CRIMSON,
@@ -1151,14 +1163,14 @@ class MenuCard extends StatelessWidget {
                                           ]else...[
                                             food?.price?.amount == null ? Text("") : Text("${food.price.amount / 100} €", style: TextStyle(fontWeight: FontWeight.bold)),
                                           ]
-                                            
+
 
                                           /*ButtonItemCountWidget(
                                             food,
                                             isMenu: true, onAdded: (value){
                                               _cartContext.addItem(food, value);
                                           }, onRemoved: (value){
-                                              value == 0 ? _cartContext.removeItem(food) 
+                                              value == 0 ? _cartContext.removeItem(food)
                                               : _cartContext.addItem(food, value);
                                           }, itemCount: _cartContext.getCount(food)
                                           , isContains: _cartContext.contains(food))*/
@@ -1166,6 +1178,7 @@ class MenuCard extends StatelessWidget {
                                       ),
                                       if (menuContext.selectedMenu[entry.key]?.first?.id == food.id)...[
                                         MenuItemFoodOption(food: food,menu: menu,withPrice: withPrice,subMenu:entry.key)
+                                        // Container()
                                       ]else
                                         Container()
                                     ],
@@ -1607,6 +1620,10 @@ class _BagItemState extends State<BagItem> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           SizedBox(width: 15),
+                          (itemsOption.quantity != null || itemsOption.quantity > 1) ?
+                          TextTranslator('${itemsOption.quantity} x\t', style: TextStyle(fontSize: 16,fontWeight: FontWeight.w600)) :
+                          Container(),
+
                           TextTranslator('${itemsOption.name}', style: TextStyle(fontSize: 16)),
                           Spacer(),
                           /*Image.network(

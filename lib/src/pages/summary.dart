@@ -358,6 +358,9 @@ class _SummaryState extends State<Summary> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       // SizedBox(width: 150),
+                      if (itemsOption.quantity != null && itemsOption.quantity > 0)
+                        Text("${itemsOption.quantity} x\t",
+                        style:TextStyle(fontSize: 16,fontWeight: FontWeight.bold)),
                       TextTranslator('${itemsOption.item.name}', style: TextStyle(fontSize: 16)),
                       Spacer(),
                       /*Image.network(

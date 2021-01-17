@@ -204,6 +204,7 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                   _cartContext.addItem(widget.food, value, true);
                // }
                 // widget.onAdded();
+                widget.food.optionSelected = List();
               },
             ),
           ],

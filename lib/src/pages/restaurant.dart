@@ -100,8 +100,15 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
     _langTranslate = Provider.of<SettingContext>(context, listen: false).languageCodeTranslate;
     Provider.of<SettingContext>(context,listen: false).isRestaurantPage = true;
     range = Provider.of<SettingContext>(context,listen: false).range;
-    attributeFilter = Provider.of<DataContext>(context,listen: false).attributes;
+
     _restaurantContext = Provider.of<RestaurantContext>(context,listen: false);
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      attributeFilter = Provider.of<DataContext>(context,listen: false).attributes;
+      setState(() {
+
+      });
+    });
 
   api
         .getRestaurant(
@@ -216,6 +223,10 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
         _lang,
         restaurant.id,
       );
+
+      /*await Future.forEach(menus, (element){
+        return Future.forEach(element.foods, (element) => element = api.getFood(id: element.id,lang: "fr"));
+      });*/
 
       setState(() {
         loading = false;

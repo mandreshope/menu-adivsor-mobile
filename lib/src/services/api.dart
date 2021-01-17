@@ -729,12 +729,13 @@ Future<List<FoodAttribute>> getFoodAttributes() async {
   }
 
   
-Future<Map<String,dynamic>> ConfirmSms(String idCommande, String code) async {
+Future<Map<String,dynamic>> ConfirmSms(String idCommande, String code,String commandType) async {
    await _refreshTokens();
     return http.post(
       '$_apiURL/commands/$idCommande/confirm',
       body: json.encode({
-        'code':code
+        'code':code,
+        'commandType':commandType
       }),
       headers:{
         'content-type': 'application/json',

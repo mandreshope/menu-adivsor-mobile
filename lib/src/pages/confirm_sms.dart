@@ -188,7 +188,7 @@ class _ConfirmSmsState extends State<ConfirmSms> {
       setState(() {
         loading = true;
       });
-      Map<String,dynamic> result = await Api.instance.ConfirmSms(widget.command.id, pin);
+      Map<String,dynamic> result = await Api.instance.ConfirmSms(widget.command.id, pin,widget.command.commandType);
       setState(() {
         loading = false;
       });
