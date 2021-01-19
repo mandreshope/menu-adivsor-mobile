@@ -51,7 +51,7 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
       return CircleButton(
           backgroundColor: TEAL,
           onPressed: () async {
-            if (widget.fromRestaurant && widget.food.options.length > 0) {
+           /* if (widget.fromRestaurant && widget.food.options.length > 0) {
               RouteUtil.goTo(
                 context: context,
                 child: Material(
@@ -63,7 +63,7 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                 routeName: foodRoute,
               );
               return;
-            }
+            }*/
             if (_cartContext.itemCount != 0) {
               if (!_cartContext.hasSamePricingAsInBag(widget.food)) {
                 Fluttertoast.showToast(
@@ -175,7 +175,7 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                 size: widget.isFromDelevery ? 12 : 12,
               ),
               onPressed: () async {
-                if (widget.fromRestaurant && widget.food.options.length > 0) {
+               /* if (widget.fromRestaurant && widget.food.options.length > 0) {
                   RouteUtil.goTo(
                     context: context,
                     child: Material(
@@ -187,7 +187,7 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                     routeName: foodRoute,
                   );
                   return;
-                }
+                }*/
                 if (widget.food.isMenu) return;
                 int value = ++widget.itemCount;
                 /*if (widget.food.options.isNotEmpty) {

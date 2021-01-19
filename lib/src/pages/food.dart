@@ -706,7 +706,43 @@ class _FoodPageState extends State<FoodPage> {
                                   value == 0 ? cartContext.removeItem(widget.food) : cartContext.addItem(widget.food, value,false);
                                 },
                                 itemCount: cartContext.getCount(widget.food),
-                                isContains: cartContext.contains(widget.food)))
+                                isContains: cartContext.contains(widget.food))),
+
+                        Consumer<CartContext>(
+                          builder: (_,cartContext,w){
+                            return !cartContext.contains(widget.food) ? Container() :
+                             IconButton(icon: Icon(Icons.delete_rounded,color:Colors.grey), onPressed: () async {
+                              if ((cartContext.itemCount == 0) ||
+                                  (cartContext.hasSamePricingAsInBag(
+                                      widget.food) &&
+                                      cartContext.hasSameOriginAsInBag(
+                                          widget.food))) {
+                                if (cartContext.contains(widget.food)) {
+                                  var result = await showDialog(
+                                    context: context,
+                                    builder: (_) => ConfirmationDialog(
+                                      title: AppLocalizations.of(context)
+                                          .translate(
+                                          'confirm_remove_from_cart_title'),
+                                      content: AppLocalizations.of(context)
+                                          .translate(
+                                          'confirm_remove_from_cart_content'),
+                                    ),
+                                  );
+
+                                  if (result is bool && result) {
+                                    cartContext.removeItem(widget.food);
+                                    setState(() {
+                                      itemCount = 1;
+                                    });
+                                    RouteUtil.goBack(context: context);
+                                  }
+                                }
+                              }
+                            });
+
+                          },
+                        )
 
                       ],
                     ),
@@ -721,62 +757,7 @@ class _FoodPageState extends State<FoodPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                         /* if (showFavorite) ...[
-                            FloatingActionButton(
-                              onPressed: !switchingFavorite
-                                  ? () async {
-                                      AuthContext authContext =
-                                          Provider.of<AuthContext>(
-                                        context,
-                                        listen: false,
-                                      );
 
-                                      setState(() {
-                                        switchingFavorite = true;
-                                      });
-                                      if (!isInFavorite)
-                                        await authContext
-                                            .addToFavoriteFoods(widget.food);
-                                      else
-                                        await authContext
-                                            .removeFromFavoriteFoods(widget.food);
-                                      setState(() {
-                                        switchingFavorite = false;
-                                        isInFavorite = !isInFavorite;
-                                      });
-                                      Fluttertoast.showToast(
-                                        msg: AppLocalizations.of(context)
-                                            .translate(
-                                          isInFavorite
-                                              ? 'added_to_favorite'
-                                              : 'removed_from_favorite',
-                                        ),
-                                      );
-                                    }
-                                  : null,
-                              child: !switchingFavorite
-                                  ? Icon(
-                                      isInFavorite
-                                          ? Icons.favorite
-                                          : Icons.favorite_border,
-                                    )
-                                  : SizedBox(
-                                      width: 15,
-                                      height: 15,
-                                      child: FittedBox(
-                                        child: CircularProgressIndicator(
-                                          valueColor:
-                                              AlwaysStoppedAnimation<Color>(
-                                            Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                          ],*/
                           Expanded(
                             child: Container(
                               child: Consumer<CartContext>(
@@ -818,6 +799,8 @@ class _FoodPageState extends State<FoodPage> {
                                                 _cartContext.addItem(widget.food, value, false);
                                               }
                                             }) : Container(),*/
+
+                                    if(!cartContext.contains(widget.food))
                                     RaisedButton(
                                       padding: EdgeInsets.all(20),
                                       color: cartContext.contains(widget.food)
@@ -879,10 +862,6 @@ class _FoodPageState extends State<FoodPage> {
                                                   }else{*/
 
                                                     cartContext.addItem(widget.food, itemCount,true);
-                                                  //}
-
-                                            /*Navigator.of(context).pop(true);*/
-
                                           }
                                         } else if (!cartContext
                                             .hasSamePricingAsInBag(widget.food)) {

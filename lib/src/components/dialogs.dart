@@ -1138,29 +1138,33 @@ class _AtributesDialogState extends State<AtributesDialog> {
             onTap: (){
               setState(() {
                 dataContext.isAllAttribute = !dataContext.isAllAttribute;
+                attributes.forEach((element) {
+                  element.isChecked = false;
+                });
               });
             },
             title: Row(
               children: [
+                SizedBox(height: 10,),
                 Checkbox(value: dataContext.isAllAttribute, onChanged: (value){
                   setState(() {
                     dataContext.isAllAttribute = value;
+
                   });
                 },
                   checkColor: Colors.white,
                   hoverColor: CRIMSON,
                   activeColor: CRIMSON,),
-                SizedBox(width: 5,),
                 SizedBox(width: 10,),
-                TextTranslator("Tous les Allergènes",
+                TextTranslator("Afficher tous les Allergènes",
                 style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
               ],
             ),
           ),
-          SizedBox(height: 20,),
+          SizedBox(height: 15,),
           Padding(
             padding: EdgeInsets.only(left: 35),
-            child: TextTranslator("Avec les allergènes : ",style:TextStyle(
+            child: TextTranslator("Retirer les allergènes : ",style:TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold)),
           ),
@@ -1179,7 +1183,7 @@ class _AtributesDialogState extends State<AtributesDialog> {
                     },
                     title: Row(
                       children: [
-                        Checkbox(value: att.isChecked, onChanged: (value){
+                        Checkbox(value: dataContext.isAllAttribute ? false : att.isChecked, onChanged: (value){
                           setState(() {
                             att.isChecked = value;
                             dataContext.isAllAttribute = false;
@@ -1191,9 +1195,9 @@ class _AtributesDialogState extends State<AtributesDialog> {
                         FadeInImage.assetNetwork(
                           placeholder: 'assets/images/loading.gif',
                           image:  att.imageURL,
-                          height: 14,
+                          height: 20,
+                          width: 20,
                         ),
-                        SizedBox(width: 5,),
                         SizedBox(width: 10,),
                         TextTranslator(att.locales),
                       ],
@@ -1206,7 +1210,8 @@ class _AtributesDialogState extends State<AtributesDialog> {
             onTap: (){
               List<FoodAttribute> selectedAttributes = List();
 
-              selectedAttributes = dataContext.isAllAttribute ? attributes : attributes.where((element) => element.isChecked).toList();
+              // selectedAttributes = dataContext.isAllAttribute ? attributes : attributes.where((element) => element.isChecked).toList();
+              selectedAttributes = dataContext.isAllAttribute ? List() : attributes.where((element) => element.isChecked).toList();
 
               Navigator.of(context).pop(selectedAttributes);
             },

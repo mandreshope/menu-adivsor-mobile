@@ -102,13 +102,8 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
     range = Provider.of<SettingContext>(context,listen: false).range;
 
     _restaurantContext = Provider.of<RestaurantContext>(context,listen: false);
+    attributeFilter = Provider.of<DataContext>(context,listen: false).attributes;
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      attributeFilter = Provider.of<DataContext>(context,listen: false).attributes;
-      setState(() {
-
-      });
-    });
 
   api
         .getRestaurant(
@@ -333,7 +328,8 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
         }
         Provider.of<SettingContext>(context,listen: false).isRestaurantPage = false;
         Provider.of<CartContext>(context,listen: false).withPrice = true;
-        
+        Provider.of<DataContext>(context,listen: false).resetAttributes();
+
         return true;
       },
       child: Localizations.override(
@@ -1259,7 +1255,6 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
               ),
               TextTranslator(
                 AppLocalizations.of(context).translate('no_food'),
-                
                 style: TextStyle(
                   fontSize: 22,
                 ),

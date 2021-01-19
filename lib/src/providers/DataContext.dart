@@ -240,4 +240,10 @@ class DataContext extends ChangeNotifier {
     notifyListeners();
   }
 
+  resetAttributes() {
+    _foodAttributes.forEach((element) {
+        element.isChecked = false;
+    });
+  }
+
 }

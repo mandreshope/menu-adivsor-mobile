@@ -66,7 +66,7 @@ class CartContext extends ChangeNotifier {
     }
 
     return false;
-  }
+  } 
 
   bool removeFoodItemMenu(String idFood,String idOption){
     _items.forEach((food, count) {

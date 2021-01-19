@@ -475,7 +475,7 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
               ),
             ),
           );*/
-          RouteUtil.goTo(
+         RouteUtil.goTo(
             context: context,
             child: Material(
               child: FoodPage(

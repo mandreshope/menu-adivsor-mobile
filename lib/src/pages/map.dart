@@ -76,7 +76,8 @@ class _MapPageState extends State<MapPage> {
             restaurant.content['location']['coordinates'][0],
           ),
           infoWindow: InfoWindow(
-            title: restaurant.content['name'],
+            title: "${restaurant.content['name']}\n",
+
           ),
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
         ));
