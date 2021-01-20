@@ -28,6 +28,7 @@ import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textFormFieldTranslator.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:segment_control/segment_control.dart';
 import 'package:share/share.dart';
@@ -88,13 +89,19 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
   List<Menu> menus;
 
   Map<int, Widget> _segmentChilder;
-  List<String> _foodTypes = List();
+  List<FoodTypeItem> _foodTypes = List();
 
   RestaurantContext _restaurantContext;
+  AutoScrollController _autoScrollController;
 
   @override
   void initState() {
     super.initState();
+
+    _autoScrollController = AutoScrollController(
+        viewportBoundaryGetter: () =>
+        Rect.fromLTRB(0, 0, MediaQuery.of(context).padding.right, 0),
+    axis: Axis.horizontal);
     
      _lang = Provider.of<SettingContext>(context, listen: false).languageCode;
     _langTranslate = Provider.of<SettingContext>(context, listen: false).languageCodeTranslate;
@@ -142,14 +149,8 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
 
       _segmentChilder = Map();
 
-      _foodTypes.clear();
-      for (int i=0; i< restaurant.foodTypes.length; i++){
-        if (restaurant.foodTypes[i]['tag'] != 'drink'){
-          _foodTypes.add(restaurant.foodTypes[i]['name']['fr']);
-          _segmentChilder[i] = _segmentWidget(restaurant.foodTypes[i]['name']['fr']);
-        }
-
-      }
+      _restaurantContext.init( restaurant.foodTypes);
+      _foodTypes = _restaurantContext.foodTypes;
 
       tabController.addListener(() {
         print(tabController.index);
@@ -164,10 +165,13 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
         });
       });
 
-      itemPositionsListener.itemPositions.addListener(() {
+      itemPositionsListener.itemPositions.addListener(() async {
         print('Scroll position: ${itemPositionsListener.itemPositions.value.first.index}');
         if (tabController.index == 0){
           _restaurantContext.currentIndex = itemPositionsListener.itemPositions.value.first.index;
+          _restaurantContext.setFoodTypeSelected(_restaurantContext.currentIndex);
+          await _autoScrollController.scrollToIndex(_restaurantContext.currentIndex,preferPosition: AutoScrollPosition.begin);
+
         }
 
         // tabController.animateTo(itemPositionsListener.itemPositions.value.first.index);
@@ -1059,7 +1063,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                           padding: const EdgeInsets.symmetric(
                             vertical: 10,
                           ),
-                          child: Divider(),
+                          child: restaurant.foodTypes[index]['tag'] != "drink" ? Container() : Divider(),
                         ),
                       ),
                     ),
@@ -1259,6 +1263,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                   fontSize: 22,
                 ),
               ),
+              SizedBox(height: 800,)
             ],
           );
   }
@@ -1269,7 +1274,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
         return Padding(
 
           padding: EdgeInsets.symmetric(horizontal: 25,vertical: 5),
-          child: _segmentChilder.length < 2 ?
+          child: /*_segmentChilder.length < 2 ?
           Container(
             // width: 350,
             height: 45,
@@ -1303,42 +1308,61 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
             normalTitleStyle: TextStyle(fontSize: 14, color: CRIMSON,fontWeight: FontWeight.bold),
             activeTitleStyle: TextStyle(fontSize: 16, color: Colors.white,fontWeight: FontWeight.bold),
             height: 45,
-          )
-
-          /*CupertinoSegmentedControl(
-            children: _segmentChilder, onValueChanged: (index) {
-            restaurantContext.currentIndex = index;
-            itemScrollController.jumpTo(index: index);
-          },
-            unselectedColor: Color(0xffEDEDED),
-            padding: EdgeInsets.symmetric(horizontal: 0),
-            selectedColor: CRIMSON,
-            borderColor: CRIMSON,
-            groupValue: restaurantContext.currentIndex,
           )*/
+          Consumer<RestaurantContext>(
+            builder: (context, snapshot,w) {
+              return Align(
+                alignment: Alignment.topCenter,
+                child: Container(
+                  height: 50,
+                  // width: 500,
+                  child: ListView.builder(
+                      itemCount: _foodTypes.length,
+                      scrollDirection: Axis.horizontal,
+                      controller: _autoScrollController,
+                      shrinkWrap: true,
+                      itemBuilder: (_, position){
+                        return  AutoScrollTag(
+                            controller: _autoScrollController,
+                            key:ValueKey(position),
+                            index: position,
+                            child: Center(child: _segmentWidget(position)));
+                  }),
+                ),
+              );
+            }
+          )
         );
       },
     );
 
   }
 
-  Widget _segmentWidget(String title) => Container(
-    width: 350,
-    height: 45,
-    // padding: EdgeInsets.symmetric(horizontal: 15),
-    decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5)
-    ),
-    // padding: EdgeInsets.only(left: 12, right: 12),
-    child: Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 25),
-        child: TextTranslator(title,style:TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold
-        )),
-      ),
-    ),
-  );
-
+  Widget _segmentWidget(int position) {
+    FoodTypeItem foodTypeItem = _restaurantContext.foodTypes[position];
+    return InkWell(
+        onTap: () {
+          itemScrollController.jumpTo(index: position);
+          _restaurantContext.setFoodTypeSelected(position);
+        },
+        child: Container(
+            width: 150,
+            height: 45,
+            // padding: EdgeInsets.symmetric(horizontal: 15),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                color: foodTypeItem.isSelected ? CRIMSON : Colors.white),
+            // padding: EdgeInsets.only(left: 12, right: 12),
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25),
+                child: TextTranslator(foodTypeItem.name,
+                    style: TextStyle(
+                        color:
+                            !foodTypeItem.isSelected ? CRIMSON : Colors.white,
+                        fontWeight: FontWeight.bold)),
+              ),
+            )));
+  }
 }
+
