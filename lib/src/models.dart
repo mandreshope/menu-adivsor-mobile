@@ -87,6 +87,28 @@ class Food implements Copyable<Food>{
         maxOptions:json['maxOptions'],
       );
 
+  factory Food.copy(Food food) => Food(
+    id: food.id,
+    options: food.options.map((e) => Option.copy(e)).toList(),
+    price: food.price,
+    restaurant: food.restaurant,
+    name: food.name,
+    imageURL: food.imageURL,
+    category: food.category,
+    attributes: food.attributes,
+    isFoodForMenu: food.isFoodForMenu,
+    isMenu: food.isMenu,
+    title: food.title,
+    type: food.type,
+    description: food.description,
+    foodAttributes: food.foodAttributes,
+    maxOptions: food.maxOptions,
+    message: food.message,
+    // optionSelected: food.optionSelected,
+    ratings: food.ratings,
+    status: food.status
+  );
+
   Map<String, dynamic> toJson() {
     return this.isMenu ?
     {
@@ -107,6 +129,7 @@ class Food implements Copyable<Food>{
   @override
   Food copy() {
     // TODO: implement copy
+    return this;
     return Food(
       id: this.id, 
       name: this.name, 
@@ -843,12 +866,12 @@ class Option {
   String title;
   int maxOptions;
 
-  List<ItemsOption> itemOptionSelected;
+  List<ItemsOption> itemOptionSelected = List();
 
   Option({this.sId, this.items, this.title, this.maxOptions,this.itemOptionSelected});
 
   factory Option.copy(Option o) => Option(
-    itemOptionSelected: o.itemOptionSelected,
+    itemOptionSelected: o.itemOptionSelected?.map((e) => ItemsOption.Copy(e))?.toList(),
     items: o.items,
     maxOptions: o.maxOptions,
     sId: o.sId,
@@ -899,6 +922,15 @@ class ItemsOption {
     if (json['item'] != null)
     item = ItemsOption.fromJson(json['item']);
   }
+
+  factory ItemsOption.Copy(ItemsOption item) => ItemsOption(
+    name: item.name,
+    imageUrl: item.imageUrl,
+    item: item.item,
+    price: Price.Copy(item.price),
+    quantity: item.quantity,
+    sId: item.sId
+  );
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();

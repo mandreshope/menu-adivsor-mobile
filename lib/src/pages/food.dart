@@ -48,13 +48,15 @@ class _FoodPageState extends State<FoodPage> {
   CartContext _cartContext;
   List<Option> options = [
   ];
-  bool collaspse = true;
+  // bool collaspse = true;
+  Map<String,bool> collaspse = Map();
 
   OptionContext _optionContext;
 
-  List<ItemsOption> _itemOptionSelected = List();
+  List<Option> _optionSelected = List();
 
   Menu menu;
+  Food foodAdded;
 
   @override
   void initState() {
@@ -111,7 +113,14 @@ class _FoodPageState extends State<FoodPage> {
       // setState(() {
         
       // });
-      options = widget.food.options;
+      // options = widget.food.options;
+      foodAdded = Food.copy(widget.food);
+      options = widget.food.options.map((e) => Option.copy(e)).toList();
+
+      options.forEach((element) {
+        collaspse[element.sId] = true;
+      });
+
     });
 
   }
@@ -427,8 +436,10 @@ class _FoodPageState extends State<FoodPage> {
                                             if (option.itemOptionSelected?.length == option.maxOptions){
                                               if (option.itemOptionSelected.length >= value.length ){
                                                 option.itemOptionSelected = value.cast<ItemsOption>();
-                                                option.itemOptionSelected = option.itemOptionSelected.map((e) => e).toList();
-                                                widget.food.optionSelected = options;
+                                                // option.itemOptionSelected = option.itemOptionSelected.map((e) => e).toList();
+                                                // widget.food.optionSelected = options;
+
+                                                foodAdded.optionSelected = options.map((o) => Option.copy(o)).toList();
 
                                               }else{
                                                 print("max options");
@@ -439,7 +450,8 @@ class _FoodPageState extends State<FoodPage> {
 
                                             }else{
                                               option.itemOptionSelected = value.cast<ItemsOption>();
-                                              widget.food.optionSelected = options;
+                                              // widget.food.optionSelected = options;
+                                              foodAdded.optionSelected = options.map((o) => Option.copy(o)).toList();
                                               // if (widget.fromMenu){
                                               //   menu.optionSelected = options;
                                               //   widget.food.optionSelected = options;
@@ -513,11 +525,11 @@ class _FoodPageState extends State<FoodPage> {
                                                     onPressed: (){
                                                       _.value.quantity = 1;
                                                       _.select(!_.selected);
-                                                      if (widget.fromMenu){
+                                                     /* if (widget.fromMenu){
                                                         menu.optionSelected = options;
                                                         widget.food.optionSelected = options;
                                                         _cartContext.addOption(menu, options,key: widget.subMenu);
-                                                      }
+                                                      }*/
                                                     },)
                                                      :
                                                     //button incrementation
@@ -536,11 +548,13 @@ class _FoodPageState extends State<FoodPage> {
                                                           }else{
                                                              _.value.quantity --;
                                                            }
-                                                           if (widget.fromMenu){
-                                                             menu.optionSelected = options;
-                                                             widget.food.optionSelected = options;
+                                                          /* if (widget.fromMenu){
+                                                             menu.optionSelected = _optionSelected;
+                                                             widget.food.optionSelected = _optionSelected;
                                                              _cartContext.addOption(menu, options,key: widget.subMenu);
-                                                           }
+                                                           }else{
+                                                             widget.food.optionSelected = _optionSelected;
+                                                           }*/
                                                            snapshot.refresh();
 
                                                           }),
@@ -609,10 +623,10 @@ class _FoodPageState extends State<FoodPage> {
                                       ),
                                     ),
                                   ),
-                                  value: collaspse,
+                                  value: collaspse[option.sId],
                                   onChange: (value){
                                     setState(() {
-                                      collaspse = value;
+                                      collaspse[option.sId] = value;
                                     });
 
                                   },
@@ -684,26 +698,24 @@ class _FoodPageState extends State<FoodPage> {
                                   ),
                                 )
                         )*/
-                           ButtonItemCountWidget(widget.food,
-                            onAdded: (value) async {
-                                /*if (widget.food.options.isNotEmpty){
-                                  var optionSelected = await showDialog(
-                                                  context: context,
-                                                  barrierDismissible: false,
-                                                  builder: (_) => OptionChoiceDialog(
-                                                    food: widget.food,
-                                                  ),
-                                                );
-                                  if (optionSelected != null)
-                                    cartContext.addItem(widget.food, value,true);
-                                }else{
-                                  cartContext.addItem(widget.food, value,true);
-                                }
-                                  */
-                              cartContext.addItem(widget.food, value,true);
+                           ButtonItemCountWidget(foodAdded,
+
+                            onAdded: () async {
+                                setState(() {
+                                  // cartContext.addItem(
+                                  //     foodAdded, itemCount, true);
+                                  foodAdded = Food.copy(widget.food);
+                                  options.forEach((element) {
+                                    element.itemOptionSelected =
+                                        List();});
+                                });
                                 },
-                                onRemoved: (value) {
-                                  value == 0 ? cartContext.removeItem(widget.food) : cartContext.addItem(widget.food, value,false);
+                                onRemoved: (food) {
+                                  // value == 0 ? cartContext.removeItem(widget.food) : cartContext.addItem(widget.food, value,false);
+                                  setState(() {
+                                    options = food.optionSelected.map<Option>((e) => Option.copy(e)).toList();
+                                    print(options);
+                                  });
                                 },
                                 itemCount: cartContext.getCount(widget.food),
                                 isContains: cartContext.contains(widget.food))),
@@ -731,7 +743,7 @@ class _FoodPageState extends State<FoodPage> {
                                   );
 
                                   if (result is bool && result) {
-                                    cartContext.removeItem(widget.food);
+                                    cartContext.removeAllFood(widget.food);
                                     setState(() {
                                       itemCount = 1;
                                     });
@@ -829,7 +841,7 @@ class _FoodPageState extends State<FoodPage> {
                                             );
 
                                             if (result is bool && result) {
-                                              cartContext.removeItem(widget.food);
+                                              cartContext.removeAllFood(foodAdded);
                                               setState(() {
                                                 itemCount = 1;
                                               });
@@ -860,8 +872,21 @@ class _FoodPageState extends State<FoodPage> {
                                                     if (optionSelected != null)
                                                       cartContext.addItem(widget.food, itemCount,true);
                                                   }else{*/
-
-                                                    cartContext.addItem(widget.food, itemCount,true);
+                                                    if (cartContext.hasOptionSelectioned(foodAdded)) {
+                                                cartContext.addItem(
+                                                    foodAdded, itemCount, true);
+                                                foodAdded = Food.copy(widget.food);
+                                                options.forEach((element) {
+                                                  element.itemOptionSelected =
+                                                      List();
+                                                });
+                                                // cartContext.refresh();
+                                                setState(() {
+                                                });
+                                              } else
+                                                      Fluttertoast.showToast(
+                                                        msg: 'Ajouter une option',
+                                                      );
                                           }
                                         } else if (!cartContext
                                             .hasSamePricingAsInBag(widget.food)) {
@@ -938,7 +963,7 @@ class _FoodPageState extends State<FoodPage> {
                 child: Consumer<CartContext>(
                   builder: (_, cartContext, __) => cartContext.contains(widget.food)
                       ? OrderButton(
-                          totalPrice: _cartContext.getTotalPriceFood(widget.food),
+                          totalPrice: _cartContext.totalPrice,
                         )
                       : SizedBox(),
                 )),

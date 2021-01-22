@@ -1349,9 +1349,10 @@ class BagItem extends StatefulWidget {
   bool activeDelete;
   String imageTag;
   bool withPrice;
+  int position;
 
 
-  BagItem({Key key, @required this.food, @required this.count, this.activeDelete = true, this.imageTag,this.withPrice = true}) : super(key: key);
+  BagItem({Key key, @required this.food, this.position,@required this.count, this.activeDelete = true, this.imageTag,this.withPrice = true}) : super(key: key);
 
   @override
   _BagItemState createState() => _BagItemState();
@@ -1403,17 +1404,17 @@ class _BagItemState extends State<BagItem> {
                     width: 10,
                   ),
                   widget.food.imageURL != null
-                      ? Hero(
+                      ? /*Hero(
                           tag: widget.imageTag ?? widget.food.id,
-                          child: CircleAvatar(
+                          child:*/ CircleAvatar(
                             backgroundImage: NetworkImage(
                               widget.food.imageURL,
                             ),
                             onBackgroundImageError: (_, __) {},
                             backgroundColor: Colors.grey,
                             maxRadius: 20,
-                          ),
-                        )
+                          )
+                       // )
                       : Icon(
                           Icons.fastfood,
                         ),
@@ -1483,7 +1484,7 @@ class _BagItemState extends State<BagItem> {
                     },
                   ),*/
 
-                  ButtonItemCountWidget(
+                  /*ButtonItemCountWidget(
                     widget.food,
                     itemCount: widget.count,
                     onAdded: (value) {
@@ -1498,7 +1499,7 @@ class _BagItemState extends State<BagItem> {
                     },
                     isContains: _cartContext.contains(widget.food),
                     isFromDelevery: true,
-                  ),
+                  ),*/
                   /* SizedBox(
                       width: 15,
                     ),
@@ -1544,16 +1545,16 @@ class _BagItemState extends State<BagItem> {
                       ),
                       ],
                   ),*/
-                  if (widget.activeDelete) ...[
+                  // if (widget.activeDelete) ...[
                     SizedBox(
                       width: 15,
                     ),
                     CircleButton(
-                      backgroundColor: CRIMSON,
+                      backgroundColor: Colors.white,padding: EdgeInsets.zero,
                       child: Icon(
-                        Icons.delete,
-                        color: Colors.white,
-                        size: 15,
+                        Icons.remove_circle,
+                        color: CRIMSON,
+                        size: 30,
                       ),
                       onPressed: () async {
                         var result = await showDialog(
@@ -1567,16 +1568,16 @@ class _BagItemState extends State<BagItem> {
                         if (result is bool && result) {
                           CartContext cartContext = Provider.of<CartContext>(context, listen: false);
 
-                          cartContext.removeItem(widget.food);
+                          cartContext.removeItemAtPosition(widget.position);
                           if (cartContext.items.length == 0) RouteUtil.goBack(context: context);
                         }
                       },
                     ),
-                  ]
+                  // ]
                 ],
               ),
               //
-              if (_cartContext.options[widget.food.id] != null)...[
+              if (widget.food.options != null)...[
                 Divider(),
                 _options(),
               ]
@@ -1591,21 +1592,21 @@ class _BagItemState extends State<BagItem> {
   }
   Widget _options() {
     // int i = 0;
-    List<Option> options = _cartContext.options[widget.food.id]
+    /*List<Option> options = _cartContext.options[widget.food.id]
         .expand((element) => element)
-        .toList();
-    var o = _cartContext.options[widget.food.id];
+        .toList();*/
+    var options = widget.food.optionSelected;
     return Container(
       // margin: EdgeInsets.only(left: MediaQuery.of(context).size.width/4),
       child: Column(
         children: [
-          for (int a=0;a<o.length;a++)...[
+          // for (Option option in options)...[
             Container(
               padding: EdgeInsets.only(top:15,bottom: 15,left: MediaQuery.of(context).size.width/2.5,right: 25),
-              color: a%2 == 0 ? Colors.grey.withAlpha(20) : Colors.white,
+              // color: a%2 == 0 ? Colors.grey.withAlpha(20) : Colors.white,
               child: Column(
                 children: [
-                  for (Option option in o[a])...[
+                  for (Option option in options)...[
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
@@ -1615,7 +1616,8 @@ class _BagItemState extends State<BagItem> {
                       ],
                     ),
                     SizedBox(height: 15,),
-                    for (ItemsOption itemsOption in option.itemOptionSelected)...[
+
+                    for (ItemsOption itemsOption in option?.itemOptionSelected?.toList())...[
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
@@ -1647,11 +1649,12 @@ class _BagItemState extends State<BagItem> {
               ),
             ),
             // Divider()
-          ]
+          // ]
         ],
       ),
     );
     // for (int a=0;a<o.length;a++){
+  /*
       return Container(
         child: Column(
           children: [
@@ -1717,7 +1720,7 @@ class _BagItemState extends State<BagItem> {
           ],
         ),
       );
-
+*/
     // }
 
   }

@@ -43,6 +43,11 @@ class Price {
      'currency': currency,
    };
 
+   factory Price.Copy(Price p)=> Price(
+     amount: p.amount,
+     currency: p.currency
+   );
+
 }
 
 class UserName {

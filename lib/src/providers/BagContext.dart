@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/models.dart';
 
 class CartContext extends ChangeNotifier {
-  Map<dynamic, int> _items = Map();
+  // Map<dynamic, int> _items = Map();
+  List<dynamic> _items = List();
   Map<String, List<List<Option>>> _options = Map();
   String _currentOrigin;
   Queue q = Queue();
@@ -38,8 +39,12 @@ class CartContext extends ChangeNotifier {
   }
 
   bool get pricelessItems {
-    return _items.keys.length > 0 &&
+    /*return _items.keys.length > 0 &&
         _items.keys.any(
+          (element) => element.price == null || element.price.amount == null,
+        );*/
+    return _items.length > 0 &&
+        _items.any(
           (element) => element.price == null || element.price.amount == null,
         );
   }
@@ -53,13 +58,26 @@ class CartContext extends ChangeNotifier {
   bool addItem(dynamic item, number,bool isAdd) {
     if (itemCount == 0 || (hasSamePricingAsInBag(item) && hasSameOriginAsInBag(item))) {
       // _items[item] = number;
-      _items.update(
+      /*_items.update(
         item,
         (value) => number,
         ifAbsent: () => number,
-      );
-      if (item.optionSelected != null)
-        isAdd ? addOption(item, item.optionSelected) : removeOption(item);
+      );*/
+      if(isAdd){
+       /* dynamic food;
+        if (item is Food){
+          food = item.copy();
+        }*/
+        _items.add(item);
+        // addOption(item, item.optionSelected);
+      }else{
+        // removeOption(item);
+        removeItem(item);
+      }
+      _items.sort((a,b) => a.name.compareTo(b.name));
+      // if (item.optionSelected != null)
+      //   isAdd ? addOption(item, item.optionSelected) : removeItem(item);
+      // isAdd ? addOption(item, item.optionSelected) : removeOption(item);
       currentOrigin = (item.restaurant is String) ? item.restaurant : item.restaurant['_id'] ;
       notifyListeners();
       return true;
@@ -68,8 +86,19 @@ class CartContext extends ChangeNotifier {
     return false;
   } 
 
-  bool removeFoodItemMenu(String idFood,String idOption){
+  /*bool removeFoodItemMenu(String idFood,String idOption){
     _items.forEach((food, count) {
+      if(food.isFoodForMenu){
+        food.optionSelected.forEach((f){
+          if (f.sId == idOption)
+            f.itemOptionSelected.clear();
+        });
+      }
+    });
+  }*/
+
+  bool removeFoodItemMenu(String idFood,String idOption){
+    _items.forEach((food) {
       if(food.isFoodForMenu){
         food.optionSelected.forEach((f){
           if (f.sId == idOption)
@@ -79,7 +108,8 @@ class CartContext extends ChangeNotifier {
     });
   }
   
-  Map<dynamic, int> get items => _items;
+  // Map<dynamic, int> get items => _items;
+  List<dynamic> get items => _items;
   Map<dynamic, List<List<Option>>> get options => _options;
 
   int get itemCount => _items.length;
@@ -87,7 +117,40 @@ class CartContext extends ChangeNotifier {
   double get totalPrice {
     double totalPrice = 0;
 
-    _items.forEach((food, count) {
+    _items.forEach((food) {
+      /*if (food.isMenu) {
+        food.foods.forEach((f){
+         if (f.price != null && f.price.amount != null) totalPrice += f.price.amount / 100 * count;
+        });
+      }else*/
+      if (food.isMenu){
+        if (food.type == "per_food"){
+          if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100;
+        }else if(food.type == "priceless"){
+
+        }else if (food.type == "fixed_price"){
+          if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100;
+        }
+
+      }else{
+        if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100;
+      }
+
+      /*if (food.isMenu){
+        // if (per_food)
+        // priceless
+        // fixed_price
+      }else{*/
+       /* food.options?.forEach((option){
+        option.itemOptionSelected?.forEach((itemOption) {
+        if(itemOption.price != null) totalPrice += itemOption.price/100;
+      });
+      });*/
+
+    //}
+    });
+
+   /* _items.forEach((food, count) {
       /*if (food.isMenu) {
         food.foods.forEach((f){
          if (f.price != null && f.price.amount != null) totalPrice += f.price.amount / 100 * count;
@@ -121,7 +184,7 @@ class CartContext extends ChangeNotifier {
     }*/
       
       
-    });
+    });*/
     
     List<Option> _temp = _options.values.expand((element) => element).toList().expand((element) => element).toList();
     _temp.forEach((option) {
@@ -135,7 +198,7 @@ class CartContext extends ChangeNotifier {
 
   bool contains(dynamic food) {
     return itemCount > 0 &&
-        _items.keys.firstWhere(
+        _items.firstWhere(
               (element) => element.id == food.id,
               orElse: () => null,
             ) !=
@@ -143,44 +206,48 @@ class CartContext extends ChangeNotifier {
   }
 
   void removeItem(dynamic food) {
-    _items.removeWhere((key, _) { 
-      if(key.id == food.id){
-        //if (food.isMenu){
-
-        //}else{
-          key.optionSelected?.forEach((itemOption) {
-          itemOption.itemOptionSelected?.clear();
-        
-         });
-      _options[key.id]?.clear();
-       // }
-         return true;
-      } 
-      return false;
-    });
+    dynamic item = _items.lastWhere((element) => element.id == food.id);
+    _items.remove(item);
     if (_items.length == 0) currentOrigin = null;
     notifyListeners();
   }
 
-  void setCount(dynamic food, int itemCount) {
+  dynamic getLastFood(String id){
+    dynamic item = _items.lastWhere((element) => element.id == id);
+    return item;
+  }
+
+  void removeAllFood(dynamic food){
+    _items.removeWhere((element) => element.id == food.id);
+    notifyListeners();
+  }
+
+    void removeItemAtPosition(int position) {
+    _items.removeAt(position);
+    if (_items.length == 0) currentOrigin = null;
+    notifyListeners();
+  }
+
+  /*void setCount(dynamic food, int itemCount) {
     _items.updateAll((key, value) {
       if (key.id == food.id) return itemCount;
       return value;
     });
     notifyListeners();
-  }
+  }*/
 
   int getCount(dynamic food) {
     int count = 0;
-    _items.forEach((key, value) {
-      if (key.id == food.id) count = value;
+    _items.forEach((key) {
+      if (key.id == food.id) count ++;
     });
     return count;
   }
 
   double getTotalPriceFood(dynamic food){
     double totalPrice = 0;
-    int count = _items[food] ?? 1;
+    //int count = _items[food] ?? 1;
+    int count = _items.where((element) => element.id == food.id).toList().length;
 // return 15.2;
     /*_items.forEach((key, value) {
       
@@ -238,7 +305,7 @@ class CartContext extends ChangeNotifier {
   
   Food getFood(dynamic food) {
     var f;
-    _items.forEach((key, value) {
+    _items.forEach((key) {
       if (key.id == food.id) {
         f = key;
         return; 
@@ -256,8 +323,8 @@ class CartContext extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addOption(dynamic item, List<Option> options,{String key}) {
-    if (_options[item.id] == null) {
+  void addOption(dynamic item,List<Option>  options,{String key}) {
+    /*if (_options[item.id] == null) {
       _options[item.id] = List();
     }
     if (item.isMenu){
@@ -266,7 +333,9 @@ class CartContext extends ChangeNotifier {
       _options[item.id] = [options.map((e) => Option.copy(e)).toList()];
       }
     }else
-      _options[item.id].add(options.map((e) => Option.copy(e)).toList());
+      if (options != null && options.isNotEmpty)
+      _options[item.id].add(options.map((e) => Option.copy(e)).toList());*/
+    item.optionSelected = options;
   }
 
   void removeOption(dynamic item) {
@@ -277,5 +346,18 @@ class CartContext extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool hasOptionSelectioned(Food food){
+    bool hasOption = false;
+    if (food.optionSelected == null || food.optionSelected.isEmpty) return false;
+
+    for (Option option in food.optionSelected) {
+      if (option.itemOptionSelected.isNotEmpty){
+        hasOption = true;
+      }else{
+        hasOption = false;
+      }
+    }
+    return hasOption;
+  }
 
 }

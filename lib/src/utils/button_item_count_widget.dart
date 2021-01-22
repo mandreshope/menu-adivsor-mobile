@@ -133,12 +133,13 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                   );
 
                   if (result is bool && result) {
-                    _cartContext.removeItem(widget.food);
+                    _cartContext.removeAllFood(widget.food);
                     if (!widget.fromRestaurant)
                       RouteUtil.goBack(context: context);
                   }
                 } else {
                   _cartContext.addItem(widget.food, value, false);
+                  widget.onRemoved(_cartContext.getLastFood(widget.food.id));
                 }
                 // if (value <= 0) {
                 //   showOptions = false;
@@ -188,23 +189,19 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                   );
                   return;
                 }*/
-                if (widget.food.isMenu) return;
-                int value = ++widget.itemCount;
-                /*if (widget.food.options.isNotEmpty) {
-                  var optionSelected = await showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (_) => OptionChoiceDialog(
-                      food: widget.food,
-                      withPrice: widget.withPrice,
-                    ),
-                  );
-                  if (optionSelected != null) _cartContext.addItem(widget.food, value, true);
-                } else {*/
-                  _cartContext.addItem(widget.food, value, true);
-               // }
-                // widget.onAdded();
-                widget.food.optionSelected = List();
+               if (!_cartContext.hasOptionSelectioned(widget.food)) {
+                 Fluttertoast.showToast(
+                   msg: 'Ajouter une option',
+                 );
+
+               }else{
+                 if (widget.food.isMenu) return;
+                 // widget.itemCount ++ ;
+
+                 _cartContext.addItem(widget.food, 1, true);
+                 widget.onAdded();
+               }
+
               },
             ),
           ],

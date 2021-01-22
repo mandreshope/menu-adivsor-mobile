@@ -89,20 +89,23 @@ class _OrderPageState extends State<OrderPage> {
                     builder: (_, cartContext, __) {
                       final List<Widget> list = [];
                       String id = "-1";
+                      int position = 0;
                       cartContext.items.forEach(
-                        (food,count) {
+                        (food) {
                           //if (food.price != null)
-                          if (food.id != id){
-                            id = food.id;
+                         /* if (food.id != id){
+                            id = food.id;*/
                             list.add(
                               BagItem(
                                 food: food,
-                                count: count,
+                                position: position,
+                                count: 1,
                                 withPrice: widget.withPrice,
                               ),
                             );
+                            position++;
                           }
-                        },
+                        // },
                       );
 
                       if (cartContext.itemCount == 0)
@@ -410,16 +413,24 @@ class _OrderPageState extends State<OrderPage> {
               comment: cartContext.comment,
               relatedUser: authContext.currentUser?.id ?? null,
               commandType: commandContext.commandType,
-              items: cartContext.items.entries.where((e) => !e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id, 'options': cartContext.options[e.key.id] != null ? cartContext.options[e.key.id].expand((element) => element).toList() : [],'comment':e.key.message}).toList(),
+              items: cartContext.items.where(
+                      (f) => !f.isMenu).map(
+                      (e) => {
+                        'quantity': 1,
+                        'item': e.id,
+                        'options': e.optionSelected != null ?
+                        e.optionSelected : [],
+                        'comment':e.message}
+                        ).toList(),
               restaurant: cartContext.currentOrigin,
               totalPrice: (cartContext.totalPrice * 100).round(),
               menu: 
-              cartContext.items.entries.where(
-                (e) => e.key.isMenu).map(
+              cartContext.items.where(
+                (e) => e.isMenu).map(
                   (e) => 
                   {
-                    'quantity': e.value, 
-                    'item': e.key.id, 
+                    'quantity': 1,
+                    'item': e.id,
                     'foods': 
                 cartContext.foodMenuSelecteds
               }).toList(),
@@ -503,16 +514,18 @@ class _OrderPageState extends State<OrderPage> {
           comment: cartContext.comment,
           relatedUser: authContext.currentUser.id,
           commandType: commandContext.commandType,
-          items: cartContext.items.entries.where((e) => !e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id, 'options': cartContext.options[e.key.id] != null ? cartContext.options[e.key.id].expand((element) => element).toList() : [],'comment':e.key.message}).toList(),
+          items: cartContext.items.where((e) => !e.isMenu).map((e) => {'quantity': 1, 'item': e.id,
+            'options': e.optionSelected != null ?
+            e.optionSelected : [],'comment':e.message}).toList(),
           restaurant: cartContext.currentOrigin,
           totalPrice: (cartContext.totalPrice * 100).round(),
-        menu: cartContext.items.entries.where(
+        menu: cartContext.items.where(
                 (e) => 
-                e.key.isMenu).map(
+                e.isMenu).map(
                   (e) => 
                   {
-                    'quantity': e.value, 
-                    'item': e.key.id, 
+                    'quantity': 1,
+                    'item': e.id,
                     'foods': 
                 cartContext.foodMenuSelecteds
               }).toList(),

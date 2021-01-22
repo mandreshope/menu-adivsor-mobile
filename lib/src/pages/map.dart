@@ -45,6 +45,11 @@ class _MapPageState extends State<MapPage> {
   // ignore: unused_field
   LatLng _lastMapPosition = _center;
 
+  bool showInfo = false;
+  Restaurant restaurant;
+
+  int range;
+
   void _onCameraMove(CameraPosition position) {
     _lastMapPosition = position.target;
   }
@@ -75,10 +80,26 @@ class _MapPageState extends State<MapPage> {
             restaurant.content['location']['coordinates'][1],
             restaurant.content['location']['coordinates'][0],
           ),
+          onTap: (){
+            setState(() {
+              this.restaurant = Restaurant.fromJson(restaurant.content);
+              this.showInfo = true;
+            });
+          },
+          /*
           infoWindow: InfoWindow(
-            title: "${restaurant.content['name']}\n",
-
+            title: "${restaurant.content['name']}\n${restaurant.content['address']}\n${restaurant.content['phoneNumber']}",
+            onTap: (){
+              RouteUtil.goTo(
+                context: context,
+                child: RestaurantPage(
+                  restaurant: restaurant.content['id'],
+                ),
+                routeName: restaurantRoute,
+              );
+            }
           ),
+          */
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
         ));
       }
@@ -91,6 +112,7 @@ class _MapPageState extends State<MapPage> {
   void initState() {
     super.initState();
 
+    range = Provider.of<SettingContext>(context,listen: false).range;
     _checkForLocationPermission();
 
     _initSearch();
@@ -158,6 +180,9 @@ class _MapPageState extends State<MapPage> {
           ).languageCode,
           type: 'restaurant',
           filters: filters,
+          location: {
+            "coordinates":[_currentPosition?.longitude ?? 0,_currentPosition?.latitude ?? 0] ?? [0,0]
+          },
         );
       } catch (error) {} finally {
         if (mounted)
@@ -221,6 +246,11 @@ class _MapPageState extends State<MapPage> {
                     onMapCreated: (GoogleMapController controller) {
                       _mapController.complete(controller);
                     },
+                  onTap: (latlong){
+                      setState(() {
+                        showInfo = false;
+                      });
+              },
                   )
                 // FlutterMap(
                 //     mapController: _mapController,
@@ -354,11 +384,13 @@ class _MapPageState extends State<MapPage> {
                               languageCode: Provider.of<SettingContext>(context).languageCode,
                               filters: filters,
                               type: 'restaurant',
+                              range: Provider.of<SettingContext>(context).range,
                             ),
                           );
                           if (result != null && result['filters'] is Map) {
                             setState(() {
                               filters = result['filters'];
+                              range = result['range'];
                             });
                             _initSearch();
                           }
@@ -513,6 +545,86 @@ class _MapPageState extends State<MapPage> {
                 child: Icon(Icons.my_location),
               ),
             ),
+            Visibility(
+              visible: showInfo,
+              child: Align(
+                alignment: Alignment.center,
+                child: Container(
+                  padding: EdgeInsets.all(15),
+                  width: 350,
+                  // height: 350,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15)
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextTranslator(
+                        'Nom  ',
+                        style: TextStyle(
+                            color: Colors.black, fontWeight: FontWeight.w600,
+                            fontSize: 12
+                        ),
+                      ),
+                      TextTranslator(
+                        "\t${restaurant?.name ?? ""}",
+                        style: TextStyle(
+                            fontSize: 16
+                        ),
+                      ),
+                      SizedBox(height: 20,),
+                      TextTranslator('Adresse ',
+                        style: TextStyle(
+                            color: Colors.black, fontWeight: FontWeight.w600,
+                            fontSize: 12
+                        ),),
+                      TextTranslator(
+                        "\t${this.restaurant?.address ?? ""}",
+                        style: TextStyle(
+                            fontSize: 16
+                        ),
+                      ),
+                      SizedBox(height: 20,),
+                      TextTranslator('Tel  ',style: TextStyle(color: Colors.black,fontWeight: FontWeight.w600,fontSize: 12),),
+                      TextTranslator(
+                        "\t${this.restaurant?.phoneNumber ?? ""}",
+                        style: TextStyle(
+                            fontSize: 16
+                        ),
+                      ),
+                      SizedBox(height: 20,),
+                      InkWell(
+                        onTap: (){
+                          RouteUtil.goTo(
+                            context: context,
+                            child: RestaurantPage(
+                              restaurant: this.restaurant.id,
+                            ),
+                            routeName: restaurantRoute,
+                          );
+                        },
+                        child: Container(
+                            width: double.infinity,
+                            height: 45,
+                            decoration: BoxDecoration(
+                                color: CRIMSON,
+                                borderRadius: BorderRadius.circular(12)
+                            ),
+                            child: Center(
+                              child: TextTranslator("Voir restaurant",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600
+                                ),),
+                            )),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            )
           ],
         ),
       ),

@@ -112,11 +112,11 @@ class BagModal extends StatelessWidget {
                 builder: (_, cartContext, __) {
                   final List<Widget> list = [];
                   cartContext.items.forEach(
-                    (food, count) {
+                    (food) {
                       list.add(
                         BagItem(
                           food: food,
-                          count: count,
+                          count: 1,
                         ),
                       );
                     },
@@ -326,9 +326,9 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
                               Fluttertoast.showToast(msg: AppLocalizations.of(context)
                                   .translate('choose_option'),);
                             }else{
-                              if (cartContext.contains(widget.food))
+                             /* if (cartContext.contains(widget.food))
                                 cartContext.setCount(widget.food, itemCount);
-                              else
+                              else*/
                                 cartContext.addItem(widget.food, itemCount,true);
 
                               Navigator.of(context).pop(true);

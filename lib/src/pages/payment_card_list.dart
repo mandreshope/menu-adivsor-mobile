@@ -104,36 +104,26 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                             relatedUser: authContext.currentUser.id,
                                             commandType: commandContext.commandType,
                                             items: cartContext
-                                                      .items.entries
+                                                      .items
                                                       .where(
-                                                          (e) => !e.key.isMenu)
+                                                          (e) => !e.isMenu)
                                                       .map((e) => {
-                                                            'quantity': e.value,
-                                                            'item': e.key.id,
-                                                            'options': cartContext
-                                                                            .options[
-                                                                        e.key
-                                                                            .id] !=
-                                                                    null
-                                                                ? cartContext
-                                                                    .options[e
-                                                                        .key.id]
-                                                                    .expand((element) =>
-                                                                        element)
-                                                                    .toList()
-                                                                : [],
+                                                            'quantity': 1,
+                                                            'item': e.id,
+                                                            'options': e.optionSelected != null ?
+                                                            e.optionSelected : [],
                                                             'comment':
-                                                                e.key.message
+                                                                e.message
                                                           })
                                                       .toList(),
                                                   restaurant: cartContext.currentOrigin,
                                             totalPrice: (cartContext.totalPrice * 100).round(),
-                                            menu:cartContext.items.entries.where(
-                                                  (e) => e.key.isMenu).map(
+                                            menu:cartContext.items.where(
+                                                  (e) => e.isMenu).map(
                                                     (e) => 
                                                     {
-                                                      'quantity': e.value, 
-                                                      'item': e.key.id, 
+                                                      'quantity': 1,
+                                                      'item': e.id,
                                                       'foods': 
                                                   cartContext.foodMenuSelecteds
                                                 }),shippingAddress: commandContext.deliveryAddress,

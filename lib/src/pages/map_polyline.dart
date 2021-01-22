@@ -4,12 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
+import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:menu_advisor/src/utils/textTranslator.dart';
+
+import '../models.dart';
 
 class MapPolylinePage extends StatefulWidget {
   final LatLng initialPosition;
   final LatLng destinationPosition;
-  MapPolylinePage({Key key, @required this.initialPosition, @required this.destinationPosition}) : super(key: key);
+  final Restaurant restaurant;
+  MapPolylinePage({Key key, @required this.initialPosition, @required this.restaurant,@required this.destinationPosition}) : super(key: key);
 
   @override
   _MapPolylinePageState createState() => _MapPolylinePageState();
@@ -33,6 +39,8 @@ class _MapPolylinePageState extends State<MapPolylinePage> {
   final Set<Marker> _markers = {};
   final Map<PolylineId, Polyline> _polylines = {};
   List<LatLng> polylineCoordinates = <LatLng>[];
+
+  bool showInfo = false;
   
   // ignore: unused_field
   LatLng _lastMapPosition = _center;
@@ -73,9 +81,14 @@ class _MapPolylinePageState extends State<MapPolylinePage> {
         // This marker id can be anything that uniquely identifies each marker.
         markerId: MarkerId(destPosMarkerId),
         position: LatLng(_destinationPosition.latitude, _destinationPosition.longitude,),
-        infoWindow: InfoWindow(
-          title: 'destination'
-        ),
+        /*infoWindow: InfoWindow(
+          title: "${widget.restaurant.name}",
+        ),*/
+        onTap: (){
+          setState(() {
+            showInfo = true;
+          });
+        },
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
       ));
     });
@@ -161,6 +174,11 @@ class _MapPolylinePageState extends State<MapPolylinePage> {
         children: [
           _currentPosition != null
           ? GoogleMap(
+            onTap: (latlong){
+              setState(() {
+                showInfo = false;
+              });
+            },
               mapType: MapType.normal,
               initialCameraPosition: CameraPosition(
                 target: LatLng(_currentPosition.latitude, _currentPosition.longitude),
@@ -201,6 +219,81 @@ class _MapPolylinePageState extends State<MapPolylinePage> {
               child: Icon(Icons.my_location),
             ),
           ),
+
+          Visibility(
+            visible: showInfo,
+            child: Align(
+              alignment: Alignment.center,
+              child: Container(
+                padding: EdgeInsets.all(15),
+                width: 350,
+                // height: 350,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15)
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextTranslator(
+                      'Nom  ',
+                      style: TextStyle(
+                          color: Colors.black, fontWeight: FontWeight.w600,
+                          fontSize: 12
+                      ),
+                    ),
+                    TextTranslator(
+                      "\t${widget.restaurant.name}",
+                      style: TextStyle(
+                        fontSize: 16
+                      ),
+                    ),
+                    SizedBox(height: 20,),
+                    TextTranslator('Adresse ',
+                        style: TextStyle(
+                            color: Colors.black, fontWeight: FontWeight.w600,
+                            fontSize: 12
+                        ),),
+                    TextTranslator(
+                      "\t${widget.restaurant.address}",
+                      style: TextStyle(
+                          fontSize: 16
+                      ),
+                    ),
+                    SizedBox(height: 20,),
+                    TextTranslator('Tel  ',style: TextStyle(color: Colors.black,fontWeight: FontWeight.w600,fontSize: 12),),
+                    TextTranslator(
+                      "\t${widget.restaurant.phoneNumber}",
+                      style: TextStyle(
+                          fontSize: 16
+                      ),
+                    ),
+                    SizedBox(height: 20,),
+                    InkWell(
+                      onTap: (){
+                      RouteUtil.goBack(context: context);
+                    },
+                    child: Container(
+                        width: double.infinity,
+                        height: 45,
+                        decoration: BoxDecoration(
+                          color: CRIMSON,
+                          borderRadius: BorderRadius.circular(12)
+                        ),
+                        child: Center(
+                          child: TextTranslator("Voir restaurant",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600
+                          ),),
+                        )),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          )
         ],
       ),
     );

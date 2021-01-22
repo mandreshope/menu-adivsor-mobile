@@ -673,9 +673,11 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                               RouteUtil.goTo(
                                                 context: context,
                                                 child: MapPolylinePage(
+                                                  restaurant: restaurant,
                                                   initialPosition: LatLng(currentPosition.latitude, currentPosition.longitude),
                                                   destinationPosition: LatLng(coordinates.last, coordinates.first),
                                                 ),
+
                                                 routeName: restaurantRoute,
                                               );
                                             },

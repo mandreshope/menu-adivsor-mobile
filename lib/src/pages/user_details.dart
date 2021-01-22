@@ -362,8 +362,17 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
         var command = await Api.instance.sendCommand(
           comment: cartContext.comment,
           commandType: commandContext.commandType,
-          items: cartContext.items.entries.where((e) => !e.key.isMenu).map((e) => {'quantity': e.value, 'item': e.key.id, 'options': cartContext.options[e.key.id] != null ? cartContext.options[e.key.id].expand((element) => element).toList() : [],'comment':e.key.message}).toList(),
-          restaurant: cartContext.currentOrigin,
+          items: cartContext.items
+                .where((e) => !e.isMenu)
+                .map((e) => {
+                      'quantity': 1,
+                      'item': e.id,
+                      'options': e.optionSelected != null ?
+                      e.optionSelected : [],
+                      'comment': e.message
+                    })
+                .toList(),
+            restaurant: cartContext.currentOrigin,
           totalPrice: (cartContext.totalPrice * 100).round(),
           customer: {
             'name': _displayNameController.value.text,
@@ -379,12 +388,12 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
           )
               ?.millisecondsSinceEpoch ??
               null,
-          menu: cartContext.items.entries.where(
-                (e) => e.key.isMenu).map(
-                  (e) => 
+          menu: cartContext.items.where(
+                (e) => e.isMenu).map(
+                  (e) =>
                   {
-                    'quantity': e.value, 
-                    'item': e.key.id, 
+                    'quantity': 1,
+                    'item': e.id,
                     'foods': 
                 cartContext.foodMenuSelecteds
               }).toList(),
