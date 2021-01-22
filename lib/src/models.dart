@@ -49,6 +49,7 @@ class Food implements Copyable<Food>{
 
   bool isMenu = false;
   bool isFoodForMenu = false;
+  String idMenu = "";
 
   Food({
     @required this.id,
@@ -69,7 +70,8 @@ class Food implements Copyable<Food>{
     this.message = "",
     this.foodAttributes,
     this.isFoodForMenu = false,
-    this.isMenu = false
+    this.isMenu = false,
+    this.idMenu
   });
 
   factory Food.fromJson(Map<String, dynamic> json,{bool fromCommande = false}) => Food(
@@ -106,7 +108,8 @@ class Food implements Copyable<Food>{
     message: food.message,
     // optionSelected: food.optionSelected,
     ratings: food.ratings,
-    status: food.status
+    status: food.status,
+    idMenu: food.idMenu
   );
 
   Map<String, dynamic> toJson() {
@@ -124,6 +127,10 @@ class Food implements Copyable<Food>{
         if (optionSelected != null)
         "options": this.optionSelected.map((v) => v.toJson()).toList()
       };
+  }
+
+  void copyOptions(List<Option> options){
+    this.options = options.map((o) => Option.copy(o)).toList();
   }
 
   @override
@@ -172,6 +179,7 @@ class Menu implements Copyable<Menu>{
   final dynamic name;
   final dynamic description;
   final List<Food> foods;
+  List<Food> foodSelected;
   String restaurant;
   Price price;
   String type;
@@ -203,6 +211,7 @@ class Menu implements Copyable<Menu>{
     price = Price(amount: 0,currency: "€");
     this.foods?.forEach((f){
           f.isFoodForMenu = true;
+          f.idMenu = this.id;
          if (f.price != null && f.price.amount != null) price.amount += f.price.amount;
         });
         print("prince ${price.amount}");
@@ -901,6 +910,25 @@ class Option {
     data['maxOptions'] = this.maxOptions;
     return data;
   }
+
+  bool get isMaxOptions {
+    bool isMax = false;
+    int val = 0;
+    for(ItemsOption itemsOption in items){
+      val += itemsOption.quantity;
+    }
+    return  this.maxOptions > val;
+  }
+
+  int get quantityOptions {
+    int val = 0;
+    for(ItemsOption itemsOption in items){
+      val += itemsOption.quantity;
+    }
+    return val;
+  }
+
+
 }
 
 class ItemsOption {
@@ -910,8 +938,9 @@ class ItemsOption {
   String imageUrl;
   int quantity = 0;
   ItemsOption item;
+  bool isSelected = false;
 
-  ItemsOption({this.sId, this.name, this.price,this.imageUrl,this.quantity,this.item});
+  ItemsOption({this.sId, this.name, this.price,this.imageUrl,this.quantity,this.item,this.isSelected});
 
   ItemsOption.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
@@ -929,7 +958,8 @@ class ItemsOption {
     item: item.item,
     price: Price.Copy(item.price),
     quantity: item.quantity,
-    sId: item.sId
+    sId: item.sId,
+    isSelected: item.isSelected
   );
 
   Map<String, dynamic> toJson() {

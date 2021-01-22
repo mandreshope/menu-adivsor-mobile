@@ -70,7 +70,7 @@ class _FoodPageState extends State<FoodPage> {
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
 
-     /*Food f = await api.getFood(
+       /*Food f = await api.getFood(
         id: widget.food.id,
         lang: 'fr'
       );
@@ -566,7 +566,7 @@ class _FoodPageState extends State<FoodPage> {
                                                           IconButton(
                                                               icon: Icon(Icons.add_circle_outlined,color:CRIMSON,size: 35), onPressed: (){
                                                             // if (_optionContext.quantityOptions == option.maxOptions){
-                                                              if (_optionContext.quantityOptions < option.maxOptions ){
+                                                              if (option.isMaxOptions){
                                                                 _.value.quantity ++;
                                                                 snapshot.refresh();
                                                               }else{
@@ -713,7 +713,10 @@ class _FoodPageState extends State<FoodPage> {
                                 onRemoved: (food) {
                                   // value == 0 ? cartContext.removeItem(widget.food) : cartContext.addItem(widget.food, value,false);
                                   setState(() {
-                                    options = food.optionSelected.map<Option>((e) => Option.copy(e)).toList();
+                                    // options = food.optionSelected.map<Option>((e) => Option.copy(e)).toList();
+                                    options.forEach((element) {
+                                      element.itemOptionSelected =
+                                          List();});
                                     print(options);
                                   });
                                 },

@@ -100,19 +100,20 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                                 SizedBox(
                                   width: 5,
                                 ),
-                                Container(
+                                /*Container(
                                   // padding: EdgeInsets.all(5),
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     // color: _.value.price == 0 ? null : Colors.grey[400]
                                   ),
                                   child: 
-                                  !widget.withPrice ? Text("") : 
+                                  !widget.withPrice ? Text("") :
+                                      _.value.price == null ? Text("") :
                                   Text(
                                     "${_.value.price == 0 ? '' : _.value.price/100}${_.value.price == 0 ? '' : "€"}",
                                     style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
                                   ),
-                                )
+                                )*/
                               ],
                             );
                           },

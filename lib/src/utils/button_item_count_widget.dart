@@ -51,7 +51,7 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
       return CircleButton(
           backgroundColor: TEAL,
           onPressed: () async {
-           /* if (widget.fromRestaurant && widget.food.options.length > 0) {
+           if (widget.fromRestaurant /*&& widget.food.options.length > 0*/) {
               RouteUtil.goTo(
                 context: context,
                 child: Material(
@@ -63,7 +63,7 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                 routeName: foodRoute,
               );
               return;
-            }*/
+            }
             if (_cartContext.itemCount != 0) {
               if (!_cartContext.hasSamePricingAsInBag(widget.food)) {
                 Fluttertoast.showToast(
@@ -122,6 +122,19 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
               ),
               onPressed: () async { // onRemove
                 // widget.onRemoved(--widget.itemCount);
+                if (widget.fromRestaurant /*&& widget.food.options.length > 0*/) {
+                  RouteUtil.goTo(
+                    context: context,
+                    child: Material(
+                      child: FoodPage(
+                        food: widget.food,
+                        imageTag: widget.food.id,
+                      ),
+                    ),
+                    routeName: foodRoute,
+                  );
+                  return;
+                }
                 int value = --widget.itemCount;
                 if (value <= 0) {
                   var result = await showDialog(
@@ -176,7 +189,7 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                 size: widget.isFromDelevery ? 12 : 12,
               ),
               onPressed: () async {
-               /* if (widget.fromRestaurant && widget.food.options.length > 0) {
+                if (widget.fromRestaurant /*&& widget.food.options.length > 0*/) {
                   RouteUtil.goTo(
                     context: context,
                     child: Material(
@@ -188,7 +201,7 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                     routeName: foodRoute,
                   );
                   return;
-                }*/
+                }
                if (!_cartContext.hasOptionSelectioned(widget.food)) {
                  Fluttertoast.showToast(
                    msg: 'Ajouter une option',

@@ -168,6 +168,7 @@ class OrderButton extends StatelessWidget {
 
                                           // var count = _cartContext.items.values.elementAt(position);
                                           var count = 1;
+                                          if(food.isFoodForMenu) return Container();
 
                                           return BagItem(
                                             food: food,

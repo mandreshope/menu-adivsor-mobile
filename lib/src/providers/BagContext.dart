@@ -197,16 +197,37 @@ class CartContext extends ChangeNotifier {
   }
 
   bool contains(dynamic food) {
+
+    if (food.isFoodForMenu)
+      return _items.firstWhere(
+            (element) =>( element.id == food.id && element.idMenu == food.idMenu),
+        orElse: () => null,
+      ) !=
+          null;
+
     return itemCount > 0 &&
         _items.firstWhere(
-              (element) => element.id == food.id,
+              (element) => (element.id == food.id && !food.isFoodForMenu),
               orElse: () => null,
             ) !=
             null;
   }
 
   void removeItem(dynamic food) {
-    dynamic item = _items.lastWhere((element) => element.id == food.id);
+    dynamic item;
+
+    if (food is Food){
+      if (food.isFoodForMenu){
+        item = _items.lastWhere(
+                (element) => (element.id == food.id && element.idMenu == food.idMenu));
+      }else{
+        item = _items.lastWhere((element) => element.id == food.id);
+      }
+    }else{
+      item = _items.lastWhere((element) => element.id == food.id);
+    }
+
+
     _items.remove(item);
     if (_items.length == 0) currentOrigin = null;
     notifyListeners();
@@ -347,17 +368,19 @@ class CartContext extends ChangeNotifier {
   }
 
   bool hasOptionSelectioned(Food food){
-    bool hasOption = false;
+    bool hasOption = true;
     if (food.optionSelected == null || food.optionSelected.isEmpty) return false;
 
     for (Option option in food.optionSelected) {
-      if (option.itemOptionSelected.isNotEmpty){
-        hasOption = true;
-      }else{
+      if (option.itemOptionSelected.isEmpty){
         hasOption = false;
       }
     }
     return hasOption;
+  }
+
+  Food getFoodForMenu(Menu menu){
+    Food food = menu.foods.first;
   }
 
 }
