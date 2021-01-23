@@ -96,6 +96,20 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                           choiceLabelBuilder: (_) {
                             return Row(
                               children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(50),
+                                  child: FadeInImage.assetNetwork(
+                                    placeholder: 'assets/images/loading.gif',
+                                    image: _.value.imageUrl,
+                                    height: 25,
+                                    width: 25,
+                                    fit: BoxFit.cover,
+
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
                                 Text("${_.value.name}"),
                                 SizedBox(
                                   width: 5,
