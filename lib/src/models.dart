@@ -914,7 +914,7 @@ class Option {
   bool get isMaxOptions {
     bool isMax = false;
     int val = 0;
-    for(ItemsOption itemsOption in items){
+    for(ItemsOption itemsOption in itemOptionSelected){
       val += itemsOption.quantity;
     }
     return  this.maxOptions > val;

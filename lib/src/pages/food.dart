@@ -398,6 +398,13 @@ class _FoodPageState extends State<FoodPage> {
 
                   // options
                   SizedBox(height: 15,),
+                  loading ? Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        CRIMSON,
+                      ),
+                    ),
+                  ) :
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 25),
                     child: Column(
@@ -523,8 +530,16 @@ class _FoodPageState extends State<FoodPage> {
                                                     IconButton(
                                                         icon: Icon(Icons.add_circle_outlined,color: Colors.grey,size: 25),
                                                     onPressed: (){
-                                                      _.value.quantity = 1;
-                                                      _.select(!_.selected);
+                                                      if (option.isMaxOptions){
+                                                        _.value.quantity = 1;
+                                                        _.select(!_.selected);
+                                                      }else{
+                                                        print("max options");
+                                                        Fluttertoast.showToast(
+                                                            msg: "maximum selection ${option.title} : ${option.maxOptions}"
+                                                        );
+                                                      }
+
                                                      /* if (widget.fromMenu){
                                                         menu.optionSelected = options;
                                                         widget.food.optionSelected = options;
@@ -620,6 +635,7 @@ class _FoodPageState extends State<FoodPage> {
                                           }
                                         );
                                       },
+
                                       ),
                                     ),
                                   ),
