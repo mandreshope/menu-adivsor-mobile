@@ -58,6 +58,8 @@ class _FoodPageState extends State<FoodPage> {
   Menu menu;
   Food foodAdded;
 
+  dynamic choiceSelected;
+
   @override
   void initState() {
     super.initState();
@@ -442,9 +444,12 @@ class _FoodPageState extends State<FoodPage> {
                                           setState(() {
                                             if (option.itemOptionSelected?.length == option.maxOptions){
                                               if (option.itemOptionSelected.length >= value.length ){
-                                                option.itemOptionSelected = value.cast<ItemsOption>();
+                                                // option.itemOptionSelected = value.cast<ItemsOption>();
                                                 // option.itemOptionSelected = option.itemOptionSelected.map((e) => e).toList();
                                                 // widget.food.optionSelected = options;
+                                                var seen = Set<String>();
+                                                option.itemOptionSelected = value.cast<ItemsOption>().where((element) => seen.add(element.name)).toList();
+                                                // option.itemOptionSelected = itemDistinc;
 
                                                 foodAdded.optionSelected = options.map((o) => Option.copy(o)).toList();
 
@@ -456,7 +461,10 @@ class _FoodPageState extends State<FoodPage> {
                                               }
 
                                             }else{
-                                              option.itemOptionSelected = value.cast<ItemsOption>();
+                                              // option.itemOptionSelected = value.cast<ItemsOption>();
+                                              var seen = Set<String>();
+                                              option.itemOptionSelected = value.cast<ItemsOption>().where((element) => seen.add(element.name)).toList();
+
                                               // widget.food.optionSelected = options;
                                               foodAdded.optionSelected = options.map((o) => Option.copy(o)).toList();
                                               // if (widget.fromMenu){
@@ -517,6 +525,7 @@ class _FoodPageState extends State<FoodPage> {
                                           label: (i, v) => v.name,
                                         ),
                                         choiceBuilder: (_){
+                                          choiceSelected = _;
 
                                         return Consumer<OptionContext>(
                                           builder: (context, snapshot,w) {
@@ -581,8 +590,9 @@ class _FoodPageState extends State<FoodPage> {
                                                           IconButton(
                                                               icon: Icon(Icons.add_circle_outlined,color:CRIMSON,size: 35), onPressed: (){
                                                             // if (_optionContext.quantityOptions == option.maxOptions){
-                                                              if (option.isMaxOptions){
+                                                            if (option.isMaxOptions){
                                                                 _.value.quantity ++;
+                                                                _.select(true);
                                                                 snapshot.refresh();
                                                               }else{
                                                                 print("max options");
@@ -720,6 +730,7 @@ class _FoodPageState extends State<FoodPage> {
                                 setState(() {
                                   // cartContext.addItem(
                                   //     foodAdded, itemCount, true);
+                                  // choiceSelected.select(choiceSelected.selected);
                                   foodAdded = Food.copy(widget.food);
                                   options.forEach((element) {
                                     element.itemOptionSelected =
