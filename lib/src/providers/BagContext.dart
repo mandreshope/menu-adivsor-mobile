@@ -115,7 +115,7 @@ class CartContext extends ChangeNotifier {
   int get itemCount => _items.length;
 
   double get totalPrice {
-    if (withPrice) return 0;
+    if (!withPrice) return 0;
     double totalPrice = 0;
 
     _items.forEach((food) {
@@ -267,7 +267,7 @@ class CartContext extends ChangeNotifier {
   }
 
   double getTotalPriceFood(dynamic food){
-    if (withPrice) return 0;
+    if (!withPrice) return 0;
     double totalPrice = 0;
     //int count = _items[food] ?? 1;
     int count = _items.where((element) => element.id == food.id).toList().length;

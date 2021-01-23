@@ -7,6 +7,7 @@ import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/food.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
+import 'package:menu_advisor/src/providers/MenuContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
@@ -122,7 +123,7 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
               ),
               onPressed: () async { // onRemove
                 // widget.onRemoved(--widget.itemCount);
-                if (widget.fromRestaurant /*&& widget.food.options.length > 0*/) {
+                if (widget.fromRestaurant && (widget.food is Food)/*&& widget.food.options.length > 0*/) {
                   RouteUtil.goTo(
                     context: context,
                     child: Material(
@@ -149,6 +150,9 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                     _cartContext.removeAllFood(widget.food);
                     if (!widget.fromRestaurant)
                       RouteUtil.goBack(context: context);
+                  }
+                  if (widget.food is Menu){
+                    Provider.of<MenuContext>(context,listen: false).clear();
                   }
                 } else {
                   _cartContext.addItem(widget.food, value, false);

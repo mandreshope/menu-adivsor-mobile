@@ -32,6 +32,9 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
     // TODO: implement initState
     super.initState();
     options = widget.food.options;
+    options.forEach((element) {
+      element.itemOptionSelected = List();
+    });
     _cartContext = Provider.of<CartContext>(context,listen: false);
   }
 
@@ -95,6 +98,7 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                           },
                           choiceLabelBuilder: (_) {
                             return Row(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(50),
@@ -137,6 +141,11 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                             value: (i, v) => v,
                             label: (i, v) => v.name,
                           ),
+
+                          // padding: EdgeInsets.zero,
+                          // wrapped: true,
+                          // textDirection: TextDirection.ltr,
+                          direction: Axis.vertical,
                         ),
                       ),
                     ),

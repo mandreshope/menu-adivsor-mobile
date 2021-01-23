@@ -35,7 +35,7 @@ class _ConfirmSmsState extends State<ConfirmSms> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: TextTranslator(widget.isFromSignup ? "Vérification sms" : "Confirme commande"),
+        title: TextTranslator(widget.isFromSignup ? "Vérification sms" : "confirmation de commande"),
       ),
       body: Center(
         child: Column(

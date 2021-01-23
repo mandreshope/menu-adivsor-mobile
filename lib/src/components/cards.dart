@@ -1399,9 +1399,13 @@ class _BagItemState extends State<BagItem> {
                 if (_cartContext.foodMenuSelecteds != null)...[
 
                   for(Food f in _cartContext.foodMenuSelecteds)...[
-                    _foodRender(f),
-                    Divider(),
-                    _options(f),
+                    if (f != null)...[
+                      _foodRender(f),
+                      Divider(),
+                      _options(f),
+                    ] else ...[
+                      Container()
+                    ]
                   ]
 
                 ]
@@ -1517,7 +1521,7 @@ class _BagItemState extends State<BagItem> {
     /*List<Option> options = _cartContext.options[widget.food.id]
         .expand((element) => element)
         .toList();*/
-    var options = f.optionSelected;
+    var options = f.optionSelected ?? List();
     return Container(
       // margin: EdgeInsets.only(left: MediaQuery.of(context).size.width/4),
       child: Column(

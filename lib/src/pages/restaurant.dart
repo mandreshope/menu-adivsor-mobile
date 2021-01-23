@@ -109,7 +109,8 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
     range = Provider.of<SettingContext>(context,listen: false).range;
 
     _restaurantContext = Provider.of<RestaurantContext>(context,listen: false);
-    attributeFilter = Provider.of<DataContext>(context,listen: false).attributes;
+    // attributeFilter = Provider.of<DataContext>(context,listen: false).attributes;
+    attributeFilter = List();
 
 
   api
