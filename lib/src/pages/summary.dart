@@ -54,90 +54,102 @@ class _SummaryState extends State<Summary> {
        });
     }
 
-    return Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          title: TextTranslator(
-            AppLocalizations.of(context).translate('summary'),
-          ),
-        ),
-        body: isLoading ? Center(
-          child:CircularProgressIndicator()
-        ) :
-         SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: 25,
-                ),
-                Divider(),
-                _header(),
-                Divider(),
-                //commande id
-                Row(
-                  children: [
-                    TextTranslator("Commande ID : "),
-                    TextTranslator(widget.commande.code?.toString()?.padLeft(6,'0') ?? "", style: TextStyle(color: CRIMSON, fontWeight: FontWeight.bold, fontSize: 18)),
-                    Spacer(),
-                    _validated()
-                  ],
-                ),
-                //end commande id
-                Divider(),
-                // food
-                for (var command in widget.commande.items)
-                  _items(command),
-                // Divider(),
-                // menu
-                if (widget.commande.menus != null)
-                for (var command in widget.commande.menus) _items(command),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: Row(
-                    children: [
-                      TextTranslator('Total', style: TextStyle(fontSize: 16)),
-                      Spacer(),
-                      widget.commande.priceless ? Text(" ") : Text('${widget.commande.totalPrice / 100} €', style: TextStyle(fontSize: 16, color: CRIMSON, fontWeight: FontWeight.bold)),
-                    ],
-                  ),
-                ),
-                Divider(),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      TextTranslator(
-                        AppLocalizations.of(context).translate(widget.commande.commandType ?? 'on_site').toUpperCase(),
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-                      ),
-                      TextTranslator('${widget.commande.shippingTime == null ? "" : widget.commande.shippingTime.dateToString("dd/MM/yyyy HH:mm")}')
-                    ],
-                  ),
-                ),
-                Divider(),
-                SizedBox(height: 30,),
-                TextTranslator("Commentaire",
-                  style:TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    decoration: TextDecoration.underline
-
-                  ),
-                  
-                ),
-                SizedBox(height: 5,),
-                _renderComment(widget.commande.comment),
-                SizedBox(height: 50,)
-              ],
+    return WillPopScope(
+      onWillPop: () async {
+        if (widget.fromHistory) {
+          RouteUtil.goBack(context: context);
+        }else{
+          while(Navigator.canPop(context)){
+            RouteUtil.goBack(context: context);
+          }
+        }
+        return true;
+      },
+      child: Scaffold(
+          backgroundColor: Colors.white,
+          appBar: AppBar(
+            title: TextTranslator(
+              AppLocalizations.of(context).translate('summary'),
             ),
           ),
-        ));
+          body: isLoading ? Center(
+            child:CircularProgressIndicator()
+          ) :
+           SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: 25,
+                  ),
+                  Divider(),
+                  _header(),
+                  Divider(),
+                  //commande id
+                  Row(
+                    children: [
+                      TextTranslator("Commande ID : "),
+                      TextTranslator(widget.commande.code?.toString()?.padLeft(6,'0') ?? "", style: TextStyle(color: CRIMSON, fontWeight: FontWeight.bold, fontSize: 18)),
+                      Spacer(),
+                      _validated()
+                    ],
+                  ),
+                  //end commande id
+                  Divider(),
+                  // food
+                  for (var command in widget.commande.items)
+                    _items(command),
+                  // Divider(),
+                  // menu
+                  if (widget.commande.menus != null)
+                  for (var command in widget.commande.menus) _items(command),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Row(
+                      children: [
+                        TextTranslator('Total', style: TextStyle(fontSize: 16)),
+                        Spacer(),
+                        widget.commande.priceless ? Text(" ") : Text('${widget.commande.totalPrice / 100} €', style: TextStyle(fontSize: 16, color: CRIMSON, fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                  ),
+                  Divider(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextTranslator(
+                          AppLocalizations.of(context).translate(widget.commande.commandType ?? 'on_site').toUpperCase(),
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                        ),
+                        TextTranslator('${widget.commande.shippingTime == null ? "" : widget.commande.shippingTime.dateToString("dd/MM/yyyy HH:mm")}')
+                      ],
+                    ),
+                  ),
+                  Divider(),
+                  SizedBox(height: 30,),
+                  TextTranslator("Commentaire",
+                    style:TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                      decoration: TextDecoration.underline
+
+                    ),
+
+                  ),
+                  SizedBox(height: 5,),
+                  _renderComment(widget.commande.comment),
+                  SizedBox(height: 50,)
+                ],
+              ),
+            ),
+          )),
+    );
   }
 
   _header() {

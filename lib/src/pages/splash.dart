@@ -172,11 +172,16 @@ class _SplashState extends State<Splash> {
                           valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
                         ),
                         SizedBox(height: 15,),
-                        TextTranslator("Chargement des données...",style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 15,
+                        Consumer<SettingContext>(
 
-                        ),)
+                          builder: (context, snapshot,w) {
+                            return TextTranslator("Chargement des langages... ( ${snapshot.loadingIndex}/10 )",style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 15,
+
+                            ),);
+                          }
+                        )
                       ],
                     ),
                   ),

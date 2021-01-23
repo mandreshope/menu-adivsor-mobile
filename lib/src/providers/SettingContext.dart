@@ -12,6 +12,7 @@ class SettingContext extends ChangeNotifier {
   String _languageCodeRstaurant = 'fr';
   Future<void> initialized;
   int range = 1;
+  int loadingIndex = 0;
 
   bool _isRestaurantPage = false;
   bool isDownloadingLang = true;
@@ -122,11 +123,14 @@ class SettingContext extends ChangeNotifier {
       print("download loading...");
       isDownloadingLang = true;
       notifyListeners();
-      
+      int i = 1;
       await Future.forEach(
           _supportedLanguages,
-              (item) =>
-                  FirebaseLanguage.instance.modelManager().downloadModel(item)
+              (item) {
+                loadingIndex ++;
+                notifyListeners();
+                return FirebaseLanguage.instance.modelManager().downloadModel(item);
+              }
       );
 
       isDownloadingLang = false;

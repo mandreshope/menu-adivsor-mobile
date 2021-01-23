@@ -369,6 +369,7 @@ class CartContext extends ChangeNotifier {
 
   bool hasOptionSelectioned(Food food){
     bool hasOption = true;
+    if (food.options.isEmpty) return true;
     if (food.optionSelected == null || food.optionSelected.isEmpty) return false;
 
     for (Option option in food.optionSelected) {
