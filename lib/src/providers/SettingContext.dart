@@ -123,12 +123,17 @@ class SettingContext extends ChangeNotifier {
       isDownloadingLang = true;
       notifyListeners();
       
-      await Future.forEach(_supportedLanguages, (item) => FirebaseLanguage.instance.modelManager().downloadModel(item));
+      await Future.forEach(
+          _supportedLanguages,
+              (item) =>
+                  FirebaseLanguage.instance.modelManager().downloadModel(item)
+      );
 
       isDownloadingLang = false;
       notifyListeners();
 
      print("download finish...");
+
   }
 
 

@@ -354,12 +354,15 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
       listen: false,
     );
 
+    AuthContext authContext = Provider.of<AuthContext>(context,listen: false);
+
     if (formState.validate() && deliveryDate != null && deliveryTime != null) {
       setState(() {
         sendingCommand = true;
       });
       try {
         var command = await Api.instance.sendCommand(
+            relatedUser: authContext.currentUser.id,
           comment: cartContext.comment,
           commandType: commandContext.commandType,
           items: cartContext.items

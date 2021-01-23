@@ -1469,7 +1469,7 @@ class _BagItemState extends State<BagItem> {
               if (widget.food.price?.amount != null)...[
                 f.isFoodForMenu ? Container() :
                 Text(
-                  !_cartContext.withPrice ? "" : '${_cartContext.getTotalPriceFood(widget.food)}€',
+                  !_cartContext.withPrice ? "" : '${widget.food.price.amount/100}€',
                   style: TextStyle(
                     fontSize: 18,
                     color: Colors.grey[600],
