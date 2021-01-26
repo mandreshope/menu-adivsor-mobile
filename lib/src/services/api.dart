@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/types.dart';
@@ -748,5 +749,24 @@ Future<Map<String,dynamic>> ConfirmSms(String idCommande, String code,String com
     });
 }
 
+  Future<bool> sendCommandSms(
+      {@required String relatedUser,
+      @required Map customer,
+      @required String commandType}) {
+    var post = jsonEncode({
+      'relatedUser': relatedUser,
+      'commandType': commandType,
+      'customer': customer,
+    });
+    print(post);
+    return http.post(
+      '$_apiURL/commands/sendCode',
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: post,
+    ).then((value) => true);
+
+  }
 }
 

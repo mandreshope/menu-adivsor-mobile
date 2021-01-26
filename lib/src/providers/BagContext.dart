@@ -127,6 +127,13 @@ class CartContext extends ChangeNotifier {
       if (food.isMenu){
         if (food.type == "per_food"){
           if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100;
+          food.foodSelected.forEach((element) {
+            element.optionSelected.forEach((options) {
+              options.itemOptionSelected?.forEach((itemOption) {
+                if(itemOption.price != null && itemOption.price.amount != null) totalPrice += itemOption.price.amount/100;
+              });
+            });
+          });
         }else if(food.type == "priceless"){
 
         }else if (food.type == "fixed_price"){
@@ -135,6 +142,11 @@ class CartContext extends ChangeNotifier {
 
       }else{
         if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100;
+        food.optionSelected?.forEach((option){
+          option.itemOptionSelected?.forEach((itemOption) {
+            if(itemOption.price != null && itemOption.price.amount != null) totalPrice += itemOption.price.amount/100;
+          });
+        });
       }
 
       /*if (food.isMenu){
@@ -150,42 +162,21 @@ class CartContext extends ChangeNotifier {
 
     //}
     });
+      // if (food.isMenu){
+      //   if (per_food)
+      //   priceless
+      //   fixed_price
+      // }else{
+      //   food.options?.forEach((option){
+      //   option.itemOptionSelected?.forEach((itemOption) {
+      //   if(itemOption.price != null) totalPrice += itemOption.price/100;
+      // });
+      // });
 
-   /* _items.forEach((food, count) {
-      /*if (food.isMenu) {
-        food.foods.forEach((f){
-         if (f.price != null && f.price.amount != null) totalPrice += f.price.amount / 100 * count;
-        });
-      }else*/
-      if (food.isMenu){
-        if (food.type == "per_food"){
-          if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100* count;
-        }else if(food.type == "priceless"){
-
-        }else if (food.type == "fixed_price"){
-          if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100* count;
-        }
-        
-        
-      }else{
-          if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100* count;
-      }
-      
-      /*if (food.isMenu){
-        if (per_food)
-        priceless
-        fixed_price
-      }else{
-        food.options?.forEach((option){
-        option.itemOptionSelected?.forEach((itemOption) {
-        if(itemOption.price != null) totalPrice += itemOption.price/100;
-      });
-      });
-
-    }*/
+    // }
       
       
-    });*/
+    //});
     
     List<Option> _temp = _options.values.expand((element) => element).toList().expand((element) => element).toList();
     _temp.forEach((option) {

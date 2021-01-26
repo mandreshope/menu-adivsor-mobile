@@ -1560,7 +1560,7 @@ class _BagItemState extends State<BagItem> {
                           width: 25,
                         ),*/
                           // SizedBox(width: 8),
-                          if (itemsOption.price == 0 || widget.withPrice)
+                          if (itemsOption.price == 0 || !widget.withPrice)
                             Text("")
                           else
                             itemsOption.price.amount == null ? Text("") : TextTranslator('${itemsOption.price.amount/100} €', style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),

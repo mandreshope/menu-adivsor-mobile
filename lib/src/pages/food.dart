@@ -627,7 +627,7 @@ class _FoodPageState extends State<FoodPage> {
                                                       width: 5,
                                                     ),
                                                     Text("${_.value.name}"),
-                                                    SizedBox(width: 5,),
+                                                    Spacer(),
                                                     Container(
                                                       padding: EdgeInsets.all(5),
                                                       decoration: BoxDecoration(

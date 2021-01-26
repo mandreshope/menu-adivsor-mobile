@@ -109,7 +109,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                           textInputAction: TextInputAction.next,
                           decoration: InputDecoration(
                             labelText: "Votre numéro de téléphone",
-                             prefixText: "+33",
+                             prefixText: "+261",
                           ),
                           onFieldSubmitted: (_) {
                             _emailFocus.unfocus();

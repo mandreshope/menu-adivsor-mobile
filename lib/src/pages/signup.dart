@@ -163,7 +163,7 @@ class _SignupPageState extends State<SignupPage> {
                               },
                               decoration: InputDecoration(
                                 contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                                prefixText: "+33",
+                                prefixText: "+261",
                                 counter: Offstage(),
                               ),
                             ),

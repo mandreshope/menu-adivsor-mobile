@@ -1034,7 +1034,7 @@ class SheduleDialog extends StatelessWidget {
               width: double.infinity,
               child: Center(
                 child: TextTranslator(
-                  "Horaires",
+                  "Horaire",
                   textAlign: TextAlign.center,
                   style:TextStyle(color: Colors.white,fontWeight: FontWeight.bold,
                   fontSize: 20)),
@@ -1079,7 +1079,7 @@ class SheduleDialog extends StatelessWidget {
               ),
               child: Center(
                   child: TextTranslator(
-                    "Férmer",
+                    "Fermer",
                     textAlign: TextAlign.center,
                     style:TextStyle(color: Colors.white,fontWeight: FontWeight.bold,
                     fontSize: 20)),

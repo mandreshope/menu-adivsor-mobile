@@ -803,7 +803,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                     width: 25,
                                   ),
                                   TextTranslator(
-                                    "Horaires",
+                                    "Horaire",
                                     style: TextStyle(fontSize: 18, color: CRIMSON, fontWeight: FontWeight.w600),
                                     
                                   ),

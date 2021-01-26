@@ -945,7 +945,7 @@ class ItemsOption {
   ItemsOption.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
     name = json['name'] ?? "";
-    price = Price.fromJson(json);
+    price = Price.fromJson(json['price']);
     imageUrl = json['imageURL'];
     quantity = json['quantity'];
     if (json['item'] != null)
