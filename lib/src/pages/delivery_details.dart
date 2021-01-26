@@ -282,6 +282,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                         context: context,
                         child: PaymentCardListPage(
                           isPaymentStep: true,
+                          restaurant: _restaurant,
                         ),
                         routeName: paymentCardListRoute,
                       );

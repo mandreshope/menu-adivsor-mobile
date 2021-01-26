@@ -21,10 +21,12 @@ import 'package:provider/provider.dart';
 
 class PaymentCardListPage extends StatefulWidget {
   final bool isPaymentStep;
+  final Restaurant restaurant;
 
   const PaymentCardListPage({
     Key key,
     this.isPaymentStep = false,
+    this.restaurant
   }) : super(key: key);
 
   @override
@@ -117,7 +119,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                                           })
                                                       .toList(),
                                                   restaurant: cartContext.currentOrigin,
-                                            totalPrice: (cartContext.totalPrice * 100).round(),
+                                              totalPrice: ((cartContext.totalPrice * 100) + (widget.restaurant.priceDelevery != null ? widget.restaurant.priceDelevery : 0).toDouble() ).round(),
                                             menu:cartContext.items.where(
                                                   (e) => e.isMenu).map(
                                                     (e) => 
