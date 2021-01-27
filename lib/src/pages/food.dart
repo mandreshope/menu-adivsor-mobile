@@ -571,6 +571,7 @@ class _FoodPageState extends State<FoodPage> {
                                                               _.select(false);
                                                           }else{
                                                              _.value.quantity --;
+                                                             _.select(true);
                                                            }
                                                           /* if (widget.fromMenu){
                                                              menu.optionSelected = _optionSelected;

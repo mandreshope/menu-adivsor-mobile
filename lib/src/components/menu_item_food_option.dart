@@ -194,6 +194,8 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                                                   _.select(false);
                                                 }else{
                                                   _.value.quantity --;
+                                                  _.select(true);
+                                                  // snapshot.refresh();
                                                 }
                                                 /* if (widget.fromMenu){
                                                              menu.optionSelected = _optionSelected;
@@ -250,7 +252,7 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                                           width: 5,
                                         ),
                                         Text("${_.value.name}"),
-                                        SizedBox(width: 5,),
+                                        Spacer(),
                                         Container(
                                           padding: EdgeInsets.all(5),
                                           decoration: BoxDecoration(

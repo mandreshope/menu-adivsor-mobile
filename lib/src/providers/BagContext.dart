@@ -125,26 +125,33 @@ class CartContext extends ChangeNotifier {
         });
       }else*/
       if (food.isMenu){
-        if (food.type == "per_food"){
-          if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100;
+       // if (food.type == "per_food"){
+         /* if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100;
           food.foodSelected.forEach((element) {
             element.optionSelected.forEach((options) {
               options.itemOptionSelected?.forEach((itemOption) {
-                if(itemOption.price != null && itemOption.price.amount != null) totalPrice += itemOption.price.amount/100;
+                if(itemOption.price != null && itemOption.price.amount != null) totalPrice += itemOption.price.amount/100 * itemOption.quantity;
               });
             });
-          });
-        }else if(food.type == "priceless"){
+          });*/
+       /* }else if(food.type == "priceless"){
 
         }else if (food.type == "fixed_price"){
           if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100;
-        }
-
+        }*/
+        if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100;
+        foodMenuSelecteds.forEach((element) {
+          element.optionSelected?.forEach((options) {
+            options.itemOptionSelected?.forEach((itemOption) {
+              if(itemOption.price != null && itemOption.price.amount != null) totalPrice += itemOption.price.amount/100 * itemOption.quantity;
+            });
+          });
+        });
       }else{
         if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100;
         food.optionSelected?.forEach((option){
           option.itemOptionSelected?.forEach((itemOption) {
-            if(itemOption.price != null && itemOption.price.amount != null) totalPrice += itemOption.price.amount/100;
+            if(itemOption.price != null && itemOption.price.amount != null) totalPrice += itemOption.price.amount/100 * itemOption.quantity;
           });
         });
       }
@@ -181,7 +188,7 @@ class CartContext extends ChangeNotifier {
     List<Option> _temp = _options.values.expand((element) => element).toList().expand((element) => element).toList();
     _temp.forEach((option) {
       option.itemOptionSelected?.forEach((itemOption) {
-        if(itemOption.price != null && itemOption.price.amount != null) totalPrice += itemOption.price.amount/100;
+        if(itemOption.price != null && itemOption.price.amount != null) totalPrice += itemOption.price.amount/100 * itemOption.quantity;
       });
     });
     

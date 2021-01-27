@@ -103,7 +103,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
 
                                           var command = await Api.instance.sendCommand(
                                             comment: cartContext.comment,
-                                            relatedUser: authContext.currentUser.id,
+                                            relatedUser: authContext.currentUser?.id ?? null,
                                             commandType: commandContext.commandType,
                                             items: cartContext
                                                       .items

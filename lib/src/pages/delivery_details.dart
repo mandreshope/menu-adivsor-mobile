@@ -31,12 +31,25 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
 
   Restaurant _restaurant;
 
+  CommandContext commandContext;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    commandContext = Provider.of<CommandContext>(
+      context,
+      listen: false,
+    );
+
+
     deliveryDate =  now.add(Duration(days: 0));
     deliveryTime = TimeOfDay(hour: now.hour,minute: 00);
+
+    commandContext.deliveryTime = deliveryTime;
+    commandContext.deliveryDate = deliveryDate;
+
   }
 
   @override
@@ -144,6 +157,9 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                     setState(() {
                                       deliveryDate =  now.add(Duration(days: 0));
                                       deliveryTime = TimeOfDay(hour: now.hour,minute: 00);
+
+                                      commandContext.deliveryDate = deliveryDate;
+                                      commandContext.deliveryTime = deliveryTime;
                                     });
                                     
                                     return;
@@ -436,6 +452,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
 
                                   setState(() {
                                      deliveryTime = time;
+                                     commandContext.deliveryTime = deliveryTime;
                                   });
                                    
 

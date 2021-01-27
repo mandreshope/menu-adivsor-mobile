@@ -45,14 +45,18 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
   bool sendingCommand = false;
    DateTime now = DateTime.now();
    Restaurant _restaurant;
-    
 
+  CommandContext commandContext;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
 
-      AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
+    AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
+    commandContext = Provider.of<CommandContext>(
+      context,
+      listen: false,
+    );
 
       if (authContext.currentUser != null){
       _displayNameController.text = authContext.currentUser.toString();
@@ -63,6 +67,9 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
 
     deliveryDate =  now.add(Duration(days: 0));
     deliveryTime = TimeOfDay(hour: now.hour,minute: 00);
+
+    commandContext.deliveryDate = deliveryDate;
+    commandContext.deliveryTime = deliveryTime;
 
   }
 
@@ -362,7 +369,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
       });
       try {
         var command = await Api.instance.sendCommand(
-            relatedUser: authContext.currentUser.id,
+            relatedUser: authContext.currentUser?.id ?? null,
           comment: cartContext.comment,
           commandType: commandContext.commandType,
           items: cartContext.items
@@ -461,6 +468,8 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                                     if(_restaurant.openingTimes.where((v) =>v.day.toLowerCase() == dayName).isNotEmpty) {
                                       print('ouvert');
                                       deliveryDate = date;
+                                      commandContext.deliveryDate = deliveryDate;
+                                      commandContext.deliveryTime = deliveryTime;
                                     }else {
                                       print('fermé');
                                       Fluttertoast.showToast(msg: 'Le restaurant est fermé');
@@ -559,6 +568,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                                   print(time);
                                   setState(() {
                                      deliveryTime = time;
+                                     commandContext.deliveryTime = deliveryTime;
                                   });
                                    
 

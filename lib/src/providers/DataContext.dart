@@ -147,7 +147,7 @@ class DataContext extends ChangeNotifier {
           "searchCategory": "priority",
           // "searchCategory": "with_price",
           // "limit": 5,
-          "city":_city ?? ""
+          "city":""
         },
         // type: 'food'
       );
