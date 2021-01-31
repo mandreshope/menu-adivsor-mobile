@@ -7,24 +7,24 @@ import 'package:menu_advisor/src/types.dart';
 
 class DataContext extends ChangeNotifier {
   List<Food> popularFoods = [];
-  bool loadingPopularFoods = false;
+  bool loadingPopularFoods = true;
 
   List<Restaurant> nearestRestaurants = [];
-  bool loadingNearestRestaurants = false;
+  bool loadingNearestRestaurants = true;
 
   List<FoodCategory> foodCategories = [];
-  bool loadingFoodCategories = false;
+  bool loadingFoodCategories = true;
 
   List<Food> onSiteFoods = [];
-  bool loadingOnSiteFoods = false;
+  bool loadingOnSiteFoods = true;
 
   List<Food> foods = [];
-  bool loadingFoods = false;
+  bool loadingFoods = true;
 
   List<FoodAttribute> _foodAttributes = List();
 
   List<Blog> blogs = List();
-  bool loadingBlog = false;
+  bool loadingBlog = true;
   bool isAllAttribute = false;
 
   /*List<Map<String, String>> attributes = [
