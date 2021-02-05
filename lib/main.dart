@@ -18,5 +18,6 @@ Future main() async {
     Permission.storage,Permission.location
   ].request();
 
-  runApp(MyApp());
+  runApp(
+      MyApp());
 }

@@ -13,7 +13,7 @@ class MenuContext extends ChangeNotifier {
 
   set foodsGrouped(List<Food> foods) => _foodsGrouped = foods.groupBy((f) {
         // f.isMenu = true;
-        return (f.type is String) ? f.type : f.type.name ?? "";
+        return (f.type is String) ? f.type : (f.type.name is String) ? f.type.name : f.type.name["fr"];
       });
 
   get foodsGrouped => _foodsGrouped;

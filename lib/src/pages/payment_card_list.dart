@@ -164,13 +164,27 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                             ).clear();
                                             Provider.of<MenuContext>(context,listen: false).clear();
 
-                                            RouteUtil.goToAndRemoveUntil(
+                                            /*RouteUtil.goToAndRemoveUntil(
                                               context: context,
                                               child: ConfirmSms(
                                                 command: cm,
                                               ),
                                               routeName: summaryRoute,
                                               predicate: (route) => route.settings.name == homeRoute,
+                                            );*/
+
+                                            commandContext.clear();
+                                            cartContext.clear();
+                                            Provider.of<MenuContext>(context,listen: false).clear();
+                                            Fluttertoast.showToast(
+                                              msg:
+                                              'Votre commande a été bien reçu.',
+                                            );
+
+                                            RouteUtil.goTo(
+                                              context: context,
+                                              child: Summary(commande: cm),
+                                              routeName: confirmEmailRoute,
                                             );
                                           } else {
                                             Fluttertoast.showToast(

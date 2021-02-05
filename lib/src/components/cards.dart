@@ -552,7 +552,7 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                                   children: widget.food.attributes
                                       .map(
                                         (attribute) => Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 5),
+                                          padding: expanded ? const EdgeInsets.symmetric(horizontal: 5,vertical: 0.5) : const EdgeInsets.symmetric(horizontal: 5,vertical: 0),
                                           child: FittedBox(
                                             child: Card(
                                               shape: RoundedRectangleBorder(
@@ -1138,7 +1138,7 @@ class MenuCard extends StatelessWidget {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment: MainAxisAlignment.start,
                                         children: [
                                           Radio<String>(
                                             value: menuContext.selectedMenu[entry.key]?.first?.id,
@@ -1152,9 +1152,21 @@ class MenuCard extends StatelessWidget {
                                             activeColor: CRIMSON,
                                             hoverColor: CRIMSON,
                                           ),
+                                          ClipRRect(
+                                            borderRadius: BorderRadius.circular(50),
+                                            child: FadeInImage.assetNetwork(
+                                              placeholder: 'assets/images/loading.gif',
+                                              image: food.imageURL,
+                                              height: 25,
+                                              width: 25,
+                                              fit: BoxFit.cover,
+
+                                            ),
+                                          ),
+                                          SizedBox(width: MediaQuery.of(context).size.width/6,),
                                           Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: TextTranslator(food.name),
+                                            alignment: Alignment.center,
+                                            child: TextTranslator(food.name,textAlign: TextAlign.center,),
                                           ),
                                           if (menu.type == MenuType.fixed_price.value)...[
                                             Text(" ")

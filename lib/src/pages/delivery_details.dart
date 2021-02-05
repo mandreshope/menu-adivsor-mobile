@@ -5,10 +5,12 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/constants/date_format.dart';
+import 'package:menu_advisor/src/pages/confirm_sms.dart';
 import 'package:menu_advisor/src/pages/payment_card_list.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/CommandContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
+import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/extensions.dart';
@@ -32,6 +34,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
   Restaurant _restaurant;
 
   CommandContext commandContext;
+  bool sendingCommand = false;
 
   @override
   void initState() {
@@ -284,7 +287,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
-                onPressed: () {
+                onPressed: () async {
                   FormState formState = formKey.currentState;
 
                   if (formState.validate()) {
@@ -294,6 +297,40 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                     );
 
                     if (authContext.currentUser != null) {
+
+                      var customer = {
+                        'name': authContext.currentUser?.name,
+                        'address': authContext.currentUser?.address,
+                        'phoneNumber': authContext.currentUser?.phoneNumber,
+                        'email': authContext.currentUser?.email
+                      };
+                      setState(() {
+                        sendingCommand = true;
+                      });
+                      String code = await Api.instance.sendCode(
+                          relatedUser: authContext.currentUser?.id ?? null,
+                          customer: customer,
+                          commandType: commandContext.commandType);
+
+                      RouteUtil.goTo(
+                        context: context,
+                        child: ConfirmSms(
+                          command: null,
+                          isFromSignup: false,
+                          customer:customer,
+                          code: code,
+                          fromDelivery: true,
+                          restaurant: _restaurant,
+                        ),
+                        routeName: homeRoute,
+                        // method: RoutingMethod.atTop,
+                      );
+                      setState(() {
+                        sendingCommand = false;
+                      });
+
+
+                      /*
                       RouteUtil.goTo(
                         context: context,
                         child: PaymentCardListPage(
@@ -301,11 +338,22 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                           restaurant: _restaurant,
                         ),
                         routeName: paymentCardListRoute,
-                      );
+                      );*/
                     }
                   }
                 },
-                child: TextTranslator(
+                child: this.sendingCommand
+                    ? Center(
+                  child: SizedBox(
+                    height: 23,
+                    width: 23,
+                    child: CircularProgressIndicator(
+                      valueColor:
+                      AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  ),
+                )
+                    :TextTranslator(
                   AppLocalizations.of(context).translate('next'),
                   style: TextStyle(
                     color: Colors.white,

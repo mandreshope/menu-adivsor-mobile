@@ -316,6 +316,7 @@ class _SearchPageState extends State<SearchPage> {
                               filters: filters,
                               type: type,
                               range: Provider.of<SettingContext>(context).range,
+                              isDiscover: widget.barTitle == 'Découvrir' ? true : false,
                             ),
                           );
                           if (result != null && result['filters'] is Map) {

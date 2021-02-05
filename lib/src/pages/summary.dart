@@ -342,7 +342,7 @@ class _SummaryState extends State<Summary> {
         for (int i = 0; i < options.length; i++)...[
           Container(
             // color: (options.length/quantity) <   ? Colors.grey.withAlpha(100) : Colors.white,
-            padding: EdgeInsets.only(top:15,bottom: 15,left: MediaQuery.of(context).size.width/2.5,right: 25),
+            padding: EdgeInsets.only(top:15,bottom: 15,left: MediaQuery.of(context).size.width/2.5,right: 0),
             child: Column(
               children: [
                 Container(

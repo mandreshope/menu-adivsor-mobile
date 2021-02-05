@@ -138,7 +138,7 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                 }
                 int value = --widget.itemCount;
                 if (value <= 0) {
-                  var result = await showDialog(
+                  /*var result = await showDialog(
                     context: context,
                     builder: (_) => ConfirmationDialog(
                       title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
@@ -147,15 +147,20 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                   );
 
                   if (result is bool && result) {
-                    _cartContext.removeAllFood(widget.food);
+                    // _cartContext.removeAllFood(widget.food);
+                    _cartContext.addItem(widget.food, value, false);
                     if (!widget.fromRestaurant)
                       RouteUtil.goBack(context: context);
                   }
                   if (widget.food is Menu){
                     Provider.of<MenuContext>(context,listen: false).clear();
-                  }
+                  }*/
+                  widget.onRemoved(_cartContext.getLastFood(widget.food.id));
+                  _cartContext.addItem(widget.food, value, false);
+
                 } else {
                   _cartContext.addItem(widget.food, value, false);
+                  // widget.onRemoved(_cartContext.getLastFood(widget.food.id));
                   widget.onRemoved(_cartContext.getLastFood(widget.food.id));
                 }
                 // if (value <= 0) {
@@ -206,7 +211,7 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                   );
                   return;
                 }
-               if (!_cartContext.hasOptionSelectioned(widget.food)) {
+               if (widget.itemCount == 0 && !_cartContext.hasOptionSelectioned(widget.food)) {
                  Fluttertoast.showToast(
                    msg: 'Ajouter une option',
                  );

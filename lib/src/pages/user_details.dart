@@ -368,6 +368,40 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
         sendingCommand = true;
       });
       try {
+
+        String code = await Api.instance.sendCode(
+            relatedUser: authContext.currentUser?.id ?? null,
+            customer: {
+              'name': _displayNameController.value.text,
+              'address': _addressController.value.text,
+              'phoneNumber': "+261"+_phoneNumberController.value.text,
+              'email': _emailController.value.text
+            },
+            commandType: commandContext.commandType);
+
+        RouteUtil.goTo(
+          context: context,
+          child: ConfirmSms(
+            command: null,
+            isFromSignup: false,
+              customer:{
+                'name': _displayNameController.value.text,
+                'address': _addressController.value.text,
+                'phoneNumber': "+261"+_phoneNumberController.value.text,
+                'email': _emailController.value.text
+              },
+            code: code,
+          ),
+          routeName: homeRoute,
+          // method: RoutingMethod.atTop,
+        );
+        setState(() {
+          sendingCommand = false;
+        });
+
+        return ;
+
+        // sendcommand
         var command = await Api.instance.sendCommand(
             relatedUser: authContext.currentUser?.id ?? null,
           comment: cartContext.comment,

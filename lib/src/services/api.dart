@@ -377,7 +377,7 @@ class Api {
   }) {
     String searchQuery;
     
-    if (location != null){
+    if (location == null){
       searchQuery = '?lang=$lang&q=$query&range=$range';
     }else{
      searchQuery = '?lang=$lang&q=$query&range=$range&location=${jsonEncode(location)}';
@@ -749,7 +749,7 @@ Future<Map<String,dynamic>> ConfirmSms(String idCommande, String code,String com
     });
 }
 
-  Future<bool> sendCommandSms(
+  Future<String> sendCode(
       {@required String relatedUser,
       @required Map customer,
       @required String commandType}) {
@@ -765,7 +765,35 @@ Future<Map<String,dynamic>> ConfirmSms(String idCommande, String code,String com
         'Content-type': 'application/json',
       },
       body: post,
-    ).then((value) => true);
+    ).then((value) {
+      var response = jsonDecode(value.body);
+      return "${response["code"]}";
+    }
+     );
+
+  }
+  Future<bool> confirmCode(
+      {@required String relatedUser,
+      @required Map customer,
+      @required String code,
+      @required String commandType,}) {
+    var post = jsonEncode({
+      'relatedUser': relatedUser,
+      'commandType': commandType,
+      'customer': customer,
+      'code': code,
+    });
+    print(post);
+    return http.post(
+      '$_apiURL/commands/confirmCode',
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: post,
+    ).then((value) {
+      print("confirmCode $value");
+      return true;
+    });
 
   }
 }

@@ -243,6 +243,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
 
   void _onChanged(String value) {
     setState(() {
+      searchResults = List();
       searchLoading = true;
       searchValue = value;
     });

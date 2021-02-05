@@ -51,6 +51,8 @@ class Food implements Copyable<Food>{
   bool isFoodForMenu = false;
   String idMenu = "";
 
+  String idNewFood = "";
+
   Food({
     @required this.id,
     @required this.name,
@@ -191,6 +193,8 @@ class Menu implements Copyable<Menu>{
   List<Option> options = List();
 
   List<Option> optionSelected = List();
+
+  String idNewFood = "";
 
   Menu({
     @required this.id,
@@ -877,6 +881,7 @@ class Option {
 
   List<ItemsOption> itemOptionSelected = List();
 
+
   Option({this.sId, this.items, this.title, this.maxOptions,this.itemOptionSelected});
 
   factory Option.copy(Option o) => Option(
@@ -939,6 +944,7 @@ class ItemsOption {
   int quantity = 0;
   ItemsOption item;
   bool isSelected = false;
+  bool isSingle = false;
 
   ItemsOption({this.sId, this.name, this.price,this.imageUrl,this.quantity,this.item,this.isSelected});
 

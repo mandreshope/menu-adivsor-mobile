@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/pages/payment_card_list.dart';
 import 'package:menu_advisor/src/pages/summary.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
+import 'package:menu_advisor/src/providers/BagContext.dart';
+import 'package:menu_advisor/src/providers/CommandContext.dart';
+import 'package:menu_advisor/src/providers/MenuContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
@@ -15,12 +19,16 @@ import 'home.dart';
 
 // ignore: must_be_immutable
 class ConfirmSms extends StatefulWidget {
-  ConfirmSms({Key key, this.command, this.verificationId, this.isFromSignup = false, this.phoneNumber, this.password}) : super(key: key);
+  ConfirmSms({Key key, this.command, this.verificationId, this.isFromSignup = false, this.phoneNumber, this.password,this.restaurant,this.customer,this.code,this.fromDelivery = false}) : super(key: key);
   Command command;
   String verificationId;
   bool isFromSignup;
   String phoneNumber;
   String password;
+  String code;
+  dynamic customer;
+  bool fromDelivery;
+  Restaurant restaurant;
   @override
   _ConfirmSmsState createState() => _ConfirmSmsState();
 }
@@ -30,6 +38,15 @@ class _ConfirmSmsState extends State<ConfirmSms> {
   final TextEditingController _pinPutController = TextEditingController();
   final FocusNode _pinPutFocusNode = FocusNode();
   bool loading = false;
+
+  DateTime dateDelai;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    dateDelai = DateTime.now().add(Duration(minutes: 5));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -185,23 +202,111 @@ class _ConfirmSmsState extends State<ConfirmSms> {
           }
       }
     } else {
-      setState(() {
-        loading = true;
-      });
-      Map<String,dynamic> result = await Api.instance.ConfirmSms(widget.command.id, pin,widget.command.commandType);
+
+      CommandContext commandContext = Provider.of<CommandContext>(
+        context,
+        listen: false,
+      );
+
+      CartContext cartContext = Provider.of<CartContext>(
+        context,
+        listen: false,
+      );
+
+      AuthContext authContext = Provider.of<AuthContext>(context,listen: false);
+/*
+      var result = await Api.instance.confirmCode(
+          relatedUser: authContext.currentUser?.id ?? null,
+          customer: widget.customer,
+          commandType: commandContext.commandType,
+          code: pin
+      );
       setState(() {
         loading = false;
-      });
-      if (result.containsKey("message") && result["message"].contains("Bad code")){
+      });*/
+     if (widget.code != pin){
         Fluttertoast.showToast(msg: "Invalide sms code");
         return ;
       }
 
+     if (this.dateDelai.isBefore(DateTime.now())){
+       Fluttertoast.showToast(msg: "Votre délai de confirmation est épuisé. Veuillez renvoyer votre code de confirmation.");
+       return ;
+     }
+
+
+     if (widget.fromDelivery){
+       RouteUtil.goTo(
+         context: context,
+         child: PaymentCardListPage(
+           isPaymentStep: true,
+           restaurant: widget.restaurant,
+         ),
+         routeName: paymentCardListRoute,
+       );
+       return;
+     }
+
+      setState(() {
+        loading = true;
+      });
+
+
+      var command = await Api.instance.sendCommand(
+          relatedUser: authContext.currentUser?.id ?? null,
+          comment: cartContext.comment,
+          commandType: commandContext.commandType,
+          items: cartContext.items
+              .where((e) => !e.isMenu)
+              .map((e) => {
+            'quantity': 1,
+            'item': e.id,
+            'options': e.optionSelected != null ?
+            e.optionSelected : [],
+            'comment': e.message
+          })
+              .toList(),
+          restaurant: cartContext.currentOrigin,
+          totalPrice: (cartContext.totalPrice * 100).round(),
+          customer: widget.customer,
+          shippingTime: commandContext.deliveryDate
+              ?.add(
+            Duration(
+              minutes: commandContext.deliveryTime.hour * 60 + commandContext.deliveryTime.minute,
+            ),
+          )
+              ?.millisecondsSinceEpoch ??
+              null,
+          menu: cartContext.items.where(
+                  (e) => e.isMenu).map(
+                  (e) =>
+              {
+                'quantity': 1,
+                'item': e.id,
+                'foods':
+                cartContext.foodMenuSelecteds
+              }).toList(),
+          priceless: !cartContext.withPrice
+
+      );
+      Command cm = Command.fromJson(command);
+
+      commandContext.clear();
+      cartContext.clear();
+      Provider.of<MenuContext>(context,listen: false).clear();
+      Fluttertoast.showToast(
+        msg:
+        'Votre commande a été bien reçu.',
+      );
+
       RouteUtil.goTo(
         context: context,
-        child: Summary(commande: widget.command),
+        child: Summary(commande: cm),
         routeName: confirmEmailRoute,
       );
+      setState(() {
+        loading = false;
+      });
     }
   }
 }

@@ -431,6 +431,7 @@ class SearchSettingDialog extends StatefulWidget {
   final String type;
   final bool inRestaurant;
   final int range;
+  final bool isDiscover;
 
   SearchSettingDialog({
     Key key,
@@ -438,7 +439,8 @@ class SearchSettingDialog extends StatefulWidget {
     @required this.filters,
     @required this.type,
     this.inRestaurant = false,
-    this.range = 1
+    this.range = 1,
+    this.isDiscover = false
   }) : super(key: key);
 
   @override
@@ -522,64 +524,67 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
               displayTrackball: true,
               // sliderHeight: 50,
             ),*/
-            TextTranslator(
-              AppLocalizations.of(context).translate('search_type'),
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+            if (!widget.isDiscover)...[
+              TextTranslator(
+                AppLocalizations.of(context).translate('search_type'),
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              physics: BouncingScrollPhysics(),
-              child: Row(
-                children: [
-                  if (widget.inRestaurant) ...[
-                    'all',
-                    'food',
-                  ] else ...[
-                    'all',
-                    'restaurant',
-                    'food',
+              SizedBox(
+                height: 10,
+              ),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                physics: BouncingScrollPhysics(),
+                child: Row(
+                  children: [
+                    if (widget.inRestaurant) ...[
+                      'all',
+                      'food',
+                    ] else ...[
+                      'all',
+                      'restaurant',
+                      'food',
+                    ]
                   ]
-                ]
-                    .map(
-                      (e) => Theme(
-                        data: ThemeData(
-                          brightness:
-                              type == e ? Brightness.dark : Brightness.light,
-                          cardColor: type == e ? CRIMSON : Colors.white,
+                      .map(
+                        (e) => Theme(
+                      data: ThemeData(
+                        brightness:
+                        type == e ? Brightness.dark : Brightness.light,
+                        cardColor: type == e ? CRIMSON : Colors.white,
+                      ),
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50),
                         ),
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(50),
-                            onTap: () {
-                              setState(() {
-                                type = e;
-                              });
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(10),
-                              child: TextTranslator(
-                                AppLocalizations.of(context).translate(e),
-                              ),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(50),
+                          onTap: () {
+                            setState(() {
+                              type = e;
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(10),
+                            child: TextTranslator(
+                              AppLocalizations.of(context).translate(e),
                             ),
                           ),
                         ),
                       ),
-                    )
-                    .toList(),
+                    ),
+                  )
+                      .toList(),
+                ),
               ),
-            ),
-            SizedBox(
-              height: 15,
-            ),
+              SizedBox(
+                height: 15,
+              ),
+            ],
+
             TextTranslator(
               AppLocalizations.of(context).translate('categories'),
               style: TextStyle(
@@ -717,17 +722,17 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                         (e) => Theme(
                           data: ThemeData(
                             brightness: filters.containsKey('attributes') &&
-                                    filters['attributes'] == e.tag
+                                    filters['attributes'] == e.sId
                                 ? Brightness.dark
                                 : Brightness.light,
                             cardColor: filters.containsKey('attributes') &&
-                                    filters['attributes'] == e.tag
+                                    filters['attributes'] == e.sId
                                 ? CRIMSON
                                 : Colors.white,
                           ),
                           child: Card(
                             color: filters.containsKey('attributes') &&
-                                    filters['attributes'] == e.tag
+                                    filters['attributes'] == e.sId
                                 ? CRIMSON
                                 : Colors.white,
                             shape: RoundedRectangleBorder(
@@ -737,7 +742,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                               borderRadius: BorderRadius.circular(50),
                               onTap: () {
                                 setState(() {
-                                  filters['attributes'] = e.tag;
+                                  filters['attributes'] = e.sId;
                                 });
                               },
                               child: Container(
@@ -1195,8 +1200,8 @@ class _AtributesDialogState extends State<AtributesDialog> {
                         FadeInImage.assetNetwork(
                           placeholder: 'assets/images/loading.gif',
                           image:  att.imageURL,
-                          height: 20,
-                          width: 20,
+                          height: 25,
+                          width: 25,
                         ),
                         SizedBox(width: 10,),
                         TextTranslator(att.locales),
