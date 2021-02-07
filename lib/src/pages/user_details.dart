@@ -60,7 +60,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
 
       if (authContext.currentUser != null){
       _displayNameController.text = authContext.currentUser.toString();
-      _phoneNumberController.text = authContext.currentUser.phoneNumber.replaceFirst("+261", "");
+      _phoneNumberController.text = authContext.currentUser.phoneNumber.replaceFirst("+33", "");
       _emailController.text = authContext.currentUser.email;
       _addressController.text = authContext.currentUser.address ?? "";
     }
@@ -134,7 +134,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                   maxLength: 9,
                   decoration: InputDecoration(
                     contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                    prefixText: "+261",
+                    prefixText: "+33",
                     counter: Offstage(),
                   ),
                 ),
@@ -374,7 +374,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
             customer: {
               'name': _displayNameController.value.text,
               'address': _addressController.value.text,
-              'phoneNumber': "+261"+_phoneNumberController.value.text,
+              'phoneNumber': "+33"+_phoneNumberController.value.text,
               'email': _emailController.value.text
             },
             commandType: commandContext.commandType);
@@ -387,7 +387,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
               customer:{
                 'name': _displayNameController.value.text,
                 'address': _addressController.value.text,
-                'phoneNumber': "+261"+_phoneNumberController.value.text,
+                'phoneNumber': "+33"+_phoneNumberController.value.text,
                 'email': _emailController.value.text
               },
             code: code,

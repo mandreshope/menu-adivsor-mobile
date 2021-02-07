@@ -1,4 +1,5 @@
 import 'package:chips_choice/chips_choice.dart';
+import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -7,9 +8,11 @@ import 'package:geolocator/geolocator.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/components/menu_item_food_option.dart';
+import 'package:menu_advisor/src/components/pointer_paint.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/constants/date_format.dart';
 import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/pages/detail_menu.dart';
 import 'package:menu_advisor/src/pages/food.dart';
 import 'package:menu_advisor/src/pages/restaurant.dart';
 import 'package:menu_advisor/src/pages/summary.dart';
@@ -1013,203 +1016,243 @@ class MenuCard extends StatelessWidget {
     MenuContext _controller = Provider.of<MenuContext>(context, listen: false);
     CartContext _cartContext = Provider.of<CartContext>(context, listen: false);
     menu.restaurant = restaurant;
-    _controller.menu = menu;
-    _controller.foodsGrouped = menu.foods ?? List();
-    count = _cartContext.getCount(menu);
+    // _controller.menu = menu;
+    menu.foodsGrouped = menu.foods ?? List();
+    // count = _cartContext.getCount(menu);
 
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      elevation: 4.0,
-      child: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                menu.imageURL != null
-                    ? FadeInImage.assetNetwork(placeholder: 'assets/images/loading.gif', image: menu.imageURL, width: 100, height: 100, fit: BoxFit.contain)
-                    : SizedBox(
-                        width: 40,
-                        height: 40,
-                        child: Center(
-                          child: Icon(
-                            Icons.food_bank,
+    return InkWell(
+      onTap: (){
+        RouteUtil.goTo(
+            context: context,
+            child: DetailMenu(menu: Menu.clone(menu)),
+            routeName: null
+        );
+      },
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        elevation: 4.0,
+        margin: EdgeInsets.symmetric(horizontal: 15),
+        child: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                 /* menu.imageURL != null
+                      ? FadeInImage.assetNetwork(placeholder: 'assets/images/loading.gif', image: menu.imageURL, width: 100, height: 100, fit: BoxFit.contain)
+                      : SizedBox(
+                          width: 40,
+                          height: 40,
+                          child: Center(
+                            child: Icon(
+                              Icons.food_bank,
+                            ),
+                          ),
+                        ),*/
+                  SizedBox(width: 5.0),
+                  Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        TextTranslator(
+                          menu.name ?? "",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18
                           ),
                         ),
-                      ),
-                SizedBox(width: 5.0),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      TextTranslator(
-                        menu.name ?? "",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18
-                        ),
-                      ),
-                      TextTranslator(
-                        menu.description ?? "",
-                        style: TextStyle(),
-                      ),
-                      SizedBox(height: 10,),
-                      TextTranslator(
-                        Provider.of<CartContext>(context).withPrice ?  "${menu.price.amount/100 ?? ""}€" : " ",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold
-                        ),
-                      ),
+                      /*  TextTranslator(
+                          menu.description ?? "",
+                          style: TextStyle(),
+                        ),*/
+                        SizedBox(height: 10,),
+                        _renderListPlat(context,_controller)
 
-                    ],
+                      ],
+
                   ),
-                ),
-                Consumer<CartContext>(
-                  builder: (_, _cart,__) {
-                    return ButtonItemCountWidget(
-                        menu,
-                        fromRestaurant: true,
-                        isMenu: true, onAdded: (value){
-                          if (value < 2){
-                            _cart.addItem(menu, value,true);
-                            count = value;
-                          }
-
-                        },
-                        onRemoved: (value){
-                          value == 0 ? _cart.removeItem(menu)
-                          : _cart.addItem(menu, value,false);
-                          count = value;
-
-                        }, itemCount: count
-                        , isContains: _cart.contains(menu));
-                  }
-                )
-              ],
-            ),
-            Column(
-              children: [
-                for (var entry in _controller.foodsGrouped.entries)
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 15,),
-                      TextTranslator(entry.key,
-                      style: TextStyle(
-                        fontSize: 16,
+                  Expanded(
+                    child: CustomPaint(
+                      painter: PointPainter(),
+                    ),
+                  ),
+                  SizedBox(width: 10,),
+                  TextTranslator(
+                    Provider.of<CartContext>(context).withPrice ?  "${menu.price.amount/100 ?? ""}€" : " ",
+                    style: TextStyle(
                         fontWeight: FontWeight.bold,
-                      ),),
-                      Divider(),
-                      for (var food in entry.value)...[
-                        Consumer<MenuContext>(
-                          builder: (context, menuContext,w) {
-                            return InkWell(
-                              onTap: (){
-                                if (_cartContext.contains(menu)){
-                                _cartContext.setFoodMenuSelected(entry.key,food);
-                                menuContext.select(_cartContext,entry.key, food);
-                               /* RouteUtil.goTo(
-                                  context: context,
-                                  child: FoodPage(
-                                    food: food,
-                                    imageTag: food.id,
-                                    fromMenu: true,
-                                    subMenu:entry.key,
-                                    restaurantName: menu.restaurant,
-                                  ),
-                                  routeName: foodRoute,
-                                );*/
-                                }else{
-                                  Fluttertoast.showToast(msg: "Veuillez ajouter le menu dans le panier");
-                                }
-                              },
-                                child: Card(
-                                elevation: 2,
-                                child: Container(
-                                  margin: EdgeInsets.all(15),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
+                      fontSize: 20,
+                      color: CRIMSON
+                    ),
+                  ),
+                  /*
+                  Consumer<CartContext>(
+                    builder: (_, _cart,__) {
+                      return ButtonItemCountWidget(
+                          menu,
+                          fromRestaurant: true,
+                          isMenu: true, onAdded: (value){
+                            if (value < 2){
+                              _cart.addItem(menu, value,true);
+                              count = value;
+                            }
+
+                          },
+                          onRemoved: (value){
+                            value == 0 ? _cart.removeItem(menu)
+                            : _cart.addItem(menu, value,false);
+                            count = value;
+
+                          }, itemCount: count
+                          , isContains: _cart.contains(menu));
+                    }
+                  )*/
+                ],
+              ),
+              //plat
+             /* Visibility(
+                visible: false,
+                child: Column(
+                  children: [
+                    for (var entry in _controller.foodsGrouped.entries)
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 15,),
+                          TextTranslator(entry.key,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),),
+                          Divider(),
+                          for (var food in entry.value)...[
+                            Consumer<MenuContext>(
+                              builder: (context, menuContext,w) {
+                                return InkWell(
+                                  onTap: (){
+                                    if (_cartContext.contains(menu)){
+                                    _cartContext.setFoodMenuSelected(entry.key,food);
+                                    menuContext.select(_cartContext,entry.key, food);
+                                   *//*
+                                   RouteUtil.goTo(
+                                      context: context,
+                                      child: FoodPage(
+                                        food: food,
+                                        imageTag: food.id,
+                                        fromMenu: true,
+                                        subMenu:entry.key,
+                                        restaurantName: menu.restaurant,
+                                      ),
+                                      routeName: foodRoute,
+                                    );*//*
+                                    }else{
+                                      Fluttertoast.showToast(msg: "Veuillez ajouter le menu dans le panier");
+                                    }
+                                  },
+                                    child: Card(
+                                    elevation: 2,
+                                    child: Container(
+                                      margin: EdgeInsets.all(15),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Radio<String>(
-                                            value: menuContext.selectedMenu[entry.key]?.first?.id,
-                                            groupValue: food.id,
-                                            onChanged: (value){
-                                              print("food selected");
-                                              if (_cartContext.contains(menu))
-                                              _cartContext.foodMenuSelected[entry.key] = food;
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            children: [
+                                              Radio<String>(
+                                                value: menuContext.selectedMenu[entry.key]?.first?.id,
+                                                groupValue: food.id,
+                                                onChanged: (value){
+                                                  print("food selected");
+                                                  if (_cartContext.contains(menu))
+                                                  _cartContext.foodMenuSelected[entry.key] = food;
 
-                                            },
-                                            activeColor: CRIMSON,
-                                            hoverColor: CRIMSON,
+                                                },
+                                                activeColor: CRIMSON,
+                                                hoverColor: CRIMSON,
+                                              ),
+                                              ClipRRect(
+                                                borderRadius: BorderRadius.circular(50),
+                                                child: FadeInImage.assetNetwork(
+                                                  placeholder: 'assets/images/loading.gif',
+                                                  image: food.imageURL,
+                                                  height: 25,
+                                                  width: 25,
+                                                  fit: BoxFit.cover,
+
+                                                ),
+                                              ),
+                                              SizedBox(width: MediaQuery.of(context).size.width/6,),
+                                              Align(
+                                                alignment: Alignment.center,
+                                                child: TextTranslator(food.name,textAlign: TextAlign.center,),
+                                              ),
+                                              if (menu.type == MenuType.fixed_price.value)...[
+                                                Text(" ")
+                                              ]else if (menu.type == MenuType.fixed_price.value)...[
+                                                Text(" ")
+                                              ]else...[
+                                                food?.price?.amount == null ? Text("") : Text("${food.price.amount / 100} €", style: TextStyle(fontWeight: FontWeight.bold)),
+                                              ]
+
+
+                                              *//*ButtonItemCountWidget(
+                                                food,
+                                                isMenu: true, onAdded: (value){
+                                                  _cartContext.addItem(food, value);
+                                              }, onRemoved: (value){
+                                                  value == 0 ? _cartContext.removeItem(food)
+                                                  : _cartContext.addItem(food, value);
+                                              }, itemCount: _cartContext.getCount(food)
+                                              , isContains: _cartContext.contains(food))*//*
+                                            ],
                                           ),
-                                          ClipRRect(
-                                            borderRadius: BorderRadius.circular(50),
-                                            child: FadeInImage.assetNetwork(
-                                              placeholder: 'assets/images/loading.gif',
-                                              image: food.imageURL,
-                                              height: 25,
-                                              width: 25,
-                                              fit: BoxFit.cover,
-
-                                            ),
-                                          ),
-                                          SizedBox(width: MediaQuery.of(context).size.width/6,),
-                                          Align(
-                                            alignment: Alignment.center,
-                                            child: TextTranslator(food.name,textAlign: TextAlign.center,),
-                                          ),
-                                          if (menu.type == MenuType.fixed_price.value)...[
-                                            Text(" ")
-                                          ]else if (menu.type == MenuType.fixed_price.value)...[
-                                            Text(" ")
-                                          ]else...[
-                                            food?.price?.amount == null ? Text("") : Text("${food.price.amount / 100} €", style: TextStyle(fontWeight: FontWeight.bold)),
-                                          ]
-
-
-                                          /*ButtonItemCountWidget(
-                                            food,
-                                            isMenu: true, onAdded: (value){
-                                              _cartContext.addItem(food, value);
-                                          }, onRemoved: (value){
-                                              value == 0 ? _cartContext.removeItem(food)
-                                              : _cartContext.addItem(food, value);
-                                          }, itemCount: _cartContext.getCount(food)
-                                          , isContains: _cartContext.contains(food))*/
+                                          if (menuContext.selectedMenu[entry.key]?.first?.id == food.id)...[
+                                            MenuItemFoodOption(food: food,menu: menu,withPrice: withPrice,subMenu:entry.key)
+                                            // Container()
+                                          ]else
+                                            Container()
                                         ],
                                       ),
-                                      if (menuContext.selectedMenu[entry.key]?.first?.id == food.id)...[
-                                        MenuItemFoodOption(food: food,menu: menu,withPrice: withPrice,subMenu:entry.key)
-                                        // Container()
-                                      ]else
-                                        Container()
-                                    ],
+                                    ),
                                   ),
-                                ),
-                              ),
-                            );
-                          }
-                        )
-                      ]
-                    ],
-                  )
-              ],
-            ),
-          ],
+                                );
+                              }
+                            )
+                          ]
+                        ],
+                      )
+                  ],
+                ),
+              ),*/
+            ],
+          ),
         ),
       ),
     );
+
   }
+
+
+  Widget _renderListPlat(context,controller){
+    String name = "";
+    for (var entry in menu.foodsGrouped.entries)
+      name += entry.key + " + ";
+      return TextTranslator(
+        name.substring(0,name.length-2),
+        style: TextStyle(
+            fontWeight: FontWeight.bold,
+          fontSize: 14
+        ),
+      );
+  }
+
 }
 
 class RestaurantCard extends StatefulWidget {
@@ -1410,7 +1453,7 @@ class _BagItemState extends State<BagItem> {
                 // _foodRender(_cartContext.foodMenuSelecteds.first),
                 if (_cartContext.foodMenuSelecteds != null)...[
 
-                  for(Food f in _cartContext.foodMenuSelecteds)...[
+                  for(Food f in widget.food.foodMenuSelecteds)...[
                     if (f != null)...[
                       _foodRender(f),
                       Divider(),

@@ -109,7 +109,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                           textInputAction: TextInputAction.next,
                           decoration: InputDecoration(
                             labelText: "Votre numéro de téléphone",
-                             prefixText: "+261",
+                             prefixText: "+33",
                           ),
                           onFieldSubmitted: (_) {
                             _emailFocus.unfocus();
@@ -161,7 +161,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   _submitForm() async {
     FormState formState = _formKey.currentState;
     if (formState.validate()) {
-      final String email = "+261"+_emailController.value.text;
+      final String email = "+33"+_emailController.value.text;
 
       setState(() {
         loading = true;

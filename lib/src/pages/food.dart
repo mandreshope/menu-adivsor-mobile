@@ -70,7 +70,7 @@ class _FoodPageState extends State<FoodPage> {
     _cartContext = Provider.of<CartContext>(context, listen: false);
     // if (_cartContext.contains(widget.food)) itemCount = _cartContext.getCount(widget.food);
     MenuContext _menuContext = Provider.of<MenuContext>(context, listen: false);
-    menu = _menuContext.menu;
+    // menu = _menuContext.menu;
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
 

@@ -1,6 +1,8 @@
 import 'package:copyable/copyable.dart';
 import 'package:flutter/material.dart';
+import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/types.dart';
+import 'package:menu_advisor/src/utils/extensions.dart';
 
 class FoodCategory {
   final String id;
@@ -139,28 +141,7 @@ class Food implements Copyable<Food>{
   Food copy() {
     // TODO: implement copy
     return this;
-    return Food(
-      id: this.id, 
-      name: this.name, 
-      category: this.category,
-     restaurant: this.restaurant, 
-     price: this.price,
-     attributes: this.attributes,
-     description: this.description,
-     foodAttributes: this.foodAttributes,
-     imageURL: this.imageURL,
-     isFoodForMenu: this.isFoodForMenu,
-     isMenu: this.isMenu, 
-     maxOptions: this.maxOptions,
-     message: this.message,
-     optionSelected: this.optionSelected,
-     options: this.options,
-     ratings: this.ratings,
-     status: this.status,
-     title: this.title,
-     type: this.type);
   }
-
   @override
   Food copyWith() {
     // TODO: implement copyWith
@@ -181,7 +162,7 @@ class Menu implements Copyable<Menu>{
   final dynamic name;
   final dynamic description;
   final List<Food> foods;
-  List<Food> foodSelected;
+  List<Food> foodSelected = List();
   String restaurant;
   Price price;
   String type;
@@ -195,6 +176,9 @@ class Menu implements Copyable<Menu>{
   List<Option> optionSelected = List();
 
   String idNewFood = "";
+
+  Map<String,Food> _foodMenuSelected = Map();
+  Map<String, List<Food>> selectedMenu = Map();
 
   Menu({
     @required this.id,
@@ -222,6 +206,80 @@ class Menu implements Copyable<Menu>{
         
   }
 
+
+  Map<String, List<Food>> _foodsGrouped;
+  set foodsGrouped(List<Food> foods) => _foodsGrouped = foods.groupBy((f) {
+    // f.isMenu = true;
+    return (f.type is String) ? f.type : (f.type.name is String) ? f.type.name : f.type.name["fr"];
+  });
+  get foodsGrouped => _foodsGrouped;
+
+
+
+  select(CartContext cartContext, String entry, food, Function onFinish) {
+
+    if (this.selectedMenu[entry] != null && selectedMenu[entry].firstWhere((element) => element.id != food.id,orElse: ()=>null) != null){
+      foodMenuSelected[entry].optionSelected = List();
+      selectedMenu[entry] = [food];
+      cartContext.addOption(this, foodMenuSelected[entry].optionSelected);
+      cartContext.refresh();
+    }
+    else
+      selectedMenu[entry] = [food];
+    /*if (_foodsGrouped.length == selectedMenu.length) {
+
+      _selectedFood.clear();
+      for (var entry in selectedMenu.entries){
+        _selectedFood.addAll(entry.value);
+      }
+
+    }else{
+
+    }*/
+    onFinish();
+    // notifyListeners();
+
+  }
+
+
+  // Food _foodMenuSelected;
+  setFoodMenuSelected(String key, value) {
+    _foodMenuSelected[key] = value;
+    _foodMenuSelected[key].isMenu = true;
+  }
+  List<Food> get foodMenuSelecteds {
+    List<Food> foods = List();
+    _foodMenuSelected.forEach((key, value) {
+      foods.add(value);
+    });
+
+    return foods;
+
+  }
+
+
+  Map<String,Food> get foodMenuSelected => _foodMenuSelected;
+
+  factory Menu.clone(Menu menu) {
+   Menu clone = Menu(
+      name: menu.name,
+      id: menu.id,
+      optionSelected: menu.optionSelected.map((e) => Option.copy(e)).toList(),
+      message: menu.message,
+      description: menu.description,
+      type: menu.type,
+      isMenu: menu.isMenu,
+      isFoodForMenu: menu.isFoodForMenu,
+      imageURL: menu.imageURL,
+      restaurant: menu.restaurant,
+      price: menu.price,
+      foods: menu.foods.map((f) => Food.copy(f)).toList(),
+    );
+
+   clone.foodSelected = menu.foodSelected.map((e) => Food.copy(e)).toList();
+
+   return clone;
+  }
 
   factory Menu. fromJson(Map<String, dynamic> json,{String resto,bool fromCommand = false}) {
     

@@ -284,7 +284,7 @@ class _ConfirmSmsState extends State<ConfirmSms> {
                 'quantity': 1,
                 'item': e.id,
                 'foods':
-                cartContext.foodMenuSelecteds
+                e.foodMenuSelecteds
               }).toList(),
           priceless: !cartContext.withPrice
 

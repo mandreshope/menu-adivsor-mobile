@@ -5,20 +5,11 @@ import 'package:menu_advisor/src/utils/extensions.dart';
 import '../models.dart';
 
 class MenuContext extends ChangeNotifier {
-  Menu menu;
-  Map<String, List<Food>> _foodsGrouped;
 
   List<Food> _selectedFood = List();
   Map<String, List<Food>> selectedMenu = Map();
 
-  set foodsGrouped(List<Food> foods) => _foodsGrouped = foods.groupBy((f) {
-        // f.isMenu = true;
-        return (f.type is String) ? f.type : (f.type.name is String) ? f.type.name : f.type.name["fr"];
-      });
-
-  get foodsGrouped => _foodsGrouped;
-
-  select(CartContext cartContext, String entry, food) {
+  select(CartContext cartContext,Menu menu, String entry, food) {
     
     if (selectedMenu[entry] != null && selectedMenu[entry].firstWhere((element) => element.id != food.id,orElse: ()=>null) != null){
       cartContext.foodMenuSelected[entry].optionSelected = List();

@@ -432,7 +432,7 @@ class _OrderPageState extends State<OrderPage> {
                     'quantity': 1,
                     'item': e.id,
                     'foods': 
-                cartContext.foodMenuSelecteds
+                e.foodMenuSelecteds
               }).toList(),
                 priceless: !cartContext.withPrice
             );
@@ -527,7 +527,7 @@ class _OrderPageState extends State<OrderPage> {
                     'quantity': 1,
                     'item': e.id,
                     'foods': 
-                cartContext.foodMenuSelecteds
+                e.foodMenuSelecteds
               }).toList(),
             priceless: !cartContext.withPrice
         );

@@ -127,7 +127,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                                       'quantity': 1,
                                                       'item': e.id,
                                                       'foods': 
-                                                  cartContext.foodMenuSelecteds
+                                                  e.foodMenuSelecteds
                                                 }).toList(),shippingAddress: commandContext.deliveryAddress,
                                             shipAsSoonAsPossible: commandContext.deliveryDate == null && commandContext.deliveryTime == null,
                                             shippingTime: commandContext.deliveryDate
