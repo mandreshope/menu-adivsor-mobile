@@ -555,7 +555,7 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                                   children: widget.food.attributes
                                       .map(
                                         (attribute) => Padding(
-                                          padding: expanded ? const EdgeInsets.symmetric(horizontal: 5,vertical: 0.5) : const EdgeInsets.symmetric(horizontal: 5,vertical: 0),
+                                          padding: expanded ? const EdgeInsets.symmetric(horizontal: 5,vertical: 0.8) : const EdgeInsets.symmetric(horizontal: 5,vertical: 0),
                                           child: FittedBox(
                                             child: Card(
                                               shape: RoundedRectangleBorder(
@@ -563,7 +563,7 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                                                   20,
                                                 ),
                                               ),
-                                              elevation: expanded ? 4.0 : 0.0,
+                                              elevation: expanded ? 4 : 0.0,
                                               margin: EdgeInsets.zero,
                                               child: Padding(
                                                 padding: expanded

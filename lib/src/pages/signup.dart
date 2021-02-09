@@ -3,6 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/components/inputs.dart';
 import 'package:menu_advisor/src/components/logo.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/pages/confirm_sms.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
@@ -163,7 +164,7 @@ class _SignupPageState extends State<SignupPage> {
                               },
                               decoration: InputDecoration(
                                 contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                                prefixText: "+261",
+                                prefixText: phonePrefix,
                                 counter: Offstage(),
                               ),
                             ),
@@ -288,7 +289,7 @@ class _SignupPageState extends State<SignupPage> {
 
   _submitForm() async {
     String email = _emailController.value.text,
-        phoneNumber = "+261" + _phoneNumberController.value.text,
+        phoneNumber = phonePrefix + _phoneNumberController.value.text,
         password = _passwordController.value.text,
         confirmPassword = _confirmPasswordController.value.text,
         firstName = _firstNameController.value.text,

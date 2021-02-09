@@ -3,6 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/animations/FadeAnimation.dart';
 import 'package:menu_advisor/src/components/logo.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/constants/validators.dart';
 import 'package:menu_advisor/src/pages/new_password.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
@@ -109,7 +110,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                           textInputAction: TextInputAction.next,
                           decoration: InputDecoration(
                             labelText: "Votre numéro de téléphone",
-                             prefixText: "+261",
+                             prefixText: phonePrefix,
                           ),
                           onFieldSubmitted: (_) {
                             _emailFocus.unfocus();
@@ -161,7 +162,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   _submitForm() async {
     FormState formState = _formKey.currentState;
     if (formState.validate()) {
-      final String email = "+261"+_emailController.value.text;
+      final String email = phonePrefix+_emailController.value.text;
 
       setState(() {
         loading = true;

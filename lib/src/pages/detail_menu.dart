@@ -108,8 +108,12 @@ class _DetailMenuState extends State<DetailMenu> {
                     _renderListPlat(context),
                     _renderAddMenu(),
                     SizedBox(height: 50,),
-                    _cartContext.getFoodCountByIdNew(widget.menu) > 0 ?
-                    SizedBox(height: 50,) : Container()
+                    Consumer<CartContext>(
+                      builder: (_,cart,w){
+                        return cart.getFoodCountByIdNew(widget.menu) > 0 ?
+                        SizedBox(height: 150,) : Container();
+                      },
+                    )
                   ],
 
             ),

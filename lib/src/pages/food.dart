@@ -955,9 +955,6 @@ class _FoodPageState extends State<FoodPage> {
             option.itemOptionSelected.removeWhere((element) => element.isSingle);
             option.itemOptionSelected.add(value);
 
-            // var seen = Set<String>();
-            // option.itemOptionSelected = option.itemOptionSelected.where((element) => seen.add(element.name)).toList();
-
             foodAdded.optionSelected = options.map((o) => Option.copy(o)).toList();
             _optionContext.itemOptions = option.itemOptionSelected;
 
@@ -1011,78 +1008,7 @@ class _FoodPageState extends State<FoodPage> {
           source: option.items,
           value: (i, v) => v,
           label: (i, v) => v.name,
-        ),/*
-       choiceBuilder: (_){
-          choiceSelected = _;
-
-          return Consumer<OptionContext>(
-              builder: (context, snapshot,w) {
-                return Container(
-                  // color: _.selected ? CRIMSON : Colors.grey.withAlpha(1),
-                  padding: EdgeInsets.symmetric(horizontal: 5,vertical: 10),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      !_.selected ?
-                      IconButton(
-                        icon: Icon(Icons.add_circle_outlined,color: Colors.grey,size: 25),
-                        onPressed: (){
-                          // if (option.isMaxOptions){
-                            _.value.quantity = 1;
-                            _.select(!_.selected);
-                            snapshot.refresh();
-                        /*  }else{
-                            print("max options");
-                            Fluttertoast.showToast(
-                                msg: "maximum selection ${option.title} : ${option.maxOptions}"
-                            );
-                          }*/
-
-                          /* if (widget.fromMenu){
-                                                        menu.optionSelected = options;
-                                                        widget.food.optionSelected = options;
-                                                        _cartContext.addOption(menu, options,key: widget.subMenu);
-                                                      }*/
-                        },)
-                          :
-                      //button incrementation
-                      Icon(Icons.radio_button_checked,color: CRIMSON,size: 25),
-
-                      SizedBox(width: 10,),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(50),
-                        child: FadeInImage.assetNetwork(
-                          placeholder: 'assets/images/loading.gif',
-                          image: _.value.imageUrl,
-                          height: 50,
-                          width: 50,
-                          fit: BoxFit.cover,
-
-                        ),
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Text("${_.value.name}"),
-                      Spacer(),
-                      Container(
-                        padding: EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          // shape: BoxShape.circle,
-                          // color: _.value.price == 0 ? null : Colors.grey[400]
-                        ),
-                        child: !_cartContext.withPrice || _.value.price.amount == null ? Text("") : Text("${_.value.price.amount == 0 ? '': _.value.price.amount/100}${_.value.price.amount == 0 ? '': "€"}",
-                          style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),),
-                      ),
-                      Spacer(),
-                    ],
-                  ),
-
-                );
-              }
-          );
-        },*/
-
+        ),
       );
     }
 
@@ -1103,13 +1029,8 @@ class _FoodPageState extends State<FoodPage> {
         setState(() {
           if (option.itemOptionSelected?.length == option.maxOptions){
             if (option.itemOptionSelected.length >= value.length ){
-              // option.itemOptionSelected = value.cast<ItemsOption>();
-              // option.itemOptionSelected = option.itemOptionSelected.map((e) => e).toList();
-              // widget.food.optionSelected = options;
               var seen = Set<String>();
               option.itemOptionSelected = value.cast<ItemsOption>().where((element) => seen.add(element.name)).toList();
-              // option.itemOptionSelected = itemDistinc;
-
               foodAdded.optionSelected = options.map((o) => Option.copy(o)).toList();
 
             }else{
@@ -1120,17 +1041,10 @@ class _FoodPageState extends State<FoodPage> {
             }
 
           }else{
-            // option.itemOptionSelected = value.cast<ItemsOption>();
             var seen = Set<String>();
             option.itemOptionSelected = value.cast<ItemsOption>().where((element) => seen.add(element.name)).toList();
 
-            // widget.food.optionSelected = options;
             foodAdded.optionSelected = options.map((o) => Option.copy(o)).toList();
-            // if (widget.fromMenu){
-            //   menu.optionSelected = options;
-            //   widget.food.optionSelected = options;
-            //   _cartContext.addOption(menu, options,key: widget.subMenu);
-            // }
           }
           _optionContext.itemOptions = option.itemOptionSelected;
         });
@@ -1142,11 +1056,6 @@ class _FoodPageState extends State<FoodPage> {
 
             // _.selected ? Icon(Icons.check_circle,color:CRIMSON,size: 15,) :
             Icon(Icons.radio_button_unchecked,color: CRIMSON,),
-            /*if (_.value.quantity == 0)...[
-
-                                              ]else...[
-
-                                              ],*/
             ClipRRect(
               borderRadius: BorderRadius.circular(50),
               child: FadeInImage.assetNetwork(
@@ -1166,8 +1075,6 @@ class _FoodPageState extends State<FoodPage> {
             Container(
               padding: EdgeInsets.all(5),
               decoration: BoxDecoration(
-                // shape: BoxShape.circle,
-                // color: _.value.price == 0 ? null : Colors.grey[400]
               ),
               child: !_cartContext.withPrice || _.value.price.amount == null ? Text("") : Text("${_.value.price.amount == 0 ? '': _.value.price.amount/100}${_.value.price.amount == 0 ? '': "€"}",
                 style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),),
@@ -1209,11 +1116,6 @@ class _FoodPageState extends State<FoodPage> {
                           );
                         }
 
-                        /* if (widget.fromMenu){
-                                                        menu.optionSelected = options;
-                                                        widget.food.optionSelected = options;
-                                                        _cartContext.addOption(menu, options,key: widget.subMenu);
-                                                      }*/
                       },)
                         :
                     //button incrementation
@@ -1234,13 +1136,6 @@ class _FoodPageState extends State<FoodPage> {
                               _.value.quantity --;
                               _.select(true);
                             }
-                            /* if (widget.fromMenu){
-                                                             menu.optionSelected = _optionSelected;
-                                                             widget.food.optionSelected = _optionSelected;
-                                                             _cartContext.addOption(menu, options,key: widget.subMenu);
-                                                           }else{
-                                                             widget.food.optionSelected = _optionSelected;
-                                                           }*/
                             snapshot.refresh();
 
                           }),
@@ -1264,10 +1159,6 @@ class _FoodPageState extends State<FoodPage> {
                               );
                             }
 
-                            /*}else{
-                                                              _.value.quantity ++;
-                                                              snapshot.refresh();
-                                                            }*/
 
                           }),
                         ],

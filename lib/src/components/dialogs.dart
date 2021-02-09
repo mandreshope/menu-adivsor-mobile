@@ -475,43 +475,45 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-
-            
             //distan around
-            
-            SizedBox(height: 20,),
-            ValueListenableBuilder(
-              valueListenable: _slider1Value,
-              builder: (__,value,w){
-                return Text(
-                "Max distance : $distanceAround km",
-                 style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                ),);
-              },
-                          
-            ),
-             SizedBox(height: 15,),
-             BalloonSlider(
-                value: widget.range/100,
-                ropeLength: 55,
-                showRope: true,
-                onChangeStart: (val) {},
-                onChanged: (val) {
-                  
-                     distanceAround = (val*100).round();
-                     _slider1Value.value = val;
-                     Provider.of<SettingContext>(context,listen: false).range = distanceAround;
-                     print("$distanceAround km");
-                 
+            if (!widget.inRestaurant) ...[
+              SizedBox(
+                height: 20,
+              ),
+              ValueListenableBuilder(
+                valueListenable: _slider1Value,
+                builder: (__, value, w) {
+                  return Text(
+                    "Max distance : $distanceAround km",
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  );
                 },
-                onChangeEnd: (val) {},
-                color: Colors.indigo
-            ),
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              BalloonSlider(
+                  value: widget.range / 100,
+                  ropeLength: 55,
+                  showRope: true,
+                  onChangeStart: (val) {},
+                  onChanged: (val) {
+                    distanceAround = (val * 100).round();
+                    _slider1Value.value = val;
+                    Provider.of<SettingContext>(context, listen: false).range =
+                        distanceAround;
+                    print("$distanceAround km");
+                  },
+                  onChangeEnd: (val) {},
+                  color: Colors.indigo),
+              SizedBox(
+                height: 15,
+              ),
+            ],
             SizedBox(height: 15,),
-            
-              SizedBox(height: 15,),
             /*WaveSlider(
               onChanged: (value){
                 setState(() {
@@ -525,6 +527,9 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
               // sliderHeight: 50,
             ),*/
             if (!widget.isDiscover)...[
+              if (!widget.inRestaurant)...[
+
+
               TextTranslator(
                 AppLocalizations.of(context).translate('search_type'),
                 style: TextStyle(
@@ -540,14 +545,11 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                 physics: BouncingScrollPhysics(),
                 child: Row(
                   children: [
-                    if (widget.inRestaurant) ...[
-                      'all',
-                      'food',
-                    ] else ...[
+
                       'all',
                       'restaurant',
                       'food',
-                    ]
+
                   ]
                       .map(
                         (e) => Theme(
@@ -583,6 +585,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
               SizedBox(
                 height: 15,
               ),
+              ]
             ],
 
             TextTranslator(

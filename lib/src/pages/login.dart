@@ -8,6 +8,7 @@ import 'package:menu_advisor/src/animations/FadeAnimation.dart';
 import 'package:menu_advisor/src/components/inputs.dart';
 import 'package:menu_advisor/src/components/logo.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/pages/confirm_sms.dart';
 import 'package:menu_advisor/src/pages/forgot_password.dart';
 import 'package:menu_advisor/src/pages/home.dart';
@@ -158,7 +159,7 @@ class _LoginPageState extends State<LoginPage> {
                           textInputAction: TextInputAction.next,
                           decoration: InputDecoration(
                             labelText: "Votre numéro de téléphone",
-                             prefixText: "+261",
+                             prefixText: phonePrefix,
                           ),
                           onFieldSubmitted: (_) {
                             _emailFocus.unfocus();
@@ -316,7 +317,7 @@ class _LoginPageState extends State<LoginPage> {
 
   _submitForm() async {
     
-    final String email = "+261"+_emailController.value.text,
+    final String email = phonePrefix+_emailController.value.text,
         password = _passwordController.value.text;
 
     if (email.isEmpty || password.isEmpty) {

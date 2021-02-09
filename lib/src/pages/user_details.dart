@@ -4,6 +4,7 @@ import 'package:flutter_cupertino_datetime_picker/flutter_cupertino_datetime_pic
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/constants/date_format.dart';
 import 'package:menu_advisor/src/constants/validators.dart';
 import 'package:menu_advisor/src/models.dart';
@@ -60,7 +61,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
 
       if (authContext.currentUser != null){
       _displayNameController.text = authContext.currentUser.toString();
-      _phoneNumberController.text = authContext.currentUser.phoneNumber.replaceFirst("+261", "");
+      _phoneNumberController.text = authContext.currentUser.phoneNumber.replaceFirst(phonePrefix, "");
       _emailController.text = authContext.currentUser.email;
       _addressController.text = authContext.currentUser.address ?? "";
     }
@@ -134,7 +135,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                   maxLength: 9,
                   decoration: InputDecoration(
                     contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                    prefixText: "+261",
+                    prefixText: phonePrefix,
                     counter: Offstage(),
                   ),
                 ),
@@ -374,7 +375,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
             customer: {
               'name': _displayNameController.value.text,
               'address': _addressController.value.text,
-              'phoneNumber': "+261"+_phoneNumberController.value.text,
+              'phoneNumber': phonePrefix+_phoneNumberController.value.text,
               'email': _emailController.value.text
             },
             commandType: commandContext.commandType);
@@ -387,7 +388,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
               customer:{
                 'name': _displayNameController.value.text,
                 'address': _addressController.value.text,
-                'phoneNumber': "+261"+_phoneNumberController.value.text,
+                'phoneNumber': phonePrefix+_phoneNumberController.value.text,
                 'email': _emailController.value.text
               },
             code: code,

@@ -35,6 +35,12 @@ class SettingContext extends ChangeNotifier {
     SupportedLanguages.Korean,
     SupportedLanguages.Dutch,
     SupportedLanguages.German,
+    SupportedLanguages.Portuguese,
+  ];
+
+  List<String> _defaultSupportedLanguages = [
+    SupportedLanguages.French,
+    SupportedLanguages.English,
   ];
 
   List<String> _languages = [
@@ -47,7 +53,8 @@ class SettingContext extends ChangeNotifier {
     "Russe",
     "Coréen",
     "Néérlendais",
-    "Allemand"
+    "Allemand",
+    "Portugais",
   ];
 
   get languages => _languages;
@@ -123,9 +130,8 @@ class SettingContext extends ChangeNotifier {
       print("download loading...");
       isDownloadingLang = true;
       notifyListeners();
-      int i = 1;
       await Future.forEach(
-          _supportedLanguages,
+          _defaultSupportedLanguages,
               (item) {
                 loadingIndex ++;
                 notifyListeners();
