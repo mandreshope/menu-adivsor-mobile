@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:floatingpanel/floatingpanel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -14,7 +15,9 @@ import 'package:menu_advisor/src/components/utilities.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/discover.dart';
+import 'package:menu_advisor/src/pages/order.dart';
 import 'package:menu_advisor/src/pages/search.dart';
+import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/DataContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
@@ -194,8 +197,8 @@ class _HomePageState extends State<HomePage> {
                                       children: [
                                         _renderFoodCategories(),
                                         _renderNearestRestaurants(),
-                                        
-                                        _renderPopularFoods(), 
+
+                                        _renderPopularFoods(),
                                         _renderOnSiteFoods(),
                                         _renderBlog()
                                       ],
@@ -205,6 +208,60 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ),
                           ),
+                          Consumer<CartContext>(
+                            builder: (_,cart,w){
+
+                              return cart.items.length == 0 ? Container() : Positioned(
+                                bottom: 20,
+                                right: 20,
+                                child: Stack(
+                                  children: [
+                                    FloatingActionButton(
+                                      onPressed: (){
+                                        RouteUtil.goTo(
+                                          context: context,
+                                          child: OrderPage(
+                                            withPrice: cart.withPrice,
+                                          ),
+                                          routeName: orderRoute,
+                                        );
+
+                                      },
+                                      child: FaIcon(
+                                        Icons.shopping_cart_outlined,
+                                        color: Colors.white,
+                                      ),
+                                      backgroundColor: TEAL,
+                                      heroTag: "floating",
+                                    ),
+                                    Positioned(
+                                      top: 0,
+                                      right: 0,
+                                      child: Container(
+                                          padding: EdgeInsets.only(bottom: 5),
+                                          decoration: BoxDecoration(
+                                            color: CRIMSON,
+                                            borderRadius: BorderRadius.circular(12.5)
+                                          ),
+                                          child: Center(
+                                            child: Text("${cart.items.length}",
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold
+                                              ),
+                                            )
+                                            ,
+                                          ),
+                                      width: 25,
+                                        height: 25,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              );
+                            },
+                          )
+
                         ],
                       ),
                     ),
@@ -277,6 +334,16 @@ class _HomePageState extends State<HomePage> {
                 SizedBox(
                   height: 10,
                 ),
+                /*InkWell(
+                  onTap: (){
+
+                  },
+                  child: Stack(
+                    children: [
+                      Icon(Icons.shopping_cart_outlined)
+                    ],
+                  ),
+                ),*/
                 RoundedButton(
                     backgroundColor: Colors.white,
                     boxShadow: [

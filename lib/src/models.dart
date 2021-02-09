@@ -179,6 +179,7 @@ class Menu implements Copyable<Menu>{
 
   Map<String,Food> _foodMenuSelected = Map();
   Map<String, List<Food>> selectedMenu = Map();
+  int count = 0;
 
   Menu({
     @required this.id,

@@ -906,7 +906,7 @@ class _FoodPageState extends State<FoodPage> {
                     child: Container(
                       height: 50,
                       width: double.infinity,
-                      color: Colors.black.withAlpha(150),
+                      color: Colors.black.withAlpha(70),
                       child: Center(
                         child: TextTranslator(
                           widget.food.name,

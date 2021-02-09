@@ -384,7 +384,7 @@ class CartContext extends ChangeNotifier {
     Food food = menu.foods.first;
   }
 
-  int getFoodCountByIdNew(Food food){
+  int getFoodCountByIdNew(dynamic food){
     int count = _items.where((element) => element.idNewFood == food.idNewFood).toList().length;
     return count;
   }

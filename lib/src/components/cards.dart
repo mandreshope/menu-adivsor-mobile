@@ -1607,7 +1607,20 @@ class _BagItemState extends State<BagItem> {
                           (itemsOption.quantity != null || itemsOption.quantity > 1) ?
                           TextTranslator('${itemsOption.quantity} x\t', style: TextStyle(fontSize: 16,fontWeight: FontWeight.w600)) :
                           Container(),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(50),
+                            child: FadeInImage.assetNetwork(
+                              placeholder: 'assets/images/loading.gif',
+                              image: itemsOption.imageUrl,
+                              height: 20,
+                              width: 20,
+                              fit: BoxFit.cover,
 
+                            ),
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
                           TextTranslator('${itemsOption.name}', style: TextStyle(fontSize: 16)),
                           Spacer(),
                           /*Image.network(

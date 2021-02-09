@@ -69,8 +69,10 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                           value: option.itemOptionSelected,
                           padding: EdgeInsets.zero,
                           onChanged: (value) {
+                            if (widget.menu.count > 0) return;
                             // int diff =
                             setState(() {
+
                               if (option.itemOptionSelected?.length == option.maxOptions) {
                                 if (option.itemOptionSelected.length >= value.length) {
                                   option.itemOptionSelected = value.cast<ItemsOption>();
@@ -162,6 +164,7 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                                         IconButton(
                                           icon: Icon(Icons.add_circle_outlined,color: Colors.grey,size: 20),
                                           onPressed: (){
+                                            if (widget.menu.count > 0) return;
                                             if (option.isMaxOptions){
                                               _.value.quantity = 1;
                                               _.select(!_.selected);
@@ -188,7 +191,7 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                                             children: [
                                               IconButton(
                                                   icon: Icon(Icons.remove_circle,color:CRIMSON,size: 25,), onPressed: (){
-
+                                                if (widget.menu.count > 0) return;
                                                 if (_.value.quantity == 1){
                                                   _.value.quantity = 0;
                                                   _.select(false);
@@ -215,6 +218,7 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                                               IconButton(
                                                   icon: Icon(Icons.add_circle_outlined,color:CRIMSON,size: 25), onPressed: (){
                                                 // if (_optionContext.quantityOptions == option.maxOptions){
+                                                if (widget.menu.count > 0) return;
                                                 if (option.isMaxOptions){
                                                   _.value.quantity ++;
                                                   _.select(true);

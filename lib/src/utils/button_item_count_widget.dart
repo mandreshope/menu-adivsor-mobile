@@ -52,6 +52,7 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
       return CircleButton(
           backgroundColor: TEAL,
           onPressed: () async {
+
            if (widget.fromRestaurant && (widget.food is Food)/*&& widget.food.options.length > 0*/) {
               RouteUtil.goTo(
                 context: context,
@@ -123,6 +124,10 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
               ),
               onPressed: () async { // onRemove
                 // widget.onRemoved(--widget.itemCount);
+                if (widget.food.isMenu){
+                  widget.onRemoved();
+                  return;
+                }
                 if (widget.fromRestaurant && (widget.food is Food)/*&& widget.food.options.length > 0*/) {
                   RouteUtil.goTo(
                     context: context,
@@ -198,6 +203,10 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                 size: widget.isFromDelevery ? 12 : 12,
               ),
               onPressed: () async {
+                if (widget.food.isMenu){
+                  widget.onAdded();
+                  return;
+                }
                 if (widget.fromRestaurant /*&& widget.food.options.length > 0*/) {
                   RouteUtil.goTo(
                     context: context,

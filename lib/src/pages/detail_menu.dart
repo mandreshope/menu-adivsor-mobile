@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/components/menu_item_food_option.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
@@ -25,13 +26,23 @@ class DetailMenu extends StatefulWidget {
 class _DetailMenuState extends State<DetailMenu> {
   // MenuContext _controller;
   CartContext _cartContext;
-  int count = 0;
+  // int count = 0;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    widget.menu.idNewFood = DateTime.now().millisecondsSinceEpoch.toString();
+
+  }
 
   @override
   Widget build(BuildContext context) {
     widget.menu.foodsGrouped = widget.menu.foods ?? List();
     _cartContext = Provider.of<CartContext>(context, listen: false);
     // count = _cartContext.getCount(widget.menu);
+    widget.menu.count = _cartContext.getFoodCountByIdNew(widget.menu);
+
 
     return Scaffold(
       appBar: AppBar(
@@ -47,55 +58,74 @@ class _DetailMenuState extends State<DetailMenu> {
         centerTitle: true,
         title: TextTranslator(widget.menu.name),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _renderHeaderPicture(),
-            Divider(),
-            Container(
-              width: double.infinity,
-              child: Stack(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(left: 15),
-                    padding: EdgeInsets.all(5),
-                    child: Text(
-                      '€',
-                      style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
-                    decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.black),
-                  ),
-                  Positioned(
-                    left: 70,
-                    child: TextTranslator(
-                      'Prix',
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.black,
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child:
+                Column(
+                  children: [
+                    _renderHeaderPicture(),
+                    Divider(),
+                    Container(
+                      width: double.infinity,
+                      child: Stack(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(left: 15),
+                            padding: EdgeInsets.all(5),
+                            child: Text(
+                              '€',
+                              style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold),
+                            ),
+                            decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.black),
+                          ),
+                          Positioned(
+                            left: 70,
+                            child: TextTranslator(
+                              'Prix',
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          if (widget.menu.price != null && widget.menu.price?.amount != null)
+                            Positioned(
+                              right: 25,
+                              child:
+                              !_cartContext.withPrice ? Text("") : Text(
+                                '${widget.menu.price.amount / 100} €',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                     ),
-                  ),
-                  if (widget.menu.price != null && widget.menu.price?.amount != null)
-                    Positioned(
-                      right: 25,
-                      child:
-                      !_cartContext.withPrice ? Text("") : Text(
-                        '${widget.menu.price.amount / 100} €',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
+                    Divider(),
+                    _renderListPlat(context),
+                    _renderAddMenu(),
+                    SizedBox(height: 50,),
+                    _cartContext.getFoodCountByIdNew(widget.menu) > 0 ?
+                    SizedBox(height: 50,) : Container()
+                  ],
+
             ),
-            Divider(),
-            _renderListPlat(context),
-            _renderAddMenu(),
-            SizedBox(height: 50,)
-          ],
-        ),
+          ),
+          Positioned(
+              bottom: 0,
+              right: 0,
+              left: 0,
+              child: Consumer<CartContext>(
+                builder: (_, cartContext, __) => widget.menu.count > 0
+                    ? OrderButton(
+                  totalPrice: _cartContext.totalPrice,
+                )
+                    : SizedBox(),
+              )),
+        ],
       ),
     );
   }
@@ -128,7 +158,7 @@ class _DetailMenuState extends State<DetailMenu> {
                   child: Container(
                     height: 50,
                     width: double.infinity,
-                    color: Colors.black.withAlpha(150),
+                    color: Colors.black.withAlpha(70),
                     child: Center(
                       child: TextTranslator(
                         widget.menu.name,
@@ -173,13 +203,13 @@ class _DetailMenuState extends State<DetailMenu> {
                     return InkWell(
                       onTap: () {
                         // if (_cartContext.contains(widget.menu)){
-                        if (count > 0) {
+                        if (widget.menu.count == 0) {
                           widget.menu.setFoodMenuSelected(entry.key, food);
                           widget.menu.select(
                               _cartContext, entry.key, food,()=>menuContext.refresh());
                         } else {
-                          Fluttertoast.showToast(
-                              msg: "Veuillez ajouter le menu dans le panier");
+                          // Fluttertoast.showToast(
+                          //     msg: "Veuillez ajouter le menu dans le panier");
                         }
                       },
                       child: Card(
@@ -267,63 +297,92 @@ class _DetailMenuState extends State<DetailMenu> {
   }
 
   Widget _renderAddMenu() {
-    return RaisedButton(
-      padding: EdgeInsets.all(20),
-      color: count > 0 ? Colors.teal : CRIMSON,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      onPressed: () async {
-        if ((this.count > 0) ||
-            (_cartContext.hasSamePricingAsInBag(widget.menu) &&
-                _cartContext.hasSameOriginAsInBag(widget.menu))) {
-          if (count > 0) {
-            var result = await showDialog(
-              context: context,
-              builder: (_) => ConfirmationDialog(
-                title: AppLocalizations.of(context)
-                    .translate('confirm_remove_from_cart_title'),
-                content: AppLocalizations.of(context)
-                    .translate('confirm_remove_from_cart_content'),
-              ),
-            );
 
-            if (result is bool && result) {
-              _cartContext.removeItem(widget.menu);
-              RouteUtil.goBack(context: context);
+    return Consumer<CartContext>(
+      builder: (_,cart,w){
+        widget.menu.count = _cartContext.getFoodCountByIdNew(widget.menu);
+        return widget.menu.count > 0 ?
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ButtonItemCountWidget(
+                    widget.menu,
+                    onAdded: (){
+                      widget.menu.count++;
+                      _cartContext.addItem(widget.menu, 1, true);
+                      setState(() {
+
+                      });
+                    },
+                    onRemoved: (){
+                      widget.menu.count--;
+                      _cartContext.addItem(widget.menu, 1, false);
+                      setState(() {
+
+                      });
+                    }, itemCount: _cartContext.getFoodCountByIdNew(widget.menu), isContains: cart.contains(widget.menu)),
+              ],
+            ) :
+        RaisedButton(
+          padding: EdgeInsets.all(20),
+          color: widget.menu.count > 0 ? Colors.teal : CRIMSON,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          onPressed: () async {
+            if ((widget.menu.count > 0) ||
+                (_cartContext.hasSamePricingAsInBag(widget.menu) &&
+                    _cartContext.hasSameOriginAsInBag(widget.menu))) {
+              if (widget.menu.count > 0) {
+                var result = await showDialog(
+                  context: context,
+                  builder: (_) => ConfirmationDialog(
+                    title: AppLocalizations.of(context)
+                        .translate('confirm_remove_from_cart_title'),
+                    content: AppLocalizations.of(context)
+                        .translate('confirm_remove_from_cart_content'),
+                  ),
+                );
+
+                if (result is bool && result) {
+                  _cartContext.removeItem(widget.menu);
+                  RouteUtil.goBack(context: context);
+                }
+              } else {
+                widget.menu.count++;
+                _cartContext.addItem(widget.menu, 1, true);
+              }
+            } else if (!_cartContext.hasSamePricingAsInBag(widget.menu)) {
+              Fluttertoast.showToast(
+                msg: AppLocalizations.of(context)
+                    .translate('priceless_and_not_priceless_not_allowed'),
+              );
+            } else if (!_cartContext.hasSameOriginAsInBag(widget.menu)) {
+              Fluttertoast.showToast(
+                msg: AppLocalizations.of(context)
+                    .translate('from_different_origin_not_allowed'),
+              );
+            } else {
+              widget.menu.count++;
+              _cartContext.addItem(widget.menu, 1, true);
             }
-          } else {
-            count++;
-            _cartContext.addItem(widget.menu, 1, true);
-          }
-        } else if (!_cartContext.hasSamePricingAsInBag(widget.menu)) {
-          Fluttertoast.showToast(
-            msg: AppLocalizations.of(context)
-                .translate('priceless_and_not_priceless_not_allowed'),
-          );
-        } else if (!_cartContext.hasSameOriginAsInBag(widget.menu)) {
-          Fluttertoast.showToast(
-            msg: AppLocalizations.of(context)
-                .translate('from_different_origin_not_allowed'),
-          );
-        } else {
-          count++;
-          _cartContext.addItem(widget.menu, 1, true);
-        }
-        setState(() {});
+            // setState(() {});
+          },
+          child: TextTranslator(
+            widget.menu.count > 0
+                ? AppLocalizations.of(context).translate('remove_from_cart')
+                : AppLocalizations.of(context).translate("add_to_cart"),
+            overflow: TextOverflow.ellipsis,
+            softWrap: false,
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+            ),
+          ),
+        );
       },
-      child: TextTranslator(
-        count > 0
-            ? AppLocalizations.of(context).translate('remove_from_cart')
-            : AppLocalizations.of(context).translate("add_to_cart"),
-        overflow: TextOverflow.ellipsis,
-        softWrap: false,
-        style: TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-          fontSize: 20,
-        ),
-      ),
     );
+
   }
 }
