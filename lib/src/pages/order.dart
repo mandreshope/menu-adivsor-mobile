@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -333,6 +334,7 @@ class _OrderPageState extends State<OrderPage> {
                               commandContext.commandType = 'on_site';
                               _command(commandContext, authContext, cartContext);
                             } else {
+                              if (!isRestaurantLoading)
                               showModalBottomSheet(
                                   context: context,
                                   builder: (_) {
@@ -347,7 +349,7 @@ class _OrderPageState extends State<OrderPage> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           color: Colors.teal,
-                          child: TextTranslator(
+                          child: isRestaurantLoading ? CupertinoActivityIndicator(animating: true,) : TextTranslator(
                             AppLocalizations.of(context).translate('validate'),
                             style: TextStyle(
                               color: Colors.white,
@@ -596,10 +598,10 @@ class _OrderPageState extends State<OrderPage> {
                     height: 10,
                   ),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisAlignment: !_restaurant.delivery ? MainAxisAlignment.center : MainAxisAlignment.spaceEvenly,
                     children: [
                       if (!cartContext.pricelessItems || _restaurant.delivery)
-                        Theme(
+                        !_restaurant.delivery ? Container() : Theme(
                           data: ThemeData(
                             cardColor: commandContext.commandType == 'delivery' ? CRIMSON : Colors.white,
                             brightness: commandContext.commandType == 'delivery' ? Brightness.dark : Brightness.light,
