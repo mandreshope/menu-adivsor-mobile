@@ -1245,7 +1245,7 @@ class MenuCard extends StatelessWidget {
     for (var entry in menu.foodsGrouped.entries)
       name += entry.key + " + ";
       return TextTranslator(
-        name.substring(0,name.length-2),
+        name.isEmpty ? name : name.substring(0,name.length-2),
         style: TextStyle(
             fontWeight: FontWeight.bold,
           fontSize: 14

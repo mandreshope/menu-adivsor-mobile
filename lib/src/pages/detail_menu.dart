@@ -59,10 +59,12 @@ class _DetailMenuState extends State<DetailMenu> {
         title: TextTranslator(widget.menu.name),
       ),
       body: Stack(
+        fit: StackFit.expand,
         children: [
           SingleChildScrollView(
             child:
                 Column(
+                  mainAxisSize: MainAxisSize.max,
                   children: [
                     _renderHeaderPicture(),
                     Divider(),
@@ -106,7 +108,7 @@ class _DetailMenuState extends State<DetailMenu> {
                     ),
                     Divider(),
                     _renderListPlat(context),
-                    _renderAddMenu(),
+                    widget.menu.foods.isEmpty ? Container() : _renderAddMenu(),
                     SizedBox(height: 50,),
                     Consumer<CartContext>(
                       builder: (_,cart,w){
@@ -118,6 +120,17 @@ class _DetailMenuState extends State<DetailMenu> {
 
             ),
           ),
+          widget.menu.foods.isNotEmpty ? Container() :
+          Align(
+                alignment: Alignment.bottomCenter,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _renderAddMenu(),
+                    SizedBox(height: 75,)
+                  ],
+                )
+            ),
           Positioned(
               bottom: 0,
               right: 0,
@@ -179,7 +192,7 @@ class _DetailMenuState extends State<DetailMenu> {
       );
 
   Widget _renderListPlat(context) {
-    return Container(
+    return widget.menu.foods.isEmpty ? Container() : Container(
       decoration: BoxDecoration(
           color: Colors.white, borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.all(15),
@@ -267,6 +280,7 @@ class _DetailMenuState extends State<DetailMenu> {
                                       MenuType.fixed_price.value) ...[
                                     Text(" ")
                                   ] else ...[
+                                    Spacer(),
                                     food?.price?.amount == null
                                         ? Text("")
                                         : Text("${food.price.amount / 100} €",

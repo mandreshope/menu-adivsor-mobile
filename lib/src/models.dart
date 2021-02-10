@@ -91,6 +91,7 @@ class Food implements Copyable<Food>{
         status: json['status'],
         title: json['title'],
         maxOptions:json['maxOptions'],
+        description: json['description']
       );
 
   factory Food.copy(Food food) => Food(

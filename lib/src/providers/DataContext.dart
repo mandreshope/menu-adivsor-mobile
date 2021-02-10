@@ -82,7 +82,7 @@ class DataContext extends ChangeNotifier {
 
     await _fetchFoodCategories(lang);
 
-    await _fetchPopularFoods(lang);
+    await _fetchPopularFoods(location,lang);
 
     await _fetchOnSiteFoods(lang);
 
@@ -114,8 +114,8 @@ class DataContext extends ChangeNotifier {
       nearestRestaurants = await _api.getRestaurants(
         filters: {
           "searchCategory": "priority",
-          // "location": location.toString(),
-          "city":_city
+          "location": "${jsonEncode(location)}",
+          // "city":_city
           // 'NEAREST': 'nearest',
         },
       );
@@ -134,23 +134,25 @@ class DataContext extends ChangeNotifier {
     }
   }
 
-  _fetchPopularFoods(String lang) async {
+  _fetchPopularFoods(Location location,String lang) async {
     loadingPopularFoods = true;
     notifyListeners();
 
     try {
       popularFoods.clear();
-      popularFoods = await _api.getFoods(
+      List<Food> _popularFoods = await _api.getFoods(
         // "",
         lang,
         filters: {
           "searchCategory": "priority",
+          "location": "${jsonEncode(location)}",
           // "searchCategory": "with_price",
           // "limit": 5,
-          "city":""
+          // "city":""
         },
         // type: 'food'
       );
+      popularFoods = _popularFoods.where((element) => element.status).toList();
       // _searchResult.take(5).forEach((e) {
       //   popularFoods.add(Food.fromJson(e.content));
       // });
@@ -168,7 +170,7 @@ class DataContext extends ChangeNotifier {
 
     try {
       // onSiteFoods.clear();
-      onSiteFoods = await _api.getFoods(
+      List<Food> _onSiteFoods = await _api.getFoods(
         // "",
         lang,
         // type: 'food',
@@ -179,6 +181,7 @@ class DataContext extends ChangeNotifier {
           // "price.amount":null
         },
       );
+      onSiteFoods = _onSiteFoods.where((element) => element.status).toList();
       // _searchResult.take(5).forEach((e) {
       //   onSiteFoods.add(Food.fromJson(e.content));
       // });
@@ -196,7 +199,8 @@ class DataContext extends ChangeNotifier {
     notifyListeners();
 
     try {
-      foods = await _api.getFoods(lang, filters: filters);
+      List<Food> _foods = await _api.getFoods(lang, filters: filters);
+      foods = _foods.where((element) => element.status).toList();
     } catch (error) {
       print(
         'Error while fetching foods...',

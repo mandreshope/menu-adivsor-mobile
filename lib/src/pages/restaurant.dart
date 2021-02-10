@@ -618,7 +618,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                     top: false,
                     sliver: SliverAppBar(
                       backgroundColor: Colors.white,
-                      expandedHeight: 340.0,
+                      expandedHeight: restaurant.description.isEmpty ? 380 : 410.0,
                       floating: false,
                       pinned: true,
                       flexibleSpace: FlexibleSpaceBar(
@@ -781,6 +781,17 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                   ],
                                 )
                               ],
+                            ),
+                          ),
+                          Divider(),
+                          Container(
+                            padding: EdgeInsets.only(left: 25),
+                            height: restaurant.description.isEmpty ? 20 : 50,
+                            width: double.infinity,
+                            child: TextTranslator(
+                              restaurant.description.isEmpty ? "Aucune description fournie" : restaurant.description,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                           Divider(),
@@ -1199,11 +1210,14 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                 child: Column(
                   children: menus
                       .map(
-                        (e) => MenuCard(
-                          menu: e,
-                          lang: _lang,
-                          restaurant: widget.restaurant,
-                          withPrice: widget.withPrice,
+                        (e) => Container(
+                          margin: EdgeInsets.only(bottom: 25),
+                          child: MenuCard(
+                            menu: e,
+                            lang: _lang,
+                            restaurant: widget.restaurant,
+                            withPrice: widget.withPrice,
+                          ),
                         ),
                       )
                       .toList(),

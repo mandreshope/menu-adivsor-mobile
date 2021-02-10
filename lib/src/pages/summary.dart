@@ -373,6 +373,18 @@ class _SummaryState extends State<Summary> {
                       if (itemsOption.quantity != null && itemsOption.quantity > 0)
                         Text("${itemsOption.quantity} x\t",
                         style:TextStyle(fontSize: 16,fontWeight: FontWeight.bold)),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(50),
+                        child: FadeInImage.assetNetwork(
+                          placeholder: 'assets/images/loading.gif',
+                          image: itemsOption.item.imageUrl,
+                          height: 20,
+                          width: 20,
+                          fit: BoxFit.cover,
+
+                        ),
+                      ),
+                      SizedBox(width: 5,),
                       TextTranslator('${itemsOption.item.name}', style: TextStyle(fontSize: 16)),
                       Spacer(),
                       /*Image.network(

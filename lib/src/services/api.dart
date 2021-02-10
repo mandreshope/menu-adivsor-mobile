@@ -217,7 +217,7 @@ class Api {
         }
       }
     }
-
+print('$_apiURL/restaurants$query');
     return http.get('$_apiURL/restaurants$query').then<List<Restaurant>>((response) {
       if (response.statusCode == 200) {
         List<dynamic> list = jsonDecode(response.body);
@@ -246,7 +246,7 @@ class Api {
       }
     }
 
-    print(query);
+    print('$_apiURL/foods$query');
 
     return http.get(
       '$_apiURL/foods$query',

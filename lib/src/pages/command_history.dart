@@ -35,6 +35,7 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
   List<Command> commandOnTakeaway = List();
 
   Map<String, List<Command>> commandByType = Map();
+  Map<String, List<Command>> commandByTypeDate = Map();
   Map<String, bool> commandByTypeValue = Map();
   // List<bool> commandByTypeValue = List();
 
@@ -242,6 +243,12 @@ try {
     commandByType.forEach((key, value) {
       commandByTypeValue[key] = false;
       // commandByTypeValue.add(false);
+      commandByTypeDate = value.groupBy((c) =>
+        c.createdAt.day.toString().padLeft(2,"0") +"/"+ c.createdAt.month.toString().padLeft(2,"0")
+      );
+    });
+    commandByTypeDate.forEach((key, value) {
+      commandByTypeValue[key] = false;
     });
     _historyContext.commandByTypeValue = commandByTypeValue;
 
@@ -294,9 +301,36 @@ try {
                          ),
                          body: ListView.builder(
                              shrinkWrap: true,
-                             itemCount: commandByType[e.key].length,
+                             // itemCount: commandByType[e.key].length,
+                             itemCount: commandByTypeDate.keys.toList().length,
                              physics: NeverScrollableScrollPhysics(),
                              itemBuilder: (_, position) {
+                               String k = commandByTypeDate.keys.toList()[position];
+                               return Collapse(
+                                 value: snapshot.commandByTypeValue[k],
+                                 onChange: (value) {
+                                   print(value);
+                                   snapshot.setCollapse(k, value);
+                                 },
+                                 title: TextTranslator(
+                                   k,
+                                   style: TextStyle(fontSize: 18,
+                                       fontWeight: FontWeight
+                                       .bold,
+                                   color: CRIMSON),
+                                   textAlign: TextAlign.right,
+                                 ),
+                                 showBorder: true,
+                                 body: ListView.builder(
+                                     shrinkWrap: true,
+                                     itemCount: commandByTypeDate[k].length,
+                                     physics: NeverScrollableScrollPhysics(),
+                                     itemBuilder: (_, position) {
+
+                                       return CommandHistoryItem(
+                                         command: commandByTypeDate[k][position],);
+                                     }),
+                               );
                                return CommandHistoryItem(
                                  command: commandByType[e.key][position],);
                              }),

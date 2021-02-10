@@ -88,7 +88,13 @@ class _SearchPageState extends State<SearchPage> {
         location: widget.location
       );
       setState(() {
-        _searchResults = results;
+        _searchResults = results.where((search){
+          if (search.type.toString() == "SearchResultType.food"){
+            Food f = Food.fromJson(search.content);
+            return f.status;
+          }
+          return true;
+        }).toList();
         _searchResults.sort((a, b) {
           if (a.type.toString() == "SearchResultType.menu" && b.type.toString() == "SearchResultType.menu"
           || a.type.toString() == "SearchResultType.food" && b.type.toString() == "SearchResultType.menu" ||
