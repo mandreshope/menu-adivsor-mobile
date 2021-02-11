@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_collapse/flutter_collapse.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
@@ -45,6 +46,9 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
 
   String commandType = 'delivery';
   HistoryContext _historyContext;
+
+  DateTime dateTri;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -180,54 +184,85 @@ try {
                     ],
                   ),
                 )
-              : _renderViewItem(commandType)
-              /*Column(mainAxisSize: MainAxisSize.max, children: [
-                  Expanded(
-                      child: ScrollablePositionedList.separated(
-                    itemScrollController: itemScrollController,
-                    itemPositionsListener: itemPositionsListener,
-                    padding: const EdgeInsets.all(20),
-                    itemCount: 3,
-                    itemBuilder: (_, index) {
-                      if (index == 0) return _renderItems(title: 'delivery');
+              : Column(
 
-                      if (index == 1) return _renderItems(title: 'on_site');
-
-                      return _renderItems(title: 'takeaway');
-                    },
-                    separatorBuilder: (_, index) => Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 10,
+                children: [
+                  Expanded(child: _renderViewItem(commandType)),
+                  SizedBox(height: 10,),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      RaisedButton(
+                        padding: EdgeInsets.all(15),
+                        color: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        onPressed: () async {
+                          setState(() {
+                            dateTri = null;
+                          });
+                        },
+                        child: TextTranslator(
+                          "Afficher tous",
+                          style: TextStyle(
+                            color: CRIMSON,
+                            fontSize: 20,
+                          ),
+                        ),
                       ),
-                      child: Divider(),
-                    ),
-                  )),
-                ]),*/
+                      RaisedButton(
+                        padding: EdgeInsets.all(15),
+                        color: CRIMSON,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        onPressed: () async {
+                          DateTime date = await showDatePicker(
+                              context: context, initialDate: DateTime.now(), firstDate: DateTime(2021), lastDate: DateTime(2984));
+
+                          if (date != null){
+                            setState(() {
+                              dateTri = date;
+                            });
+                          }else{
+                            print("date null");
+                          }
+                        },
+                        child: TextTranslator(
+                          "Trie par date",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10,),
+                ],
+              )
     );
   }
 
-  _renderItems({String title}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        TextTranslator(
-          AppLocalizations.of(context).translate(title),
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        _renderViewItem(title)
-      ],
-    );
-  }
-
-  _renderViewItem(String title) {
+  Widget _renderViewItem(String title) {
+    /// test tri par date
     var commandTemp = commands
-        .where((element) => element.commandType == title)
+        .where((element){
+          if (dateTri != null) {
+            if (element.commandType == title &&
+            element.createdAt.day == dateTri.day &&
+            element.createdAt.month == dateTri.month &&
+            element.createdAt.year == dateTri.year) {
+              return true;
+            }
+            return false;
+          }
+          if (element.commandType == title) return true;
+            return false;
+
+
+    })
         
         .toList();
         print(commandTemp);
@@ -237,19 +272,17 @@ try {
       c.createdAt.month.toString().padLeft(2,"0").month +" "+ c.createdAt.year.toString()
     );
 
-
-
     commandByTypeValue.clear();
     commandByType.forEach((key, value) {
-      commandByTypeValue[key] = false;
+      commandByTypeValue[key] = dateTri == null ? false : true;
       // commandByTypeValue.add(false);
       commandByTypeDate = value.groupBy((c) =>
         c.createdAt.day.toString().padLeft(2,"0") +"/"+ c.createdAt.month.toString().padLeft(2,"0")
       );
     });
-    commandByTypeDate.forEach((key, value) {
+   /* commandByTypeDate.forEach((key, value) {
       commandByTypeValue[key] = false;
-    });
+    });*/
     _historyContext.commandByTypeValue = commandByTypeValue;
 
     return commandByType.length == 0
@@ -301,11 +334,11 @@ try {
                          ),
                          body: ListView.builder(
                              shrinkWrap: true,
-                             // itemCount: commandByType[e.key].length,
-                             itemCount: commandByTypeDate.keys.toList().length,
+                             itemCount: commandByType[e.key].length,
+                             // itemCount: commandByTypeDate.keys.toList().length,
                              physics: NeverScrollableScrollPhysics(),
                              itemBuilder: (_, position) {
-                               String k = commandByTypeDate.keys.toList()[position];
+                              /* String k = commandByTypeDate.keys.toList()[position];
                                return Collapse(
                                  value: snapshot.commandByTypeValue[k],
                                  onChange: (value) {
@@ -330,7 +363,7 @@ try {
                                        return CommandHistoryItem(
                                          command: commandByTypeDate[k][position],);
                                      }),
-                               );
+                               );*/
                                return CommandHistoryItem(
                                  command: commandByType[e.key][position],);
                              }),

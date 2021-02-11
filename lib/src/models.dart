@@ -362,7 +362,7 @@ class Restaurant {
     this.status,
     this.admin,
     this.priceDelevery,
-    this.delivery = false,
+    this.delivery,
     this.openingTimes
   });
 
