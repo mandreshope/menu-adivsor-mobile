@@ -18,6 +18,13 @@ import 'package:menu_advisor/src/utils/textFormFieldTranslator.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:google_map_location_picker/generated/l10n.dart'
+    as location_picker;
+import 'package:google_map_location_picker/google_map_location_picker.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 import '../models.dart';
 
 class DeliveryDetailsPage extends StatefulWidget {
@@ -35,6 +42,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
 
   CommandContext commandContext;
   bool sendingCommand = false;
+  TextEditingController addrContr = TextEditingController();
 
   @override
   void initState() {
@@ -91,6 +99,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                           ),
                           color: Colors.white,
                           child: TextFormFieldTranslator(
+                            controller: addrContr,
                             keyboardType: TextInputType.streetAddress,
                             textInputAction: TextInputAction.done,
                             decoration: InputDecoration(
@@ -99,6 +108,25 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                             ),
                             onChanged: (value) {
                               commandContext.deliveryAddress = value;
+                            },
+                            onTap: () async {
+                              LocationResult result = await showLocationPicker(
+                                context,
+                                "AIzaSyBu8U8tbY6BlxJezbjt8g3Lzi4k1I75iYw",
+                                initialCenter: LatLng(31.1975844, 29.9598339),
+          //                      automaticallyAnimateToCurrentLocation: true,
+          //                      mapStylePath: 'assets/mapStyle.json',
+                                myLocationButtonEnabled: true,
+                                // requiredGPS: true,
+                                layersButtonEnabled: true,
+                                // countries: ['AE', 'NG']
+
+          //                      resultCardAlignment: Alignment.bottomCenter,
+                                desiredAccuracy: LocationAccuracy.best,
+                              );
+                              print("result = $result");
+                              addrContr.text = result.address;
+                              commandContext.deliveryAddress = result.address;
                             },
                           ),
                         ),
