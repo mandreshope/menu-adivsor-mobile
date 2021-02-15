@@ -12,7 +12,7 @@ class SettingContext extends ChangeNotifier {
   String _languageCodeRstaurant = 'fr';
   Future<void> initialized;
   int range = 1;
-  int loadingIndex = 0;
+  int loadingIndex = 1;
 
   bool _isRestaurantPage = false;
   bool isDownloadingLang = true;
@@ -36,6 +36,8 @@ class SettingContext extends ChangeNotifier {
     SupportedLanguages.Dutch,
     SupportedLanguages.German,
     SupportedLanguages.Portuguese,
+    SupportedLanguages.Indonesian,
+    SupportedLanguages.Arabic,
   ];
 
   List<String> _defaultSupportedLanguages = [
@@ -55,6 +57,8 @@ class SettingContext extends ChangeNotifier {
     "Néérlendais",
     "Allemand",
     "Portugais",
+    "Inde",
+    "Arabe"
   ];
 
   get languages => _languages;
@@ -74,6 +78,8 @@ class SettingContext extends ChangeNotifier {
         return 'cn';
         case 'ko':
           return 'kr';
+          case 'ar':
+            return "ae";
     }
     return code;
   }
@@ -133,8 +139,6 @@ class SettingContext extends ChangeNotifier {
       await Future.forEach(
           _defaultSupportedLanguages,
               (item) {
-                loadingIndex ++;
-                notifyListeners();
                 return FirebaseLanguage.instance.modelManager().downloadModel(item);
               }
       );

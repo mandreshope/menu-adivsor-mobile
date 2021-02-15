@@ -175,7 +175,7 @@ class _SplashState extends State<Splash> {
                         Consumer<SettingContext>(
 
                           builder: (context, snapshot,w) {
-                            return TextTranslator("Chargement des langues... ${((snapshot.loadingIndex*100).toDouble()/10).round()} % ",style: TextStyle(
+                            return TextTranslator("Chargement... ",style: TextStyle(
                               color: Colors.black,
                               fontSize: 15,
 

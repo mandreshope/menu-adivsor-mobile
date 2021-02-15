@@ -101,6 +101,8 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                             currency: 'eur',
                                           );
 
+
+                                          if (payment.success) {
                                           var command = await Api.instance.sendCommand(
                                             comment: cartContext.comment,
                                             relatedUser: authContext.currentUser?.id ?? null,
@@ -143,7 +145,6 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                           var commandStr = command.toString();
                                           Command cm = Command.fromJson(command);
 
-                                          if (payment.success) {
                                             Api.instance.setCommandToPayedStatus(
                                               id: command['_id'],
                                               paymentIntentId: payment.paymentIntentId,

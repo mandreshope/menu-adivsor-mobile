@@ -214,16 +214,7 @@ class _ConfirmSmsState extends State<ConfirmSms> {
       );
 
       AuthContext authContext = Provider.of<AuthContext>(context,listen: false);
-/*
-      var result = await Api.instance.confirmCode(
-          relatedUser: authContext.currentUser?.id ?? null,
-          customer: widget.customer,
-          commandType: commandContext.commandType,
-          code: pin
-      );
-      setState(() {
-        loading = false;
-      });*/
+
      if (widget.code != pin){
         Fluttertoast.showToast(msg: "Invalide sms code");
         return ;

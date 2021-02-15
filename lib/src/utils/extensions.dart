@@ -39,6 +39,8 @@ extension ExtensionString on String {
         return 'cn';
         case 'ko':
           return 'kr';
+          case 'ar':
+            return "ae";
     }
     return this;
   }
