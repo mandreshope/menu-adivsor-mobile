@@ -14,6 +14,7 @@ import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/list_lang.dart';
 import 'package:menu_advisor/src/pages/map_polyline.dart';
+import 'package:menu_advisor/src/pages/photo_view.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/DataContext.dart';
@@ -633,12 +634,20 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Image.network(
-                                  restaurant.imageURL,
-                                  // width: 4 * MediaQuery.of(context).size.width / 7,
-                                  width: MediaQuery.of(context).size.width / 3,
-                                  height: MediaQuery.of(context).size.width / 3,
-                                  fit: BoxFit.cover,
+                                InkWell(
+                                  child: Hero(
+                                    tag: 'tag:${restaurant.imageURL}',
+                                    child: Image.network(
+                                      restaurant.imageURL,
+                                      // width: 4 * MediaQuery.of(context).size.width / 7,
+                                      width: MediaQuery.of(context).size.width / 3,
+                                      height: MediaQuery.of(context).size.width / 3,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  onTap: () {
+                                    RouteUtil.goTo(context: context, child: PhotoViewPage(tag: 'tag:${restaurant.imageURL}', img: restaurant.imageURL,), routeName: null);
+                                  },
                                 ),
                                 SizedBox(
                                   width: 15,
