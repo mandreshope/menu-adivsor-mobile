@@ -484,6 +484,7 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
               child: FoodPage(
                 food: widget.food,
                 imageTag: widget.food.id,
+                fromRestaurant: true,
               ),
             ),
             routeName: foodRoute,

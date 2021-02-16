@@ -1253,9 +1253,13 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
             child: Column(
               children: foods[foodType]
               .where((element) {
-                return !attributeFilter.any((filter) =>
-                  filter.sId == element.attributes.firstWhere((att) =>
-                  att.sId == filter.sId,orElse: ()=> FoodAttribute(sId: "-1")).sId);
+                return !attributeFilter.any((filter){ 
+                  if (filter.tag.contains("allergen") )
+                    return filter.sId == element.attributes.firstWhere((att) =>
+                   att.sId == filter.sId,orElse: ()=> FoodAttribute(sId: "-1")).sId;
+                  else 
+                    return !(filter.sId == element.attributes.firstWhere((att) =>
+                   att.sId == filter.sId,orElse: ()=> FoodAttribute(sId: "-1")).sId);});
               })
                   .map(
                     (food) => RestaurantFoodCard(

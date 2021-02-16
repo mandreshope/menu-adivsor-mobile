@@ -88,6 +88,12 @@ class _SummaryState extends State<Summary> {
                   Divider(),
                   _header(),
                   Divider(),
+                  // about user
+                  if (widget.commande.commandType != 'on_site')...[
+                    // TextTranslator(widget.commande.relatedUser[]),
+
+                    Divider(),
+                  ],
                   //commande id
                   Row(
                     children: [

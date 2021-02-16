@@ -1,4 +1,5 @@
 import 'package:chips_choice/chips_choice.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_collapse/flutter_collapse.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -29,9 +30,9 @@ class FoodPage extends StatefulWidget {
   final String restaurantName;
   final bool modalMode;
   final bool fromDelevery;
-  final bool fromMenu;
-final String subMenu;
-  FoodPage({this.food, this.subMenu,this.imageTag, this.restaurantName, this.modalMode = false, this.fromDelevery = false,this.fromMenu = false});
+  final bool fromRestaurant;
+  final String subMenu;
+  FoodPage({this.food, this.subMenu, this.imageTag, this.restaurantName, this.modalMode = false, this.fromDelevery = false, this.fromRestaurant = false});
 
   @override
   _FoodPageState createState() => _FoodPageState();
@@ -46,10 +47,9 @@ class _FoodPageState extends State<FoodPage> {
   bool switchingFavorite = false;
   int itemCount = 0;
   CartContext _cartContext;
-  List<Option> options = [
-  ];
+  List<Option> options = [];
   // bool collaspse = true;
-  Map<String,bool> collaspse = Map();
+  Map<String, bool> collaspse = Map();
 
   OptionContext _optionContext;
 
@@ -66,15 +66,14 @@ class _FoodPageState extends State<FoodPage> {
   void initState() {
     super.initState();
 
-    _optionContext = Provider.of<OptionContext>(context,listen: false);
+    _optionContext = Provider.of<OptionContext>(context, listen: false);
     _cartContext = Provider.of<CartContext>(context, listen: false);
     // if (_cartContext.contains(widget.food)) itemCount = _cartContext.getCount(widget.food);
     MenuContext _menuContext = Provider.of<MenuContext>(context, listen: false);
     // menu = _menuContext.menu;
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-
-       /*Food f = await api.getFood(
+      /*Food f = await api.getFood(
         id: widget.food.id,
         lang: 'fr'
       );
@@ -82,45 +81,47 @@ class _FoodPageState extends State<FoodPage> {
      widget.food = f;*/
 
       api
-        .getRestaurant(
-      id: (widget.food.restaurant is String) ? widget.food.restaurant : widget.food.restaurant['_id'] ,
-      lang: Provider.of<SettingContext>(
-        context,
-        listen: false,
-      ).languageCode,
-    )
-        .then((res) {
-      if (!mounted) return;
+          .getRestaurant(
+        id: (widget.food.restaurant is String) ? widget.food.restaurant : widget.food.restaurant['_id'],
+        lang: Provider.of<SettingContext>(
+          context,
+          listen: false,
+        ).languageCode,
+      )
+          .then((res) {
+        if (!mounted) return;
 
-      setState(() {
-        restaurantName = res.name;
-        loading = false;
+        setState(() {
+          restaurantName = res.name;
+          loading = false;
+        });
+      }).catchError((error) {
+        Fluttertoast.showToast(
+          msg: AppLocalizations.of(context).translate('connection_error'),
+        );
       });
-    }).catchError((error) {
-      Fluttertoast.showToast(
-        msg: AppLocalizations.of(context).translate('connection_error'),
-      );
-    });
 
-    AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
-    if (authContext.currentUser == null) showFavorite = false; else showFavorite = true;
-    isInFavorite = authContext.currentUser != null &&
-        authContext.currentUser.favoriteFoods.firstWhere(
-              (element) => element == widget.food.id,
-              orElse: () => null,
-            ) !=
-            null;
+      AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
+      if (authContext.currentUser == null)
+        showFavorite = false;
+      else
+        showFavorite = true;
+      isInFavorite = authContext.currentUser != null &&
+          authContext.currentUser.favoriteFoods.firstWhere(
+                (element) => element == widget.food.id,
+                orElse: () => null,
+              ) !=
+              null;
 
-      DataContext dataContext = Provider.of<DataContext>(context,listen: false);
-    // dataContext.fetchFoodAttributes(widget.food.attributes);
+      DataContext dataContext = Provider.of<DataContext>(context, listen: false);
+      // dataContext.fetchFoodAttributes(widget.food.attributes);
       dataContext.attributes = widget.food.attributes;
       // setState(() {
-        
+
       // });
       // options = widget.food.options;
       _init();
     });
-
   }
 
   _init() {
@@ -135,11 +136,10 @@ class _FoodPageState extends State<FoodPage> {
     itemCount = _cartContext.getFoodCountByIdNew(foodAdded);
     this.isAdded = false;
     singleItemOptionSelected = null;
-
   }
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return !widget.modalMode
         ? Scaffold(
             appBar: AppBar(
@@ -155,62 +155,58 @@ class _FoodPageState extends State<FoodPage> {
               centerTitle: true,
               title: TextTranslator(widget.food.name),
               actions: [
-                showFavorite ? IconButton(
-                  onPressed: !switchingFavorite
-                      ? () async {
-                    AuthContext authContext =
-                    Provider.of<AuthContext>(
-                      context,
-                      listen: false,
-                    );
+                showFavorite
+                    ? IconButton(
+                        onPressed: !switchingFavorite
+                            ? () async {
+                                AuthContext authContext = Provider.of<AuthContext>(
+                                  context,
+                                  listen: false,
+                                );
 
-                    setState((){
-                      switchingFavorite = true;
-                    });
-                    if (!isInFavorite)
-                      await authContext
-                          .addToFavoriteFoods(widget.food);
-                    else
-                      await authContext
-                          .removeFromFavoriteFoods(widget.food);
-                    setState(() {
-                      switchingFavorite = false;
-                      isInFavorite = !isInFavorite;
-                    });
-                    Fluttertoast.showToast(
-                      msg: AppLocalizations.of(context)
-                          .translate(
-                        isInFavorite
-                            ? 'added_to_favorite'
-                            : 'removed_from_favorite',
-                      ),
-                    );
-                  }
-                      : null,
-                  icon: !switchingFavorite
-                      ? Icon(
-                    isInFavorite
-                        ? Icons.favorite
-                        : Icons.favorite_border,
-                  )
-                      : SizedBox(
-                    width: 15,
-                    height: 15,
-                    child: FittedBox(
-                      child: CircularProgressIndicator(
-                        valueColor:
-                        AlwaysStoppedAnimation<Color>(
-                          Colors.white,
-                        ),
-                      ),
+                                setState(() {
+                                  switchingFavorite = true;
+                                });
+                                if (!isInFavorite)
+                                  await authContext.addToFavoriteFoods(widget.food);
+                                else
+                                  await authContext.removeFromFavoriteFoods(widget.food);
+                                setState(() {
+                                  switchingFavorite = false;
+                                  isInFavorite = !isInFavorite;
+                                });
+                                Fluttertoast.showToast(
+                                  msg: AppLocalizations.of(context).translate(
+                                    isInFavorite ? 'added_to_favorite' : 'removed_from_favorite',
+                                  ),
+                                );
+                              }
+                            : null,
+                        icon: !switchingFavorite
+                            ? Icon(
+                                isInFavorite ? Icons.favorite : Icons.favorite_border,
+                              )
+                            : SizedBox(
+                                width: 15,
+                                height: 15,
+                                child: FittedBox(
+                                  child: CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                      )
+                    : Container(),
+                IconButton(
+                    icon: Icon(
+                      FontAwesomeIcons.share,
+                      color: Colors.white,
                     ),
-                  ),
-                ) : Container(),
-                IconButton(icon: Icon(FontAwesomeIcons.share,color: Colors.white,),
-                    onPressed: (){
-                        Share.share("Menu advisor");
+                    onPressed: () {
+                      Share.share("Menu advisor");
                     }),
-
               ],
             ),
             body: mainContent,
@@ -220,7 +216,6 @@ class _FoodPageState extends State<FoodPage> {
             body: SingleChildScrollView(
               child: mainContent,
             ),
-            
           );
   }
 
@@ -233,7 +228,7 @@ class _FoodPageState extends State<FoodPage> {
           fit: StackFit.expand,
           children: [
             SingleChildScrollView(
-                child: Column(
+              child: Column(
                 mainAxisSize: widget.fromDelevery ? MainAxisSize.min : MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -245,6 +240,42 @@ class _FoodPageState extends State<FoodPage> {
                   SizedBox(
                     height: 25,
                   ),
+                  Divider(),
+                  Center(
+                    child: TextTranslator(
+                      widget.food.name,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                        // fontWeight: FontWeight.bold
+                      ),
+                    ),
+                  ),
+                  loading
+                      ? Center(
+                          child: CupertinoActivityIndicator(
+                          animating: true,
+                        ))
+                      : Center(
+                          child: InkWell(
+                            onTap: () {
+                              if (widget.fromRestaurant) 
+                                RouteUtil.goBack(context: context);
+                              else
+                              RouteUtil.goTo(
+                                context: context,
+                                child: RestaurantPage(
+                                  restaurant: (widget.food.restaurant is String) ? widget.food.restaurant : widget.food.restaurant['_id'],
+                                ),
+                                routeName: restaurantRoute,
+                              );
+                            },
+                            child: TextTranslator(
+                              restaurantName,
+                              style: TextStyle(color: Colors.blue, fontSize: 20, decoration: TextDecoration.underline, fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                        ),
                   Divider(),
                   Container(
                     width: double.infinity,
@@ -272,14 +303,15 @@ class _FoodPageState extends State<FoodPage> {
                         if (widget.food.price != null && widget.food.price?.amount != null)
                           Positioned(
                             right: 25,
-                            child:
-                            !_cartContext.withPrice ? Text("") : Text(
-                              '${widget.food.price.amount / 100} €',
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.black,
-                              ),
-                            ),
+                            child: !_cartContext.withPrice
+                                ? Text("")
+                                : Text(
+                                    '${widget.food.price.amount / 100} €',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.black,
+                                    ),
+                                  ),
                           ),
                       ],
                     ),
@@ -288,7 +320,7 @@ class _FoodPageState extends State<FoodPage> {
                   SizedBox(
                     height: 30,
                   ),
-                 //description
+                  //description
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 28.0),
                     child: TextTranslator(
@@ -339,62 +371,62 @@ class _FoodPageState extends State<FoodPage> {
                       right: 5 /** MediaQuery.of(context).size.width / 7*/,
                     ),
                     child: widget.food.attributes.length > 0
-                        ? Consumer<DataContext>(
-                            builder: (_, dataContext, __) {
-
+                        ? Consumer<DataContext>(builder: (_, dataContext, __) {
                             return /*!dataContext.loadingFoodAttributes
-                                ?*/ Padding(
-                                    padding: const EdgeInsets.only(
-                                      left: 5.0,
-                                    ),
-                                    child: Wrap(
-                                      spacing: 5,
-                                      runSpacing: 5,
-                                      children: dataContext.attributes
-                                          .map(
-                                            (attribute) => FittedBox(
-                                              child: Card(
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(20),
-                                                ),
-                                                margin: EdgeInsets.zero,
-                                                child: Padding(
-                                                  padding: const EdgeInsets.all(8),
-                                                  child: Builder(
-                                                    builder: (_) {
-                                                      return Row(
-                                                        children: [
-                                                          if (dataContext.attributes != null)
-                                                          //for (var attribute in dataContext.attributes)
-                                                          ...[
-                                                            FadeInImage.assetNetwork(
-                                                              placeholder: 'assets/images/loading.gif',
-                                                              image: attribute.imageURL,
-                                                              height: 14,
-                                                            ),
-                                                            SizedBox(
-                                                              width: 5,
-                                                            ),
-                                                            TextTranslator(
-                                                              attribute.locales,
-                                                            ),
-                                                          ]
-                                                          else TextTranslator("")
-                                                        ],
-                                                      );
-                                                    },
-                                                  ),
-                                                ),
-                                              ),
+                                ?*/
+                                Padding(
+                              padding: const EdgeInsets.only(
+                                left: 5.0,
+                              ),
+                              child: Wrap(
+                                spacing: 5,
+                                runSpacing: 5,
+                                children: dataContext.attributes
+                                    .map(
+                                      (attribute) => FittedBox(
+                                        child: Card(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(20),
+                                          ),
+                                          margin: EdgeInsets.zero,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8),
+                                            child: Builder(
+                                              builder: (_) {
+                                                return Row(
+                                                  children: [
+                                                    if (dataContext.attributes != null)
+                                                      //for (var attribute in dataContext.attributes)
+                                                      ...[
+                                                      FadeInImage.assetNetwork(
+                                                        placeholder: 'assets/images/loading.gif',
+                                                        image: attribute.imageURL,
+                                                        height: 14,
+                                                      ),
+                                                      SizedBox(
+                                                        width: 5,
+                                                      ),
+                                                      TextTranslator(
+                                                        attribute.locales,
+                                                      ),
+                                                    ] else
+                                                      TextTranslator("")
+                                                  ],
+                                                );
+                                              },
                                             ),
-                                          )
-                                          .toList(),
-                                    ),
-                                  );
-                                /*: CircularProgressIndicator(
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
+                            );
+                            /*: CircularProgressIndicator(
                                     valueColor: AlwaysStoppedAnimation<Color>(
                                     CRIMSON,
-                                  ));*/})
+                                  ));*/
+                          })
                         : Padding(
                             padding: const EdgeInsets.only(
                               left: 20.0,
@@ -410,55 +442,52 @@ class _FoodPageState extends State<FoodPage> {
                   ),
 
                   // options
-                  SizedBox(height: 15,),
-                  loading ? Center(
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        CRIMSON,
-                      ),
-                    ),
-                  ) :
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 25),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: options.length,
-                          itemBuilder: (_,position){
-                            Option option = options[position];
-                            return  Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                SizedBox(height: 15,),
-                                Collapse(
-                                  title: TextTranslator(
-                                      "Vous avez ${option.maxOptions} choix de ${option.title}",
-                                      style:TextStyle(color: Colors.black,fontWeight: FontWeight.bold)),
-                                  body: Container(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(0),
-                                      child: _choice(option,option.maxOptions == 1 ?true:false)
+                  SizedBox(
+                    height: 15,
+                  ),
+                  loading
+                      ? Center(
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              CRIMSON,
+                            ),
+                          ),
+                        )
+                      : Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 25),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              ListView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemCount: options.length,
+                                itemBuilder: (_, position) {
+                                  Option option = options[position];
+                                  return Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      SizedBox(
+                                        height: 15,
+                                      ),
+                                      Collapse(
+                                        title: TextTranslator("Vous avez ${option.maxOptions} choix de ${option.title}", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                                        body: Container(
+                                          child: Padding(padding: const EdgeInsets.all(0), child: _choice(option, option.maxOptions == 1 ? true : false)),
+                                        ),
+                                        value: collaspse[option.sId],
+                                        onChange: (value) {
+                                          setState(() {
+                                            collaspse[option.sId] = value;
+                                          });
+                                        },
+                                      )
+                                    ],
+                                  );
+                                },
+                              ),
 
-                                    ),
-                                  ),
-                                  value: collaspse[option.sId],
-                                  onChange: (value){
-                                    setState(() {
-                                      collaspse[option.sId] = value;
-                                    });
-
-                                  },
-                                )
-
-                              ],
-                            );
-                          },
-                        ),
-
-                        /*RaisedButton(
+                              /*RaisedButton(
                           padding: EdgeInsets.all(8),
                           color: CRIMSON,
                           shape: RoundedRectangleBorder(
@@ -475,9 +504,9 @@ class _FoodPageState extends State<FoodPage> {
                             ),
                           ),
                         ),*/
-                      ],
-                    ),
-                  ),
+                            ],
+                          ),
+                        ),
                   // Text("test"),
 
                   if (!widget.fromDelevery) ...[
@@ -489,24 +518,25 @@ class _FoodPageState extends State<FoodPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                       /* if (showFavorite)
+                        /* if (showFavorite)
                           SizedBox(
                             width: 20,
                           ),*/
-                        itemCount == 0 ? Container() :
-                        Consumer<CartContext>(
-                            builder: (_, cartContext, __) {
-                              this.itemCount = cartContext.getFoodCountByIdNew(foodAdded);
-                              if (this.itemCount == 0){
-                                WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                                  setState(() {
-                                    _init();
+                        itemCount == 0
+                            ? Container()
+                            : Consumer<CartContext>(builder: (_, cartContext, __) {
+                                this.itemCount = cartContext.getFoodCountByIdNew(foodAdded);
+                                if (this.itemCount == 0) {
+                                  WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                                    setState(() {
+                                      _init();
+                                    });
                                   });
-                                });
-
-                              }
-                              return itemCount == 0 ? Container() :
-                              /*    Padding(
+                                }
+                                return itemCount == 0
+                                    ? Container()
+                                    :
+                                    /*    Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                   child: Container(
                                     decoration: BoxDecoration(
@@ -529,34 +559,31 @@ class _FoodPageState extends State<FoodPage> {
                                   ),
                                 )
                         )*/
-                              ButtonItemCountWidget(foodAdded,
-
-                                  onAdded: () async {
-                                    setState(() {
-                                      // cartContext.addItem(
-                                      //     foodAdded, itemCount, true);
-                                      // choiceSelected.select(choiceSelected.selected);
-                                      // foodAdded = Food.copy(widget.food);
-                                      /*options.forEach((element) {
+                                    ButtonItemCountWidget(foodAdded, onAdded: () async {
+                                        setState(() {
+                                          // cartContext.addItem(
+                                          //     foodAdded, itemCount, true);
+                                          // choiceSelected.select(choiceSelected.selected);
+                                          // foodAdded = Food.copy(widget.food);
+                                          /*options.forEach((element) {
                                     element.itemOptionSelected =
                                         List();});*/
-                                      this.itemCount ++;
-                                    });
-                                  },
-                                  onRemoved: (food) {
-                                    // value == 0 ? cartContext.removeItem(widget.food) : cartContext.addItem(widget.food, value,false);
-                                    setState(() {
-                                      // options = food.optionSelected.map<Option>((e) => Option.copy(e)).toList();
-                                      /* options.forEach((element) {
+                                          this.itemCount++;
+                                        });
+                                      }, onRemoved: (food) {
+                                        // value == 0 ? cartContext.removeItem(widget.food) : cartContext.addItem(widget.food, value,false);
+                                        setState(() {
+                                          // options = food.optionSelected.map<Option>((e) => Option.copy(e)).toList();
+                                          /* options.forEach((element) {
                                       element.itemOptionSelected =
                                           List();});
                                     print(options);*/
-                                      --this.itemCount;
-                                      if (this.itemCount <= 0) {
-                                        this.itemCount = 0;
-                                        this.isAdded = false;
-                                        _init();
-                                        /*foodAdded = Food.copy(widget.food);
+                                          --this.itemCount;
+                                          if (this.itemCount <= 0) {
+                                            this.itemCount = 0;
+                                            this.isAdded = false;
+                                            _init();
+                                            /*foodAdded = Food.copy(widget.food);
                                         foodAdded.optionSelected = null;
                                         options.forEach((element) {
                                           element.itemOptionSelected = List();
@@ -565,17 +592,12 @@ class _FoodPageState extends State<FoodPage> {
                                         singleItemOptionSelected = null;
                                         options = food.optionSelected.map<Option>((e) => Option.copy(e)).toList();
 */
-                                      }
-                                    });
-                                  },
-                                  itemCount: cartContext.getFoodCountByIdNew(
-                                      foodAdded),
-                                  isContains: cartContext.contains(widget.food));
+                                          }
+                                        });
+                                      }, itemCount: cartContext.getFoodCountByIdNew(foodAdded), isContains: cartContext.contains(widget.food));
 
-
-
-                              //delete all food
-                              /*
+                                //delete all food
+                                /*
                         Consumer<CartContext>(
                           builder: (_,cartContext,w){
                             return itemCount == 0 ? Container() :
@@ -611,7 +633,7 @@ class _FoodPageState extends State<FoodPage> {
 
                           },
                         )*/
-                            })
+                              })
                       ],
                     ),
 
@@ -625,7 +647,6 @@ class _FoodPageState extends State<FoodPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-
                           Expanded(
                             child: Container(
                               child: Consumer<CartContext>(
@@ -669,22 +690,19 @@ class _FoodPageState extends State<FoodPage> {
                                             }) : Container(),*/
 
                                     // add food
-                                    if(itemCount == 0)
-                                    RaisedButton(
-                                      padding: EdgeInsets.all(20),
-                                      color: /*itemCount > 0
+                                    if (itemCount == 0)
+                                      RaisedButton(
+                                        padding: EdgeInsets.all(20),
+                                        color: /*itemCount > 0
                                           ? Colors.teal
-                                          :*/ CRIMSON,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      onPressed: () async {
-                                        if ((this.itemCount == 0) ||
-                                            (cartContext.hasSamePricingAsInBag(
-                                                    widget.food) &&
-                                                cartContext.hasSameOriginAsInBag(
-                                                    widget.food))) {
-                                        /*  if (cartContext.contains(widget.food)) {
+                                          :*/
+                                            CRIMSON,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        onPressed: () async {
+                                          if ((this.itemCount == 0) || (cartContext.hasSamePricingAsInBag(widget.food) && cartContext.hasSameOriginAsInBag(widget.food))) {
+                                            /*  if (cartContext.contains(widget.food)) {
                                             var result = await showDialog(
                                               context: context,
                                               builder: (_) => ConfirmationDialog(
@@ -712,13 +730,13 @@ class _FoodPageState extends State<FoodPage> {
                                                 ),
                                               );
                                               if (result is bool && result) {}*/
-                                           /* if (cartContext.contains(widget.food))
+                                            /* if (cartContext.contains(widget.food))
                                               cartContext.setCount(
                                                   widget.food, itemCount);
                                             else
                                               cartContext.addItem(
                                                   widget.food, itemCount);*/
-                                                 /* if (widget.food.options.isNotEmpty){
+                                            /* if (widget.food.options.isNotEmpty){
                                                     var optionSelected = await showDialog(
                                                                     context: context,
                                                                     barrierDismissible: false,
@@ -729,56 +747,50 @@ class _FoodPageState extends State<FoodPage> {
                                                     if (optionSelected != null)
                                                       cartContext.addItem(widget.food, itemCount,true);
                                                   }else{*/
-                                                    if (cartContext.hasOptionSelectioned(foodAdded)) {
-                                                cartContext.addItem(
-                                                    foodAdded, itemCount, true);
-                                               // foodAdded = Food.copy(widget.food);
-                                                /*options.forEach((element) {
+                                            if (cartContext.hasOptionSelectioned(foodAdded)) {
+                                              cartContext.addItem(foodAdded, itemCount, true);
+                                              // foodAdded = Food.copy(widget.food);
+                                              /*options.forEach((element) {
                                                   element.itemOptionSelected =
                                                       List();
                                                   element.singleItemOptionSelected = null;
                                                 });*/
-                                                // cartContext.refresh();
-                                                this.isAdded = true;
-                                                this.itemCount ++;
-                                                setState(() {
-                                                });
-                                              } else
-                                                      Fluttertoast.showToast(
-                                                        msg: 'Ajouter une option',
-                                                      );
-                                          //}
-                                        } else if (!cartContext
-                                            .hasSamePricingAsInBag(widget.food)) {
-                                          Fluttertoast.showToast(
-                                            msg: AppLocalizations.of(context).translate(
-                                                'priceless_and_not_priceless_not_allowed'),
-                                          );
-                                        } else if (!cartContext
-                                            .hasSameOriginAsInBag(widget.food)) {
-                                          Fluttertoast.showToast(
-                                            msg: AppLocalizations.of(context).translate(
-                                                'from_different_origin_not_allowed'),
-                                          );
-                                        }
-                                      },
-                                      child: TextTranslator(
-                                        /*cartContext.contains(widget.food)
+                                              // cartContext.refresh();
+                                              this.isAdded = true;
+                                              this.itemCount++;
+                                              setState(() {});
+                                            } else
+                                              Fluttertoast.showToast(
+                                                msg: 'Ajouter une option',
+                                              );
+                                            //}
+                                          } else if (!cartContext.hasSamePricingAsInBag(widget.food)) {
+                                            Fluttertoast.showToast(
+                                              msg: AppLocalizations.of(context).translate('priceless_and_not_priceless_not_allowed'),
+                                            );
+                                          } else if (!cartContext.hasSameOriginAsInBag(widget.food)) {
+                                            Fluttertoast.showToast(
+                                              msg: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
+                                            );
+                                          }
+                                        },
+                                        child: TextTranslator(
+                                          /*cartContext.contains(widget.food)
                                             ? AppLocalizations.of(context)
                                                 .translate('remove_from_cart')
-                                            : */AppLocalizations.of(context)
-                                                .translate("add_to_cart"),
-                                        overflow: TextOverflow.ellipsis,
-                                        softWrap: false,
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 20,
+                                            : */
+                                          AppLocalizations.of(context).translate("add_to_cart"),
+                                          overflow: TextOverflow.ellipsis,
+                                          softWrap: false,
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20,
+                                          ),
                                         ),
                                       ),
-                                    ),
                                     //cartContext.contains(widget.food) ? SizedBox(height: 50,) : Container()
-                                   /* cartContext.contains(widget.food) ?
+                                    /* cartContext.contains(widget.food) ?
                                     FlatButton(child:  Container(
                                       width: 60,
                                       height: 60,
@@ -797,7 +809,6 @@ class _FoodPageState extends State<FoodPage> {
                                           });
 
                                         }) : Container(),*/
-
                                   ],
                                 ),
                               ),
@@ -806,14 +817,15 @@ class _FoodPageState extends State<FoodPage> {
                         ],
                       ),
                     ),
-
                   ],
                   Consumer<CartContext>(
-                    builder: (_,cartContext,__) => cartContext.contains(widget.food) ? SizedBox(height: 95,) : Container(),
+                    builder: (_, cartContext, __) => cartContext.contains(widget.food)
+                        ? SizedBox(
+                            height: 95,
+                          )
+                        : Container(),
                   )
-
                 ],
-
               ),
             ),
             Positioned(
@@ -894,7 +906,7 @@ class _FoodPageState extends State<FoodPage> {
                       size: 250,
                     ),
             ),
-            Positioned.fill(
+            /* Positioned.fill(
                 bottom: 0,
                 left: 0,
                 child: Container(
@@ -920,24 +932,17 @@ class _FoodPageState extends State<FoodPage> {
                     ),
                   ),
 
-                ))
+                ))*/
           ],
         ),
       );
 
-
   Widget _choice(Option option, bool isSingle) {
-
-    if (isSingle){
+    if (isSingle) {
       return ChipsChoice.single(
         value: singleItemOptionSelected,
-        choiceStyle: C2ChoiceStyle(
-            borderColor: Colors.white,
-            disabledColor: Colors.white,borderRadius: BorderRadius.zero,
-          showCheckmark: false,
-          padding: EdgeInsets.zero,
-          labelPadding: EdgeInsets.zero
-        ),
+        choiceStyle:
+            C2ChoiceStyle(borderColor: Colors.white, disabledColor: Colors.white, borderRadius: BorderRadius.zero, showCheckmark: false, padding: EdgeInsets.zero, labelPadding: EdgeInsets.zero),
         padding: EdgeInsets.zero,
         // wrapped: true,
         // textDirection: TextDirection.ltr,
@@ -946,7 +951,6 @@ class _FoodPageState extends State<FoodPage> {
           // int diff =
           if (this.isAdded) return;
           setState(() {
-
             singleItemOptionSelected = value;
             singleItemOptionSelected.isSingle = true;
             singleItemOptionSelected.quantity = 1;
@@ -957,21 +961,31 @@ class _FoodPageState extends State<FoodPage> {
 
             foodAdded.optionSelected = options.map((o) => Option.copy(o)).toList();
             _optionContext.itemOptions = option.itemOptionSelected;
-
           });
         },
-        choiceLabelBuilder: (_){
-
+        choiceLabelBuilder: (_) {
           return Container(
             color: Colors.white,
             child: Row(
               mainAxisSize: MainAxisSize.max,
-
               children: [
-                SizedBox(width: 10,),
-                _.selected ? Icon(Icons.radio_button_checked,color:CRIMSON,size: 25,) :
-                Icon(Icons.add_circle_outlined,color: Colors.grey,size: 25,),
-                SizedBox(width: 20,),
+                SizedBox(
+                  width: 10,
+                ),
+                _.selected
+                    ? Icon(
+                        Icons.radio_button_checked,
+                        color: CRIMSON,
+                        size: 25,
+                      )
+                    : Icon(
+                        Icons.add_circle_outlined,
+                        color: Colors.grey,
+                        size: 25,
+                      ),
+                SizedBox(
+                  width: 20,
+                ),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(50),
                   child: FadeInImage.assetNetwork(
@@ -980,31 +994,34 @@ class _FoodPageState extends State<FoodPage> {
                     height: 50,
                     width: 50,
                     fit: BoxFit.cover,
-
                   ),
                 ),
                 SizedBox(
                   width: 5,
                 ),
                 Text("${_.value.name}"),
-                SizedBox(width: 5,),
+                SizedBox(
+                  width: 5,
+                ),
                 Container(
                   padding: EdgeInsets.all(5),
                   decoration: BoxDecoration(
-                    // shape: BoxShape.circle,
-                    // color: _.value.price == 0 ? null : Colors.grey[400]
-                  ),
-                  child: !_cartContext.withPrice || _.value.price.amount == null ? Text("") : Text("${_.value.price.amount == 0 ? '': _.value.price.amount/100}${_.value.price.amount == 0 ? '': "€"}",
-                    style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),),
+                      // shape: BoxShape.circle,
+                      // color: _.value.price == 0 ? null : Colors.grey[400]
+                      ),
+                  child: !_cartContext.withPrice || _.value.price.amount == null
+                      ? Text("")
+                      : Text(
+                          "${_.value.price.amount == 0 ? '' : _.value.price.amount / 100}${_.value.price.amount == 0 ? '' : "€"}",
+                          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                        ),
                 )
               ],
             ),
           );
         },
         choiceItems: C2Choice.listFrom(
-          meta: (position, item){
-
-          },
+          meta: (position, item) {},
           source: option.items,
           value: (i, v) => v,
           label: (i, v) => v.name,
@@ -1012,13 +1029,9 @@ class _FoodPageState extends State<FoodPage> {
       );
     }
 
-
     return ChipsChoice.multiple(
       value: option.itemOptionSelected,
-      choiceStyle: C2ChoiceStyle(
-          borderColor: Colors.transparent,
-          disabledColor: Colors.white,borderRadius: BorderRadius.zero
-      ),
+      choiceStyle: C2ChoiceStyle(borderColor: Colors.transparent, disabledColor: Colors.white, borderRadius: BorderRadius.zero),
       padding: EdgeInsets.zero,
       // wrapped: true,
       // textDirection: TextDirection.ltr,
@@ -1027,20 +1040,16 @@ class _FoodPageState extends State<FoodPage> {
         // int diff =
         if (this.isAdded) return;
         setState(() {
-          if (option.itemOptionSelected?.length == option.maxOptions){
-            if (option.itemOptionSelected.length >= value.length ){
+          if (option.itemOptionSelected?.length == option.maxOptions) {
+            if (option.itemOptionSelected.length >= value.length) {
               var seen = Set<String>();
               option.itemOptionSelected = value.cast<ItemsOption>().where((element) => seen.add(element.name)).toList();
               foodAdded.optionSelected = options.map((o) => Option.copy(o)).toList();
-
-            }else{
+            } else {
               print("max options");
-              Fluttertoast.showToast(
-                  msg: "maximum selection ${option.title} : ${option.maxOptions}"
-              );
+              Fluttertoast.showToast(msg: "maximum selection ${option.title} : ${option.maxOptions}");
             }
-
-          }else{
+          } else {
             var seen = Set<String>();
             option.itemOptionSelected = value.cast<ItemsOption>().where((element) => seen.add(element.name)).toList();
 
@@ -1049,13 +1058,15 @@ class _FoodPageState extends State<FoodPage> {
           _optionContext.itemOptions = option.itemOptionSelected;
         });
       },
-      choiceLabelBuilder: (_){
+      choiceLabelBuilder: (_) {
         return Row(
           mainAxisSize: MainAxisSize.max,
           children: [
-
             // _.selected ? Icon(Icons.check_circle,color:CRIMSON,size: 15,) :
-            Icon(Icons.radio_button_unchecked,color: CRIMSON,),
+            Icon(
+              Icons.radio_button_unchecked,
+              color: CRIMSON,
+            ),
             ClipRRect(
               borderRadius: BorderRadius.circular(50),
               child: FadeInImage.assetNetwork(
@@ -1064,145 +1075,148 @@ class _FoodPageState extends State<FoodPage> {
                 height: 50,
                 width: 50,
                 fit: BoxFit.cover,
-
               ),
             ),
             SizedBox(
               width: 5,
             ),
             Text("${_.value.name}"),
-            SizedBox(width: 5,),
+            SizedBox(
+              width: 5,
+            ),
             Container(
               padding: EdgeInsets.all(5),
-              decoration: BoxDecoration(
-              ),
-              child: !_cartContext.withPrice || _.value.price.amount == null ? Text("") : Text("${_.value.price.amount == 0 ? '': _.value.price.amount/100}${_.value.price.amount == 0 ? '': "€"}",
-                style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),),
+              decoration: BoxDecoration(),
+              child: !_cartContext.withPrice || _.value.price.amount == null
+                  ? Text("")
+                  : Text(
+                      "${_.value.price.amount == 0 ? '' : _.value.price.amount / 100}${_.value.price.amount == 0 ? '' : "€"}",
+                      style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                    ),
             )
           ],
         );
       },
       choiceItems: C2Choice.listFrom(
-        meta: (position, item){
-
-        },
+        meta: (position, item) {},
         source: option.items,
         value: (i, v) => v,
         label: (i, v) => v.name,
       ),
-      choiceBuilder: (_){
+      choiceBuilder: (_) {
         choiceSelected = _;
 
-        return Consumer<OptionContext>(
-            builder: (context, snapshot,w) {
-              return Container(
-                // color: _.selected ? CRIMSON : Colors.grey.withAlpha(1),
-                padding: EdgeInsets.symmetric(horizontal: 5,vertical: 10),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    !_.selected ?
-                    IconButton(
-                      icon: Icon(Icons.add_circle_outlined,color: Colors.grey,size: 25),
-                      onPressed: (){
-                        if (this.isAdded) return;
-                        if (option.isMaxOptions){
-                          _.value.quantity = 1;
-                          _.select(!_.selected);
-                        }else{
-                          print("max options");
-                          Fluttertoast.showToast(
-                              msg: "maximum selection ${option.title} : ${option.maxOptions}"
-                          );
-                        }
-
-                      },)
-                        :
+        return Consumer<OptionContext>(builder: (context, snapshot, w) {
+          return Container(
+            // color: _.selected ? CRIMSON : Colors.grey.withAlpha(1),
+            padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                !_.selected
+                    ? IconButton(
+                        icon: Icon(Icons.add_circle_outlined, color: Colors.grey, size: 25),
+                        onPressed: () {
+                          if (this.isAdded) return;
+                          if (option.isMaxOptions) {
+                            _.value.quantity = 1;
+                            _.select(!_.selected);
+                          } else {
+                            print("max options");
+                            Fluttertoast.showToast(msg: "maximum selection ${option.title} : ${option.maxOptions}");
+                          }
+                        },
+                      )
+                    :
                     //button incrementation
 
                     Container(
-                      padding: EdgeInsets.only(left: 0),
-                      // width: 50,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                              icon: Icon(Icons.remove_circle,color:CRIMSON,size: 35,), onPressed: (){
-                            if (this.isAdded) return;
-                            if (_.value.quantity == 1){
-                              _.value.quantity = 0;
-                              _.select(false);
-                            }else{
-                              _.value.quantity --;
-                              _.select(true);
-                            }
-                            snapshot.refresh();
-
-                          }),
-                          SizedBox(width: 2,),
-                          Text("${_.value.quantity ?? ""}",style: TextStyle(
-                              fontSize: 20
-                          ),),
-                          SizedBox(width: 2,),
-                          IconButton(
-                              icon: Icon(Icons.add_circle_outlined,color:CRIMSON,size: 35), onPressed: (){
-                            // if (_optionContext.quantityOptions == option.maxOptions){
-                            if (this.isAdded) return;
-                            if (option.isMaxOptions){
-                              _.value.quantity ++;
-                              _.select(true);
-                              snapshot.refresh();
-                            }else{
-                              print("max options");
-                              Fluttertoast.showToast(
-                                  msg: "maximum selection ${option.title} : ${option.maxOptions}"
-                              );
-                            }
-
-
-                          }),
-                        ],
+                        padding: EdgeInsets.only(left: 0),
+                        // width: 50,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                                icon: Icon(
+                                  Icons.remove_circle,
+                                  color: CRIMSON,
+                                  size: 35,
+                                ),
+                                onPressed: () {
+                                  if (this.isAdded) return;
+                                  if (_.value.quantity == 1) {
+                                    _.value.quantity = 0;
+                                    _.select(false);
+                                  } else {
+                                    _.value.quantity--;
+                                    _.select(true);
+                                  }
+                                  snapshot.refresh();
+                                }),
+                            SizedBox(
+                              width: 2,
+                            ),
+                            Text(
+                              "${_.value.quantity ?? ""}",
+                              style: TextStyle(fontSize: 20),
+                            ),
+                            SizedBox(
+                              width: 2,
+                            ),
+                            IconButton(
+                                icon: Icon(Icons.add_circle_outlined, color: CRIMSON, size: 35),
+                                onPressed: () {
+                                  // if (_optionContext.quantityOptions == option.maxOptions){
+                                  if (this.isAdded) return;
+                                  if (option.isMaxOptions) {
+                                    _.value.quantity++;
+                                    _.select(true);
+                                    snapshot.refresh();
+                                  } else {
+                                    print("max options");
+                                    Fluttertoast.showToast(msg: "maximum selection ${option.title} : ${option.maxOptions}");
+                                  }
+                                }),
+                          ],
+                        ),
                       ),
-                    ),
-
-                    SizedBox(width: 10,),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(50),
-                      child: FadeInImage.assetNetwork(
-                        placeholder: 'assets/images/loading.gif',
-                        image: _.value.imageUrl,
-                        height: 50,
-                        width: 50,
-                        fit: BoxFit.cover,
-
-                      ),
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Text("${_.value.name}"),
-                    Spacer(),
-                    Container(
-                      padding: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        // shape: BoxShape.circle,
-                        // color: _.value.price == 0 ? null : Colors.grey[400]
-                      ),
-                      child: !_cartContext.withPrice || _.value.price.amount == null ? Text("") : Text("${_.value.price.amount == 0 ? '': _.value.price.amount/100}${_.value.price.amount == 0 ? '': "€"}",
-                        style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),),
-                    ),
-                    Spacer(),
-                  ],
+                SizedBox(
+                  width: 10,
                 ),
-
-              );
-            }
-        );
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(50),
+                  child: FadeInImage.assetNetwork(
+                    placeholder: 'assets/images/loading.gif',
+                    image: _.value.imageUrl,
+                    height: 50,
+                    width: 50,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                SizedBox(
+                  width: 5,
+                ),
+                Text("${_.value.name}"),
+                Spacer(),
+                Container(
+                  padding: EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                      // shape: BoxShape.circle,
+                      // color: _.value.price == 0 ? null : Colors.grey[400]
+                      ),
+                  child: !_cartContext.withPrice || _.value.price.amount == null
+                      ? Text("")
+                      : Text(
+                          "${_.value.price.amount == 0 ? '' : _.value.price.amount / 100}${_.value.price.amount == 0 ? '' : "€"}",
+                          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                        ),
+                ),
+                Spacer(),
+              ],
+            ),
+          );
+        });
       },
-
     );
-
   }
-
-
 }

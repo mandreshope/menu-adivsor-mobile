@@ -1142,6 +1142,7 @@ class _AtributesDialogState extends State<AtributesDialog> {
                       fontSize: 20)),
             ),
           ),
+          /*
           ListTile(
             onTap: (){
               setState(() {
@@ -1169,6 +1170,7 @@ class _AtributesDialogState extends State<AtributesDialog> {
               ],
             ),
           ),
+         */
           SizedBox(height: 15,),
           Padding(
             padding: EdgeInsets.only(left: 35),
@@ -1186,6 +1188,19 @@ class _AtributesDialogState extends State<AtributesDialog> {
                     onTap: (){
                       setState(() {
                         att.isChecked = !att.isChecked;
+                        if (att.tag.contains("allergen")) {
+                              attributes.forEach((element) {
+                                if (!element.tag.contains("allergen")){
+                                  element.isChecked = false;
+                                }
+                              });
+                            }else{
+                              attributes.forEach((element) {
+                                if (element.tag.contains("allergen")){
+                                  element.isChecked = false;
+                                }
+                              });
+                            }
                         dataContext.isAllAttribute = false;
                       });
                     },
@@ -1194,6 +1209,19 @@ class _AtributesDialogState extends State<AtributesDialog> {
                         Checkbox(value: dataContext.isAllAttribute ? false : att.isChecked, onChanged: (value){
                           setState(() {
                             att.isChecked = value;
+                            if (att.tag.contains("allergen")) {
+                              attributes.forEach((element) {
+                                if (!element.tag.contains("allergen")){
+                                  element.isChecked = false;
+                                }
+                              });
+                            }else{
+                              attributes.forEach((element) {
+                                if (element.tag.contains("allergen")){
+                                  element.isChecked = false;
+                                }
+                              });
+                            }
                             dataContext.isAllAttribute = false;
                           });
                         },
@@ -1219,7 +1247,7 @@ class _AtributesDialogState extends State<AtributesDialog> {
               List<FoodAttribute> selectedAttributes = List();
 
               // selectedAttributes = dataContext.isAllAttribute ? attributes : attributes.where((element) => element.isChecked).toList();
-              selectedAttributes = dataContext.isAllAttribute ? List() : attributes.where((element) => element.isChecked).toList();
+              selectedAttributes = /*dataContext.isAllAttribute ? List() : */attributes.where((element) => element.isChecked).toList();
 
               Navigator.of(context).pop(selectedAttributes);
             },

@@ -344,6 +344,7 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                 ),*/
+                /*
                 RoundedButton(
                     backgroundColor: Colors.white,
                     boxShadow: [
@@ -386,6 +387,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                           routeName: searchRoute,
                         )),
+             */
               ],
             ),
           ),

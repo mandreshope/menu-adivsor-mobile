@@ -257,8 +257,8 @@ class _DetailMenuState extends State<DetailMenu> {
                                     child: FadeInImage.assetNetwork(
                                       placeholder: 'assets/images/loading.gif',
                                       image: food.imageURL,
-                                      height: 25,
-                                      width: 25,
+                                      height: 35,
+                                      width: 35,
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -277,7 +277,7 @@ class _DetailMenuState extends State<DetailMenu> {
                                       MenuType.fixed_price.value) ...[
                                     Text(" ")
                                   ] else if (widget.menu.type ==
-                                      MenuType.fixed_price.value) ...[
+                                      MenuType.priceless.value) ...[
                                     Text(" ")
                                   ] else ...[
                                     Spacer(),

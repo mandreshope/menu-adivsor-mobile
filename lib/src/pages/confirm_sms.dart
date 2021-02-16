@@ -227,6 +227,8 @@ class _ConfirmSmsState extends State<ConfirmSms> {
 
 
      if (widget.fromDelivery){
+      /// alefa any am page misafidy paiement CB na à la livraison 
+
        RouteUtil.goTo(
          context: context,
          child: PaymentCardListPage(
@@ -235,9 +237,8 @@ class _ConfirmSmsState extends State<ConfirmSms> {
          ),
          routeName: paymentCardListRoute,
        );
-       return;
-     }
-
+       
+     }else{
       setState(() {
         loading = true;
       });
@@ -298,6 +299,9 @@ class _ConfirmSmsState extends State<ConfirmSms> {
       setState(() {
         loading = false;
       });
+     }
+
+      
     }
   }
 }

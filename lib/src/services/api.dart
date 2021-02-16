@@ -623,7 +623,7 @@ print('$_apiURL/restaurants$query');
 
   }
 
-  Future setCommandToPayedStatus({
+  Future setCommandToPayedStatus(bool status,{
     String id,
     String paymentIntentId,
   }) async {
@@ -639,7 +639,7 @@ print('$_apiURL/restaurants$query');
       body: jsonEncode(
         {
           'payed': {
-            'status': true,
+            'status': status,
             'paymentIntentId': paymentIntentId,
           }
         },

@@ -114,7 +114,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                                       .map((e) => {
                                                             'quantity': 1,
                                                             'item': e.id,
-                                                            'options': e.optionSelected != null ?
+                                                            'options': e.optionSelected != null ? 
                                                             e.optionSelected : [],
                                                             'comment':
                                                                 e.message
@@ -146,6 +146,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                           Command cm = Command.fromJson(command);
 
                                             Api.instance.setCommandToPayedStatus(
+                                              true,
                                               id: command['_id'],
                                               paymentIntentId: payment.paymentIntentId,
                                             );

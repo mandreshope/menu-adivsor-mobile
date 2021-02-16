@@ -188,7 +188,7 @@ try {
 
                 children: [
                   Expanded(child: _renderViewItem(commandType)),
-                  SizedBox(height: 10,),
+                  /*SizedBox(height: 10,),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -237,8 +237,9 @@ try {
                           ),
                         ),
                       ),
+                    
                     ],
-                  ),
+                  ),*/
                   SizedBox(height: 10,),
                 ],
               )
@@ -247,7 +248,7 @@ try {
 
   Widget _renderViewItem(String title) {
     /// test tri par date
-    var commandTemp = commands
+ /*   var commandTemp = commands
         .where((element){
           if (dateTri != null) {
             if (element.commandType == title &&
@@ -264,7 +265,9 @@ try {
 
     })
         
-        .toList();
+        .toList();*/
+            var commandTemp = commands
+        .where((element) => element.commandType == title).toList();
         print(commandTemp);
 
 
