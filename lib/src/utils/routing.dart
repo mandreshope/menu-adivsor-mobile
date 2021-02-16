@@ -29,6 +29,7 @@ class RouteUtil {
             type: transitionType,
           ),
         );
+        print("go to : /"+child.toString());
         return true;
 
       case RoutingMethod.replaceLast:
@@ -43,6 +44,7 @@ class RouteUtil {
             type: transitionType,
           ),
         );
+        print("go to : /"+child.toString());
         return true;
 
       case RoutingMethod.atTop:
@@ -58,6 +60,7 @@ class RouteUtil {
           ),
           (route) => false,
         );
+        print("go to : /"+child.toString());
         return true;
 
       default:
@@ -72,19 +75,21 @@ class RouteUtil {
     @required bool Function(Route<T>) predicate,
     PageTransitionType transitionType = PageTransitionType.fade,
     Object arguments,
-  }) =>
-      Navigator.of(context).pushAndRemoveUntil<T>(
-        PageTransition(
-          duration: Duration(milliseconds: 500),
-          settings: RouteSettings(
-            name: routeName,
-            arguments: arguments,
-          ),
-          child: child,
-          type: transitionType,
+  }) {
+    Navigator.of(context).pushAndRemoveUntil<T>(
+      PageTransition(
+        duration: Duration(milliseconds: 500),
+        settings: RouteSettings(
+          name: routeName,
+          arguments: arguments,
         ),
-        predicate,
-      );
+        child: child,
+        type: transitionType,
+      ),
+      predicate,
+    );
+    print("go to : /"+child.toString());
+  }
 
   static void goBack({
     @required BuildContext context,

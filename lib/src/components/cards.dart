@@ -14,6 +14,7 @@ import 'package:menu_advisor/src/constants/date_format.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/detail_menu.dart';
 import 'package:menu_advisor/src/pages/food.dart';
+import 'package:menu_advisor/src/pages/photo_view.dart';
 import 'package:menu_advisor/src/pages/restaurant.dart';
 import 'package:menu_advisor/src/pages/summary.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
@@ -73,16 +74,24 @@ class CategoryCard extends StatelessWidget {
                           height: 40,
                           color: DARK_BLUE,
                         )
-                      : ClipRRect(
-                          borderRadius: BorderRadius.circular(50),
-                          child: FadeInImage.assetNetwork(
-                            placeholder: 'assets/images/loading.gif',
-                            image: imageURL,
-                            height: 50,
-                            width: 50,
-                            fit: BoxFit.cover,
+                      : InkWell(
+                        child: Hero(
+                          tag: 'tag:$imageURL',
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(50),
+                            child: FadeInImage.assetNetwork(
+                              placeholder: 'assets/images/loading.gif',
+                              image: imageURL,
+                              height: 50,
+                              width: 50,
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
+                        onTap: () {
+                          RouteUtil.goTo(context: context, child: PhotoViewPage(tag: 'tag:$imageURL', img: imageURL,), routeName: null);
+                        },
+                      ),
                 ),
                 SizedBox(
                   height: 10,
@@ -363,18 +372,23 @@ class _FoodCardState extends State<FoodCard> {
                     top: 0,
                     bottom: 0,
                     left: widget.showButton ? 30 : null,
-                    child: Hero(
-                      tag: widget.imageTag ?? 'foodImage${widget.food.id}',
-                      child: widget.food.imageURL != null
-                          ? FadeInImage.assetNetwork(
-                              image: widget.food.imageURL,
-                              placeholder: 'assets/images/loading.gif',
-                              width: 80,
-                            )
-                          : Icon(
-                              Icons.fastfood,
-                              size: 60,
-                            ),
+                    child: InkWell(
+                      child: Hero(
+                        tag: widget.imageTag ?? 'foodImage${widget.food.id}',
+                        child: widget.food.imageURL != null
+                            ? FadeInImage.assetNetwork(
+                                image: widget.food.imageURL,
+                                placeholder: 'assets/images/loading.gif',
+                                width: 80,
+                              )
+                            : Icon(
+                                Icons.fastfood,
+                                size: 60,
+                              ),
+                      ),
+                      onTap: () {
+                        RouteUtil.goTo(context: context, child: PhotoViewPage(tag: widget.imageTag?? 'foodImage${widget.food.id}', img: widget.food.imageURL,), routeName: null);
+                      },
                     ),
                   ),
                 ],
@@ -1382,12 +1396,20 @@ class _RestaurantCardState extends State<RestaurantCard> {
                         ],
                       ),
                     ),
-                    FadeInImage.assetNetwork(
-                      image: widget.restaurant.imageURL,
-                      placeholder: 'assets/images/loading.gif',
-                      width: 120,
-                      fit: BoxFit.cover,
-                    ),
+                    InkWell(
+                      child: Hero(
+                        tag: "tag:${widget.restaurant.imageURL}",
+                        child: FadeInImage.assetNetwork(
+                          image: widget.restaurant.imageURL,
+                          placeholder: 'assets/images/loading.gif',
+                          width: 120,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      onTap: () {
+                        RouteUtil.goTo(context: context, child: PhotoViewPage(tag: 'tag:${widget.restaurant.imageURL}', img: widget.restaurant.imageURL,), routeName: null);
+                      },
+                    )
                   ],
                 ),
               ),
@@ -1833,14 +1855,22 @@ class BlogCard extends StatelessWidget {
             Stack(
               fit: StackFit.loose,
                 children: [
-                  Container(
-                    height: 190,
-                    width: double.infinity,
-                    child: FadeInImage.assetNetwork(
-                      image: blog.imageURL,
-                      placeholder: 'assets/images/loading.gif',
-                      fit: BoxFit.contain,
+                  InkWell(
+                    child: Hero(
+                      tag: 'tag:${blog.imageURL}',
+                      child: Container(
+                        height: 190,
+                        width: double.infinity,
+                        child: FadeInImage.assetNetwork(
+                          image: blog.imageURL,
+                          placeholder: 'assets/images/loading.gif',
+                          fit: BoxFit.contain,
+                        ),
+                      ),
                     ),
+                    onTap: () {
+                      RouteUtil.goTo(context: context, child: PhotoViewPage(tag: 'tag:${blog.imageURL}', img: blog.imageURL,), routeName: null);
+                    },
                   ),
                   Positioned.fill(
                     bottom: 0,

@@ -8,6 +8,7 @@ import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/pages/photo_view.dart';
 import 'package:menu_advisor/src/pages/restaurant.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
@@ -892,19 +893,24 @@ class _FoodPageState extends State<FoodPage> {
         },
         child: Stack(
           children: [
-            Hero(
-              tag: widget.imageTag ?? 'foodImage${widget.food.id}',
-              child: widget.food.imageURL != null
-                  ? Image.network(
-                      widget.food.imageURL,
-                      // width: 4 * MediaQuery.of(context).size.width / 7,
-                      width: MediaQuery.of(context).size.width,
-                      fit: BoxFit.contain,
-                    )
-                  : Icon(
-                      Icons.fastfood,
-                      size: 250,
-                    ),
+            InkWell(
+              child: Hero(
+                tag: widget.imageTag ?? 'foodImage${widget.food.id}',
+                child: widget.food.imageURL != null
+                    ? Image.network(
+                        widget.food.imageURL,
+                        // width: 4 * MediaQuery.of(context).size.width / 7,
+                        width: MediaQuery.of(context).size.width,
+                        fit: BoxFit.contain,
+                      )
+                    : Icon(
+                        Icons.fastfood,
+                        size: 250,
+                      ),
+              ),
+              onTap: () {
+                RouteUtil.goTo(context: context, child: PhotoViewPage(tag: widget.imageTag ?? 'foodImage${widget.food.id}', img: widget.food.imageURL,), routeName: null);
+              },
             ),
             /* Positioned.fill(
                 bottom: 0,
