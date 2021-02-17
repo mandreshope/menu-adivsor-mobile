@@ -160,7 +160,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     )
                                   ],
                                 ),
-                                Positioned(
+                                /*Positioned(
                                   right: 10,
                                   bottom: 10,
                                   child: FloatingActionButton(
@@ -229,7 +229,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       Icons.comment,
                                     ),
                                   ),
-                                ),
+                                ),*/
                               ],
                             )
                           : Container(),
@@ -266,8 +266,10 @@ class _ProfilePageState extends State<ProfilePage> {
                               context,
                               listen: false,
                             );
-
-                            settingContext.languageCode = languageCode;
+                            showDialogProgress(context);
+                                    settingContext.setlanguageCode(languageCode).then((value) {
+                                      dismissDialogProgress(context);
+                                    });
                           },
                           style: TextStyle(
                             color: Colors.grey[700],
@@ -476,6 +478,98 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ),
                           ),
+                        ),
+                         SizedBox(
+                          height: 5,
+                        ),
+                        RaisedButton(
+                          onPressed: () {
+                            RouteUtil.goTo(
+                                        context: context,
+                                        child: ProfileEditPage(),
+                                        routeName: profileEditRoute,
+                                      );
+                          },
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(40),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 8,
+                          ),
+                          child: TextTranslator(
+                            "Votre adresse",
+                            style: GoogleFonts.raleway(
+                              textStyle: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        RaisedButton(
+                          onPressed: () {
+                           showDialog<String>(context: context,
+                                                  child: MessageDialog(message: "",)).then((value) async {
+                                                      print(value);
+                                                      //widget.food.message = value;
+                                                  
+                                                    if (value.isNotEmpty){
+                                                        User user =  Provider.of<AuthContext>(
+                                                          context,
+                                                          listen: false,
+                                                        ).currentUser;
+                                                      Message message = Message(email: user.email,message: value,name: "${user.name.first} ${user.name.last}", phoneNumber: user.phoneNumber,read: false,
+                                                      target: null);
+                                                      showDialog(
+                                                        barrierDismissible: false,
+                                                        context: context,child: Center(
+                                                        child: CircularProgressIndicator(
+                                                                            valueColor: AlwaysStoppedAnimation<Color>(
+                                                                              CRIMSON,
+                                                                            ),
+                                                                          ),
+                                                      ));
+                                                      bool result = await Api.instance.sendMessage(message);
+                                                      RouteUtil.goBack(context: context);
+                                                        
+                                                        if (result){
+                                                            Fluttertoast.showToast(
+                                                                msg: "Message envoyé",
+                                                              );
+                                                        }else{
+                                                            Fluttertoast.showToast(
+                                                                msg: "Message non envoyé",
+                                                              );
+                                                        }
+                                                        
+                                                      }else{
+                                                        
+                                                      }
+                                                    }   
+                                                  );
+                          },
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(40),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 8,
+                          ),
+                          child: TextTranslator(
+                            "Envoyer message dans MON COMPTE",
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.raleway(
+                              textStyle: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 5,
                         ),
                         /*SizedBox(
                           height: 20,

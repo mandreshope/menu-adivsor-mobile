@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/animations/FadeAnimation.dart';
+import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/components/inputs.dart';
 import 'package:menu_advisor/src/components/logo.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
@@ -130,7 +131,11 @@ class _LoginPageState extends State<LoginPage> {
                                     listen: false,
                                   );
 
-                                  settingContext.languageCode = languageCode;
+                                  
+                                   showDialogProgress(context);
+                                    settingContext.setlanguageCode(languageCode).then((value) {
+                                      dismissDialogProgress(context);
+                                    });
                                 },
                                 style: TextStyle(
                                   color: Colors.grey[700],

@@ -504,6 +504,8 @@ class Command {
         ),
         priceless: json['priceless'] ?? false
       );
+
+
 }
 
 class PaymentCard {

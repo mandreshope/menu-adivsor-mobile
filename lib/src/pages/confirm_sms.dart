@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/pages/choose_payement.dart';
 import 'package:menu_advisor/src/pages/payment_card_list.dart';
 import 'package:menu_advisor/src/pages/summary.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
@@ -229,13 +230,21 @@ class _ConfirmSmsState extends State<ConfirmSms> {
      if (widget.fromDelivery){
       /// alefa any am page misafidy paiement CB na à la livraison 
 
-       RouteUtil.goTo(
+       /*RouteUtil.goTo(
          context: context,
          child: PaymentCardListPage(
            isPaymentStep: true,
            restaurant: widget.restaurant,
          ),
          routeName: paymentCardListRoute,
+       );*/
+       RouteUtil.goTo(
+         context: context,
+         child: ChoosePayement(
+           restaurant: widget.restaurant,
+           customer: widget.customer,
+         ),
+         routeName: choosePayement,
        );
        
      }else{

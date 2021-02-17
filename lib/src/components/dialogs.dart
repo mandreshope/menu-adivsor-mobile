@@ -125,8 +125,7 @@ class BagModal extends StatelessWidget {
                   if (cartContext.itemCount == 0)
                     return Center(
                       child: TextTranslator(
-                        AppLocalizations.of(context)
-                            .translate('no_item_in_cart'),
+                        AppLocalizations.of(context).translate('no_item_in_cart'),
                       ),
                     );
 
@@ -187,16 +186,14 @@ class AddToBagDialog extends StatefulWidget {
 class _AddToBagDialogState extends State<AddToBagDialog> {
   int itemCount = 1;
   dynamic optionSelected;
-  List<dynamic> options = [
-  ];
+  List<dynamic> options = [];
 
   @override
   void initState() {
     super.initState();
 
     CartContext cartContext = Provider.of<CartContext>(context, listen: false);
-    if (cartContext.contains(widget.food))
-      itemCount = cartContext.getCount(widget.food);
+    if (cartContext.contains(widget.food)) itemCount = cartContext.getCount(widget.food);
     options = widget.food.options;
     // if (options.length > 0)
     //   optionSelected = options.first;
@@ -209,12 +206,9 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
-      child: Consumer<CartContext>(
-        builder: (_, cartContext, __) 
-{
-  if (cartContext.contains(widget.food))
-      itemCount = cartContext.getCount(widget.food);
-       return  Container(
+      child: Consumer<CartContext>(builder: (_, cartContext, __) {
+        if (cartContext.contains(widget.food)) itemCount = cartContext.getCount(widget.food);
+        return Container(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -226,9 +220,7 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
                   right: 25.0,
                 ),
                 child: TextTranslator(
-                  cartContext.contains(widget.food)
-                      ? AppLocalizations.of(context).translate('edit')
-                      : AppLocalizations.of(context).translate('add_to_cart'),
+                  cartContext.contains(widget.food) ? AppLocalizations.of(context).translate('edit') : AppLocalizations.of(context).translate('add_to_cart'),
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -236,11 +228,10 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
                 ),
               ),
               SizedBox(height: 10),
-
               if (options.isEmpty)
                 Container()
               else ...[
-               /* Padding(
+                /* Padding(
                   padding: const EdgeInsets.only(left: 25.0),
                   child: TextTranslator("Options"),
                 ),
@@ -263,7 +254,6 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
                 ),*/
               ],
               SizedBox(height: 5),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -284,21 +274,16 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
                           padding: const EdgeInsets.symmetric(horizontal: 25.0),
                           child: Row(
                             children: [
-                              ButtonItemCountWidget(
-                                  widget.food,
-                                  onAdded: (value) {
-                                    setState(() {
-                                      itemCount = value;
-                                    });
-                                  },
-                                  onRemoved: (value) {
-                                    if (value >0)
-                                      setState(() {
-                                        itemCount = value;
-                                      });
-                                  },
-                                  itemCount: itemCount,
-                                  isContains: true)
+                              ButtonItemCountWidget(widget.food, onAdded: (value) {
+                                setState(() {
+                                  itemCount = value;
+                                });
+                              }, onRemoved: (value) {
+                                if (value > 0)
+                                  setState(() {
+                                    itemCount = value;
+                                  });
+                              }, itemCount: itemCount, isContains: true)
                             ],
                           ),
                         ),
@@ -306,44 +291,41 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
                     ),
                   ),
                   Padding(
-                        padding: const EdgeInsets.only(
-                          right: 25.0,
-                        ),
-                        child: RaisedButton(
-                          color: CRIMSON,
-                          child: TextTranslator(
-                            cartContext.contains(widget.food)
-                                ? AppLocalizations.of(context).translate('edit')
-                                : AppLocalizations.of(context).translate('add'),
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          onPressed: () {
-                            if (widget.food.options.isNotEmpty && optionSelected == null) {
-                              Fluttertoast.showToast(msg: AppLocalizations.of(context)
-                                  .translate('choose_option'),);
-                            }else{
-                             /* if (cartContext.contains(widget.food))
-                                cartContext.setCount(widget.food, itemCount);
-                              else*/
-                                cartContext.addItem(widget.food, itemCount,true);
-
-                              Navigator.of(context).pop(true);
-                            }
-
-                          },
+                    padding: const EdgeInsets.only(
+                      right: 25.0,
+                    ),
+                    child: RaisedButton(
+                      color: CRIMSON,
+                      child: TextTranslator(
+                        cartContext.contains(widget.food) ? AppLocalizations.of(context).translate('edit') : AppLocalizations.of(context).translate('add'),
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
+                      onPressed: () {
+                        if (widget.food.options.isNotEmpty && optionSelected == null) {
+                          Fluttertoast.showToast(
+                            msg: AppLocalizations.of(context).translate('choose_option'),
+                          );
+                        } else {
+                          /* if (cartContext.contains(widget.food))
+                                cartContext.setCount(widget.food, itemCount);
+                              else*/
+                          cartContext.addItem(widget.food, itemCount, true);
+
+                          Navigator.of(context).pop(true);
+                        }
+                      },
+                    ),
+                  ),
                 ],
               ),
             ],
           ),
         );
-}     
-      ),
+      }),
     );
   }
 }
@@ -384,16 +366,12 @@ class LanguageDialog extends StatelessWidget {
                           vertical: 0,
                         ),
                         decoration: BoxDecoration(
-                          color: lang == 'fr'
-                              ? Colors.grey[400].withOpacity(.4)
-                              : Colors.transparent,
+                          color: lang == 'fr' ? Colors.grey[400].withOpacity(.4) : Colors.transparent,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: IconButton(
-                          icon:
-                              SvgPicture.asset('assets/images/france-flag.svg'),
-                          onPressed: () =>
-                              Navigator.of(context).pop<String>('fr'),
+                          icon: SvgPicture.asset('assets/images/france-flag.svg'),
+                          onPressed: () => Navigator.of(context).pop<String>('fr'),
                         ),
                       ),
                       Container(
@@ -402,15 +380,12 @@ class LanguageDialog extends StatelessWidget {
                           vertical: 0,
                         ),
                         decoration: BoxDecoration(
-                          color: lang == 'en'
-                              ? Colors.grey[400].withOpacity(.4)
-                              : Colors.transparent,
+                          color: lang == 'en' ? Colors.grey[400].withOpacity(.4) : Colors.transparent,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: IconButton(
                           icon: SvgPicture.asset('assets/images/usa-flag.svg'),
-                          onPressed: () =>
-                              Navigator.of(context).pop<String>('en'),
+                          onPressed: () => Navigator.of(context).pop<String>('en'),
                         ),
                       ),
                     ],
@@ -433,15 +408,7 @@ class SearchSettingDialog extends StatefulWidget {
   final int range;
   final bool isDiscover;
 
-  SearchSettingDialog({
-    Key key,
-    @required this.languageCode,
-    @required this.filters,
-    @required this.type,
-    this.inRestaurant = false,
-    this.range = 1,
-    this.isDiscover = false
-  }) : super(key: key);
+  SearchSettingDialog({Key key, @required this.languageCode, @required this.filters, @required this.type, this.inRestaurant = false, this.range = 1, this.isDiscover = false}) : super(key: key);
 
   @override
   _SearchSettingDialogState createState() => _SearchSettingDialogState();
@@ -503,8 +470,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                   onChanged: (val) {
                     distanceAround = (val * 100).round();
                     _slider1Value.value = val;
-                    Provider.of<SettingContext>(context, listen: false).range =
-                        distanceAround;
+                    Provider.of<SettingContext>(context, listen: false).range = distanceAround;
                     print("$distanceAround km");
                   },
                   onChangeEnd: (val) {},
@@ -513,7 +479,9 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                 height: 15,
               ),
             ],
-            SizedBox(height: 15,),
+            SizedBox(
+              height: 15,
+            ),
             /*WaveSlider(
               onChanged: (value){
                 setState(() {
@@ -526,65 +494,60 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
               displayTrackball: true,
               // sliderHeight: 50,
             ),*/
-            if (!widget.isDiscover)...[
-              if (!widget.inRestaurant)...[
-
-
-              TextTranslator(
-                AppLocalizations.of(context).translate('search_type'),
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+            if (!widget.isDiscover) ...[
+              if (!widget.inRestaurant) ...[
+                TextTranslator(
+                  AppLocalizations.of(context).translate('search_type'),
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                physics: BouncingScrollPhysics(),
-                child: Row(
-                  children: [
-
+                SizedBox(
+                  height: 10,
+                ),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  physics: BouncingScrollPhysics(),
+                  child: Row(
+                    children: [
                       'all',
                       'restaurant',
                       'food',
-
-                  ]
-                      .map(
-                        (e) => Theme(
-                      data: ThemeData(
-                        brightness:
-                        type == e ? Brightness.dark : Brightness.light,
-                        cardColor: type == e ? CRIMSON : Colors.white,
-                      ),
-                      child: Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(50),
-                          onTap: () {
-                            setState(() {
-                              type = e;
-                            });
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(10),
-                            child: TextTranslator(
-                              AppLocalizations.of(context).translate(e),
+                    ]
+                        .map(
+                          (e) => Theme(
+                            data: ThemeData(
+                              brightness: type == e ? Brightness.dark : Brightness.light,
+                              cardColor: type == e ? CRIMSON : Colors.white,
+                            ),
+                            child: Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(50),
+                                onTap: () {
+                                  setState(() {
+                                    type = e;
+                                  });
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(10),
+                                  child: TextTranslator(
+                                    AppLocalizations.of(context).translate(e),
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                    ),
-                  )
-                      .toList(),
+                        )
+                        .toList(),
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: 15,
-              ),
+                SizedBox(
+                  height: 15,
+                ),
               ]
             ],
 
@@ -605,12 +568,8 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                 children: [
                   Theme(
                     data: ThemeData(
-                      brightness: !filters.containsKey('category')
-                          ? Brightness.dark
-                          : Brightness.light,
-                      cardColor: !filters.containsKey('category')
-                          ? CRIMSON
-                          : Colors.white,
+                      brightness: !filters.containsKey('category') ? Brightness.dark : Brightness.light,
+                      cardColor: !filters.containsKey('category') ? CRIMSON : Colors.white,
                     ),
                     child: Card(
                       shape: RoundedRectangleBorder(
@@ -637,20 +596,11 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                       .map(
                         (e) => Theme(
                           data: ThemeData(
-                            brightness: filters.containsKey('category') &&
-                                    filters['category'] == e.id
-                                ? Brightness.dark
-                                : Brightness.light,
-                            cardColor: filters.containsKey('category') &&
-                                    filters['category'] == e.id
-                                ? CRIMSON
-                                : Colors.white,
+                            brightness: filters.containsKey('category') && filters['category'] == e.id ? Brightness.dark : Brightness.light,
+                            cardColor: filters.containsKey('category') && filters['category'] == e.id ? CRIMSON : Colors.white,
                           ),
                           child: Card(
-                            color: filters.containsKey('category') &&
-                                    filters['category'] == e.id
-                                ? CRIMSON
-                                : Colors.white,
+                            color: filters.containsKey('category') && filters['category'] == e.id ? CRIMSON : Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(50),
                             ),
@@ -692,12 +642,8 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                 children: [
                   Theme(
                     data: ThemeData(
-                      brightness: !filters.containsKey('attributes')
-                          ? Brightness.dark
-                          : Brightness.light,
-                      cardColor: !filters.containsKey('attributes')
-                          ? CRIMSON
-                          : Colors.white,
+                      brightness: !filters.containsKey('attributes') ? Brightness.dark : Brightness.light,
+                      cardColor: !filters.containsKey('attributes') ? CRIMSON : Colors.white,
                     ),
                     child: Card(
                       shape: RoundedRectangleBorder(
@@ -724,20 +670,11 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                       .map(
                         (e) => Theme(
                           data: ThemeData(
-                            brightness: filters.containsKey('attributes') &&
-                                    filters['attributes'] == e.sId
-                                ? Brightness.dark
-                                : Brightness.light,
-                            cardColor: filters.containsKey('attributes') &&
-                                    filters['attributes'] == e.sId
-                                ? CRIMSON
-                                : Colors.white,
+                            brightness: filters.containsKey('attributes') && filters['attributes'] == e.sId ? Brightness.dark : Brightness.light,
+                            cardColor: filters.containsKey('attributes') && filters['attributes'] == e.sId ? CRIMSON : Colors.white,
                           ),
                           child: Card(
-                            color: filters.containsKey('attributes') &&
-                                    filters['attributes'] == e.sId
-                                ? CRIMSON
-                                : Colors.white,
+                            color: filters.containsKey('attributes') && filters['attributes'] == e.sId ? CRIMSON : Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(50),
                             ),
@@ -781,11 +718,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
               alignment: Alignment.centerRight,
               child: RaisedButton(
                 onPressed: () => Navigator.of(context).pop(
-                  {
-                    'filters': filters,
-                    'type': type,
-                    'range': distanceAround
-                  },
+                  {'filters': filters, 'type': type, 'range': distanceAround},
                 ),
                 child: TextTranslator(
                   AppLocalizations.of(context).translate('confirm'),
@@ -802,9 +735,8 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
   }
 }
 
-
 class OptionChoiceDialog extends StatefulWidget {
-  OptionChoiceDialog({this.food,this.withPrice = true});
+  OptionChoiceDialog({this.food, this.withPrice = true});
   Food food;
   bool withPrice;
 
@@ -815,8 +747,7 @@ class OptionChoiceDialog extends StatefulWidget {
 class _OptionChoiceDialogState extends State<OptionChoiceDialog> {
   int itemCount = 1;
   List<Option> optionSelected = List();
-  List<Option> options = [
-  ];
+  List<Option> options = [];
 
   @override
   void initState() {
@@ -827,109 +758,106 @@ class _OptionChoiceDialogState extends State<OptionChoiceDialog> {
 
   @override
   Widget build(BuildContext context) {
-    CartContext _cartContext = Provider.of<CartContext>(context,listen: false);
+    CartContext _cartContext = Provider.of<CartContext>(context, listen: false);
     return WillPopScope(
-      onWillPop: () async{
+      onWillPop: () async {
         return false;
       },
-          child: Dialog(
+      child: Dialog(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 25),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-              children: [
-                ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: options.length,
-                        itemBuilder: (_,position){
-                          Option option = options[position];
-                            return  Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      SizedBox(height: 15,),
-                                      TextTranslator(
-                                        "Vous avez ${option.maxOptions} choix de ${option.title}",
-                                        style:TextStyle(color: Colors.black,fontWeight: FontWeight.bold)),
-                                      Container(
-                                        child: Padding(
-                                                  padding: const EdgeInsets.only(left: 25.0),
-                                                  child: ChipsChoice.multiple(
-                                                    value: option.itemOptionSelected,
-                                                    padding: EdgeInsets.zero,
-                                                    onChanged: (value) {
-                                                      // int diff = 
-                                                      setState(() {
-                                                        if (option.itemOptionSelected?.length == option.maxOptions){
-                                                          if (option.itemOptionSelected.length >= value.length ){
-                                                            option.itemOptionSelected = value.cast<ItemsOption>();
-                                                            widget.food.optionSelected = options;
-                                                          }else{
-                                                            print("max options");
-                                                            Fluttertoast.showToast(
-                                                            msg: "maximum selection ${option.title} : ${option.maxOptions}"
-                                                          );
-                                                          }
-                                                          
-                                                        }else{
-                                                          option.itemOptionSelected = value.cast<ItemsOption>();
-                                                            widget.food.optionSelected = options;
-                                                        }
-                                                        
-                                                      });
-                                                    },
-                                                    choiceLabelBuilder: (_){
-                                                      return Row(
-                                                        children: [
-                                                          Text("${_.value.name}"),
-                                                          SizedBox(width: 5,),
-                                                          Container(
-                                                            // padding: EdgeInsets.all(5),
-                                                            decoration: BoxDecoration(
-                                                              shape: BoxShape.circle,
-                                                              // color: _.value.price == 0 ? null : Colors.grey[400]
-                                                            ),
-                                                            child: !_cartContext.withPrice ? Text("") : Text("${_.value.price == 0 ? '': _.value.price/100}${_.value.price == 0 ? '': "€"}",
-                                                            style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),),
-                                                          )
-                                                        ],
-                                                      );
-                                                    },
-                                                    choiceItems: C2Choice.listFrom(
-                                                      meta: (position, item){
-
-                                                      },
-                                                      source: option.items,
-                                                      value: (i, v) => v,
-                                                      label: (i, v) => v.name,
-                                                    ),
-                                                  ),
-                                                ),
-                                      ),
-                                      
-                                    ],
-                                  );
-                        },
+            children: [
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: options.length,
+                itemBuilder: (_, position) {
+                  Option option = options[position];
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        height: 15,
+                      ),
+                      TextTranslator("Vous avez ${option.maxOptions} choix de ${option.title}", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                      Container(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 25.0),
+                          child: ChipsChoice.multiple(
+                            value: option.itemOptionSelected,
+                            padding: EdgeInsets.zero,
+                            onChanged: (value) {
+                              // int diff =
+                              setState(() {
+                                if (option.itemOptionSelected?.length == option.maxOptions) {
+                                  if (option.itemOptionSelected.length >= value.length) {
+                                    option.itemOptionSelected = value.cast<ItemsOption>();
+                                    widget.food.optionSelected = options;
+                                  } else {
+                                    print("max options");
+                                    Fluttertoast.showToast(msg: "maximum selection ${option.title} : ${option.maxOptions}");
+                                  }
+                                } else {
+                                  option.itemOptionSelected = value.cast<ItemsOption>();
+                                  widget.food.optionSelected = options;
+                                }
+                              });
+                            },
+                            choiceLabelBuilder: (_) {
+                              return Row(
+                                children: [
+                                  Text("${_.value.name}"),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Container(
+                                    // padding: EdgeInsets.all(5),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      // color: _.value.price == 0 ? null : Colors.grey[400]
+                                    ),
+                                    child: !_cartContext.withPrice
+                                        ? Text("")
+                                        : Text(
+                                            "${_.value.price == 0 ? '' : _.value.price / 100}${_.value.price == 0 ? '' : "€"}",
+                                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                                          ),
+                                  )
+                                ],
+                              );
+                            },
+                            choiceItems: C2Choice.listFrom(
+                              meta: (position, item) {},
+                              source: option.items,
+                              value: (i, v) => v,
+                              label: (i, v) => v.name,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+              RaisedButton(
+                padding: EdgeInsets.all(8),
+                color: CRIMSON,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
                 ),
-              
-                                          RaisedButton(
-                                              padding: EdgeInsets.all(8),
-                                              color: CRIMSON,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(10),
-                                              ),
-                                              onPressed: ()=> Navigator.of(context).pop(optionSelected),
-                                              child: TextTranslator(
-                                                      AppLocalizations.of(context)
-                                                          .translate("validate"),
-                                                      style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontWeight: FontWeight.bold,
-                                                        fontSize: 12,
-                                                      ),
-                                                    ),
-                                            ),
-              ],
-            ),
+                onPressed: () => Navigator.of(context).pop(optionSelected),
+                child: TextTranslator(
+                  AppLocalizations.of(context).translate("validate"),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -937,8 +865,8 @@ class _OptionChoiceDialogState extends State<OptionChoiceDialog> {
 }
 
 class MessageDialog extends StatelessWidget {
-   MessageDialog({Key key,this.message}) : super(key: key);
-   String message;
+  MessageDialog({Key key, this.message}) : super(key: key);
+  String message;
 
   TextEditingController _messageController = TextEditingController();
 
@@ -951,25 +879,19 @@ class MessageDialog extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(10))
-        ),
+        decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10))),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-             decoration: BoxDecoration(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
                 color: CRIMSON,
-            ),
+              ),
               height: 50,
               width: double.infinity,
               child: Center(
-                child: TextTranslator(
-                  "Message",
-                  textAlign: TextAlign.center,
-                  style:TextStyle(color: Colors.white,fontWeight: FontWeight.bold,
-                  fontSize: 20)),
+                child: TextTranslator("Message", textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
               ),
             ),
             Container(
@@ -980,28 +902,21 @@ class MessageDialog extends StatelessWidget {
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
                 showCursor: true,
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: "Votre message..."
-                ),
+                decoration: InputDecoration(border: InputBorder.none, hintText: "Votre message..."),
               ),
             ),
             InkWell(
-              onTap: (){
+              onTap: () {
                 Navigator.of(context).pop(_messageController.text);
               },
-                child: Container(
+              child: Container(
                 height: 50,
-               decoration: BoxDecoration(
-              borderRadius: BorderRadius.vertical(bottom: Radius.circular(10)),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.vertical(bottom: Radius.circular(10)),
                   color: TEAL,
-              ),
-              child: Center(
-                  child: TextTranslator(
-                    "Envoyer",
-                    textAlign: TextAlign.center,
-                    style:TextStyle(color: Colors.white,fontWeight: FontWeight.bold,
-                    fontSize: 20)),
+                ),
+                child: Center(
+                  child: TextTranslator("Envoyer", textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
                 ),
               ),
             )
@@ -1013,84 +928,69 @@ class MessageDialog extends StatelessWidget {
 }
 
 class SheduleDialog extends StatelessWidget {
-   SheduleDialog({Key key,this.openingTimes}) : super(key: key);
-   List<OpeningTimes> openingTimes;
-
-  
+  SheduleDialog({Key key, this.openingTimes}) : super(key: key);
+  List<OpeningTimes> openingTimes;
 
   @override
   Widget build(BuildContext context) {
-    
     return Dialog(
       elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
       child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(10))
-        ),
+        decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10))),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-             decoration: BoxDecoration(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
                 color: CRIMSON,
-            ),
+              ),
               height: 50,
               width: double.infinity,
               child: Center(
-                child: TextTranslator(
-                  "Horaire",
-                  textAlign: TextAlign.center,
-                  style:TextStyle(color: Colors.white,fontWeight: FontWeight.bold,
-                  fontSize: 20)),
+                child: TextTranslator("Horaire", textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
               ),
             ),
             Container(
               // height: 150,
               padding: EdgeInsets.all(25),
               child: ListView.builder(
-                                        itemCount: openingTimes.length,
-                                        shrinkWrap: true,
-                                        itemBuilder: (_,position){
-                                        OpeningTimes op = openingTimes[position];
-                                        return Column(
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                                                TextTranslator("${op.day}",
-                                                style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.normal)),
-                                                TextTranslator(
-                                                  "${op.openings.first.begin.hour.toString()?.padLeft(2,'0')} : ${op.openings.first.begin.minute.toString()?.padLeft(2,'0')}  -  ${op.openings.last.end.hour.toString()?.padLeft(2,'0')} : ${op.openings.last.end.minute.toString()?.padLeft(2,'0')}",
-                                                  style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.normal),
-                                                  
-                                                ),
-                                              ],
-                                            ),
-                                            Divider()
-                                          ],
-                                        );
-                                      }),
+                  itemCount: openingTimes.length,
+                  shrinkWrap: true,
+                  itemBuilder: (_, position) {
+                    OpeningTimes op = openingTimes[position];
+                    return Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            TextTranslator("${op.day}", style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.normal)),
+                            TextTranslator(
+                              "${op.openings.first.begin.hour.toString()?.padLeft(2, '0')} : ${op.openings.first.begin.minute.toString()?.padLeft(2, '0')}  -  ${op.openings.last.end.hour.toString()?.padLeft(2, '0')} : ${op.openings.last.end.minute.toString()?.padLeft(2, '0')}",
+                              style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.normal),
+                            ),
+                          ],
+                        ),
+                        Divider()
+                      ],
+                    );
+                  }),
             ),
             InkWell(
-              onTap: (){
+              onTap: () {
                 Navigator.of(context).pop();
               },
-                child: Container(
+              child: Container(
                 height: 50,
-               decoration: BoxDecoration(
-              borderRadius: BorderRadius.vertical(bottom: Radius.circular(10)),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.vertical(bottom: Radius.circular(10)),
                   color: TEAL,
-              ),
-              child: Center(
-                  child: TextTranslator(
-                    "Fermer",
-                    textAlign: TextAlign.center,
-                    style:TextStyle(color: Colors.white,fontWeight: FontWeight.bold,
-                    fontSize: 20)),
+                ),
+                child: Center(
+                  child: TextTranslator("Fermer", textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
                 ),
               ),
             )
@@ -1102,7 +1002,6 @@ class SheduleDialog extends StatelessWidget {
 }
 
 class AtributesDialog extends StatefulWidget {
-
   @override
   _AtributesDialogState createState() => _AtributesDialogState();
 }
@@ -1115,14 +1014,13 @@ class _AtributesDialogState extends State<AtributesDialog> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    dataContext = Provider.of<DataContext>(context,listen: false);
+    dataContext = Provider.of<DataContext>(context, listen: false);
     attributes = dataContext.foodAttributes;
     // isAllAttribute = dataContext.isAllAttribute;
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Dialog(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -1135,11 +1033,7 @@ class _AtributesDialogState extends State<AtributesDialog> {
             height: 50,
             width: double.infinity,
             child: Center(
-              child: TextTranslator(
-                  "Filtre allergènes",
-                  textAlign: TextAlign.center,
-                  style:TextStyle(color: Colors.white,fontWeight: FontWeight.bold,
-                      fontSize: 20)),
+              child: TextTranslator("Filtre allergènes", textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
             ),
           ),
           /*
@@ -1171,83 +1065,87 @@ class _AtributesDialogState extends State<AtributesDialog> {
             ),
           ),
          */
-          SizedBox(height: 15,),
+          SizedBox(
+            height: 15,
+          ),
           Padding(
             padding: EdgeInsets.only(left: 35),
-            child: TextTranslator("Retirer les allergènes : ",style:TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold)),
+            child: TextTranslator("Retirer les allergènes : ", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
           ),
           Divider(),
           Expanded(
             child: ListView.builder(
                 itemCount: attributes.length,
-                itemBuilder: (_,position){
+                itemBuilder: (_, position) {
                   FoodAttribute att = attributes[position];
                   return ListTile(
-                    onTap: (){
+                    onTap: () {
                       setState(() {
                         att.isChecked = !att.isChecked;
                         if (att.tag.contains("allergen")) {
-                              attributes.forEach((element) {
-                                if (!element.tag.contains("allergen")){
-                                  element.isChecked = false;
-                                }
-                              });
-                            }else{
-                              attributes.forEach((element) {
-                                if (element.tag.contains("allergen")){
-                                  element.isChecked = false;
-                                }
-                              });
+                          attributes.forEach((element) {
+                            if (!element.tag.contains("allergen")) {
+                              element.isChecked = false;
                             }
+                          });
+                        } else {
+                          attributes.forEach((element) {
+                            if (element.tag.contains("allergen")) {
+                              element.isChecked = false;
+                            }
+                          });
+                        }
                         dataContext.isAllAttribute = false;
                       });
                     },
                     title: Row(
                       children: [
-                        Checkbox(value: dataContext.isAllAttribute ? false : att.isChecked, onChanged: (value){
-                          setState(() {
-                            att.isChecked = value;
-                            if (att.tag.contains("allergen")) {
-                              attributes.forEach((element) {
-                                if (!element.tag.contains("allergen")){
-                                  element.isChecked = false;
-                                }
-                              });
-                            }else{
-                              attributes.forEach((element) {
-                                if (element.tag.contains("allergen")){
-                                  element.isChecked = false;
-                                }
-                              });
-                            }
-                            dataContext.isAllAttribute = false;
-                          });
-                        },
-                        checkColor: Colors.white,
-                        hoverColor: CRIMSON,
-                        activeColor: CRIMSON,),
+                        Checkbox(
+                          value: dataContext.isAllAttribute ? false : att.isChecked,
+                          onChanged: (value) {
+                            setState(() {
+                              att.isChecked = value;
+                              if (att.tag.contains("allergen")) {
+                                attributes.forEach((element) {
+                                  if (!element.tag.contains("allergen")) {
+                                    element.isChecked = false;
+                                  }
+                                });
+                              } else {
+                                attributes.forEach((element) {
+                                  if (element.tag.contains("allergen")) {
+                                    element.isChecked = false;
+                                  }
+                                });
+                              }
+                              dataContext.isAllAttribute = false;
+                            });
+                          },
+                          checkColor: Colors.white,
+                          hoverColor: CRIMSON,
+                          activeColor: CRIMSON,
+                        ),
                         FadeInImage.assetNetwork(
                           placeholder: 'assets/images/loading.gif',
-                          image:  att.imageURL,
+                          image: att.imageURL,
                           height: 25,
                           width: 25,
                         ),
-                        SizedBox(width: 10,),
+                        SizedBox(
+                          width: 10,
+                        ),
                         TextTranslator(att.locales),
                       ],
                     ),
                   );
-                }
-            ),
+                }),
           ),
           InkWell(
-            onTap: (){
+            onTap: () {
               List<FoodAttribute> selectedAttributes = List();
 
               // selectedAttributes = dataContext.isAllAttribute ? attributes : attributes.where((element) => element.isChecked).toList();
-              selectedAttributes = /*dataContext.isAllAttribute ? List() : */attributes.where((element) => element.isChecked).toList();
+              selectedAttributes = /*dataContext.isAllAttribute ? List() : */ attributes.where((element) => element.isChecked).toList();
 
               Navigator.of(context).pop(selectedAttributes);
             },
@@ -1257,11 +1155,7 @@ class _AtributesDialogState extends State<AtributesDialog> {
                 color: TEAL,
               ),
               child: Center(
-                child: TextTranslator(
-                    "Valider",
-                    textAlign: TextAlign.center,
-                    style:TextStyle(color: Colors.white,fontWeight: FontWeight.bold,
-                        fontSize: 20)),
+                child: TextTranslator("Valider", textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
               ),
             ),
           )
@@ -1269,4 +1163,26 @@ class _AtributesDialogState extends State<AtributesDialog> {
       ),
     );
   }
+}
+
+showDialogProgress(BuildContext context,{bool barrierDismissible = true}) {
+  showDialog(
+    barrierDismissible: barrierDismissible,
+      context: context,
+      builder: (_) {
+        return Container(
+          color: Colors.black.withAlpha(50),
+          child: Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(
+                CRIMSON,
+              ),
+            ),
+          ),
+        );
+      });
+}
+
+dismissDialogProgress(context) {
+  Navigator.of(context).pop();
 }

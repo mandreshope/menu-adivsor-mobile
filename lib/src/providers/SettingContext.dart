@@ -16,10 +16,10 @@ class SettingContext extends ChangeNotifier {
 
   bool _isRestaurantPage = false;
   bool isDownloadingLang = true;
-  
+
   set isRestaurantPage(bool value) {
-     _isRestaurantPage = value;
-      notifyListeners();
+    _isRestaurantPage = value;
+    notifyListeners();
   }
 
   get isRestaurantPage => _isRestaurantPage;
@@ -45,45 +45,31 @@ class SettingContext extends ChangeNotifier {
     SupportedLanguages.English,
   ];
 
-  List<String> _languages = [
-    "Français",
-    "Anglais",
-    "Japonais",
-    "Chinois",
-    "Italien",
-    "Espaniol",
-    "Russe",
-    "Coréen",
-    "Néérlendais",
-    "Allemand",
-    "Portugais",
-    "Inde",
-    "Arabe"
-  ];
+  List<String> _languages = ["Français", "Anglais", "Japonais", "Chinois", "Italien", "Espaniol", "Russe", "Coréen", "Néérlendais", "Allemand", "Portugais", "Inde", "Arabe"];
 
   get languages => _languages;
   get supportedLanguages => _supportedLanguages;
 
   String get languageCodeTranslate => _languageCode;
   String get languageCodeRestaurantTranslate => _languageCodeRstaurant;
-  
+
   String get languageCodeFlag {
     String code = isRestaurantPage ? _languageCodeRstaurant : _languageCode;
-    switch(code){
+    switch (code) {
       case "en":
         return 'us';
-        case 'ja':
-          return 'jp';
+      case 'ja':
+        return 'jp';
       case 'zh':
         return 'cn';
-        case 'ko':
-          return 'kr';
-          case 'ar':
-            return "ae";
+      case 'ko':
+        return 'kr';
+      case 'ar':
+        return "ae";
     }
     return code;
   }
-  
+
   String get languageCode => _languageCode ?? 'fr';
   /*_languageCode == 'fr'
       ? WidgetsBinding.instance.window.locale.languageCode
@@ -91,21 +77,23 @@ class SettingContext extends ChangeNotifier {
 
   bool get isSystemSetting => _languageCode == 'fr';
 
-  set languageCode(String value) {
+  Future setlanguageCode(String value) {
     _languageCode = value;
     Intl.defaultLocale = value;
     SharedPreferences.getInstance().then((sharedPrefs) {
       sharedPrefs.setString('languageCode', value);
     });
     notifyListeners();
+    return FirebaseLanguage.instance.modelManager().downloadModel(value);
   }
 
-  set languageCodeRestaurant(String value) {
+  Future setlanguageCodeRestaurant(String value) {
     _languageCodeRstaurant = value;
-    notifyListeners();
     SharedPreferences.getInstance().then((sharedPrefs) {
       sharedPrefs.setString('languageCodeRestaurant', value);
     });
+    notifyListeners();
+    return FirebaseLanguage.instance.modelManager().downloadModel(value);
   }
 
   SettingContext() {
@@ -114,9 +102,9 @@ class SettingContext extends ChangeNotifier {
 
   Future<void> _loadCurrentUserSettings() async {
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
-    if (sharedPrefs.containsKey('languageCode') || sharedPrefs.containsKey('languageCodeRestaurant') ) {
-      languageCode = sharedPrefs.getString('languageCode');
-      languageCodeRestaurant = sharedPrefs.getString('languageCodeRestaurant');
+    if (sharedPrefs.containsKey('languageCode') || sharedPrefs.containsKey('languageCodeRestaurant')) {
+      setlanguageCode(sharedPrefs.getString('languageCode'));
+      setlanguageCodeRestaurant(sharedPrefs.getString('languageCodeRestaurant'));
       notifyListeners();
     } else {
       await sharedPrefs.setString(
@@ -128,27 +116,21 @@ class SettingContext extends ChangeNotifier {
   }
 
   resetLanguage() {
-    languageCode = 'fr';
-    languageCodeRestaurant = 'fr';
+    setlanguageCode('fr');
+    setlanguageCodeRestaurant('fr');
   }
 
-  Future<void> downloadLanguage() async  {
-      print("download loading...");
-      isDownloadingLang = true;
-      notifyListeners();
-      await Future.forEach(
-          _defaultSupportedLanguages,
-              (item) {
-                return FirebaseLanguage.instance.modelManager().downloadModel(item);
-              }
-      );
+  Future<void> downloadLanguage() async {
+    print("download loading...");
+    isDownloadingLang = true;
+    notifyListeners();
+    await Future.forEach(_defaultSupportedLanguages, (item) {
+      return FirebaseLanguage.instance.modelManager().downloadModel(item);
+    });
 
-      isDownloadingLang = false;
-      notifyListeners();
+    isDownloadingLang = false;
+    notifyListeners();
 
-     print("download finish...");
-
+    print("download finish...");
   }
-
-
 }

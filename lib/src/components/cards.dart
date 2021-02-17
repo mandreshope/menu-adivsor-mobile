@@ -309,7 +309,7 @@ class _FoodCardState extends State<FoodCard> {
                                       ),
                                     ),
                                     onPressed: 
-                                    widget.food.options.isNotEmpty ? 
+                                    !cartContext.contains(widget.food) ? 
                                     () => RouteUtil.goTo(
                                           context: context,
                                           child: FoodPage(
@@ -334,7 +334,7 @@ class _FoodCardState extends State<FoodCard> {
                                               );
 
                                               if (result is bool && result) {
-                                                cartContext.removeItem(widget.food);
+                                                cartContext.removeAllFood(widget.food);
 
                                                 // RouteUtil.goBack(
                                                 //     context: context);
@@ -1606,7 +1606,7 @@ class _BagItemState extends State<BagItem> {
         children: [
           // for (Option option in options)...[
             Container(
-              padding: EdgeInsets.only(top:15,bottom: 15,left: MediaQuery.of(context).size.width/2.5,right: 25),
+              padding: EdgeInsets.only(top:15,bottom: 15,left: MediaQuery.of(context).size.width/3,right: 25),
               // color: a%2 == 0 ? Colors.grey.withAlpha(20) : Colors.white,
               child: Column(
                 children: [
@@ -1630,17 +1630,27 @@ class _BagItemState extends State<BagItem> {
                           (itemsOption.quantity != null || itemsOption.quantity > 1) ?
                           TextTranslator('${itemsOption.quantity} x\t', style: TextStyle(fontSize: 16,fontWeight: FontWeight.w600)) :
                           Container(),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(50),
-                            child: FadeInImage.assetNetwork(
-                              placeholder: 'assets/images/loading.gif',
-                              image: itemsOption.imageUrl,
-                              height: 20,
-                              width: 20,
-                              fit: BoxFit.cover,
-
-                            ),
-                          ),
+                           InkWell(
+                  onTap: () {
+                    RouteUtil.goTo(
+                        context: context,
+                        child: PhotoViewPage(
+                          tag: 'tag:${itemsOption.imageUrl}',
+                          img: itemsOption.imageUrl,
+                        ),
+                        routeName: null);
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(50),
+                    child: FadeInImage.assetNetwork(
+                      placeholder: 'assets/images/loading.gif',
+                      image: itemsOption.imageUrl,
+                      height: 35,
+                      width: 35,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
                           SizedBox(
                             width: 5,
                           ),

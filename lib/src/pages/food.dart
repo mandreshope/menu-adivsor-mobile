@@ -260,16 +260,16 @@ class _FoodPageState extends State<FoodPage> {
                       : Center(
                           child: InkWell(
                             onTap: () {
-                              if (widget.fromRestaurant) 
+                              if (widget.fromRestaurant)
                                 RouteUtil.goBack(context: context);
                               else
-                              RouteUtil.goTo(
-                                context: context,
-                                child: RestaurantPage(
-                                  restaurant: (widget.food.restaurant is String) ? widget.food.restaurant : widget.food.restaurant['_id'],
-                                ),
-                                routeName: restaurantRoute,
-                              );
+                                RouteUtil.goTo(
+                                  context: context,
+                                  child: RestaurantPage(
+                                    restaurant: (widget.food.restaurant is String) ? widget.food.restaurant : widget.food.restaurant['_id'],
+                                  ),
+                                  routeName: restaurantRoute,
+                                );
                             },
                             child: TextTranslator(
                               restaurantName,
@@ -696,8 +696,8 @@ class _FoodPageState extends State<FoodPage> {
                                         padding: EdgeInsets.all(20),
                                         color: /*itemCount > 0
                                           ? Colors.teal
-                                          :*/
-                                            CRIMSON,
+                                          // :*/cartContext.hasOptionSelectioned(foodAdded) ?
+                                            CRIMSON : Colors.grey,
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(10),
                                         ),
@@ -909,7 +909,13 @@ class _FoodPageState extends State<FoodPage> {
                       ),
               ),
               onTap: () {
-                RouteUtil.goTo(context: context, child: PhotoViewPage(tag: widget.imageTag ?? 'foodImage${widget.food.id}', img: widget.food.imageURL,), routeName: null);
+                RouteUtil.goTo(
+                    context: context,
+                    child: PhotoViewPage(
+                      tag: widget.imageTag ?? 'foodImage${widget.food.id}',
+                      img: widget.food.imageURL,
+                    ),
+                    routeName: null);
               },
             ),
             /* Positioned.fill(
@@ -969,8 +975,15 @@ class _FoodPageState extends State<FoodPage> {
             _optionContext.itemOptions = option.itemOptionSelected;
           });
         },
-        choiceLabelBuilder: (_) {
+        choiceItems: C2Choice.listFrom(
+          meta: (position, item) {},
+          source: option.items,
+          value: (i, v) => v,
+          label: (i, v) => v.name,
+        ),
+        choiceBuilder: (_) {
           return Container(
+            margin: EdgeInsets.only(top: 15),
             color: Colors.white,
             child: Row(
               mainAxisSize: MainAxisSize.max,
@@ -978,8 +991,11 @@ class _FoodPageState extends State<FoodPage> {
                 SizedBox(
                   width: 10,
                 ),
-                _.selected
-                    ? Icon(
+                InkWell(
+                  onTap: () {
+                    _.select(!_.selected);
+                  },
+                  child: _.selected ? Icon(
                         Icons.radio_button_checked,
                         color: CRIMSON,
                         size: 25,
@@ -989,17 +1005,30 @@ class _FoodPageState extends State<FoodPage> {
                         color: Colors.grey,
                         size: 25,
                       ),
+                ),
+                    
                 SizedBox(
                   width: 20,
                 ),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(50),
-                  child: FadeInImage.assetNetwork(
-                    placeholder: 'assets/images/loading.gif',
-                    image: _.value.imageUrl,
-                    height: 50,
-                    width: 50,
-                    fit: BoxFit.cover,
+                InkWell(
+                  onTap: () {
+                    RouteUtil.goTo(
+                        context: context,
+                        child: PhotoViewPage(
+                          tag: 'tag:${_.value.imageUrl}',
+                          img: _.value.imageUrl,
+                        ),
+                        routeName: null);
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(50),
+                    child: FadeInImage.assetNetwork(
+                      placeholder: 'assets/images/loading.gif',
+                      image: _.value.imageUrl,
+                      height: 50,
+                      width: 50,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
                 SizedBox(
@@ -1026,12 +1055,6 @@ class _FoodPageState extends State<FoodPage> {
             ),
           );
         },
-        choiceItems: C2Choice.listFrom(
-          meta: (position, item) {},
-          source: option.items,
-          value: (i, v) => v,
-          label: (i, v) => v.name,
-        ),
       );
     }
 
@@ -1064,45 +1087,7 @@ class _FoodPageState extends State<FoodPage> {
           _optionContext.itemOptions = option.itemOptionSelected;
         });
       },
-      choiceLabelBuilder: (_) {
-        return Row(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            // _.selected ? Icon(Icons.check_circle,color:CRIMSON,size: 15,) :
-            Icon(
-              Icons.radio_button_unchecked,
-              color: CRIMSON,
-            ),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(50),
-              child: FadeInImage.assetNetwork(
-                placeholder: 'assets/images/loading.gif',
-                image: _.value.imageUrl,
-                height: 50,
-                width: 50,
-                fit: BoxFit.cover,
-              ),
-            ),
-            SizedBox(
-              width: 5,
-            ),
-            Text("${_.value.name}"),
-            SizedBox(
-              width: 5,
-            ),
-            Container(
-              padding: EdgeInsets.all(5),
-              decoration: BoxDecoration(),
-              child: !_cartContext.withPrice || _.value.price.amount == null
-                  ? Text("")
-                  : Text(
-                      "${_.value.price.amount == 0 ? '' : _.value.price.amount / 100}${_.value.price.amount == 0 ? '' : "€"}",
-                      style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-                    ),
-            )
-          ],
-        );
-      },
+
       choiceItems: C2Choice.listFrom(
         meta: (position, item) {},
         source: option.items,
@@ -1189,14 +1174,25 @@ class _FoodPageState extends State<FoodPage> {
                 SizedBox(
                   width: 10,
                 ),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(50),
-                  child: FadeInImage.assetNetwork(
-                    placeholder: 'assets/images/loading.gif',
-                    image: _.value.imageUrl,
-                    height: 50,
-                    width: 50,
-                    fit: BoxFit.cover,
+                InkWell(
+                  onTap: () {
+                    RouteUtil.goTo(
+                        context: context,
+                        child: PhotoViewPage(
+                          tag: 'tag:${_.value.imageUrl}',
+                          img: _.value.imageUrl,
+                        ),
+                        routeName: null);
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(50),
+                    child: FadeInImage.assetNetwork(
+                      placeholder: 'assets/images/loading.gif',
+                      image: _.value.imageUrl,
+                      height: 50,
+                      width: 50,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
                 SizedBox(

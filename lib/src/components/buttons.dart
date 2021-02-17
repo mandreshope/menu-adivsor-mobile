@@ -108,7 +108,7 @@ class OrderButton extends StatelessWidget {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: DARK_BLUE,
         boxShadow: [
           new BoxShadow(
             color: Colors.black26,
@@ -116,19 +116,26 @@ class OrderButton extends StatelessWidget {
           ),
         ],
       ),
-      height: 60,
+      height: 45,
       child: Stack(
         children: [
           Align(
-            alignment: Alignment.centerLeft,
+            alignment: Alignment.centerRight,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Row(
+              child: 
+              Text(
+                    !Provider.of<CartContext>(context,listen: false).withPrice ? "" : this.totalPrice == 0 ? "" : '${this.totalPrice.toStringAsFixed(2)} €',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+              /* Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  InkWell(
+                  /*InkWell(
                     onTap: () {
                       //this.onTap();
+  /*
                       if (!fromModal)
                       showModalBottomSheet(
                           context: context,
@@ -190,26 +197,52 @@ class OrderButton extends StatelessWidget {
                             });
                             /**/
                           });
+*/                   
                     },
-                    child: Container(
+                    child: Text("") 
+                    /*Container(
                         padding: EdgeInsets.all(8),
                         decoration: BoxDecoration(shape: BoxShape.circle, color: CRIMSON),
                         child: Icon(
                           Icons.shopping_cart,
                           color: Colors.white,
-                        )),
+                        )
+                        ),*/
                   ),
                   SizedBox(
                     width: 10,
-                  ),
-                  Text(
-                    !Provider.of<CartContext>(context,listen: false).withPrice ? "" : this.totalPrice == 0 ? "" : '${this.totalPrice.toStringAsFixed(2)} €',
-                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: CRIMSON),
-                  ),
+                  ),*/
+                  
                 ],
-              ),
+              ),*/
             ),
           ),
+           Align(
+            alignment: Alignment.center,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: 
+              InkWell(
+                onTap: (){
+                   RouteUtil.goTo(
+                    context: context,
+                    child: OrderPage(
+                      withPrice: withPrice,
+                    ),
+                    routeName: orderRoute,
+                  );
+                },
+                child: TextTranslator("Voir le panier",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold
+                ),))
+            ),
+           ),
+          Visibility(
+            visible: false,
+            child: 
           Positioned(
             right: 0,
             child: RaisedButton(
@@ -229,7 +262,9 @@ class OrderButton extends StatelessWidget {
               ),
             ),
           )
-        ],
+       
+          )
+           ],
       ),
     );
   }

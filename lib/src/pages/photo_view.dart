@@ -8,13 +8,18 @@ class PhotoViewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Hero(
-      child: PhotoView(
-        maxScale: 2.0,
-        minScale: 0.5,
-        imageProvider: NetworkImage(img),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.black,
       ),
-      tag: tag,
+          body: Hero(
+        child: PhotoView(
+          maxScale: 2.0,
+          minScale: 0.5,
+          imageProvider: NetworkImage(img),
+        ),
+        tag: tag,
+      ),
     );
   }
 }

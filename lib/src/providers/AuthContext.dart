@@ -158,6 +158,7 @@ class AuthContext extends ChangeNotifier {
       currentUser.id,
       data,
     );
+    print("object");
     currentUser = await _api.getMe();
   }
 

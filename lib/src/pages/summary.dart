@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/pages/photo_view.dart';
 import 'package:menu_advisor/src/pages/splash.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/services/api.dart';
@@ -90,8 +91,24 @@ class _SummaryState extends State<Summary> {
                   Divider(),
                   // about user
                   if (widget.commande.commandType != 'on_site')...[
-                    // TextTranslator(widget.commande.relatedUser[]),
-
+                    TextTranslator(widget.commande.shippingAddress ?? widget.commande.relatedUser["address"],
+                    style: TextStyle(
+                      decoration: TextDecoration.none,
+                      fontSize: 16,
+                      // color: Colors.blue
+                    ),),
+                    SizedBox(height: 5,),
+                    InkWell(
+                      onTap: () async {
+                        await launch("tel:${widget.commande.restaurant.phoneNumber}");
+                      },
+                      child: TextTranslator(widget.commande.relatedUser["phoneNumber"],
+                      style: TextStyle(
+                        decoration: TextDecoration.underline,
+                        fontSize: 16,
+                        color: Colors.blue
+                      )),
+                    ),
                     Divider(),
                   ],
                   //commande id
@@ -112,11 +129,28 @@ class _SummaryState extends State<Summary> {
                   // menu
                   if (widget.commande.menus != null)
                   for (var command in widget.commande.menus) _items(command),
+                  if (widget.commande.commandType == 'delivery')...[
+Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Row(
+                      children: [
+                        TextTranslator('Frais de livraison : ', style: TextStyle(fontSize: 16)),
+                        Spacer(),
+                        Opacity(opacity: 0.6,
+                        child: Text(
+                          widget.commande.restaurant?.priceDelevery == null ? "" : '${widget.commande.restaurant.priceDelevery/100 ?? ''}€',
+                           style: TextStyle(fontSize: 16, color: CRIMSON, fontWeight: FontWeight.bold)),
+                     )
+                         ],
+                    ),
+                  ),
+                  Divider(),
+                  ],
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: Row(
                       children: [
-                        TextTranslator('Total', style: TextStyle(fontSize: 16)),
+                        TextTranslator('Total', style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold)),
                         Spacer(),
                         widget.commande.priceless ? Text(" ") : Text('${widget.commande.totalPrice / 100} €', style: TextStyle(fontSize: 16, color: CRIMSON, fontWeight: FontWeight.bold)),
                       ],
@@ -165,12 +199,24 @@ class _SummaryState extends State<Summary> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.network(
+            InkWell(
+              onTap: (){
+                    RouteUtil.goTo(
+                        context: context,
+                        child: PhotoViewPage(
+                          tag: 'tag:${widget.commande.restaurant.imageURL}',
+                          img: widget.commande.restaurant.imageURL,
+                        ),
+                        routeName: null);
+              },
+              child: Image.network(
               widget.commande.restaurant.imageURL ?? "",
               // width: 4 * MediaQuery.of(context).size.width / 7,
               width: MediaQuery.of(context).size.width / 4,
               height: MediaQuery.of(context).size.width / 4,
               fit: BoxFit.cover,
+              
+            ),
             ),
             SizedBox(
               width: 15,
@@ -332,9 +378,21 @@ class _SummaryState extends State<Summary> {
             children: [
               TextTranslator('${commandItem.quantity}', style: TextStyle(fontSize: 16)),
               SizedBox(width: 15),
-              Image.network(
+              InkWell(
+                onTap: (){
+                    RouteUtil.goTo(
+                        context: context,
+                        child: PhotoViewPage(
+                          tag: 'tag:${item.imageURL}',
+                          img: item.imageURL,
+                        ),
+                        routeName: null);                    
+                },
+                child: Image.network(
                 item.imageURL,
-                width: 25,
+                width: 40,
+                height: 40,
+              ),
               ),
               SizedBox(width: 8),
               TextTranslator('${item.name}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
@@ -379,17 +437,29 @@ class _SummaryState extends State<Summary> {
                       if (itemsOption.quantity != null && itemsOption.quantity > 0)
                         Text("${itemsOption.quantity} x\t",
                         style:TextStyle(fontSize: 16,fontWeight: FontWeight.bold)),
-                      ClipRRect(
+                      InkWell(
+                        onTap: (){
+RouteUtil.goTo(
+                        context: context,
+                        child: PhotoViewPage(
+                          tag: 'tag:${itemsOption.item.imageUrl}',
+                          img: itemsOption.item.imageUrl,
+                        ),
+                        routeName: null);
+                        },
+                        child: ClipRRect(
                         borderRadius: BorderRadius.circular(50),
                         child: FadeInImage.assetNetwork(
                           placeholder: 'assets/images/loading.gif',
                           image: itemsOption.item.imageUrl,
-                          height: 20,
-                          width: 20,
+                          height: 35,
+                          width: 35,
                           fit: BoxFit.cover,
 
                         ),
                       ),
+                      ),
+                      
                       SizedBox(width: 5,),
                       TextTranslator('${itemsOption.item.name}', style: TextStyle(fontSize: 16)),
                       Spacer(),
@@ -463,9 +533,20 @@ class _SummaryState extends State<Summary> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     SizedBox(width: 15),
-                    Image.network(
-                      item.food.imageURL,
-                      width: 25,
+                    InkWell(
+                      onTap: (){
+                        RouteUtil.goTo(
+                        context: context,
+                        child: PhotoViewPage(
+                          tag: 'tag:${item.food.imageURL}',
+                          img: item.food.imageURL,
+                        ),
+                        routeName: null);
+                      },
+                      child: Image.network(
+                        item.food.imageURL,
+                        width: 35,
+                      ),
                     ),
                     SizedBox(width: 8),
                     TextTranslator('${item.food.name}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
@@ -499,7 +580,17 @@ class _SummaryState extends State<Summary> {
                             if (itemsOption.quantity != null && itemsOption.quantity > 0)
                               Text("${itemsOption.quantity} x\t",
                                   style:TextStyle(fontSize: 16,fontWeight: FontWeight.bold)),
-                            ClipRRect(
+                            InkWell(
+                              onTap: (){
+                                RouteUtil.goTo(
+                        context: context,
+                        child: PhotoViewPage(
+                          tag: 'tag:${item.food.imageURL}',
+                          img: item.food.imageURL,
+                        ),
+                        routeName: null);
+                              },
+                              child: ClipRRect(
                               borderRadius: BorderRadius.circular(50),
                               child: FadeInImage.assetNetwork(
                                 placeholder: 'assets/images/loading.gif',
@@ -510,6 +601,8 @@ class _SummaryState extends State<Summary> {
 
                               ),
                             ),
+                            ),
+                            
                             SizedBox(width: 5,),
                             TextTranslator('${itemsOption.item.name}', style: TextStyle(fontSize: 16)),
                             Spacer(),
