@@ -161,6 +161,12 @@ class _ConfirmSmsState extends State<ConfirmSms> {
 
   _submit(String pin) async {
     print(widget.phoneNumber);
+    if (_pinPutController.value.text.isEmpty)
+                      Fluttertoast.showToast(
+                        msg: "Entrer votre code",
+                        backgroundColor: CRIMSON,
+                        textColor: Colors.white,
+                      );
     if (widget.isFromSignup) {
       AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
       try {

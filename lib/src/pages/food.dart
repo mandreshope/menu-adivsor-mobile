@@ -694,10 +694,12 @@ class _FoodPageState extends State<FoodPage> {
                                     if (itemCount == 0)
                                       RaisedButton(
                                         padding: EdgeInsets.all(20),
-                                        color: /*itemCount > 0
+                                        color:
+                                            /*itemCount > 0
                                           ? Colors.teal
-                                          // :*/cartContext.hasOptionSelectioned(foodAdded) ?
-                                            CRIMSON : Colors.grey,
+                                          // :*/ /*cartContext.hasOptionSelectioned(foodAdded) ?
+                                            CRIMSON :*/
+                                            Colors.grey,
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(10),
                                         ),
@@ -759,6 +761,7 @@ class _FoodPageState extends State<FoodPage> {
                                               // cartContext.refresh();
                                               this.isAdded = true;
                                               this.itemCount++;
+                                              RouteUtil.goBack(context: context);
                                               setState(() {});
                                             } else
                                               Fluttertoast.showToast(
@@ -995,18 +998,18 @@ class _FoodPageState extends State<FoodPage> {
                   onTap: () {
                     _.select(!_.selected);
                   },
-                  child: _.selected ? Icon(
-                        Icons.radio_button_checked,
-                        color: CRIMSON,
-                        size: 25,
-                      )
-                    : Icon(
-                        Icons.add_circle_outlined,
-                        color: Colors.grey,
-                        size: 25,
-                      ),
+                  child: _.selected
+                      ? Icon(
+                          Icons.radio_button_checked,
+                          color: CRIMSON,
+                          size: 25,
+                        )
+                      : Icon(
+                          Icons.add_circle_outlined,
+                          color: Colors.grey,
+                          size: 25,
+                        ),
                 ),
-                    
                 SizedBox(
                   width: 20,
                 ),

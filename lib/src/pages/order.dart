@@ -263,6 +263,7 @@ class _OrderPageState extends State<OrderPage> {
                 ),
               ),
               if (widget.withPrice)...[
+                _cartContext.pricelessItems ? Container() :
                 Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 20,
@@ -309,7 +310,7 @@ class _OrderPageState extends State<OrderPage> {
                               ),
                             ),
                             Text(
-                             !Provider.of<CartContext>(context,listen: false).withPrice ? "_" : _restaurant?.priceDelevery == null ? '${cartContext.totalPrice.toStringAsFixed(2)}€' : '${(cartContext.totalPrice + (_restaurant.priceDelevery/100)).toStringAsFixed(2)}€',
+                             !Provider.of<CartContext>(context,listen: false).withPrice ? "_" :'${cartContext.totalPrice.toStringAsFixed(2)}€',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18,

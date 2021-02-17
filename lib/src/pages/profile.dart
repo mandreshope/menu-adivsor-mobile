@@ -558,7 +558,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             vertical: 8,
                           ),
                           child: TextTranslator(
-                            "Envoyer message dans MON COMPTE",
+                            "Envoyer message vers l'admin",
                             textAlign: TextAlign.center,
                             style: GoogleFonts.raleway(
                               textStyle: TextStyle(
