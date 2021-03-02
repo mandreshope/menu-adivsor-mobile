@@ -103,8 +103,10 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
         direction: Axis.vertical,
         onChanged: (value) {
           // int diff =
-          if (widget.menu.count > 0) return;
+          if (widget.menu.count > 1) return;
           setState(() {
+
+            // if (widget.menu.count > 2) return;
 
             singleItemOptionSelected = value;
             singleItemOptionSelected.isSingle = true;
@@ -128,26 +130,7 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
               mainAxisSize: MainAxisSize.max,
               children: [
                 SizedBox(
-                  width: 10,
-                ),
-                InkWell(
-                  onTap: () {
-                    _.select(!_.selected);
-                  },
-                  child: _.selected ? Icon(
-                        Icons.radio_button_checked,
-                        color: CRIMSON,
-                        size: 25,
-                      )
-                    : Icon(
-                        Icons.add_circle_outlined,
-                        color: Colors.grey,
-                        size: 25,
-                      ),
-                ),
-                    
-                SizedBox(
-                  width: 20,
+                  width: 25,
                 ),
                 InkWell(
                   onTap: () {
@@ -189,7 +172,28 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                           "${_.value.price.amount == 0 ? '' : _.value.price.amount / 100}${_.value.price.amount == 0 ? '' : "€"}",
                           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
                         ),
-                )
+                ),
+                Spacer(),
+                InkWell(
+                  onTap: () {
+                    if (widget.menu.count > 1) return;
+                    _.select(!_.selected);
+                    _cartContext.refresh();
+                  },
+                  child: _.selected ? Icon(
+                        Icons.radio_button_checked,
+                        color: CRIMSON,
+                        size: 25,
+                      )
+                    : Icon(
+                        Icons.add_circle_outlined,
+                        color: Colors.grey,
+                        size: 25,
+                      ),
+                ),
+                SizedBox(width: 10,)
+                    
+                
               ],
             ),
           );
@@ -209,10 +213,10 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
       value: option.itemOptionSelected,
       padding: EdgeInsets.zero,
       onChanged: (value) {
-        if (widget.menu.count > 0) return;
+        if (widget.menu.count > 1) return;
         // int diff =
         setState(() {
-
+          // if (widget.menu.count > 1) return;
           if (option.itemOptionSelected?.length == option.maxOptions) {
             if (option.itemOptionSelected.length >= value.length) {
               option.itemOptionSelected = value.cast<ItemsOption>();
@@ -238,30 +242,7 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
           }
         });
       },
-      choiceLabelBuilder: (_) {
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(50),
-              child: FadeInImage.assetNetwork(
-                placeholder: 'assets/images/loading.gif',
-                image: _.value.imageUrl,
-                height: 32,
-                width: 32,
-                fit: BoxFit.cover,
-              ),
-            ),
-            SizedBox(
-              width: 5,
-            ),
-            Text("${_.value.name}"),
-            SizedBox(
-              width: 5,
-            ),
-          ],
-        );
-      },
+
       choiceItems: C2Choice.listFrom(
         meta: (position, item) {},
         source: option.items,
@@ -278,75 +259,14 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
             builder: (context, snapshot,w) {
               return Container(
                 // color: _.selected ? CRIMSON : Colors.grey.withAlpha(1),
-                padding: EdgeInsets.symmetric(horizontal: 5,vertical: 10),
+                padding: EdgeInsets.symmetric(horizontal: 0,vertical: 10),
                 child: Row(
                   mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    !_.selected ?
-                    IconButton(
-                      icon: Icon(Icons.add_circle_outlined,color: Colors.grey,size: 20),
-                      onPressed: (){
-                        if (widget.menu.count > 0) return;
-                        if (option.isMaxOptions){
-                          _.value.quantity = 1;
-                          _.select(!_.selected);
-                        }else{
-                          print("max options");
-                          Fluttertoast.showToast(
-                              msg: "maximum selection ${option.title} : ${option.maxOptions}"
-                          );
-                        }
-
-                      },)
-                        :
-                    //button incrementation
-                    Container(
-                      padding: EdgeInsets.only(left: 0),
-                      // width: 50,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                              icon: Icon(Icons.remove_circle,color:CRIMSON,size: 25,), onPressed: (){
-                            if (widget.menu.count > 0) return;
-                            if (_.value.quantity == 1){
-                              _.value.quantity = 0;
-                              _.select(false);
-                            }else{
-                              _.value.quantity --;
-                              _.select(true);
-                              // snapshot.refresh();
-                            }
-                            snapshot.refresh();
-
-                          }),
-                          SizedBox(width: 2,),
-                          Text("${_.value.quantity ?? ""}",style: TextStyle(
-                              fontSize: 20
-                          ),),
-                          SizedBox(width: 2,),
-                          IconButton(
-                              icon: Icon(Icons.add_circle_outlined,color:CRIMSON,size: 25), onPressed: (){
-                            // if (_optionContext.quantityOptions == option.maxOptions){
-                            if (widget.menu.count > 0) return;
-                            if (option.isMaxOptions){
-                              _.value.quantity ++;
-                              _.select(true);
-                              snapshot.refresh();
-                            }else{
-                              print("max options");
-                              Fluttertoast.showToast(
-                                  msg: "maximum selection ${option.title} : ${option.maxOptions}"
-                              );
-                            }
-
-
-                          }),
-                        ],
-                      ),
-                    ),
-
-                    SizedBox(width: 10,),
+                    SizedBox(
+                  width: 25,
+                ),
                 InkWell(
                   onTap: () {
                     RouteUtil.goTo(
@@ -383,6 +303,70 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                         style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),),
                     ),
                     Spacer(),
+                    !_.selected ?
+                    IconButton(
+                      icon: Icon(Icons.add_circle_outlined,color: Colors.grey,size: 25),
+                      onPressed: (){
+                        if (widget.menu.count > 1) return;
+                        if (option.isMaxOptions){
+                          _.value.quantity = 1;
+                          _.select(!_.selected);
+                        }else{
+                          print("max options");
+                          Fluttertoast.showToast(
+                              msg: "maximum selection ${option.title} : ${option.maxOptions}"
+                          );
+                        }
+
+                      },)
+                        :
+                    //button incrementation
+                    Container(
+                      padding: EdgeInsets.only(left: 0),
+                      // width: 50,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                              icon: Icon(Icons.remove_circle,color:CRIMSON,size: 25,), onPressed: (){
+                            if (widget.menu.count > 1) return;
+                            if (_.value.quantity == 1){
+                              _.value.quantity = 0;
+                              _.select(false);
+                            }else{
+                              _.value.quantity --;
+                              _.select(true);
+                              // snapshot.refresh();
+                            }
+                            snapshot.refresh();
+
+                          }),
+                          SizedBox(width: 2,),
+                          Text("${_.value.quantity ?? ""}",style: TextStyle(
+                              fontSize: 20
+                          ),),
+                          SizedBox(width: 2,),
+                          IconButton(
+                              icon: Icon(Icons.add_circle_outlined,color:CRIMSON,size: 25), onPressed: (){
+                            // if (_optionContext.quantityOptions == option.maxOptions){
+                            if (widget.menu.count > 1) return;
+                            if (option.isMaxOptions){
+                              _.value.quantity ++;
+                              _.select(true);
+                              snapshot.refresh();
+                            }else{
+                              print("max options");
+                              Fluttertoast.showToast(
+                                  msg: "maximum selection ${option.title} : ${option.maxOptions}"
+                              );
+                            }
+
+
+                          }),
+                        ],
+                      ),
+                    ),
+
                   ],
                 ),
 

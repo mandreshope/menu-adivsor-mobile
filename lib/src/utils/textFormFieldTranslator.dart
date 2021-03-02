@@ -5,7 +5,7 @@ import 'package:menu_advisor/src/utils/extensions.dart';
 import 'package:provider/provider.dart';
 
 class TextFormFieldTranslator extends StatelessWidget {
-  const TextFormFieldTranslator({Key key,this.controller,
+  const TextFormFieldTranslator({Key key,this.controller,this.enabled = true,
   this.focusNode,this.decoration,this.onChanged,this.onFieldSubmitted,
   this.textInputAction,this.keyboardType,this.obscureText,this.validator,
   this.inputFormatters,this.maxLength,this.autofocus,this.textAlign,this.suffixIcon,this.border, this.onTap}) : super(key: key);
@@ -26,6 +26,7 @@ class TextFormFieldTranslator extends StatelessWidget {
   final Widget suffixIcon;
   final InputBorder border;
   final void Function() onTap;
+  final bool enabled;
 
 
   @override
@@ -35,6 +36,7 @@ class TextFormFieldTranslator extends StatelessWidget {
       future: decoration.labelText != null ? decoration.labelText.translator(lang) : decoration.hintText.translator(lang),
       builder: (context, snapshot) {
         return TextFormField(
+          enabled: enabled,
                     focusNode: focusNode,
                     controller: controller,
                     keyboardType: keyboardType,

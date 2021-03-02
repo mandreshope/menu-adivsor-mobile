@@ -597,7 +597,10 @@ print('$_apiURL/restaurants$query');
         'customer': customer,
         'menus':menu,
         'comment':comment,
-        'priceless':priceless
+        'priceless':priceless,
+        'optionLivraison':'out',
+        'appartement':'test',
+        'etage':2
       });
       print(post);
       return http

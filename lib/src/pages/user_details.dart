@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cupertino_datetime_picker/flutter_cupertino_datetime_picker.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_map_location_picker/google_map_location_picker.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/constants/constant.dart';
@@ -189,6 +191,25 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                     decoration: InputDecoration(
                       contentPadding: EdgeInsets.symmetric(horizontal: 10),
                     ),
+                    onTap: () async {
+                      LocationResult result = await showLocationPicker(
+                                context,
+                                "AIzaSyBu8U8tbY6BlxJezbjt8g3Lzi4k1I75iYw",
+                                initialCenter: LatLng(31.1975844, 29.9598339),
+                                //                      automaticallyAnimateToCurrentLocation: true,
+                                //                      mapStylePath: 'assets/mapStyle.json',
+                                myLocationButtonEnabled: true,
+                                // requiredGPS: true,
+                                layersButtonEnabled: true,
+                                // countries: ['AE', 'NG']
+
+                                //                      resultCardAlignment: Alignment.bottomCenter,
+                                desiredAccuracy: LocationAccuracy.best,
+                              );
+                              print("result = $result");
+                              _addressController.text = result.address;
+                              _submitForm();
+                },
                   ),
                 ],
                 SizedBox(height: 25),

@@ -499,7 +499,7 @@ class _HomePageState extends State<HomePage> {
               SectionTitle(
                 "Plat populaires",
               ),
-              Container(
+              /*Container(
                 margin: const EdgeInsets.only(
                   right: 30,
                 ),
@@ -525,7 +525,7 @@ class _HomePageState extends State<HomePage> {
                     style: Theme.of(context).textTheme.caption,
                   ),
                 ),
-              ),
+              ),*/
             ],
           ),
           Consumer<DataContext>(
@@ -590,6 +590,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _renderNearestRestaurants() {
+    
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(
@@ -695,109 +696,112 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _renderOnSiteFoods() {
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.only(
-        bottom: 30,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SectionTitle(
-                AppLocalizations.of(context).translate("on_site_foods"),
-              ),
-              Container(
-                margin: const EdgeInsets.only(
-                  right: 30,
+    return Visibility(
+      visible: false,
+          child: Container(
+        width: double.infinity,
+        margin: const EdgeInsets.only(
+          bottom: 30,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SectionTitle(
+                  AppLocalizations.of(context).translate("on_site_foods"),
                 ),
-                child: GestureDetector(
-                  onTap: () {
-                    RouteUtil.goTo(
-                      context: context,
-                      child: SearchPage(
-                        type: 'food',
-                        location: {
-                           "coordinates":currentLocation?.coordinates ?? [0,0]
-                        },
-                        filters: {
-                          // "searchCategory": "with_price",
-                          // "price.amount":null,
-                          "searchCategory": "onsite"
-                          // "city":this.city ?? ""
-                        },
-                      ),
-                      routeName: searchRoute,
-                    );
-                  },
-                  child: TextTranslator(
-                    AppLocalizations.of(context).translate("see_all"),
-                    style: Theme.of(context).textTheme.caption,
+                Container(
+                  margin: const EdgeInsets.only(
+                    right: 30,
                   ),
-                ),
-              ),
-            ],
-          ),
-          Consumer<DataContext>(
-            builder: (_, dataContext, __) {
-              var foods = dataContext.onSiteFoods;
-              var loading = dataContext.loadingOnSiteFoods;
-
-              if (loading)
-                return Container(
-                  height: 200,
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        CRIMSON,
-                      ),
-                    ),
-                  ),
-                );
-
-              if (foods.length == 0)
-                return Container(
-                  height: 200,
-                  child: Center(
+                  child: GestureDetector(
+                    onTap: () {
+                      RouteUtil.goTo(
+                        context: context,
+                        child: SearchPage(
+                          type: 'food',
+                          location: {
+                             "coordinates":currentLocation?.coordinates ?? [0,0]
+                          },
+                          filters: {
+                            // "searchCategory": "with_price",
+                            // "price.amount":null,
+                            "searchCategory": "onsite"
+                            // "city":this.city ?? ""
+                          },
+                        ),
+                        routeName: searchRoute,
+                      );
+                    },
                     child: TextTranslator(
-                      AppLocalizations.of(context).translate('no_food'),
-                      style: TextStyle(
-                        fontSize: 22,
-                      ),
+                      AppLocalizations.of(context).translate("see_all"),
+                      style: Theme.of(context).textTheme.caption,
                     ),
                   ),
-                );
-
-              return SingleChildScrollView(
-                physics: BouncingScrollPhysics(),
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.only(
-                  left: 20,
-                  right: 20,
-                  bottom: 10,
                 ),
-                child: Row(
-                  children: [
-                    for (var food in foods)
-                      FadeAnimation(
-                        1,
-                        FoodCard(
-                          food: food,
-                          imageTag: 'onSitefoodImage${food.id}',
-                          showButton: false,
-                          minified: true,
+              ],
+            ),
+            Consumer<DataContext>(
+              builder: (_, dataContext, __) {
+                var foods = dataContext.onSiteFoods;
+                var loading = dataContext.loadingOnSiteFoods;
+
+                if (loading)
+                  return Container(
+                    height: 200,
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          CRIMSON,
                         ),
                       ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ],
+                    ),
+                  );
+
+                if (foods.length == 0)
+                  return Container(
+                    height: 200,
+                    child: Center(
+                      child: TextTranslator(
+                        AppLocalizations.of(context).translate('no_food'),
+                        style: TextStyle(
+                          fontSize: 22,
+                        ),
+                      ),
+                    ),
+                  );
+
+                return SingleChildScrollView(
+                  physics: BouncingScrollPhysics(),
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.only(
+                    left: 20,
+                    right: 20,
+                    bottom: 10,
+                  ),
+                  child: Row(
+                    children: [
+                      for (var food in foods)
+                        FadeAnimation(
+                          1,
+                          FoodCard(
+                            food: food,
+                            imageTag: 'onSitefoodImage${food.id}',
+                            showButton: false,
+                            minified: true,
+                          ),
+                        ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+// import 'package:flutter_collapse/flutter_collapse.dart';
 import 'package:flutter_cupertino_datetime_picker/flutter_cupertino_datetime_picker.dart';
 import 'package:flutter_rounded_date_picker/rounded_picker.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geocoding/geocoding.dart' as geo;
 import 'package:intl/intl.dart';
+import 'package:menu_advisor/src/components/flutter_collapse.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/constants/date_format.dart';
 import 'package:menu_advisor/src/pages/confirm_sms.dart';
@@ -42,6 +45,14 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
   CommandContext commandContext;
   bool sendingCommand = false;
   TextEditingController addrContr = TextEditingController();
+  TextEditingController postalCodeContr = TextEditingController();
+
+  bool isCollapseDateTime = false;
+  bool isCollapseLivraison = false;
+
+  //Devant la porte - Rdv à la porte - A l'exterieur -- behind_the_door / on_the_door / out -- 
+
+  String optionRdv = "behind_the_door";
 
   @override
   void initState() {
@@ -121,25 +132,184 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                 desiredAccuracy: LocationAccuracy.best,
                               );
                               print("result = $result");
+                             /* List<geo.Placemark> placemarks = await geo.placemarkFromCoordinates(result.latLng.latitude, result.latLng.longitude);
+                              
+                                // this is all you need
+                              geo.Placemark placeMark  = placemarks[0]; 
+                              String name = placeMark.name;
+                              String subLocality = placeMark.subLocality;
+                              String locality = placeMark.locality;
+                              String administrativeArea = placeMark.administrativeArea;
+                              String postalCode = placeMark.postalCode;
+                              String country = placeMark.country;
+                              String address = "${name}, ${subLocality}, ${locality}, ${administrativeArea} ${postalCode}, ${country}";
+  
+                              print("adress $address");*/
+
                               addrContr.text = result.address;
                               commandContext.deliveryAddress = result.address;
+                              
                             },
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.only(
+                            left: 30,
+                            right: 30,
+                            bottom: 30
+                          ),
+                          color: Colors.white,
+                          child: TextFormFieldTranslator(
+                            controller: postalCodeContr,
+                            enabled: addrContr.text.isEmpty ? false : true,
+                            keyboardType: TextInputType.streetAddress,
+                            textInputAction: TextInputAction.done,
+                            decoration: InputDecoration(
+                              labelText: "Code postal",
+                            ),
+                            onChanged: (value) {
+                              commandContext.deliveryAddress = value;
+                            },
+                            
                           ),
                         ),
                         SizedBox(
                           height: 30,
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 35.0,
-                            vertical: 15,
+                        Collapse(
+                          onChange: (value){
+                            setState(() {
+                              isCollapseLivraison = value;
+                            });
+                          },
+                          value: isCollapseLivraison,
+                          title: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 35.0,
+                              vertical: 15,
+                            ),
+                            child: TextTranslator(
+                              "Options de livraison",
+                              textAlign: TextAlign.start,
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                           ),
-                          child: TextTranslator(
-                            AppLocalizations.of(context).translate('date_and_time'),
-                            textAlign: TextAlign.start,
+                          body: Container(
+                          color: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 5,
+                          ),
+                          child: Column(
+                            children: [
+                              Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      optionRdv = "behind_the_door";
+                                    });
+                                  },
+                                  child: ListTile(
+                                    contentPadding: const EdgeInsets.symmetric(horizontal: 25.0),
+                                    title: TextTranslator(
+                                      "Devant la porte",
+                                      
+                                    ),
+                                    leading: Icon(
+                                      Icons.timer,
+                                    ),
+                                    trailing: optionRdv == "behind_the_door"
+                                        ? Icon(
+                                            Icons.check,
+                                            color: Colors.green[300],
+                                          )
+                                        : null,
+                                  ),
+                                ),
+                              ),
+                              Divider(),
+                              Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      optionRdv = "on_the_door";
+                                    });
+                                  },
+                                  child: ListTile(
+                                    contentPadding: const EdgeInsets.symmetric(horizontal: 25.0),
+                                    title: TextTranslator(
+                                      "Rdv à la porte",
+                                    ),
+                                    leading: Icon(
+                                      Icons.timer,
+                                    ),
+                                    trailing: optionRdv == "on_the_door"
+                                        ? Icon(
+                                            Icons.check,
+                                            color: Colors.green[300],
+                                          )
+                                        : null,
+                                  ),
+                                ),
+                              ),
+                              Divider(),
+                              Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      optionRdv = "out";
+                                    });
+                                  },
+                                  child: ListTile(
+                                    contentPadding: const EdgeInsets.symmetric(horizontal: 25.0),
+                                    title: TextTranslator(
+                                      "A l'exterieur",
+                                    ),
+                                    leading: Icon(
+                                      Icons.timer,
+                                    ),
+                                    trailing: optionRdv == "out"
+                                        ? Icon(
+                                            Icons.check,
+                                            color: Colors.green[300],
+                                          )
+                                        : null,
+                                  ),
+                                ),
+                              ),
+                              Divider(),
+                              ],
                           ),
                         ),
-                        Container(
+                      
+                        )
+                        ,
+
+                        Collapse(
+                          padding: EdgeInsets.zero,
+                          onChange: (value){
+                            setState(() {
+                              isCollapseDateTime = value;
+                            });
+                          },
+                          value: isCollapseDateTime,
+                          title: Container(
+                            // color: Colors.grey,
+                            // width: MediaQuery.of(context).size.width - 50,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 35.0,
+                              vertical: 15,
+                            ),
+                            child: TextTranslator(
+                              AppLocalizations.of(context).translate('date_and_time'),
+                              textAlign: TextAlign.start,
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            
+                        ),
+                          ),
+                          body: Container(
                           color: Colors.white,
                           padding: const EdgeInsets.symmetric(
                             vertical: 5,
@@ -283,7 +453,10 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                             ],
                           ),
                         ),
-                      ],
+                      
+                        )
+                        
+                        ],
                     ),
                   ),
                 ),

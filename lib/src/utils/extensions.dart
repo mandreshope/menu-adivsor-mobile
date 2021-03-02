@@ -1,5 +1,6 @@
 import 'package:firebase_mlkit_language/firebase_mlkit_language.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:menu_advisor/src/models.dart';
 
@@ -10,6 +11,36 @@ extension FormatDate on DateTime {
     final String formatted = formatter.format(this);
     return formatted;
   }
+
+  String get weekDayToString {
+    final DateTime dateNow = DateTime.now();
+    switch (dateNow.weekday) {
+      case 1:
+        return "Lundi";
+        break;
+      case 2:
+        return "Mardi";
+        break;
+      case 3:
+        return "Mercredi";
+        break;
+      case 4:
+        return "Jeudi";
+        break;
+      case 5:
+        return "Vendredi";
+        break;
+      case 6:
+        return "Samedi";
+        break;
+      case 7:
+        return "Dimanche";
+        break;
+      default:
+        return "Lundi";
+    }
+  }
+
 }
 
 extension ExtensionString on String {
@@ -87,4 +118,7 @@ extension Iterables<E> on Iterable<E> {
 
 extension Type on MenuType {
   String get value => describeEnum(this);
+}
+extension Time on TimeOfDay {
+  double get timeOfDayToDouble => this.hour + this.minute/60.0;
 }

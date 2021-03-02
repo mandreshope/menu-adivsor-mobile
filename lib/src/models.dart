@@ -45,6 +45,8 @@ class Food implements Copyable<Food>{
 
   String message;
 
+  int quantity = 0;
+
   List<Option> optionSelected = List();
 
   List<FoodAttribute> foodAttributes = List();
@@ -52,6 +54,7 @@ class Food implements Copyable<Food>{
   bool isMenu = false;
   bool isFoodForMenu = false;
   String idMenu = "";
+  bool isPopular = false;
 
   String idNewFood = "";
 
@@ -170,6 +173,8 @@ class Menu implements Copyable<Menu>{
 
   bool isMenu = true;
   bool isFoodForMenu = false;
+
+ int quantity = 0;
 
   String message;
   List<Option> options = List();
@@ -386,6 +391,57 @@ class Restaurant {
         delivery:json['delivery'] ?? true,
         openingTimes: (json['openingTimes'] != null) ? (json['openingTimes'] as List).map<OpeningTimes>((e) => OpeningTimes.fromJson(e)).toList() : List() 
       );
+
+
+  bool get isOpen {
+    bool open = false;
+    DateTime dateNow = DateTime.now();
+    TimeOfDay timeNow = TimeOfDay.now();
+    TimeOfDay timeBegin;
+    TimeOfDay timeEnd;
+
+    this.openingTimes.forEach((element) {
+        if (element.day == dateNow.weekDayToString){
+          
+          //AM
+          int hourAM = element.openings[0].begin.hour;
+          int minAM = element.openings[0].begin.minute;
+          
+          int endhourAM = element.openings[0].end.hour;
+          int endminAM = element.openings[0].end.minute;
+
+          //PM
+          int hourPM = element.openings[1].begin.hour;
+          int minPM = element.openings[1].begin.minute;
+
+          int bhourPM = element.openings[1].end.hour;
+          int eminPM = element.openings[1].end.minute;
+
+          if (dateNow.hour <= 12){
+            timeBegin = TimeOfDay(hour: hourAM, minute: minAM);
+            timeEnd = TimeOfDay(hour: endhourAM, minute: endminAM);
+            
+            if (timeNow.timeOfDayToDouble > timeBegin.timeOfDayToDouble && timeNow.timeOfDayToDouble < timeEnd.timeOfDayToDouble){
+              open = true;
+              return;
+            }
+          }else{
+            timeBegin = TimeOfDay(hour: hourPM, minute: minPM);
+            timeEnd = TimeOfDay(hour: bhourPM, minute: eminPM);
+            
+            if (timeNow.timeOfDayToDouble > timeBegin.timeOfDayToDouble && timeNow.timeOfDayToDouble < timeEnd.timeOfDayToDouble){
+              open = true;
+              return;
+            }
+          }
+
+        }else{
+          print("other day...");
+        }
+    });
+    return open;
+  }
+
 }
 
 class User {
@@ -445,6 +501,7 @@ class User {
     return "${this.name.first} ${this.name.last}";
     
   }
+
 
 }
 
@@ -637,6 +694,7 @@ options = json['options'] == null ? List() : (json['options'] as List).map((e) =
     data['quantity'] = this.quantity;
     if (this.food != null) {
       data['item'] = this.food.toJson();
+      
     }
     return data;
   }

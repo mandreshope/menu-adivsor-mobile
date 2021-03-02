@@ -2,12 +2,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/pages/map_polyline.dart';
 import 'package:menu_advisor/src/pages/photo_view.dart';
 import 'package:menu_advisor/src/pages/splash.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
+import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/extensions.dart';
@@ -244,15 +248,34 @@ Padding(
                     SizedBox(
                       width: 5,
                     ),
-                    Container(
-                      width: MediaQuery.of(context).size.width/2.5,
-                      child: TextTranslator(
-                        widget.commande.restaurant.address ?? "",
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                    InkWell(
+                        onTap: () async {
+                          Position currentPosition = await getCurrentPosition();
+                                              var coordinates = widget.commande.restaurant.location.coordinates;
+                                              // MapUtils.openMap(currentPosition.latitude, currentPosition.longitude,
+                                              // coordinates.last,coordinates.first);
+                                              RouteUtil.goTo(
+                                                context: context,
+                                                child: MapPolylinePage(
+                                                  restaurant: widget.commande.restaurant,
+                                                  initialPosition: LatLng(currentPosition.latitude, currentPosition.longitude),
+                                                  destinationPosition: LatLng(coordinates.last, coordinates.first),
+                                                ),
+
+                                                routeName: restaurantRoute,
+                                              );
+                        },
+                        child: Container(
+                        width: MediaQuery.of(context).size.width/2.5,
+                        child: TextTranslator(
+                          widget.commande.restaurant.address ?? "",
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                            decoration: TextDecoration.underline
+                          ),
                         ),
                       ),
                     )

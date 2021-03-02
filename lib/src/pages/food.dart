@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chips_choice/chips_choice.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -63,15 +65,48 @@ class _FoodPageState extends State<FoodPage> {
   bool isAdded = false;
   ItemsOption singleItemOptionSelected;
 
+  ScrollController _scrollController;
+  // FoodPageContext _foodPageContext;
+
+  StreamController<bool> _streamController = StreamController();
+
+  bool isContains = false;
+  StreamSink<bool> get isTransparentSink => _streamController.sink;
+  Stream<bool> get isTransparentStream => _streamController.stream;
+
+  _scrollListener(){
+    double offset = _scrollController.offset;
+    if (offset <= 50){
+      print("offset $offset");
+      isTransparentSink.add(true);
+    }else{
+      isTransparentSink.add(false);
+    }
+  }
+
+@override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _scrollController.removeListener(_scrollListener);
+    _streamController.close();
+    isTransparentSink.close();
+  }
+
   @override
   void initState() {
     super.initState();
 
     _optionContext = Provider.of<OptionContext>(context, listen: false);
     _cartContext = Provider.of<CartContext>(context, listen: false);
+    _cartContext.itemsTemp.clear();
     // if (_cartContext.contains(widget.food)) itemCount = _cartContext.getCount(widget.food);
     MenuContext _menuContext = Provider.of<MenuContext>(context, listen: false);
     // menu = _menuContext.menu;
+
+    // _streamController.add(true);
+    _scrollController = ScrollController();
+    
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       /*Food f = await api.getFood(
@@ -81,6 +116,7 @@ class _FoodPageState extends State<FoodPage> {
 
      widget.food = f;*/
 
+  _scrollController.addListener(_scrollListener);
       api
           .getRestaurant(
         id: (widget.food.restaurant is String) ? widget.food.restaurant : widget.food.restaurant['_id'],
@@ -134,22 +170,29 @@ class _FoodPageState extends State<FoodPage> {
       collaspse[element.sId] = true;
     });
 
-    itemCount = _cartContext.getFoodCountByIdNew(foodAdded);
+    itemCount = foodAdded.quantity;
     this.isAdded = false;
     singleItemOptionSelected = null;
+
+    if (options.isEmpty) {
+      itemCount = 1;
+      // _cartContext.addItem(foodAdded, 1, true);
+      foodAdded.quantity = 1;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return !widget.modalMode
         ? Scaffold(
+            /*
             appBar: AppBar(
               elevation: 0,
-              // backgroundColor: Colors.transparent,
+              backgroundColor: Colors.transparent,
               leading: IconButton(
                 icon: Icon(
                   Icons.keyboard_arrow_left,
-                  color: Colors.white,
+                  // color: Colors.black,
                 ),
                 onPressed: () => RouteUtil.goBack(context: context),
               ),
@@ -203,13 +246,14 @@ class _FoodPageState extends State<FoodPage> {
                 IconButton(
                     icon: Icon(
                       FontAwesomeIcons.share,
-                      color: Colors.white,
+                      // color: Colors.white,
                     ),
                     onPressed: () {
                       Share.share("Menu advisor");
                     }),
               ],
             ),
+            */
             body: mainContent,
           )
         : Scaffold(
@@ -229,19 +273,20 @@ class _FoodPageState extends State<FoodPage> {
           fit: StackFit.expand,
           children: [
             SingleChildScrollView(
+              controller: _scrollController,
               child: Column(
                 mainAxisSize: widget.fromDelevery ? MainAxisSize.min : MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
                     width: double.infinity,
-                    height: MediaQuery.of(context).size.height / 3.5,
+                    height: MediaQuery.of(context).size.height / 3,
                     child: _image(),
                   ),
                   SizedBox(
-                    height: 25,
+                    height: 15,
                   ),
-                  Divider(),
+                  
                   Center(
                     child: TextTranslator(
                       widget.food.name,
@@ -509,7 +554,7 @@ class _FoodPageState extends State<FoodPage> {
                           ),
                         ),
                   // Text("test"),
-
+                  if (!widget.food.isPopular)
                   if (!widget.fromDelevery) ...[
                     //  Spacer(),
                     // if (!this._cartContext.contains(widget.food))
@@ -526,7 +571,7 @@ class _FoodPageState extends State<FoodPage> {
                         itemCount == 0
                             ? Container()
                             : Consumer<CartContext>(builder: (_, cartContext, __) {
-                                this.itemCount = cartContext.getFoodCountByIdNew(foodAdded);
+                                this.itemCount = foodAdded.quantity;
                                 if (this.itemCount == 0) {
                                   WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
                                     setState(() {
@@ -537,65 +582,29 @@ class _FoodPageState extends State<FoodPage> {
                                 return itemCount == 0
                                     ? Container()
                                     :
-                                    /*    Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      shape: BoxShape.circle,
-                                      // border: Border.all(color: CRIMSON,width: 1)
-                                    ),
-                                    padding: EdgeInsets.symmetric(vertical: 6),
-                                    width: 35,
-                                    child: Center(
-                                      child: TextTranslator(
-                                        '${itemCount}',
-                                        style: TextStyle(
-                                          color: CRIMSON,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 25
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                )
-                        )*/
                                     ButtonItemCountWidget(foodAdded, onAdded: () async {
                                         setState(() {
-                                          // cartContext.addItem(
-                                          //     foodAdded, itemCount, true);
-                                          // choiceSelected.select(choiceSelected.selected);
-                                          // foodAdded = Food.copy(widget.food);
-                                          /*options.forEach((element) {
-                                    element.itemOptionSelected =
-                                        List();});*/
-                                          this.itemCount++;
+                                           ++ this.itemCount;
+                                          foodAdded.quantity = this.itemCount;
+                                          if(this.itemCount > 1)
+                                              this.isAdded = true;
+                                          else
+                                            this.isAdded = false;
                                         });
-                                      }, onRemoved: (food) {
-                                        // value == 0 ? cartContext.removeItem(widget.food) : cartContext.addItem(widget.food, value,false);
+                                      }, onRemoved: () {
                                         setState(() {
-                                          // options = food.optionSelected.map<Option>((e) => Option.copy(e)).toList();
-                                          /* options.forEach((element) {
-                                      element.itemOptionSelected =
-                                          List();});
-                                    print(options);*/
-                                          --this.itemCount;
+                                          -- this.itemCount;
+                                          foodAdded.quantity = this.itemCount;
                                           if (this.itemCount <= 0) {
                                             this.itemCount = 0;
                                             this.isAdded = false;
                                             _init();
-                                            /*foodAdded = Food.copy(widget.food);
-                                        foodAdded.optionSelected = null;
-                                        options.forEach((element) {
-                                          element.itemOptionSelected = List();
-                                        });
-                                        // _optionContext.itemOptions = option.itemOptionSelected;
-                                        singleItemOptionSelected = null;
-                                        options = food.optionSelected.map<Option>((e) => Option.copy(e)).toList();
-*/
+                                          }else if (itemCount == 1){
+                                            this.isAdded = false;
                                           }
                                         });
-                                      }, itemCount: cartContext.getFoodCountByIdNew(foodAdded), isContains: cartContext.contains(widget.food));
+                                      }, itemCount: foodAdded.quantity, isContains: isContains,
+                                      isSmal: false,);
 
                                 //delete all food
                                 /*
@@ -638,10 +647,27 @@ class _FoodPageState extends State<FoodPage> {
                       ],
                     ),
 
-                    Padding(
+                    ],
+                  Consumer<CartContext>(
+                    builder: (_, cartContext, __) => cartContext.contains(widget.food)
+                        ? SizedBox(
+                            height: 95,
+                          )
+                        : SizedBox(
+                      height: 95,
+                    ),
+                  )
+                ],
+              ),
+            ),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Padding(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 30,
-                        vertical: 20,
+                        horizontal: 0,
+                        // vertical: 20,
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.max,
@@ -650,119 +676,47 @@ class _FoodPageState extends State<FoodPage> {
                         children: [
                           Expanded(
                             child: Container(
+                              color:  widget.food.isPopular ? CRIMSON : _cartContext.hasOptionSelectioned(foodAdded) ?
+                                            CRIMSON :
+                                            Colors.grey,
+                              width: double.infinity,
+                              height: 45,
                               child: Consumer<CartContext>(
                                 builder: (_, cartContext, __) => Row(
                                   mainAxisSize: MainAxisSize.min,
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    /* cartContext.contains(widget.food) ?
-
-                                    FlatButton(child: Container(
-                                          width: 60,
-                                          height: 60,
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.all(Radius.circular(30)),
-                                            color: CRIMSON
-                                          ),
-                                          child: Icon(Icons.remove,color: Colors.white,
-                                              size: 35),
-                                        ),
-                                            onPressed: () async {
-                                              int value = --itemCount;
-                                              if (value <= 0) {
-                                                var result = await showDialog(
-                                                  context: context,
-                                                  builder: (_) => ConfirmationDialog(
-                                                    title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
-                                                    content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
-                                                  ),
-                                                );
-
-                                                if (result is bool && result) {
-                                                  _cartContext.removeItem(widget.food);
-                                                  // if (!fromRestaurant)
-                                                  itemCount = 0;
-                                                    RouteUtil.goBack(context: context);
-                                                }
-                                              } else {
-                                                _cartContext.addItem(widget.food, value, false);
-                                              }
-                                            }) : Container(),*/
-
                                     // add food
-                                    if (itemCount == 0)
-                                      RaisedButton(
-                                        padding: EdgeInsets.all(20),
-                                        color:
+                                    // if (itemCount == 0)
+                                    widget.food.isPopular ? Icon(Icons.visibility,color: Colors.white,) : Container(),
+                                      FlatButton(
+                                        // padding: EdgeInsets.all(20),
+                                        color: Colors.transparent,
                                             /*itemCount > 0
                                           ? Colors.teal
                                           // :*/ /*cartContext.hasOptionSelectioned(foodAdded) ?
-                                            CRIMSON :*/
-                                            Colors.grey,
+                                            CRIMSON :
+                                            Colors.grey,*/
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(10),
                                         ),
                                         onPressed: () async {
-                                          if ((this.itemCount == 0) || (cartContext.hasSamePricingAsInBag(widget.food) && cartContext.hasSameOriginAsInBag(widget.food))) {
-                                            /*  if (cartContext.contains(widget.food)) {
-                                            var result = await showDialog(
+                                          if (widget.food.isPopular) {
+                                            RouteUtil.goTo(
                                               context: context,
-                                              builder: (_) => ConfirmationDialog(
-                                                title: AppLocalizations.of(context)
-                                                    .translate(
-                                                        'confirm_remove_from_cart_title'),
-                                                content: AppLocalizations.of(context)
-                                                    .translate(
-                                                        'confirm_remove_from_cart_content'),
+                                              child: RestaurantPage(
+                                                restaurant: (widget.food.restaurant is String) ? widget.food.restaurant : widget.food.restaurant['_id'],
                                               ),
+                                              routeName: restaurantRoute,
                                             );
-
-                                            if (result is bool && result) {
-                                              cartContext.removeAllFood(foodAdded);
-                                              setState(() {
-                                                itemCount = 1;
-                                              });
-                                              RouteUtil.goBack(context: context);
-                                            }
-                                          } else {*/
-                                            /*bool result = await showDialog<bool>(
-                                                context: context,
-                                                builder: (_) => AddToBagDialog(
-                                                  food: widget.food,
-                                                ),
-                                              );
-                                              if (result is bool && result) {}*/
-                                            /* if (cartContext.contains(widget.food))
-                                              cartContext.setCount(
-                                                  widget.food, itemCount);
-                                            else
-                                              cartContext.addItem(
-                                                  widget.food, itemCount);*/
-                                            /* if (widget.food.options.isNotEmpty){
-                                                    var optionSelected = await showDialog(
-                                                                    context: context,
-                                                                    barrierDismissible: false,
-                                                                    builder: (_) => OptionChoiceDialog(
-                                                                      food: widget.food,
-                                                                    ),
-                                                                  );
-                                                    if (optionSelected != null)
-                                                      cartContext.addItem(widget.food, itemCount,true);
-                                                  }else{*/
+                                            return;
+                                          }
+                                          if ((this.itemCount == 0) || (cartContext.hasSamePricingAsInBag(widget.food) && cartContext.hasSameOriginAsInBag(widget.food))) {
                                             if (cartContext.hasOptionSelectioned(foodAdded)) {
-                                              cartContext.addItem(foodAdded, itemCount, true);
-                                              // foodAdded = Food.copy(widget.food);
-                                              /*options.forEach((element) {
-                                                  element.itemOptionSelected =
-                                                      List();
-                                                  element.singleItemOptionSelected = null;
-                                                });*/
-                                              // cartContext.refresh();
-                                              this.isAdded = true;
-                                              this.itemCount++;
-                                              RouteUtil.goBack(context: context);
+                                              _cartContext.addItem(foodAdded, 1, true);
                                               setState(() {});
+                                              RouteUtil.goBack(context: context);
                                             } else
                                               Fluttertoast.showToast(
                                                 msg: 'Ajouter une option',
@@ -783,7 +737,10 @@ class _FoodPageState extends State<FoodPage> {
                                             ? AppLocalizations.of(context)
                                                 .translate('remove_from_cart')
                                             : */
-                                          AppLocalizations.of(context).translate("add_to_cart"),
+                                            widget.food.isPopular ? "Voir restaurant" :
+                                          AppLocalizations.of(context).translate("add_to_cart") +
+                                              '\t\t${itemCount == 0 ? "" : (foodAdded.price?.amount ?? 0 *foodAdded.quantity)}' +
+                                                '${((foodAdded.price?.amount ?? 0 *foodAdded.quantity) ?? 0 *foodAdded.quantity) == 0 ? "" : "€"}',
                                           overflow: TextOverflow.ellipsis,
                                           softWrap: false,
                                           style: TextStyle(
@@ -821,28 +778,104 @@ class _FoodPageState extends State<FoodPage> {
                         ],
                       ),
                     ),
-                  ],
-                  Consumer<CartContext>(
-                    builder: (_, cartContext, __) => cartContext.contains(widget.food)
-                        ? SizedBox(
-                            height: 95,
-                          )
-                        : Container(),
-                  )
-                ],
-              ),
-            ),
-            Positioned(
+                  ),
+            /*Positioned(
                 bottom: 0,
                 right: 0,
                 left: 0,
                 child: Consumer<CartContext>(
-                  builder: (_, cartContext, __) => cartContext.contains(widget.food)
+                  builder: (_, cartContext, __) => cartContext.items.isNotEmpty
                       ? OrderButton(
                           totalPrice: _cartContext.totalPrice,
                         )
                       : SizedBox(),
-                )),
+                )),*/
+                /* Positioned.fill(
+              top: 50,
+              left: 0,
+              // right: 0,
+              child: Container(
+                child: StreamBuilder<bool>(
+                  stream: isTransparentStream,
+                  initialData: true,
+                  builder: (context, snapshot) {
+                    return Container(
+                      width: double.infinity,
+                      height: 45,
+                      color: snapshot.data ? Colors.transparent : CRIMSON,
+                      child: 
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          IconButton(
+                        icon: Icon(
+                          Icons.keyboard_arrow_left,
+                          color: Colors.black,
+                          size: 35,
+                        ),
+                        onPressed: () => RouteUtil.goBack(context: context),
+                      ),
+                      showFavorite
+                            ? IconButton(
+                                onPressed: !switchingFavorite
+                                    ? () async {
+                                        AuthContext authContext = Provider.of<AuthContext>(
+                                          context,
+                                          listen: false,
+                                        );
+
+                                        setState(() {
+                                          switchingFavorite = true;
+                                        });
+                                        if (!isInFavorite)
+                                          await authContext.addToFavoriteFoods(widget.food);
+                                        else
+                                          await authContext.removeFromFavoriteFoods(widget.food);
+                                        setState(() {
+                                          switchingFavorite = false;
+                                          isInFavorite = !isInFavorite;
+                                        });
+                                        Fluttertoast.showToast(
+                                          msg: AppLocalizations.of(context).translate(
+                                            isInFavorite ? 'added_to_favorite' : 'removed_from_favorite',
+                                          ),
+                                        );
+                                      }
+                                    : null,
+                                icon: !switchingFavorite
+                                    ? Icon(
+                                        isInFavorite ? Icons.favorite : Icons.favorite_border,
+                                      )
+                                    : SizedBox(
+                                        width: 15,
+                                        height: 15,
+                                        child: FittedBox(
+                                          child: CircularProgressIndicator(
+                                            valueColor: AlwaysStoppedAnimation<Color>(
+                                              Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                              )
+                            : Container(),
+                        IconButton(
+                            icon: Icon(
+                              FontAwesomeIcons.share,
+                              color: Colors.black,
+                            ),
+                            onPressed: () {
+                              Share.share("Menu advisor");
+                            }),
+                        ],
+                      ),
+                    );
+                  }
+                ),
+              )
+              ),*/
+           
           ],
         ),
       );
@@ -904,7 +937,7 @@ class _FoodPageState extends State<FoodPage> {
                         widget.food.imageURL,
                         // width: 4 * MediaQuery.of(context).size.width / 7,
                         width: MediaQuery.of(context).size.width,
-                        fit: BoxFit.contain,
+                        fit: BoxFit.cover,
                       )
                     : Icon(
                         Icons.fastfood,
@@ -912,6 +945,7 @@ class _FoodPageState extends State<FoodPage> {
                       ),
               ),
               onTap: () {
+                return;
                 RouteUtil.goTo(
                     context: context,
                     child: PhotoViewPage(
@@ -976,6 +1010,25 @@ class _FoodPageState extends State<FoodPage> {
 
             foodAdded.optionSelected = options.map((o) => Option.copy(o)).toList();
             _optionContext.itemOptions = option.itemOptionSelected;
+
+            if (_cartContext.hasOptionSelectioned(foodAdded)){
+              if(itemCount == 0) {
+                ++itemCount;
+                // _cartContext.addItem(foodAdded, 1, true);
+                foodAdded.quantity = itemCount;
+                isContains = true;
+                _cartContext.refresh();
+              }
+            }else{
+              if (itemCount > 0) {
+                itemCount = 0;
+                // _cartContext.addItem(foodAdded, 1, false);
+                foodAdded.quantity = 0;
+                isContains = false;
+                _cartContext.refresh();
+              }
+            }
+
           });
         },
         choiceItems: C2Choice.listFrom(
@@ -985,33 +1038,14 @@ class _FoodPageState extends State<FoodPage> {
           label: (i, v) => v.name,
         ),
         choiceBuilder: (_) {
-          return Container(
+            return Container(
             margin: EdgeInsets.only(top: 15),
             color: Colors.white,
             child: Row(
               mainAxisSize: MainAxisSize.max,
               children: [
                 SizedBox(
-                  width: 10,
-                ),
-                InkWell(
-                  onTap: () {
-                    _.select(!_.selected);
-                  },
-                  child: _.selected
-                      ? Icon(
-                          Icons.radio_button_checked,
-                          color: CRIMSON,
-                          size: 25,
-                        )
-                      : Icon(
-                          Icons.add_circle_outlined,
-                          color: Colors.grey,
-                          size: 25,
-                        ),
-                ),
-                SizedBox(
-                  width: 20,
+                  width: 15,
                 ),
                 InkWell(
                   onTap: () {
@@ -1053,6 +1087,32 @@ class _FoodPageState extends State<FoodPage> {
                           "${_.value.price.amount == 0 ? '' : _.value.price.amount / 100}${_.value.price.amount == 0 ? '' : "€"}",
                           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
                         ),
+                ),
+                Spacer(),
+                SizedBox(
+                  width: 10,
+                ),
+                Visibility(
+                  visible: !widget.food.isPopular,
+                   child: InkWell(
+                    onTap: () {
+                      _.select(!_.selected);
+                    },
+                    child: _.selected
+                        ? Icon(
+                            Icons.radio_button_checked,
+                            color: CRIMSON,
+                            size: 25,
+                          )
+                        : Icon(
+                            Icons.add_circle_outlined,
+                            color: Colors.grey,
+                            size: 25,
+                          ),
+                  ),
+                ),
+                SizedBox(
+                  width: 15,
                 )
               ],
             ),
@@ -1088,6 +1148,23 @@ class _FoodPageState extends State<FoodPage> {
             foodAdded.optionSelected = options.map((o) => Option.copy(o)).toList();
           }
           _optionContext.itemOptions = option.itemOptionSelected;
+          if (_cartContext.hasOptionSelectioned(foodAdded)){
+            if(itemCount == 0) {
+              ++itemCount;
+              // _cartContext.addItem(foodAdded, 1, true);
+              foodAdded.quantity = itemCount;
+              isContains = true;
+              _cartContext.refresh();
+            }
+          }else{
+            if (itemCount > 0) {
+              itemCount = 0;
+              // _cartContext.addItem(foodAdded, 1, false);
+              foodAdded.quantity = 0;
+              isContains = false;
+              _cartContext.refresh();
+            }
+          }
         });
       },
 
@@ -1107,73 +1184,6 @@ class _FoodPageState extends State<FoodPage> {
             child: Row(
               mainAxisSize: MainAxisSize.max,
               children: [
-                !_.selected
-                    ? IconButton(
-                        icon: Icon(Icons.add_circle_outlined, color: Colors.grey, size: 25),
-                        onPressed: () {
-                          if (this.isAdded) return;
-                          if (option.isMaxOptions) {
-                            _.value.quantity = 1;
-                            _.select(!_.selected);
-                          } else {
-                            print("max options");
-                            Fluttertoast.showToast(msg: "maximum selection ${option.title} : ${option.maxOptions}");
-                          }
-                        },
-                      )
-                    :
-                    //button incrementation
-
-                    Container(
-                        padding: EdgeInsets.only(left: 0),
-                        // width: 50,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                                icon: Icon(
-                                  Icons.remove_circle,
-                                  color: CRIMSON,
-                                  size: 35,
-                                ),
-                                onPressed: () {
-                                  if (this.isAdded) return;
-                                  if (_.value.quantity == 1) {
-                                    _.value.quantity = 0;
-                                    _.select(false);
-                                  } else {
-                                    _.value.quantity--;
-                                    _.select(true);
-                                  }
-                                  snapshot.refresh();
-                                }),
-                            SizedBox(
-                              width: 2,
-                            ),
-                            Text(
-                              "${_.value.quantity ?? ""}",
-                              style: TextStyle(fontSize: 20),
-                            ),
-                            SizedBox(
-                              width: 2,
-                            ),
-                            IconButton(
-                                icon: Icon(Icons.add_circle_outlined, color: CRIMSON, size: 35),
-                                onPressed: () {
-                                  // if (_optionContext.quantityOptions == option.maxOptions){
-                                  if (this.isAdded) return;
-                                  if (option.isMaxOptions) {
-                                    _.value.quantity++;
-                                    _.select(true);
-                                    snapshot.refresh();
-                                  } else {
-                                    print("max options");
-                                    Fluttertoast.showToast(msg: "maximum selection ${option.title} : ${option.maxOptions}");
-                                  }
-                                }),
-                          ],
-                        ),
-                      ),
                 SizedBox(
                   width: 10,
                 ),
@@ -1217,6 +1227,80 @@ class _FoodPageState extends State<FoodPage> {
                         ),
                 ),
                 Spacer(),
+                !_.selected
+                    ? Visibility(
+                      visible: !widget.food.isPopular,
+                                          child: IconButton(
+                          icon: Icon(Icons.add_circle_outlined, color: Colors.grey, size: 25),
+                          onPressed: () {
+                            if (this.isAdded) return;
+                            if (option.isMaxOptions) {
+                              _.value.quantity = 1;
+                              _.select(!_.selected);
+                            } else {
+                              print("max options");
+                              Fluttertoast.showToast(msg: "maximum selection ${option.title} : ${option.maxOptions}");
+                            }
+                          },
+                        ),
+                    )
+                    :
+                    //button incrementation
+
+                    Visibility(
+                      visible: !widget.food.isPopular,
+                                          child: Container(
+                          padding: EdgeInsets.only(left: 0),
+                          // width: 50,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                  icon: Icon(
+                                    Icons.remove_circle,
+                                    color: CRIMSON,
+                                    size: 35,
+                                  ),
+                                  onPressed: () {
+                                    if (this.isAdded) return;
+                                    if (_.value.quantity == 1) {
+                                      _.value.quantity = 0;
+                                      _.select(false);
+                                    } else {
+                                      _.value.quantity--;
+                                      _.select(true);
+                                    }
+                                    snapshot.refresh();
+                                  }),
+                              SizedBox(
+                                width: 2,
+                              ),
+                              Text(
+                                "${_.value.quantity ?? ""}",
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              SizedBox(
+                                width: 2,
+                              ),
+                              IconButton(
+                                  icon: Icon(Icons.add_circle_outlined, color: CRIMSON, size: 35),
+                                  onPressed: () {
+                                    // if (_optionContext.quantityOptions == option.maxOptions){
+                                    if (this.isAdded) return;
+                                    if (option.isMaxOptions) {
+                                      _.value.quantity++;
+                                      _.select(true);
+                                      snapshot.refresh();
+                                    } else {
+                                      print("max options");
+                                      Fluttertoast.showToast(msg: "maximum selection ${option.title} : ${option.maxOptions}");
+                                    }
+                                  }),
+                            ],
+                          ),
+                        ),
+                    ),
+                
               ],
             ),
           );

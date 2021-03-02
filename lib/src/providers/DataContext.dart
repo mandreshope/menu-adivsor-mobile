@@ -152,6 +152,9 @@ class DataContext extends ChangeNotifier {
         },
         // type: 'food'
       );
+      _popularFoods.forEach((element) {
+        element.isPopular = true;
+      });
       popularFoods = _popularFoods.where((element) => element.status).toList();
       // _searchResult.take(5).forEach((e) {
       //   popularFoods.add(Food.fromJson(e.content));

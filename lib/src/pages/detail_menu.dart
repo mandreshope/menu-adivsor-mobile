@@ -28,29 +28,32 @@ class _DetailMenuState extends State<DetailMenu> {
   // MenuContext _controller;
   CartContext _cartContext;
   // int count = 0;
+  Food menuFood;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     widget.menu.idNewFood = DateTime.now().millisecondsSinceEpoch.toString();
+    _cartContext = Provider.of<CartContext>(context, listen: false);
+    _cartContext.itemsTemp.clear();
   }
 
   @override
   Widget build(BuildContext context) {
     widget.menu.foodsGrouped = widget.menu.foods ?? List();
-    _cartContext = Provider.of<CartContext>(context, listen: false);
+
     // count = _cartContext.getCount(widget.menu);
     widget.menu.count = _cartContext.getFoodCountByIdNew(widget.menu);
 
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        // backgroundColor: Colors.transparent,
+        backgroundColor: Colors.transparent,
         leading: IconButton(
           icon: Icon(
             Icons.keyboard_arrow_left,
-            color: Colors.white,
+            color: Colors.black,
           ),
           onPressed: () => RouteUtil.goBack(context: context),
         ),
@@ -246,9 +249,14 @@ class _DetailMenuState extends State<DetailMenu> {
                           return InkWell(
                             onTap: () {
                               // if (_cartContext.contains(widget.menu)){
-                              if (widget.menu.count == 0) {
+                              if (widget.menu.count == 0 || widget.menu.count == 1) {
                                 widget.menu.setFoodMenuSelected(entry.key, food);
+                                menuFood = food;
                                 widget.menu.select(_cartContext, entry.key, food, () => menuContext.refresh());
+                                if (widget.menu.count == 0) {
+                                  widget.menu.count++;
+                                  _cartContext.addItem(widget.menu, 1, true);
+                                }
                               } else {
                                 // Fluttertoast.showToast(
                                 //     msg: "Veuillez ajouter le menu dans le panier");
@@ -269,7 +277,10 @@ class _DetailMenuState extends State<DetailMenu> {
                                           groupValue: food.id,
                                           onChanged: (value) {
                                             print("food selected");
-                                            if (_cartContext.contains(widget.menu)) _cartContext.foodMenuSelected[entry.key] = food;
+                                            if (_cartContext.contains(widget.menu)){
+                                               _cartContext.foodMenuSelected[entry.key] = food;
+                                               menuFood = food;
+                                              }
                                           },
                                           activeColor: CRIMSON,
                                           hoverColor: CRIMSON,
@@ -338,6 +349,85 @@ class _DetailMenuState extends State<DetailMenu> {
     return Consumer<CartContext>(
       builder: (_, cart, w) {
         widget.menu.count = _cartContext.getFoodCountByIdNew(widget.menu);
+        return Column(
+          children: [
+            widget.menu.count > 0
+                ? Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ButtonItemCountWidget(widget.menu, onAdded: () {
+                  widget.menu.count++;
+                  _cartContext.addItem(widget.menu, 1, true);
+                  setState(() {});
+                }, onRemoved: () {
+                  widget.menu.count--;
+                  _cartContext.addItem(widget.menu, 1, false);
+                  setState(() {});
+                }, itemCount: _cartContext.getFoodCountByIdNew(widget.menu), isContains: cart.containsTemp(widget.menu)),
+              ],
+            )
+                : Container(),
+            SizedBox(height: 25,),
+            RaisedButton(
+              padding: EdgeInsets.all(20),
+              color: widget.menu.foodMenuSelecteds.isEmpty || !_cartContext.hasOptionSelectioned(menuFood) ? Colors.grey : CRIMSON,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              onPressed: () async {
+                if (widget.menu.foodMenuSelecteds.isEmpty && !_cartContext.hasOptionSelectioned(menuFood)) return;
+                if ((widget.menu.count > 0) || (_cartContext.hasSamePricingAsInBag(widget.menu) && _cartContext.hasSameOriginAsInBag(widget.menu))) {
+                  if (widget.menu.count == 0) {
+                    /*var result = await showDialog(
+                      context: context,
+                      builder: (_) => ConfirmationDialog(
+                        title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
+                        content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
+                      ),
+                    );
+
+                    if (result is bool && result) {
+                      _cartContext.removeItem(widget.menu);
+                      RouteUtil.goBack(context: context);
+                    }*/
+                    //
+                  } else {
+                    widget.menu.count++;
+                    //_cartContext.addAllItem();
+                    _cartContext.addItem(widget.menu,1,true);
+                    RouteUtil.goBack(context: context);
+                  }
+                } else if (!_cartContext.hasSamePricingAsInBag(widget.menu)) {
+                  Fluttertoast.showToast(
+                    msg: AppLocalizations.of(context).translate('priceless_and_not_priceless_not_allowed'),
+                  );
+                } else if (!_cartContext.hasSameOriginAsInBag(widget.menu)) {
+                  Fluttertoast.showToast(
+                    msg: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
+                  );
+                } else {
+                  widget.menu.count++;
+                  _cartContext.addItem(widget.menu, 1, true);
+                  // _cartContext.addAllItem();
+                  RouteUtil.goBack(context: context);
+                }
+                // setState(() {});
+              },
+              child: TextTranslator(
+                AppLocalizations.of(context).translate("add_to_cart") +
+                    '\t\t${widget.menu.count == 0 ? "" : (widget.menu.price?.amount ?? 0 *widget.menu.quantity)}' +
+                    '${(widget.menu.price?.amount ?? 0 *widget.menu.quantity) == 0 ? "" : "€"}',
+                overflow: TextOverflow.ellipsis,
+                softWrap: false,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+            )
+          ],
+        );
         return widget.menu.count > 0
             ? Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -350,7 +440,7 @@ class _DetailMenuState extends State<DetailMenu> {
                     widget.menu.count--;
                     _cartContext.addItem(widget.menu, 1, false);
                     setState(() {});
-                  }, itemCount: _cartContext.getFoodCountByIdNew(widget.menu), isContains: cart.contains(widget.menu)),
+                  }, itemCount: _cartContext.getFoodCountByIdNew(widget.menu), isContains: cart.containsTemp(widget.menu)),
                 ],
               )
             : RaisedButton(
@@ -378,7 +468,7 @@ class _DetailMenuState extends State<DetailMenu> {
                     } else {
                       widget.menu.count++;
                       _cartContext.addItem(widget.menu, 1, true);
-                      RouteUtil.goBack(context: context);
+                      // RouteUtil.goBack(context: context);
                     }
                   } else if (!_cartContext.hasSamePricingAsInBag(widget.menu)) {
                     Fluttertoast.showToast(
@@ -390,13 +480,16 @@ class _DetailMenuState extends State<DetailMenu> {
                     );
                   } else {
                     widget.menu.count++;
-                    _cartContext.addItem(widget.menu, 1, true);
+                    // _cartContext.addItem(widget.menu, 1, true);
+                    _cartContext.addAllItem();
                     RouteUtil.goBack(context: context);
                   }
                   // setState(() {});
                 },
                 child: TextTranslator(
-                  widget.menu.count > 0 ? AppLocalizations.of(context).translate('remove_from_cart') : AppLocalizations.of(context).translate("add_to_cart"),
+                  AppLocalizations.of(context).translate("add_to_cart") +
+                       '\t\t${widget.menu.count == 0 ? "" : (widget.menu.price?.amount ?? 0 *widget.menu.quantity)}' +
+                    '${(widget.menu.price?.amount ?? 0 *widget.menu.quantity) == 0 ? "" : "€"}',
                   overflow: TextOverflow.ellipsis,
                   softWrap: false,
                   style: TextStyle(

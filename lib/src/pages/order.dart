@@ -2,12 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/pages/confirm_sms.dart';
 import 'package:menu_advisor/src/pages/delivery_details.dart';
 import 'package:menu_advisor/src/pages/login.dart';
+import 'package:menu_advisor/src/pages/map_polyline.dart';
 import 'package:menu_advisor/src/pages/summary.dart';
 import 'package:menu_advisor/src/pages/user_details.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
@@ -167,15 +170,35 @@ class _OrderPageState extends State<OrderPage> {
                                         SizedBox(
                                           width: 5,
                                         ),
-                                        Container(
-                                          width: (MediaQuery.of(context).size.width -  MediaQuery.of(context).size.width / 3) - 95,
-                                          child: TextTranslator(
-                                            _restaurant.address,
-                                            maxLines: 3,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 15,
+                                        InkWell(
+                                            onTap: () async {
+                                              Position currentPosition = await getCurrentPosition();
+                                              var coordinates = _restaurant.location.coordinates;
+                                              // MapUtils.openMap(currentPosition.latitude, currentPosition.longitude,
+                                              // coordinates.last,coordinates.first);
+                                              RouteUtil.goTo(
+                                                context: context,
+                                                child: MapPolylinePage(
+                                                  restaurant: _restaurant,
+                                                  initialPosition: LatLng(currentPosition.latitude, currentPosition.longitude),
+                                                  destinationPosition: LatLng(coordinates.last, coordinates.first),
+                                                ),
+
+                                                routeName: restaurantRoute,
+                                              );
+                                            },
+                                            child: Container(
+                                            width: (MediaQuery.of(context).size.width -  MediaQuery.of(context).size.width / 3) - 95,
+                                            child: TextTranslator(
+                                              _restaurant.address,
+                                              maxLines: 3,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 15,
+                                                decoration: TextDecoration.underline,
+                                                color: Colors.blue
+                                              ),
                                             ),
                                           ),
                                         )

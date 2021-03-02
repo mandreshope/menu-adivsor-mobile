@@ -74,8 +74,7 @@ class CategoryCard extends StatelessWidget {
                           height: 40,
                           color: DARK_BLUE,
                         )
-                      : InkWell(
-                        child: Hero(
+                      : Hero(
                           tag: 'tag:$imageURL',
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(50),
@@ -88,10 +87,6 @@ class CategoryCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                        onTap: () {
-                          RouteUtil.goTo(context: context, child: PhotoViewPage(tag: 'tag:$imageURL', img: imageURL,), routeName: null);
-                        },
-                      ),
                 ),
                 SizedBox(
                   height: 10,
@@ -300,15 +295,26 @@ class _FoodCardState extends State<FoodCard> {
                                     child: Container(
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
-                                        color: Colors.white,
+                                        color: widget.food.isPopular ? Colors.transparent : Colors.white,
                                       ),
-                                      padding: const EdgeInsets.all(5.0),
+                                      padding: widget.food.isPopular ? EdgeInsets.zero : EdgeInsets.all(5.0),
                                       child: FaIcon(
-                                        cartContext.contains(widget.food) ? FontAwesomeIcons.minus : FontAwesomeIcons.plus,
-                                        size: 10,
+                                       widget.food.isPopular ? Icons.visibility : cartContext.contains(widget.food) ? FontAwesomeIcons.minus : FontAwesomeIcons.plus,
+                                        size: widget.food.isPopular ? 22 : 10,
+                                        color: widget.food.isPopular ? Colors.white : Colors.black12,
+
                                       ),
                                     ),
                                     onPressed: 
+                                    widget.food.isPopular ? () => RouteUtil.goTo(
+                                        context: context,
+                                        child: FoodPage(
+                                          food: widget.food,
+                                          imageTag: widget.imageTag,
+                                          restaurantName: restaurantName,
+                                        ),
+                                        routeName: foodRoute,
+                                      ) :
                                     !cartContext.contains(widget.food) ? 
                                     () => RouteUtil.goTo(
                                           context: context,
@@ -372,8 +378,7 @@ class _FoodCardState extends State<FoodCard> {
                     top: 0,
                     bottom: 0,
                     left: widget.showButton ? 30 : null,
-                    child: InkWell(
-                      child: Hero(
+                    child: Hero(
                         tag: widget.imageTag ?? 'foodImage${widget.food.id}',
                         child: widget.food.imageURL != null
                             ? FadeInImage.assetNetwork(
@@ -386,10 +391,6 @@ class _FoodCardState extends State<FoodCard> {
                                 size: 60,
                               ),
                       ),
-                      onTap: () {
-                        RouteUtil.goTo(context: context, child: PhotoViewPage(tag: widget.imageTag?? 'foodImage${widget.food.id}', img: widget.food.imageURL,), routeName: null);
-                      },
-                    ),
                   ),
                 ],
               ),
@@ -578,7 +579,7 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                                                   20,
                                                 ),
                                               ),
-                                              elevation: expanded ? 4 : 0.0,
+                                              elevation: expanded ? 0.5 : 0,
                                               margin: EdgeInsets.zero,
                                               child: Padding(
                                                 padding: expanded
@@ -586,8 +587,8 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                                                         8,
                                                       )
                                                     : const EdgeInsets.symmetric(
-                                                        vertical: 8,
-                                                        horizontal: 4,
+                                                        vertical: 1,
+                                                        horizontal: 1,
                                                       ),
                                                 child: Builder(
                                                   builder: (_) {
@@ -1396,8 +1397,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                         ],
                       ),
                     ),
-                    InkWell(
-                      child: Hero(
+                    Hero(
                         tag: "tag:${widget.restaurant.imageURL}",
                         child: FadeInImage.assetNetwork(
                           image: widget.restaurant.imageURL,
@@ -1406,10 +1406,6 @@ class _RestaurantCardState extends State<RestaurantCard> {
                           fit: BoxFit.cover,
                         ),
                       ),
-                      onTap: () {
-                        RouteUtil.goTo(context: context, child: PhotoViewPage(tag: 'tag:${widget.restaurant.imageURL}', img: widget.restaurant.imageURL,), routeName: null);
-                      },
-                    )
                   ],
                 ),
               ),
@@ -1508,7 +1504,7 @@ class _BagItemState extends State<BagItem> {
         f.isFoodForMenu ? SizedBox(width: 150,) : Container(),
         f.isFoodForMenu ? Container() :
         TextTranslator(
-          '${widget.count} x ',
+          '${widget.food.quantity} x ',
           style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 20),
         ),
         SizedBox(
@@ -1535,6 +1531,7 @@ class _BagItemState extends State<BagItem> {
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            // mainAxisAlignment: MainAxisAlignment.start,
             children: [
               TextTranslator(
                 f.name,
@@ -1566,7 +1563,41 @@ class _BagItemState extends State<BagItem> {
           width: 15,
         ),
         f.isFoodForMenu ? Container() :
-        CircleButton(
+        ButtonItemCountWidget(
+          widget.food, 
+          onAdded: (){
+            setState(() {
+              
+            });
+          }, 
+          onRemoved: () async {
+          
+            if(widget.food.quantity <= 0){
+              var result = await showDialog(
+                    context: context,
+                    builder: (_) => ConfirmationDialog(
+                      title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
+                      content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
+                    ),
+                  );
+
+                  if (result is bool && result) {
+                    // _cartContext.removeAllFood(widget.food);
+                    _cartContext.removeItemAtPosition(widget.position);
+                    // if (!widget.fromRestaurant)
+                      // RouteUtil.goBack(context: context);
+                  }
+              // _cartContext.addItem(widget.food, 0, false);
+              // if(_cartContext.items.length == 0){
+              //   // RouteUtil.goBack(context: context);
+              // }
+            }            
+            setState(() {
+              
+            });
+
+          }, itemCount: widget.food.quantity, isContains: _cartContext.contains(widget.food)),
+        /*CircleButton(
           backgroundColor: Colors.white,padding: EdgeInsets.zero,
           child: Icon(
             Icons.remove_circle,
@@ -1589,7 +1620,7 @@ class _BagItemState extends State<BagItem> {
               if (cartContext.items.length == 0) RouteUtil.goBack(context: context);
             }
           },
-        ),
+        ),*/
         // ]
       ],
     );

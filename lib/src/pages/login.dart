@@ -47,6 +47,7 @@ class _LoginPageState extends State<LoginPage> {
       body: SafeArea(
         child: Container(
           width: double.infinity,
+          height: double.infinity,
           decoration: BoxDecoration(
             image: DecorationImage(
               fit: BoxFit.cover,

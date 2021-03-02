@@ -15,7 +15,7 @@ import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
 class ButtonItemCountWidget extends StatefulWidget {
-  ButtonItemCountWidget(this.food, {@required this.onAdded,this.options,this.onPressed,this.withPrice = true,@required this.onRemoved, @required this.itemCount, this.isFromDelevery = false, @required this.isContains = false, this.isMenu = false,this.fromRestaurant = false})
+  ButtonItemCountWidget(this.food, {@required this.onAdded,this.options,this.isSmal = true,this.onPressed,this.withPrice = true,@required this.onRemoved, @required this.itemCount, this.isFromDelevery = false, @required this.isContains = false, this.isMenu = false,this.fromRestaurant = false})
       : super();
   Function onAdded;
   Function onRemoved;
@@ -28,6 +28,8 @@ class ButtonItemCountWidget extends StatefulWidget {
   bool fromRestaurant;
   bool withPrice;
   List<Option> options;
+  int quantity = 0;
+  bool isSmal;
 
 
   @override
@@ -103,8 +105,9 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
             size: 12,
           ));
     return Container(
+      height: widget.isSmal ? 35 : 65,
       decoration: BoxDecoration(
-          color: CRIMSON,
+          color: !widget.isSmal ? Colors.transparent : CRIMSON,
           borderRadius: BorderRadius.all(
             Radius.circular(3),
           )),
@@ -115,8 +118,8 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
           children: [
             RoundedButton(
               backgroundColor: CRIMSON,
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              radius: 0.0,
+              padding: widget.isSmal ? EdgeInsets.symmetric(horizontal: 10, vertical: 6) : EdgeInsets.symmetric(horizontal: 25, vertical: 6),
+              radius:widget.isSmal ? 0.0 : 35.0,
               child: FaIcon(
                 FontAwesomeIcons.minus,
                 color: Colors.white,
@@ -124,6 +127,9 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
               ),
               onPressed: () async { // onRemove
                 // widget.onRemoved(--widget.itemCount);
+                widget.food.quantity --;
+                 widget.onRemoved();
+                  return;
                 if (widget.food.isMenu){
                   widget.onRemoved();
                   return;
@@ -164,21 +170,23 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                   _cartContext.addItem(widget.food, value, false);
 
                 } else {
-                  _cartContext.addItem(widget.food, value, false);
+                  //_cartContext.addItem(widget.food, value, false);
                   // widget.onRemoved(_cartContext.getLastFood(widget.food.id));
-                  widget.onRemoved(_cartContext.getLastFood(widget.food.id));
-                }
+                  //widget.onRemoved(_cartContext.getLastFood(widget.food.id));
+                  widget.food.quantity --;
+                }  
                 // if (value <= 0) {
                 //   showOptions = false;
                 //   widget.onPressed(false);
                 // }
               },
             ),
+            SizedBox(width: widget.isSmal ? 0 : 12,),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 0.0),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color:  widget.isSmal ? Colors.white : Colors.transparent,
                 ),
                 padding: EdgeInsets.symmetric(vertical: 6),
                 width: 35,
@@ -188,21 +196,26 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                     style: TextStyle(
                       color: CRIMSON,
                       fontWeight: FontWeight.bold,
+                      fontSize: widget.isSmal ? 14 : 25
                     ),
                   ),
                 ),
               ),
             ),
+            SizedBox(width: widget.isSmal ? 0 : 12,), 
             RoundedButton(
               backgroundColor: CRIMSON,
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              radius: 0.0,
+              padding: widget.isSmal ? EdgeInsets.symmetric(horizontal: 10, vertical: 6) : EdgeInsets.symmetric(horizontal: 25, vertical: 6),
+              radius:widget.isSmal ? 0.0 : 35.0,
               child: FaIcon(
                 FontAwesomeIcons.plus,
                 color: Colors.white,
                 size: widget.isFromDelevery ? 12 : 12,
               ),
               onPressed: () async {
+                widget.food.quantity ++;
+                widget.onAdded();
+                  return;
                 if (widget.food.isMenu){
                   widget.onAdded();
                   return;
@@ -226,7 +239,7 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                  );
 
                }else{
-                 if (widget.food.isMenu) return;
+                 // if (widget.food.isMenu) return;
                  // widget.itemCount ++ ;
 
                  _cartContext.addItem(widget.food, 1, true);

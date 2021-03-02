@@ -98,17 +98,18 @@ class CircleButton extends StatelessWidget {
 }
 
 class OrderButton extends StatelessWidget {
-  const OrderButton({Key key, this.totalPrice, this.fromModal = false,this.withPrice = true}) : super(key: key);
+  const OrderButton({Key key, this.totalPrice, this.fromModal = false, this.withPrice = true}) : super(key: key);
   final double totalPrice;
   final bool fromModal;
   final bool withPrice;
 
   @override
   Widget build(BuildContext context) {
+    CartContext provider = Provider.of<CartContext>(context,listen: false);
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: DARK_BLUE,
+        color: Colors.white, //DARK_BLUE,
         boxShadow: [
           new BoxShadow(
             color: Colors.black26,
@@ -116,27 +117,28 @@ class OrderButton extends StatelessWidget {
           ),
         ],
       ),
-      height: 45,
+      height: 60,
       child: Stack(
         children: [
-          Align(
+          /* Align(
             alignment: Alignment.centerRight,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: 
-              Text(
+            child: */
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child:
+                /*Text(
                     !Provider.of<CartContext>(context,listen: false).withPrice ? "" : this.totalPrice == 0 ? "" : '${this.totalPrice.toStringAsFixed(2)} €',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
-              ),
-              /* Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  /*InkWell(
-                    onTap: () {
-                      //this.onTap();
-  /*
-                      if (!fromModal)
+              ),*/
+                Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                InkWell(
+                  onTap: () {
+                    //this.onTap();
+
+                    if (!fromModal)
                       showModalBottomSheet(
                           context: context,
                           builder: (_) {
@@ -144,28 +146,31 @@ class OrderButton extends StatelessWidget {
                               return Column(
                                 children: [
                                   Container(
-                                    margin: EdgeInsets.only(left: 10,right: 10,top:15),
-                            padding: const EdgeInsets.all(5.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                TextTranslator(
-                                  "Vider panier",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
+                                    margin: EdgeInsets.only(left: 10, right: 10, top: 15),
+                                    padding: const EdgeInsets.all(5.0),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        TextTranslator(
+                                          "Vider panier",
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        InkWell(
+                                          child: Icon(
+                                            Icons.delete,
+                                            color: Colors.grey,
+                                          ),
+                                          onTap: () {
+                                            _cartContext.clear();
+                                            RouteUtil.goBack(context: context);
+                                          },
+                                        )
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                InkWell(
-                                  child: Icon(Icons.delete,color: Colors.grey,),
-                                  onTap: (){
-                                    _cartContext.clear();
-                                    RouteUtil.goBack(context: context);
-                                  },
-                                )
-                              ],
-                            ),
-                          ),
                                   Expanded(
                                     child: ListView.builder(
                                         itemCount: _cartContext.items.length,
@@ -175,7 +180,7 @@ class OrderButton extends StatelessWidget {
 
                                           // var count = _cartContext.items.values.elementAt(position);
                                           var count = 1;
-                                          if(food.isFoodForMenu) return Container();
+                                          if (food.isFoodForMenu) return Container();
 
                                           return BagItem(
                                             food: food,
@@ -188,7 +193,7 @@ class OrderButton extends StatelessWidget {
                                         }),
                                   ),
                                   OrderButton(
-                                    totalPrice: _cartContext.totalPrice  ?? 0,
+                                    totalPrice: _cartContext.totalPrice ?? 0,
                                     fromModal: true,
                                     withPrice: withPrice,
                                   )
@@ -197,27 +202,59 @@ class OrderButton extends StatelessWidget {
                             });
                             /**/
                           });
-*/                   
-                    },
-                    child: Text("") 
-                    /*Container(
-                        padding: EdgeInsets.all(8),
-                        decoration: BoxDecoration(shape: BoxShape.circle, color: CRIMSON),
-                        child: Icon(
-                          Icons.shopping_cart,
-                          color: Colors.white,
-                        )
-                        ),*/
+                  },
+                  child: /*Text("")*/
+                      Stack(
+                    children: [
+                      Container(
+                          padding: EdgeInsets.all(8),
+                          margin: EdgeInsets.only(right: 5,top: 5),
+                          decoration: BoxDecoration(shape: BoxShape.circle, color: CRIMSON),
+                          child: Icon(
+                            Icons.shopping_cart,
+                            color: Colors.white,
+                          )),
+                          Positioned(
+                                      top: 0,
+                                      right: 0,
+                                      child: Container(
+                                          padding: EdgeInsets.only(bottom: 5),
+                                          decoration: BoxDecoration(
+                                            color: TEAL,
+                                            borderRadius: BorderRadius.circular(12.5)
+                                          ),
+                                          child: Center(
+                                            child: Text("${provider.items.length}",
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold
+                                              ),
+                                            )
+                                            ,
+                                          ),
+                                      width: 25,
+                                        height: 25,
+                                      ),
+                                    )
+                    ],
                   ),
-                  SizedBox(
-                    width: 10,
-                  ),*/
-                  
-                ],
-              ),*/
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Text(
+                  !Provider.of<CartContext>(context, listen: false).withPrice
+                      ? ""
+                      : this.totalPrice == 0
+                          ? ""
+                          : '${this.totalPrice.toStringAsFixed(2)} €',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: CRIMSON),
+                )
+              ],
             ),
           ),
-           Align(
+          // ),
+          /*Align(
             alignment: Alignment.center,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -239,32 +276,29 @@ class OrderButton extends StatelessWidget {
                   fontWeight: FontWeight.bold
                 ),))
             ),
-           ),
+           ),*/
           Visibility(
-            visible: false,
-            child: 
-          Positioned(
-            right: 0,
-            child: RaisedButton(
-              padding: EdgeInsets.all(25),
-              onPressed: () {
-                  RouteUtil.goTo(
-                    context: context,
-                    child: OrderPage(
-                      withPrice: withPrice,
-                    ),
-                    routeName: orderRoute,
-                  );
-              },
-              child: TextTranslator(
-                AppLocalizations.of(context).translate('command'),
-                style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold),
-              ),
-            ),
-          )
-       
-          )
-           ],
+              visible: true,
+              child: Positioned(
+                right: 0,
+                child: RaisedButton(
+                  padding: EdgeInsets.all(25),
+                  onPressed: () {
+                    RouteUtil.goTo(
+                      context: context,
+                      child: OrderPage(
+                        withPrice: withPrice,
+                      ),
+                      routeName: orderRoute,
+                    );
+                  },
+                  child: TextTranslator(
+                    AppLocalizations.of(context).translate('command'),
+                    style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ))
+        ],
       ),
     );
   }
