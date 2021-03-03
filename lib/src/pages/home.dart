@@ -244,7 +244,7 @@ class _HomePageState extends State<HomePage> {
                                             borderRadius: BorderRadius.circular(12.5)
                                           ),
                                           child: Center(
-                                            child: Text("${cart.items.length}",
+                                            child: Text("${cart.totalItems}",
                                               style: TextStyle(
                                                   color: Colors.white,
                                                   fontWeight: FontWeight.bold

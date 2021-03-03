@@ -18,6 +18,7 @@ import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textFormFieldTranslator.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class MapPage extends StatefulWidget {
   @override
@@ -624,7 +625,13 @@ class _MapPageState extends State<MapPage> {
                   ),
                 ),
               ),
-            )
+            ),
+            SlidingUpPanel(
+              header: Center(
+                child: Text("Voir les restaurants",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),)
+              ),
+          panel: Center(child: Text("This is the sliding Widget"),),
+        )
           ],
         ),
       ),

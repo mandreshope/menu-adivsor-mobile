@@ -46,6 +46,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
   bool sendingCommand = false;
   TextEditingController addrContr = TextEditingController();
   TextEditingController postalCodeContr = TextEditingController();
+  TextEditingController etageContr = TextEditingController();
 
   bool isCollapseDateTime = false;
   bool isCollapseLivraison = false;
@@ -58,7 +59,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-
+    _restaurant.optionLivraison = optionRdv;
     commandContext = Provider.of<CommandContext>(
       context,
       listen: false,
@@ -165,10 +166,34 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                             keyboardType: TextInputType.streetAddress,
                             textInputAction: TextInputAction.done,
                             decoration: InputDecoration(
-                              labelText: "Code postal",
+                              labelText: "Appartement",
                             ),
                             onChanged: (value) {
-                              commandContext.deliveryAddress = value;
+                              // commandContext.deliveryAddress = value;
+                              _restaurant.appartement = postalCodeContr.text;
+                            },
+                            
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.only(
+                            left: 30,
+                            right: 30,
+                            bottom: 30
+                          ),
+                          color: Colors.white,
+                          child: TextFormFieldTranslator(
+                            controller:etageContr,
+                            enabled: addrContr.text.isEmpty ? false : true,
+                            keyboardType: TextInputType.number,
+                            textInputAction: TextInputAction.done,
+                            decoration: InputDecoration(
+                              labelText: "Etage",
+                            ),
+                            onChanged: (value) {
+                              // commandContext.deliveryAddress = value;
+                              if (etageContr.text.isNotEmpty)
+                                _restaurant.etage = int.parse(etageContr.text);
                             },
                             
                           ),
@@ -207,6 +232,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                   onTap: () {
                                     setState(() {
                                       optionRdv = "behind_the_door";
+                                      _restaurant.optionLivraison = optionRdv;
                                     });
                                   },
                                   child: ListTile(
@@ -234,6 +260,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                   onTap: () {
                                     setState(() {
                                       optionRdv = "on_the_door";
+                                      _restaurant.optionLivraison = optionRdv;
                                     });
                                   },
                                   child: ListTile(
@@ -260,6 +287,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                   onTap: () {
                                     setState(() {
                                       optionRdv = "out";
+                                      _restaurant.optionLivraison = optionRdv;
                                     });
                                   },
                                   child: ListTile(

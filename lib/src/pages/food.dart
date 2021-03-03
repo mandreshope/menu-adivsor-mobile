@@ -367,7 +367,7 @@ class _FoodPageState extends State<FoodPage> {
                     height: 30,
                   ),
                   //description
-                  Padding(
+                 /* Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 28.0),
                     child: TextTranslator(
                       AppLocalizations.of(context).translate('description'),
@@ -380,7 +380,7 @@ class _FoodPageState extends State<FoodPage> {
                   SizedBox(
                     height: 10,
                   ),
-                  Divider(),
+                  Divider(),*/
                   SizedBox(
                     height: 20,
                   ),
@@ -397,7 +397,7 @@ class _FoodPageState extends State<FoodPage> {
                   SizedBox(
                     height: 12,
                   ),
-                  Divider(),
+                 /* Divider(),
                   SizedBox(
                     height: 30,
                   ),
@@ -410,7 +410,7 @@ class _FoodPageState extends State<FoodPage> {
                         color: Colors.grey,
                       ),
                     ),
-                  ),
+                  ),*/
                   Padding(
                     padding: EdgeInsets.only(
                       top: 10,
@@ -739,8 +739,8 @@ class _FoodPageState extends State<FoodPage> {
                                             : */
                                             widget.food.isPopular ? "Voir restaurant" :
                                           AppLocalizations.of(context).translate("add_to_cart") +
-                                              '\t\t${itemCount == 0 ? "" : (foodAdded.price?.amount ?? 0 *foodAdded.quantity)}' +
-                                                '${((foodAdded.price?.amount ?? 0 *foodAdded.quantity) ?? 0 *foodAdded.quantity) == 0 ? "" : "€"}',
+                                              '\t\t${itemCount == 0 ? "" : foodAdded.totalPrice/100}' +
+                                                '${(itemCount == 0 ? "" : "€")}',
                                           overflow: TextOverflow.ellipsis,
                                           softWrap: false,
                                           style: TextStyle(
@@ -1271,6 +1271,7 @@ class _FoodPageState extends State<FoodPage> {
                                       _.select(true);
                                     }
                                     snapshot.refresh();
+                                    _cartContext.refresh();
                                   }),
                               SizedBox(
                                 width: 2,
@@ -1291,6 +1292,7 @@ class _FoodPageState extends State<FoodPage> {
                                       _.value.quantity++;
                                       _.select(true);
                                       snapshot.refresh();
+                                      _cartContext.refresh();
                                     } else {
                                       print("max options");
                                       Fluttertoast.showToast(msg: "maximum selection ${option.title} : ${option.maxOptions}");

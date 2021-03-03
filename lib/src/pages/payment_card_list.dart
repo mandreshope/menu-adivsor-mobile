@@ -95,7 +95,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                           isPaying = true;
                                         });
                                         try {
-                                          var payment = await StripeService.payViaExistingCard(
+                                          StripeTransactionResponse payment = await StripeService.payViaExistingCard(
                                             amount: (cartContext.totalPrice * 100).floor().toString(),
                                             card: creditCard,
                                             currency: 'eur',
@@ -104,6 +104,10 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
 
                                           if (payment.success) {
                                           var command = await Api.instance.sendCommand(
+                                            optionLivraison: widget.restaurant.optionLivraison,
+                                            etage: widget.restaurant.etage,
+                                            appartement: widget.restaurant.appartement,
+                                            payed: true,
                                             comment: cartContext.comment,
                                             relatedUser: authContext.currentUser?.id ?? null,
                                             commandType: commandContext.commandType,
@@ -112,7 +116,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                                       .where(
                                                           (e) => !e.isMenu)
                                                       .map((e) => {
-                                                            'quantity': 1,
+                                                            'quantity': e.quantity,
                                                             'item': e.id,
                                                             'options': e.optionSelected != null ? 
                                                             e.optionSelected : [],
@@ -126,7 +130,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                                   (e) => e.isMenu).map(
                                                     (e) => 
                                                     {
-                                                      'quantity': 1,
+                                                      'quantity': e.quantity,
                                                       'item': e.id,
                                                       'foods': 
                                                   e.foodMenuSelecteds

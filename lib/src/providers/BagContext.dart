@@ -112,12 +112,13 @@ class CartContext extends ChangeNotifier {
     double totalPrice = 0;
 
     _items.forEach((food) {
+      totalPrice += food.totalPrice.toDouble() /100;
       /*if (food.isMenu) {
         food.foods.forEach((f){
          if (f.price != null && f.price.amount != null) totalPrice += f.price.amount / 100 * count;
         });
       }else*/
-      if (food.isMenu) {
+      /*if (food.isMenu) {
         // if (food.type == "per_food"){
         /* if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100;
           food.foodSelected.forEach((element) {
@@ -132,11 +133,11 @@ class CartContext extends ChangeNotifier {
         }else if (food.type == "fixed_price"){
           if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100;
         }*/
-        if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100  * food.quantity;
+        if (food.price != null && food.price.amount != null) totalPrice += (food.price.amount / 100)  * food.quantity;
         foodMenuSelecteds.forEach((element) {
           element.optionSelected?.forEach((options) {
             options.itemOptionSelected?.forEach((itemOption) {
-              if (itemOption.price != null && itemOption.price.amount != null) totalPrice += itemOption.price.amount / 100 * itemOption.quantity;
+              if (itemOption.price != null && itemOption.price.amount != null) totalPrice += (itemOption.price.amount / 100) * itemOption.quantity;
             });
           });
         });
@@ -144,10 +145,10 @@ class CartContext extends ChangeNotifier {
         if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100   * food.quantity;
         food.optionSelected?.forEach((option) {
           option.itemOptionSelected?.forEach((itemOption) {
-            if (itemOption.price != null && itemOption.price.amount != null) totalPrice += itemOption.price.amount / 100 * itemOption.quantity;
+            if (itemOption.price != null && itemOption.price.amount != null) totalPrice += (itemOption.price.amount / 100) * itemOption.quantity;
           });
         });
-      }
+      }*/
 
       /*if (food.isMenu){
         // if (per_food)
@@ -387,4 +388,13 @@ class CartContext extends ChangeNotifier {
     int count = _itemsTemp.where((element) => element.idNewFood == food.idNewFood).toList().length;
     return count;
   }
+
+  int get totalItems {
+    int total = 0;
+    items.forEach((element) {
+      total += element.quantity;
+    });
+    return total;
+  }
+
 }

@@ -224,7 +224,7 @@ class OrderButton extends StatelessWidget {
                                             borderRadius: BorderRadius.circular(12.5)
                                           ),
                                           child: Center(
-                                            child: Text("${provider.items.length}",
+                                            child: Text("${provider.totalItems}",
                                               style: TextStyle(
                                                   color: Colors.white,
                                                   fontWeight: FontWeight.bold

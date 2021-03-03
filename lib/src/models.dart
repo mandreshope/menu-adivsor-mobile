@@ -141,6 +141,19 @@ class Food implements Copyable<Food>{
     this.options = options.map((o) => Option.copy(o)).toList();
   }
 
+int get totalPrice{
+  int price = (this.price.amount ?? 0) * quantity;
+  if (price == 0) return 0;
+  this.optionSelected.forEach((element) {
+    element.itemOptionSelected.forEach((e) {
+      price += (e.price.amount ?? 0) * e.quantity;
+    });
+  });
+
+  return price;
+
+}
+
   @override
   Food copy() {
     // TODO: implement copy
@@ -264,6 +277,23 @@ class Menu implements Copyable<Menu>{
 
   }
 
+  
+int get totalPrice{
+  int price = (this.price.amount ?? 0) * quantity;
+  if (price == 0) return 0;
+  this.foodSelected.forEach((food) {
+    price += food.totalPrice;
+  });
+  /*this.optionSelected.forEach((element) {
+    element.itemOptionSelected.forEach((e) {
+      price += (e.price.amount ?? 0) * e.quantity;
+    });
+  });*/
+
+  return price;
+
+}
+
 
   Map<String,Food> get foodMenuSelected => _foodMenuSelected;
 
@@ -351,6 +381,10 @@ class Restaurant {
   final List<OpeningTimes> openingTimes;
 
   int priceDelevery;
+
+  String optionLivraison = "";
+  String appartement = "";
+  int etage = 0;
 
   Restaurant({
     this.phoneNumber,

@@ -127,7 +127,9 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
               ),
               onPressed: () async { // onRemove
                 // widget.onRemoved(--widget.itemCount);
-                widget.food.quantity --;
+                // if (widget.food.quantity == 1){
+                  widget.food.quantity --;
+                // }
                  widget.onRemoved();
                   return;
                 if (widget.food.isMenu){

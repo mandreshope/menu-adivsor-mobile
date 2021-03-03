@@ -581,7 +581,11 @@ print('$_apiURL/restaurants$query');
     Map customer,
     var menu,
     String comment,
-    bool priceless
+    bool priceless,
+    String optionLivraison = 'out',
+    String appartement,
+    int etage,
+    bool payed = false,
   }) async {
     await _refreshTokens();
     try{
@@ -599,8 +603,9 @@ print('$_apiURL/restaurants$query');
         'comment':comment,
         'priceless':priceless,
         'optionLivraison':'out',
-        'appartement':'test',
-        'etage':2
+        'appartement':appartement,
+        'etage':etage,
+        'payed':payed
       });
       print(post);
       return http

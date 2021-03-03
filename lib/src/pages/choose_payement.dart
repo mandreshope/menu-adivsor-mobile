@@ -60,6 +60,9 @@ class ChoosePayement extends StatelessWidget {
             AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
 
             var command = await Api.instance.sendCommand(
+              optionLivraison: restaurant.optionLivraison,
+                                            etage: restaurant.etage,
+                                            appartement: restaurant.appartement,
                                             comment: cartContext.comment,
                                             relatedUser: authContext.currentUser?.id ?? null,
                                             commandType: commandContext.commandType,

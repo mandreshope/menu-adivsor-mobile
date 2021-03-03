@@ -761,6 +761,7 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                 ],
               ),
             ),
+            /*
             Positioned(
               bottom: 0,
               right: 15,
@@ -804,6 +805,7 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                 ),
               ),
             ),
+          */
           ],
         ),
       ),
@@ -1436,6 +1438,7 @@ class _BagItemState extends State<BagItem> {
   CartContext _cartContext;
 
   bool hasMessage = false;
+  bool expand = false;
 
   @override
   Widget build(BuildContext context) {
@@ -1486,7 +1489,18 @@ class _BagItemState extends State<BagItem> {
               ],
               if (!widget.food.isMenu && widget.food.optionSelected != null && widget.food.optionSelected.isNotEmpty)...[
                 Divider(),
-                _options(widget.food),
+                if (expand)...[
+                  _options(widget.food),
+                  Divider(),
+                ],
+                FlatButton(onPressed: (){
+                  setState(() {
+                    expand = !expand;
+                  });
+                }, child: Center(
+                  child: Icon(
+                    expand ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down ),
+                ))
               ]
                   // Divider(),
 
@@ -1567,11 +1581,11 @@ class _BagItemState extends State<BagItem> {
           widget.food, 
           onAdded: (){
             setState(() {
-              
+              _cartContext.refresh();
             });
           }, 
           onRemoved: () async {
-          
+            
             if(widget.food.quantity <= 0){
               var result = await showDialog(
                     context: context,
@@ -1586,6 +1600,8 @@ class _BagItemState extends State<BagItem> {
                     _cartContext.removeItemAtPosition(widget.position);
                     // if (!widget.fromRestaurant)
                       // RouteUtil.goBack(context: context);
+                  }else{
+                    widget.food.quantity = 1;
                   }
               // _cartContext.addItem(widget.food, 0, false);
               // if(_cartContext.items.length == 0){
@@ -1593,7 +1609,7 @@ class _BagItemState extends State<BagItem> {
               // }
             }            
             setState(() {
-              
+              _cartContext.refresh();
             });
 
           }, itemCount: widget.food.quantity, isContains: _cartContext.contains(widget.food)),
