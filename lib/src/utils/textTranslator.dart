@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_mlkit_language/firebase_mlkit_language.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,7 @@ class TextTranslator extends StatelessWidget {
   const TextTranslator(this.data,{Key key,this.locale,
   this.maxLines,this.overflow,this.semanticsLabel,this.softWrap,
   this.strutStyle,this.style,this.textAlign,this.textDirection,
-  this.textHeightBehavior,this.textScaleFactor,this.textWidthBasis}) : super(key: key);
+  this.textHeightBehavior,this.textScaleFactor,this.textWidthBasis,this.isAutoSizeText = false}) : super(key: key);
   // final Text child;
   final String data;
   final TextStyle style;
@@ -23,6 +24,7 @@ class TextTranslator extends StatelessWidget {
   final TextHeightBehavior textHeightBehavior;
   final double textScaleFactor;
   final TextWidthBasis textWidthBasis;
+  final bool isAutoSizeText;
 
 
   @override
@@ -37,7 +39,19 @@ class TextTranslator extends StatelessWidget {
         if (!snapshot.hasData){
           return Center(child: CupertinoActivityIndicator(animating: true,));
         }else{
-          return Text(
+          return isAutoSizeText ? AutoSizeText(
+            snapshot.data,
+            style: this.style,
+            maxLines: this.maxLines,
+            overflow: this.overflow,
+            textAlign: this.textAlign,
+            textDirection: this.textDirection,
+            locale: this.locale,
+            semanticsLabel: this.semanticsLabel,
+            softWrap: this.softWrap,
+            strutStyle: this.strutStyle,
+          ) :
+           Text(
             snapshot.data,
             style: this.style,
             maxLines: this.maxLines,

@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:chips_choice/chips_choice.dart';
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
@@ -81,8 +82,8 @@ class CategoryCard extends StatelessWidget {
                             child: FadeInImage.assetNetwork(
                               placeholder: 'assets/images/loading.gif',
                               image: imageURL,
-                              height: 50,
-                              width: 50,
+                              height: 70,
+                              width: 70,
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -203,195 +204,231 @@ class _FoodCardState extends State<FoodCard> {
                     top: 0,
                     bottom: widget.showButton ? 20 : 0,
                     left: widget.showButton ? 110 : 0,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        SizedBox(
-                          height: 20,
-                          child: Row(
-                            children: [],
-                          ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                              left: 30.0,
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                TextTranslator(
-                                  widget.food.name ?? "",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
+                        Container(
+                          width: MediaQuery.of(context).size.width - 288,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                height: 20,
+                                child: Row(
+                                  children: [],
+                                ),
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: 30.0,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.max,
+                                    children: [
+                                      TextTranslator(
+                                        widget.food.name ?? "",
+                                        maxLines: 1,
+                                        isAutoSizeText: true,
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      SizedBox(height: 5),
+                                      loadingRestaurantName
+                                          ? SizedBox(
+                                              height: 10,
+                                              child: FittedBox(
+                                                child: CircularProgressIndicator(
+                                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                                    CRIMSON,
+                                                  ),
+                                                ),
+                                              ),
+                                            )
+                                          : TextTranslator(
+                                              restaurantName ?? AppLocalizations.of(context).translate('no_associated_restaurant'),
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                      if (widget.food.price != null && widget.food.price?.amount != null) ...[
+                                        SizedBox(height: 5),
+                                        Text(
+                                          Provider.of<CartContext>(context).withPrice ? "${widget.food.price.amount / 100}€" : "",
+                                          style: TextStyle(
+                                            fontSize: 21,
+                                            color: Colors.yellow[700],
+                                          ),
+                                        ),
+                                      ] else
+                                        ...[]
+                                    ],
                                   ),
                                 ),
-                                SizedBox(height: 5),
-                                loadingRestaurantName
-                                    ? SizedBox(
-                                        height: 10,
-                                        child: FittedBox(
-                                          child: CircularProgressIndicator(
-                                            valueColor: AlwaysStoppedAnimation<Color>(
-                                              CRIMSON,
+                              ),
+                              Container(
+                                // color:Colors.black,
+                                width: MediaQuery.of(context).size.width - 170,
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  mainAxisAlignment: widget.showButton ? MainAxisAlignment.end : MainAxisAlignment.start,
+                                  children: [
+                                    Consumer<CartContext>(
+                                      builder: (_, cartContext, __) {
+                                        if (widget.showButton)
+                                          return ButtonItemCountWidget(
+                                            widget.food,
+                                            isContains: cartContext.contains(widget.food),
+                                            itemCount: cartContext.getCount(widget.food),
+                                            onAdded: (value) {
+                                              cartContext.addItem(widget.food, value,true);
+                                            },
+                                            onRemoved: (value) {
+                                              value == 0 ? cartContext.removeItem(widget.food) : cartContext.addItem(widget.food, value,false);
+                                            },
+                                          );
+                                        return RawMaterialButton(
+                                          fillColor: DARK_BLUE,
+                                          padding: const EdgeInsets.all(15),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.only(
+                                              bottomLeft: Radius.circular(30),
+                                              topRight: Radius.circular(30),
                                             ),
                                           ),
-                                        ),
-                                      )
-                                    : TextTranslator(
-                                        restaurantName ?? AppLocalizations.of(context).translate('no_associated_restaurant'),
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                if (widget.food.price != null && widget.food.price?.amount != null) ...[
-                                  SizedBox(height: 5),
-                                  Text(
-                                    Provider.of<CartContext>(context).withPrice ? "${widget.food.price.amount / 100}€" : "",
-                                    style: TextStyle(
-                                      fontSize: 21,
-                                      color: Colors.yellow[700],
-                                    ),
-                                  ),
-                                ] else
-                                  ...[]
-                              ],
-                            ),
-                          ),
-                        ),
-                        Container(
-                          // color:Colors.black,
-                          width: MediaQuery.of(context).size.width - 170,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            mainAxisAlignment: widget.showButton ? MainAxisAlignment.end : MainAxisAlignment.start,
-                            children: [
-                              Consumer<CartContext>(
-                                builder: (_, cartContext, __) {
-                                  if (widget.showButton)
-                                    return ButtonItemCountWidget(
-                                      widget.food,
-                                      isContains: cartContext.contains(widget.food),
-                                      itemCount: cartContext.getCount(widget.food),
-                                      onAdded: (value) {
-                                        cartContext.addItem(widget.food, value,true);
-                                      },
-                                      onRemoved: (value) {
-                                        value == 0 ? cartContext.removeItem(widget.food) : cartContext.addItem(widget.food, value,false);
-                                      },
-                                    );
-                                  return RawMaterialButton(
-                                    fillColor: DARK_BLUE,
-                                    padding: const EdgeInsets.all(15),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.only(
-                                        bottomLeft: Radius.circular(30),
-                                        topRight: Radius.circular(30),
-                                      ),
-                                    ),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: widget.food.isPopular ? Colors.transparent : Colors.white,
-                                      ),
-                                      padding: widget.food.isPopular ? EdgeInsets.zero : EdgeInsets.all(5.0),
-                                      child: FaIcon(
-                                       widget.food.isPopular ? Icons.visibility : cartContext.contains(widget.food) ? FontAwesomeIcons.minus : FontAwesomeIcons.plus,
-                                        size: widget.food.isPopular ? 22 : 10,
-                                        color: widget.food.isPopular ? Colors.white : Colors.black12,
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: widget.food.isPopular ? Colors.transparent : Colors.white,
+                                            ),
+                                            padding: widget.food.isPopular ? EdgeInsets.zero : EdgeInsets.all(5.0),
+                                            child: FaIcon(
+                                             widget.food.isPopular ? Icons.visibility : cartContext.contains(widget.food) ? FontAwesomeIcons.minus : FontAwesomeIcons.plus,
+                                              size: widget.food.isPopular ? 22 : 10,
+                                              color: widget.food.isPopular ? Colors.white : Colors.black12,
 
-                                      ),
-                                    ),
-                                    onPressed: 
-                                    widget.food.isPopular ? () => RouteUtil.goTo(
-                                        context: context,
-                                        child: FoodPage(
-                                          food: widget.food,
-                                          imageTag: widget.imageTag,
-                                          restaurantName: restaurantName,
-                                        ),
-                                        routeName: foodRoute,
-                                      ) :
-                                    !cartContext.contains(widget.food) ? 
-                                    () => RouteUtil.goTo(
-                                          context: context,
-                                          child: FoodPage(
-                                            food: widget.food,
-                                            imageTag: widget.imageTag,
-                                            restaurantName: restaurantName,
+                                            ),
                                           ),
-                                          routeName: foodRoute,
-                                        ) :
-                                    
-                                    (cartContext.itemCount == 0) ||
-                                            (cartContext.pricelessItems && widget.food.price?.amount == null) ||
-                                            (!cartContext.pricelessItems && widget.food.price?.amount != null)
-                                        ? () async {
-                                            if (cartContext.contains(widget.food)) {
-                                              var result = await showDialog(
+                                          onPressed: 
+                                          widget.food.isPopular ? () => RouteUtil.goTo(
+                                              context: context,
+                                              child: FoodPage(
+                                                food: widget.food,
+                                                imageTag: widget.imageTag,
+                                                restaurantName: restaurantName,
+                                              ),
+                                              routeName: foodRoute,
+                                            ) :
+                                          !cartContext.contains(widget.food) ? 
+                                          () => RouteUtil.goTo(
                                                 context: context,
-                                                builder: (_) => ConfirmationDialog(
-                                                  title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
-                                                  content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
-                                                ),
-                                              );
-
-                                              if (result is bool && result) {
-                                                cartContext.removeAllFood(widget.food);
-
-                                                // RouteUtil.goBack(
-                                                //     context: context);
-                                              }
-                                            } else if (!cartContext.hasSameOriginAsInBag(widget.food)) {
-                                              Fluttertoast.showToast(
-                                                msg: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
-                                              );
-                                            } else
-                                              showDialog(
-                                                context: context,
-                                                builder: (_) => AddToBagDialog(
+                                                child: FoodPage(
                                                   food: widget.food,
+                                                  imageTag: widget.imageTag,
+                                                  restaurantName: restaurantName,
                                                 ),
-                                              );
-                                          }
-                                        : () {
-                                            Fluttertoast.showToast(msg: 'Vous ne pouvez pas à la fois commander des articles sans prix et avec prix');
-                                          },
-                                  );
-                                },
+                                                routeName: foodRoute,
+                                              ) :
+                                          
+                                          (cartContext.itemCount == 0) ||
+                                                  (cartContext.pricelessItems && widget.food.price?.amount == null) ||
+                                                  (!cartContext.pricelessItems && widget.food.price?.amount != null)
+                                              ? () async {
+                                                  if (cartContext.contains(widget.food)) {
+                                                    var result = await showDialog(
+                                                      context: context,
+                                                      builder: (_) => ConfirmationDialog(
+                                                        title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
+                                                        content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
+                                                      ),
+                                                    );
+
+                                                    if (result is bool && result) {
+                                                      cartContext.removeAllFood(widget.food);
+
+                                                      // RouteUtil.goBack(
+                                                      //     context: context);
+                                                    }
+                                                  } else if (!cartContext.hasSameOriginAsInBag(widget.food)) {
+                                                    Fluttertoast.showToast(
+                                                      msg: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
+                                                    );
+                                                  } else
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (_) => AddToBagDialog(
+                                                        food: widget.food,
+                                                      ),
+                                                    );
+                                                }
+                                              : () {
+                                                  Fluttertoast.showToast(msg: 'Vous ne pouvez pas à la fois commander des articles sans prix et avec prix');
+                                                },
+                                        );
+                                      },
+                                    ),
+                                    SizedBox(
+                                      width: 20,
+                                    ),
+                                    // _renderNotes(food.ratings)
+                                  ],
+                                ),
                               ),
-                              SizedBox(
-                                width: 20,
-                              ),
-                              // _renderNotes(food.ratings)
                             ],
                           ),
                         ),
+                     Container(
+                      child: Hero(
+                          tag: widget.imageTag ?? 'foodImage${widget.food.id}',
+                          child: widget.food.imageURL != null
+                              ? ClipRRect(
+                                    borderRadius: BorderRadius.only(bottomRight: Radius.circular(widget.showButton ? 10 : 30),topRight: Radius.circular(widget.showButton ? 10 : 30)),
+                                    child: FadeInImage.assetNetwork(
+                                    image: widget.food.imageURL,
+                                    placeholder: 'assets/images/loading.gif',
+                                    width: 100,
+                                    height: double.infinity,
+                                    fit: BoxFit.cover,
+                                  ),
+                              )
+                              : Icon(
+                                  Icons.fastfood,
+                                  size: 60,
+                                ),
+                        ),
+                    ),
                       ],
                     ),
                   ),
-                  Positioned(
-                    right: widget.showButton ? null : 30,
-                    top: 0,
-                    bottom: 0,
-                    left: widget.showButton ? 30 : null,
-                    child: Hero(
-                        tag: widget.imageTag ?? 'foodImage${widget.food.id}',
-                        child: widget.food.imageURL != null
-                            ? FadeInImage.assetNetwork(
-                                image: widget.food.imageURL,
-                                placeholder: 'assets/images/loading.gif',
-                                width: 80,
-                              )
-                            : Icon(
-                                Icons.fastfood,
-                                size: 60,
-                              ),
-                      ),
-                  ),
+                  // Positioned(
+                  //   right: 0,
+                  //   top: 0,
+                  //   bottom: 0,
+                  //   left: widget.showButton ? 30 : null,
+                  //   child: Container(
+                  //     child: Hero(
+                  //         tag: widget.imageTag ?? 'foodImage${widget.food.id}',
+                  //         child: widget.food.imageURL != null
+                  //             ? ClipRRect(
+                  //                   borderRadius: BorderRadius.only(bottomRight: Radius.circular(widget.showButton ? 10 : 30),topRight: Radius.circular(widget.showButton ? 10 : 30)),
+                  //                   child: FadeInImage.assetNetwork(
+                  //                   image: widget.food.imageURL,
+                  //                   placeholder: 'assets/images/loading.gif',
+                  //                   width: 100,
+                  //                   fit: BoxFit.cover,
+                  //                 ),
+                  //             )
+                  //             : Icon(
+                  //                 Icons.fastfood,
+                  //                 size: 60,
+                  //               ),
+                  //       ),
+                  //   ),
+                  // ),
                 ],
               ),
             ),
@@ -1924,8 +1961,7 @@ class BlogCard extends StatelessWidget {
             Stack(
               fit: StackFit.loose,
                 children: [
-                  InkWell(
-                    child: Hero(
+                  Hero(
                       tag: 'tag:${blog.imageURL}',
                       child: Container(
                         height: 190,
@@ -1937,10 +1973,6 @@ class BlogCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    onTap: () {
-                      RouteUtil.goTo(context: context, child: PhotoViewPage(tag: 'tag:${blog.imageURL}', img: blog.imageURL,), routeName: null);
-                    },
-                  ),
                   Positioned.fill(
                     bottom: 0,
                     left: 0,
