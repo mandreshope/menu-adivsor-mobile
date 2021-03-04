@@ -52,6 +52,7 @@ class _MapPageState extends State<MapPage> {
 
   int range;
   PanelController _panelController;
+  bool isopen = true;
 
   void _onCameraMove(CameraPosition position) {
     _lastMapPosition = position.target;
@@ -191,7 +192,7 @@ class _MapPageState extends State<MapPage> {
 
 _nearestRestaurants = res.where((element) {
   Restaurant restaurant = Restaurant.fromJson(element.content);
-  return restaurant.isOpen; 
+  return restaurant.isOpen == isopen; 
 }).toList();
       } catch (error) {} finally {
         if (mounted)
@@ -221,7 +222,7 @@ _nearestRestaurants = res.where((element) {
       setState(() {
         _nearestRestaurants = results.where((element) {
   Restaurant restaurant = Restaurant.fromJson(element.content);
-  return restaurant.isOpen; 
+  return restaurant.isOpen == isopen; 
 }).toList();
       });
     } catch (error) {
@@ -323,10 +324,11 @@ _nearestRestaurants = res.where((element) {
                               range: Provider.of<SettingContext>(context).range,
                             ),
                           );
-                          if (result != null && result['filters'] is Map) {
+                          if (result != null && result['filters'] is Map && result['shedule'] != null) {
                             setState(() {
                               filters = result['filters'];
                               range = result['range'];
+                              isopen = result['shedule'];
                             });
                             _initSearch();
                           }
@@ -484,7 +486,7 @@ _nearestRestaurants = res.where((element) {
                                     width: double.infinity,
                                     child: Center(
                                       child: 
-                                      Text(_nearestRestaurants.isNotEmpty ? "Voir les restaurants" : "Acun restaurant trouvé",style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold),
+                                      Text(_nearestRestaurants.isNotEmpty ? "Voir les restaurants" : "Aucun restaurant trouvé",style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold),
                                   ),
                                     )),
                                   ..._nearestRestaurants
@@ -503,7 +505,7 @@ _nearestRestaurants = res.where((element) {
                                                                   CameraPosition( target: LatLng(
                                                                     restaurant.location.coordinates[1],
                                                                     restaurant.location.coordinates[0],
-                                                                  ), zoom: 15)
+                                                                  ), zoom: 25)
                                                                 ))
                                                               .catchError((onError) {
 
@@ -571,14 +573,30 @@ _nearestRestaurants = res.where((element) {
                                                               maxWidth: 26,
                                                             ),
                                                             onPressed: () async {
+                                                              // _panelController.close();
+                                                              //  RouteUtil.goTo(
+                                                              //   context: context,
+                                                              //   child: RestaurantPage(
+                                                              //     restaurant: restaurant.id,
+                                                              //   ),
+                                                              //   routeName: restaurantRoute,
+                                                              // );
+                                                              var map = await _mapController.future;
+                                                              map.animateCamera(
+                                                                CameraUpdate.newCameraPosition(
+                                                                  CameraPosition( target: LatLng(
+                                                                    restaurant.location.coordinates[1],
+                                                                    restaurant.location.coordinates[0],
+                                                                  ), zoom: 20)
+                                                                ))
+                                                              .catchError((onError) {
+
+                                                              });
                                                               _panelController.close();
-                                                               RouteUtil.goTo(
-                                                                context: context,
-                                                                child: RestaurantPage(
-                                                                  restaurant: restaurant.id,
-                                                                ),
-                                                                routeName: restaurantRoute,
-                                                              );
+                                                              setState(() {
+                                                                this.restaurant = restaurant;
+                                                                //                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  showInfo = true;
+                                                              });
                                                             },
                                                           ),
                                                           Container(

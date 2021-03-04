@@ -879,7 +879,7 @@ class _HomePageState extends State<HomePage> {
                     height: 200,
                     child: Center(
                       child: TextTranslator(
-                        "Acune Blog trouvée",
+                        "Aucune Blog trouvée",
                         style: TextStyle(
                           fontSize: 22,
                         ),

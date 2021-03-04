@@ -71,7 +71,7 @@ class ChoosePayement extends StatelessWidget {
                                                       .where(
                                                           (e) => !e.isMenu)
                                                       .map((e) => {
-                                                            'quantity': 1,
+                                                            'quantity': e.quantity,
                                                             'item': e.id,
                                                             'options': e.optionSelected != null ? 
                                                             e.optionSelected : [],
@@ -85,7 +85,7 @@ class ChoosePayement extends StatelessWidget {
                                                   (e) => e.isMenu).map(
                                                     (e) => 
                                                     {
-                                                      'quantity': 1,
+                                                      'quantity': e.quantity,
                                                       'item': e.id,
                                                       'foods': 
                                                   e.foodMenuSelecteds

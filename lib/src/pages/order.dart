@@ -448,7 +448,7 @@ class _OrderPageState extends State<OrderPage> {
               items: cartContext.items.where(
                       (f) => !f.isMenu).map(
                       (e) => {
-                        'quantity': 1,
+                        'quantity': e.quantity,
                         'item': e.id,
                         'options': e.optionSelected != null ?
                         e.optionSelected : [],
@@ -461,7 +461,7 @@ class _OrderPageState extends State<OrderPage> {
                 (e) => e.isMenu).map(
                   (e) => 
                   {
-                    'quantity': 1,
+                    'quantity': e.quantity,
                     'item': e.id,
                     'foods': 
                 e.foodMenuSelecteds
@@ -546,7 +546,7 @@ class _OrderPageState extends State<OrderPage> {
           comment: cartContext.comment,
           relatedUser: authContext.currentUser.id,
           commandType: commandContext.commandType,
-          items: cartContext.items.where((e) => !e.isMenu).map((e) => {'quantity': 1, 'item': e.id,
+          items: cartContext.items.where((e) => !e.isMenu).map((e) => {'quantity': e.quantity, 'item': e.id,
             'options': e.optionSelected != null ?
             e.optionSelected : [],'comment':e.message}).toList(),
           restaurant: cartContext.currentOrigin,
@@ -556,7 +556,7 @@ class _OrderPageState extends State<OrderPage> {
                 e.isMenu).map(
                   (e) => 
                   {
-                    'quantity': 1,
+                    'quantity': e.quantity,
                     'item': e.id,
                     'foods': 
                 e.foodMenuSelecteds
@@ -730,7 +730,7 @@ class _OrderPageState extends State<OrderPage> {
                           child: InkWell(
                             borderRadius: BorderRadius.circular(20),
                             onTap: () {
-                              if (!_restaurant.surPlace){
+                              if (!_restaurant.aEmporter){
                                Fluttertoast.showToast(
                                                 msg: 'Restaurant fermé',
                                               );

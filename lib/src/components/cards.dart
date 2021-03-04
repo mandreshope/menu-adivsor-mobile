@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:chips_choice/chips_choice.dart';
 import 'package:dotted_line/dotted_line.dart';
@@ -147,11 +149,13 @@ class _FoodCardState extends State<FoodCard> {
   bool loadingRestaurantName = true;
   String restaurantName;
   Api api = Api.instance;
+  bool loading = true;
 
   @override
   void initState() {
     super.initState();
-    var restaurantId = widget.food.restaurant is String ? widget.food.restaurant : widget.food.restaurant['_id'];
+    
+      var restaurantId = widget.food.restaurant is String ? widget.food.restaurant : widget.food.restaurant['_id'];
     api.getRestaurantName(id: restaurantId).then((res) {
       if (mounted)
         setState(() {
@@ -160,7 +164,14 @@ class _FoodCardState extends State<FoodCard> {
         });
     }).catchError((error) {
       restaurantName = AppLocalizations.of(context).translate('no_associated_restaurant');
-    });
+    });  
+    // Timer.periodic(Duration(milliseconds: 5), (time){
+    //   setState(() {
+    //     loading = false;
+    //   });
+    //   time.cancel();
+    // });
+    
   }
 
   @override
@@ -206,9 +217,11 @@ class _FoodCardState extends State<FoodCard> {
                     left: widget.showButton ? 110 : 0,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisSize: MainAxisSize.max,
                       children: [
                         Container(
-                          width: MediaQuery.of(context).size.width - 288,
+                          // key: ,
+                          width: widget.minified ? (MediaQuery.of(context).size.width - 288) : (MediaQuery.of(context).size.width - 188),
                           child: Column(
                             mainAxisSize: MainAxisSize.max,
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -309,7 +322,7 @@ class _FoodCardState extends State<FoodCard> {
                                             child: FaIcon(
                                              widget.food.isPopular ? Icons.visibility : cartContext.contains(widget.food) ? FontAwesomeIcons.minus : FontAwesomeIcons.plus,
                                               size: widget.food.isPopular ? 22 : 10,
-                                              color: widget.food.isPopular ? Colors.white : Colors.black12,
+                                              color: widget.food.isPopular ? Colors.white : Colors.black,
 
                                             ),
                                           ),
@@ -548,21 +561,24 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
         child: Stack(
           children: [
             Padding(
-              padding: const EdgeInsets.only(top: 15, right: 15.0, left: 15.0, bottom: 15),
+              padding: const EdgeInsets.only(right: 15.0),
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Hero(
                     tag: widget.food.id,
-                    child: FadeInImage.assetNetwork(
-                      placeholder: 'assets/images/loading.gif',
-                      image: widget.food.imageURL,
-                      width: 80,
-                      height: 80,
-                      fit: BoxFit.contain,
-                      imageErrorBuilder: (_, __, ___) => Icon(
-                        Icons.food_bank_outlined,
+                    child: ClipRRect(
+                        borderRadius: BorderRadius.only(bottomLeft: Radius.circular(5),topLeft: Radius.circular(5)),
+                        child: FadeInImage.assetNetwork(
+                        placeholder: 'assets/images/loading.gif',
+                        image: widget.food.imageURL,
+                        width: 95,
+                        height: 100,
+                        fit: BoxFit.cover,
+                        imageErrorBuilder: (_, __, ___) => Icon(
+                          Icons.food_bank_outlined,
+                        ),
                       ),
                     ),
                   ),
@@ -573,6 +589,7 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        SizedBox(height: 10,),
                         TextTranslator(
                           widget.food.name,
                           style: TextStyle(
@@ -598,8 +615,8 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                                   });
                                },
                                 child: Container(
-                                 padding: EdgeInsets.only(bottom: expanded ? 30 : 0),
-                                 height: expanded ? 56 : 20,
+                                 padding: EdgeInsets.only(bottom: expanded ? 20 : 0),
+                                 height: expanded ? 46 : 20,
                                  child: 
                                  ListView(
                                   // spacing: expanded ? 5 : 5,

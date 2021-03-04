@@ -422,7 +422,7 @@ class _FoodPageState extends State<FoodPage> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 28),
                     child: TextTranslator(
-                      widget.food.description ?? AppLocalizations.of(context).translate('no_description'),
+                      widget.food.description ?? "",
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,

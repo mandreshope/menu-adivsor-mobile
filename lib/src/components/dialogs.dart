@@ -187,7 +187,7 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
   int itemCount = 1;
   dynamic optionSelected;
   List<dynamic> options = [];
-
+  String shedule = "ouvert";
   @override
   void initState() {
     super.initState();
@@ -424,20 +424,17 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
 
   List<String> searchType = List();
 
+  String shedule = "ouvert";
+
   @override
   void initState() {
     super.initState();
-    if (widget.fromMap){
-    searchType = [
-                      'restaurant',
-                    ];
-    }else{
+   
     searchType = [
                       'all',
                       'restaurant',
                       'food',
                     ];
-    }
 
                   
     distanceAround = widget.range;
@@ -512,7 +509,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
             ),*/
             if (!widget.isDiscover) ...[
               if (!widget.inRestaurant) ...[
-                if(!widget.fromMap)...[
+                
                 TextTranslator(
                   AppLocalizations.of(context).translate('search_type'),
                   style: TextStyle(
@@ -562,10 +559,9 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                 SizedBox(
                   height: 15,
                 ),
-              ]
+              
               ]
             ],
-            if(!widget.fromMap)...[
                 TextTranslator(
                   AppLocalizations.of(context).translate('categories'),
                   style: TextStyle(
@@ -729,23 +725,37 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                 SizedBox(
                   height: 20,
                 ),
-            ]else...[
-               TextTranslator(
-                  "Restaurant ouvert",
+           
+           if (widget.fromMap)...[
+
+           
+            SizedBox(
+                  height: 5,
+                ),
+                TextTranslator(
+                  "Horaires",
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(
-                  height: 20,
-                ),
-            ],
-            Align(
+                ChipsChoice.single(
+                  value: this.shedule,
+                   onChanged: (value){
+                     setState(() {
+                       this.shedule = value;
+                     });
+                   }, choiceItems:  C2Choice.listFrom(
+                        source: ["ouvert","fermé"],
+                        value: (i, v) => v,
+                        label: (i, v) => v,
+                      ),),
+           ],
+                       Align(
               alignment: Alignment.centerRight,
               child: RaisedButton(
                 onPressed: () => Navigator.of(context).pop(
-                  {'filters': filters, 'type': type, 'range': distanceAround},
+                  {'filters': filters, 'type': type, 'range': distanceAround, "shedule":shedule == "ouvert" ? true : false},
                 ),
                 child: TextTranslator(
                   AppLocalizations.of(context).translate('confirm'),

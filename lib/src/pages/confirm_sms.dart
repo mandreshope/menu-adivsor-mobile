@@ -266,7 +266,7 @@ class _ConfirmSmsState extends State<ConfirmSms> {
           items: cartContext.items
               .where((e) => !e.isMenu)
               .map((e) => {
-            'quantity': 1,
+            'quantity': e.quantity,
             'item': e.id,
             'options': e.optionSelected != null ?
             e.optionSelected : [],
@@ -288,7 +288,7 @@ class _ConfirmSmsState extends State<ConfirmSms> {
                   (e) => e.isMenu).map(
                   (e) =>
               {
-                'quantity': 1,
+                'quantity': e.quantity,
                 'item': e.id,
                 'foods':
                 e.foodMenuSelecteds
