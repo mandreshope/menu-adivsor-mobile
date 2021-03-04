@@ -1477,9 +1477,21 @@ class _BagItemState extends State<BagItem> {
 
                   for(Food f in widget.food.foodMenuSelecteds)...[
                     if (f != null)...[
-                      _foodRender(f),
+                      if (expand)...[
+                  _foodRender(f),
                       Divider(),
                       _options(f),
+                  Divider(),
+                ],
+                FlatButton(onPressed: (){
+                  setState(() {
+                    expand = !expand;
+                  });
+                }, child: Center(
+                  child: Icon(
+                    expand ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down ),
+                ))
+                      
                     ] else ...[
                       Container()
                     ]

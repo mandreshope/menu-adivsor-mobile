@@ -408,7 +408,9 @@ class SearchSettingDialog extends StatefulWidget {
   final int range;
   final bool isDiscover;
 
-  SearchSettingDialog({Key key, @required this.languageCode, @required this.filters, @required this.type, this.inRestaurant = false, this.range = 1, this.isDiscover = false}) : super(key: key);
+  bool fromMap;
+
+  SearchSettingDialog({Key key, @required this.languageCode, @required this.filters, @required this.type, this.inRestaurant = false, this.range = 1, this.isDiscover = false,this.fromMap = false}) : super(key: key);
 
   @override
   _SearchSettingDialogState createState() => _SearchSettingDialogState();
@@ -420,10 +422,24 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
   int distanceAround; // 20 km
   ValueNotifier<double> _slider1Value = ValueNotifier<double>(0.0);
 
+  List<String> searchType = List();
+
   @override
   void initState() {
     super.initState();
+    if (widget.fromMap){
+    searchType = [
+                      'restaurant',
+                    ];
+    }else{
+    searchType = [
+                      'all',
+                      'restaurant',
+                      'food',
+                    ];
+    }
 
+                  
     distanceAround = widget.range;
     type = widget.type;
     filters.addAll(widget.filters);
@@ -496,6 +512,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
             ),*/
             if (!widget.isDiscover) ...[
               if (!widget.inRestaurant) ...[
+                if(!widget.fromMap)...[
                 TextTranslator(
                   AppLocalizations.of(context).translate('search_type'),
                   style: TextStyle(
@@ -510,11 +527,8 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                   scrollDirection: Axis.horizontal,
                   physics: BouncingScrollPhysics(),
                   child: Row(
-                    children: [
-                      'all',
-                      'restaurant',
-                      'food',
-                    ]
+                    children: 
+                    searchType
                         .map(
                           (e) => Theme(
                             data: ThemeData(
@@ -549,171 +563,184 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                   height: 15,
                 ),
               ]
+              ]
             ],
-
-            TextTranslator(
-              AppLocalizations.of(context).translate('categories'),
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              physics: BouncingScrollPhysics(),
-              child: Row(
-                children: [
-                  Theme(
-                    data: ThemeData(
-                      brightness: !filters.containsKey('category') ? Brightness.dark : Brightness.light,
-                      cardColor: !filters.containsKey('category') ? CRIMSON : Colors.white,
-                    ),
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(50),
-                        onTap: () {
-                          setState(() {
-                            filters.remove('category');
-                          });
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(10),
-                          child: TextTranslator(
-                            'Tous',
-                          ),
-                        ),
-                      ),
-                    ),
+            if(!widget.fromMap)...[
+                TextTranslator(
+                  AppLocalizations.of(context).translate('categories'),
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
-                  ...Provider.of<DataContext>(context)
-                      .foodCategories
-                      .map(
-                        (e) => Theme(
-                          data: ThemeData(
-                            brightness: filters.containsKey('category') && filters['category'] == e.id ? Brightness.dark : Brightness.light,
-                            cardColor: filters.containsKey('category') && filters['category'] == e.id ? CRIMSON : Colors.white,
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  physics: BouncingScrollPhysics(),
+                  child: Row(
+                    children: [
+                      Theme(
+                        data: ThemeData(
+                          brightness: !filters.containsKey('category') ? Brightness.dark : Brightness.light,
+                          cardColor: !filters.containsKey('category') ? CRIMSON : Colors.white,
+                        ),
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50),
                           ),
-                          child: Card(
-                            color: filters.containsKey('category') && filters['category'] == e.id ? CRIMSON : Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(50),
-                            ),
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(50),
-                              onTap: () {
-                                setState(() {
-                                  filters['category'] = e.id;
-                                });
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(10),
-                                child: TextTranslator(
-                                  e.name[Provider.of<SettingContext>(context).languageCode],
-                                ),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(50),
+                            onTap: () {
+                              setState(() {
+                                filters.remove('category');
+                              });
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(10),
+                              child: TextTranslator(
+                                'Tous',
                               ),
                             ),
                           ),
                         ),
-                      )
-                      .toList(),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 15,
-            ),
-            TextTranslator(
-              AppLocalizations.of(context).translate('attributes'),
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              physics: BouncingScrollPhysics(),
-              child: Row(
-                children: [
-                  Theme(
-                    data: ThemeData(
-                      brightness: !filters.containsKey('attributes') ? Brightness.dark : Brightness.light,
-                      cardColor: !filters.containsKey('attributes') ? CRIMSON : Colors.white,
-                    ),
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50),
                       ),
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(50),
-                        onTap: () {
-                          setState(() {
-                            filters.remove('attributes');
-                          });
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(10),
-                          child: TextTranslator(
-                            'Tous',
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  ...Provider.of<DataContext>(context)
-                      .foodAttributes
-                      .map(
-                        (e) => Theme(
-                          data: ThemeData(
-                            brightness: filters.containsKey('attributes') && filters['attributes'] == e.sId ? Brightness.dark : Brightness.light,
-                            cardColor: filters.containsKey('attributes') && filters['attributes'] == e.sId ? CRIMSON : Colors.white,
-                          ),
-                          child: Card(
-                            color: filters.containsKey('attributes') && filters['attributes'] == e.sId ? CRIMSON : Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(50),
-                            ),
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(50),
-                              onTap: () {
-                                setState(() {
-                                  filters['attributes'] = e.sId;
-                                });
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(10),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Image.network(
-                                      e.imageURL,
-                                      height: 18,
-                                    ),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    TextTranslator(
-                                      e.locales,
-                                    ),
-                                  ],
+                      ...Provider.of<DataContext>(context)
+                          .foodCategories
+                          .map(
+                            (e) => Theme(
+                              data: ThemeData(
+                                brightness: filters.containsKey('category') && filters['category'] == e.id ? Brightness.dark : Brightness.light,
+                                cardColor: filters.containsKey('category') && filters['category'] == e.id ? CRIMSON : Colors.white,
+                              ),
+                              child: Card(
+                                color: filters.containsKey('category') && filters['category'] == e.id ? CRIMSON : Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(50),
                                 ),
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(50),
+                                  onTap: () {
+                                    setState(() {
+                                      filters['category'] = e.id;
+                                    });
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(10),
+                                    child: TextTranslator(
+                                      e.name[Provider.of<SettingContext>(context).languageCode],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                TextTranslator(
+                  AppLocalizations.of(context).translate('attributes'),
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  physics: BouncingScrollPhysics(),
+                  child: Row(
+                    children: [
+                      Theme(
+                        data: ThemeData(
+                          brightness: !filters.containsKey('attributes') ? Brightness.dark : Brightness.light,
+                          cardColor: !filters.containsKey('attributes') ? CRIMSON : Colors.white,
+                        ),
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(50),
+                            onTap: () {
+                              setState(() {
+                                filters.remove('attributes');
+                              });
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(10),
+                              child: TextTranslator(
+                                'Tous',
                               ),
                             ),
                           ),
                         ),
-                      )
-                      .toList(),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
+                      ),
+                      ...Provider.of<DataContext>(context)
+                          .foodAttributes
+                          .map(
+                            (e) => Theme(
+                              data: ThemeData(
+                                brightness: filters.containsKey('attributes') && filters['attributes'] == e.sId ? Brightness.dark : Brightness.light,
+                                cardColor: filters.containsKey('attributes') && filters['attributes'] == e.sId ? CRIMSON : Colors.white,
+                              ),
+                              child: Card(
+                                color: filters.containsKey('attributes') && filters['attributes'] == e.sId ? CRIMSON : Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(50),
+                                  onTap: () {
+                                    setState(() {
+                                      filters['attributes'] = e.sId;
+                                    });
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(10),
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Image.network(
+                                          e.imageURL,
+                                          height: 18,
+                                        ),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        TextTranslator(
+                                          e.locales,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+            ]else...[
+               TextTranslator(
+                  "Restaurant ouvert",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+            ],
             Align(
               alignment: Alignment.centerRight,
               child: RaisedButton(
@@ -968,10 +995,17 @@ class SheduleDialog extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             TextTranslator("${op.day}", style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.normal)),
-                            TextTranslator(
-                              "${op.openings.first.begin.hour.toString()?.padLeft(2, '0')} : ${op.openings.first.begin.minute.toString()?.padLeft(2, '0')}  -  ${op.openings.last.end.hour.toString()?.padLeft(2, '0')} : ${op.openings.last.end.minute.toString()?.padLeft(2, '0')}",
-                              style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.normal),
-                            ),
+                            Column(
+                              children: [
+                                ...op.openings.map((e){
+                                  return TextTranslator(
+                                    "${e.begin.hour.toString()?.padLeft(2, '0')} : ${e.begin.minute.toString()?.padLeft(2, '0')}  -  ${e.end.hour.toString()?.padLeft(2, '0')} : ${e.end.minute.toString()?.padLeft(2, '0')}",
+                                    style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.normal),
+                                  );
+                                }).toList()
+                              ],
+                            )
+                            
                           ],
                         ),
                         Divider()

@@ -289,6 +289,7 @@ print('$_apiURL/restaurants$query');
           "authorization": "Bearer $_accessToken",
         },
       ).then<Food>((response) {
+        print(response.body);
         if (response.statusCode == 200) return Food.fromJson(jsonDecode(response.body));
 
         return Future.error(

@@ -353,6 +353,12 @@ class _OrderPageState extends State<OrderPage> {
                         width: MediaQuery.of(context).size.width - 100,
                         child: FlatButton(
                           onPressed: () async {
+                            if (!_restaurant.isOpen){
+                                             Fluttertoast.showToast(
+                                                msg: 'Restaurant fermé',
+                                              );
+                                            return;
+                                          }
                             // _command(commandContext, authContext, cartContext);
                             if (cartContext.pricelessItems || !widget.withPrice) {
                               commandContext.commandType = 'on_site';
@@ -519,7 +525,7 @@ class _OrderPageState extends State<OrderPage> {
     } else if (commandContext.commandType == 'delivery') {
       RouteUtil.goTo(
         context: context,
-        child: DeliveryDetailsPage(),
+        child: DeliveryDetailsPage(restaurant: _restaurant,),
         routeName: loginRoute,
           arguments: _restaurant
       );
@@ -664,7 +670,8 @@ class _OrderPageState extends State<OrderPage> {
                             ),
                           ),
                         ),
-                      Theme(
+                        
+                        Theme(
                         data: ThemeData(
                           cardColor: commandContext.commandType == 'on_site' ? CRIMSON : Colors.white,
                           brightness: commandContext.commandType == 'on_site' ? Brightness.dark : Brightness.light,
@@ -676,6 +683,12 @@ class _OrderPageState extends State<OrderPage> {
                           child: InkWell(
                             borderRadius: BorderRadius.circular(20),
                             onTap: () {
+                              if (!_restaurant.surPlace){
+                               Fluttertoast.showToast(
+                                                msg: 'Restaurant fermé',
+                                              );
+                                            return;
+                                            }
                               commandContext.commandType = 'on_site';
                               _command(commandContext, authContext, cartContext);
                               Navigator.of(context).pop();
@@ -704,6 +717,7 @@ class _OrderPageState extends State<OrderPage> {
                           ),
                         ),
                       ),
+                      // if (_restaurant.aEmporter)
                       Theme(
                         data: ThemeData(
                           cardColor: commandContext.commandType == 'takeaway' ? CRIMSON : Colors.white,
@@ -716,6 +730,12 @@ class _OrderPageState extends State<OrderPage> {
                           child: InkWell(
                             borderRadius: BorderRadius.circular(20),
                             onTap: () {
+                              if (!_restaurant.surPlace){
+                               Fluttertoast.showToast(
+                                                msg: 'Restaurant fermé',
+                                              );
+                                            return;
+                                            }
                               commandContext.commandType = 'takeaway';
                               _command(commandContext, authContext, cartContext);
                             },

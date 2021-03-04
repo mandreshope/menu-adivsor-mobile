@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/components/menu_item_food_option.dart';
@@ -8,12 +11,15 @@ import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/photo_view.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/MenuContext.dart';
+import 'package:menu_advisor/src/providers/SettingContext.dart';
+import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/button_item_count_widget.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 import 'package:menu_advisor/src/utils/extensions.dart';
+import 'package:share/share.dart';
 
 class DetailMenu extends StatefulWidget {
   Menu menu;
@@ -29,25 +35,85 @@ class _DetailMenuState extends State<DetailMenu> {
   CartContext _cartContext;
   // int count = 0;
   Food menuFood;
+  
+  StreamController<bool> _streamController = StreamController();
+  StreamSink<bool> get isTransparentSink => _streamController.sink;
+  Stream<bool> get isTransparentStream => _streamController.stream;
+
+ScrollController _scrollController;
+bool isContains = false;
+
+Restaurant restaurant;
+bool loading = true;
+  
+  _scrollListener(){
+    double offset = _scrollController.offset;
+    if (offset <= 50){
+      print("offset $offset");
+      isTransparentSink.add(true);
+    }else{
+      isTransparentSink.add(false);
+    }
+  }
+@override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+        _scrollController.removeListener(_scrollListener);
+    _streamController.close();
+    isTransparentSink.close();
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    _init();
+  }
+
+  _init(){
+    _scrollController = ScrollController();
     widget.menu.idNewFood = DateTime.now().millisecondsSinceEpoch.toString();
     _cartContext = Provider.of<CartContext>(context, listen: false);
     _cartContext.itemsTemp.clear();
+     widget.menu.foodsGrouped = widget.menu.foods ?? List();
+      widget.menu.count = _cartContext.getFoodCountByIdNew(widget.menu);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _scrollController.addListener(_scrollListener);
+      Api.instance
+          .getRestaurant(
+        id: widget.menu.restaurant,
+        lang: Provider.of<SettingContext>(
+          context,
+          listen: false,
+        ).languageCode,
+      )
+          .then((res) {
+        if (!mounted) return;
+
+        setState(() {
+          restaurant = res;
+          loading = false;
+        });
+      }).catchError((error) {
+        Fluttertoast.showToast(
+          msg: AppLocalizations.of(context).translate('connection_error'),
+        );
+        setState(() {
+          loading = false;
+        });
+      });
+     
+    });
+    
   }
 
   @override
   Widget build(BuildContext context) {
-    widget.menu.foodsGrouped = widget.menu.foods ?? List();
 
-    // count = _cartContext.getCount(widget.menu);
-    widget.menu.count = _cartContext.getFoodCountByIdNew(widget.menu);
 
     return Scaffold(
-      appBar: AppBar(
+      /*appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
         leading: IconButton(
@@ -59,11 +125,19 @@ class _DetailMenuState extends State<DetailMenu> {
         ),
         centerTitle: true,
         title: TextTranslator(widget.menu.name),
-      ),
-      body: Stack(
+      ),*/
+      body: loading
+                      ? Center(
+                          child: CircularProgressIndicator(
+                                                valueColor: AlwaysStoppedAnimation<Color>(
+                                                  CRIMSON,
+                                                ),
+                                              ),)
+                      : Stack(
         fit: StackFit.expand,
         children: [
           SingleChildScrollView(
+            controller: _scrollController,
             child: Column(
               mainAxisSize: MainAxisSize.max,
               children: [
@@ -147,17 +221,157 @@ class _DetailMenuState extends State<DetailMenu> {
                       )
                     ],
                   )),
-          Positioned(
+                  //addd to panier
+            Positioned(
               bottom: 0,
-              right: 0,
               left: 0,
-              child: Consumer<CartContext>(
-                builder: (_, cartContext, __) => widget.menu.count > 0
-                    ? OrderButton(
-                        totalPrice: _cartContext.totalPrice,
-                      )
-                    : SizedBox(),
-              )),
+              right: 0,
+              child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 0,
+                        // vertical: 20,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: 
+                            Consumer<CartContext>(
+                                builder: (_, cartContext, __) { 
+                                  widget.menu.count = _cartContext.getFoodCountByIdNew(widget.menu);
+                           return  Container(
+                              color:  widget.menu.foodMenuSelecteds.isEmpty || !_cartContext.hasOptionSelectioned(menuFood) ? Colors.grey : CRIMSON,
+                              width: double.infinity,
+                              height: 45,
+                              child: 
+                              /*  */
+                                
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                   
+                                      FlatButton(
+                                        color: Colors.transparent,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        onPressed: () async {
+                                          if (!restaurant.isOpen){
+                                             Fluttertoast.showToast(
+                                                msg: 'Restaurant fermé',
+                                              );
+                                            return;
+                                          }
+                                          if ((widget.menu.count == 0) || (cartContext.hasSamePricingAsInBag(widget.menu) && cartContext.hasSameOriginAsInBag(widget.menu))) {
+                                            if (cartContext.hasOptionSelectioned(menuFood)) {
+                                              _cartContext.addItem(widget.menu, 1, true);
+                                              // setState(() {});
+                                              RouteUtil.goBack(context: context);
+                                            } else
+                                              Fluttertoast.showToast(
+                                                msg: 'Ajouter une option',
+                                              );
+                                            //}
+                                          } else if (!cartContext.hasSamePricingAsInBag(widget.menu)) {
+                                            Fluttertoast.showToast(
+                                              msg: AppLocalizations.of(context).translate('priceless_and_not_priceless_not_allowed'),
+                                            );
+                                          } else if (!cartContext.hasSameOriginAsInBag(widget.menu)) {
+                                            Fluttertoast.showToast(
+                                              msg: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
+                                            );
+                                          }
+                                        },
+                                        child: TextTranslator(
+
+                                          AppLocalizations.of(context).translate("add_to_cart") +
+                                              '\t\t${widget.menu.count == 0 ? "" : widget.menu.totalPrice/100}' +
+                                                '${(widget.menu.count == 0 ? "" : "€")}',
+                                          overflow: TextOverflow.ellipsis,
+                                          softWrap: false,
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20,
+                                          ),
+                                        ),
+                                      ),
+                                    
+                                  ],
+                                ),
+                              );
+                              }
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+            
+          Align(
+              alignment: Alignment.topCenter,
+              // right: 0,
+              child: Container(
+                width:double.infinity,
+                height:90,
+                // margin: EdgeInsets.only(top: 20),
+                child: StreamBuilder<bool>(
+                  stream: isTransparentStream,
+                  initialData: true,
+                  builder: (context, snapshot) {
+                    return Container(
+                      width: double.infinity,
+                      height: 90,
+                      padding: EdgeInsets.only(top:40),
+                      color: snapshot.data ? Colors.transparent : CRIMSON,
+                      child: 
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // SizedBox(height: 10,),
+                          Container(
+                             padding: EdgeInsets.only(right: 5),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: CRIMSON
+                            ),
+                            child: IconButton(
+                        icon: Icon(
+                            Icons.keyboard_arrow_left,
+                            color:snapshot.data ? Colors.white : Colors.white,
+                            size: 35,
+                        ),
+                        onPressed: () => RouteUtil.goBack(context: context),
+                      ),
+                          ),
+                        
+                          Container(
+                          padding: EdgeInsets.only(left: 5),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: CRIMSON
+                            ),
+                          child: IconButton(
+                              icon: Icon(
+                                FontAwesomeIcons.share,
+                                color: snapshot.data ? Colors.white : Colors.white,
+                              ),
+                              onPressed: () {
+                                Share.share("Menu advisor");
+                              }),
+                        ),
+                        ],
+                      ),
+                    );
+                  }
+                ),
+              )
+              ),
         ],
       ),
     );
@@ -182,7 +396,7 @@ class _DetailMenuState extends State<DetailMenu> {
                       widget.menu.imageURL,
                       width: MediaQuery.of(context).size.width,
                       height: 250,
-                      fit: BoxFit.contain,
+                      fit: BoxFit.cover,
                     )
                   : Icon(
                       Icons.fastfood,
@@ -255,7 +469,7 @@ class _DetailMenuState extends State<DetailMenu> {
                                 widget.menu.select(_cartContext, entry.key, food, () => menuContext.refresh());
                                 if (widget.menu.count == 0) {
                                   widget.menu.count++;
-                                  _cartContext.addItem(widget.menu, 1, true);
+                                  // _cartContext.addItem(widget.menu, 1, true);
                                 }
                               } else {
                                 // Fluttertoast.showToast(
@@ -346,160 +560,79 @@ class _DetailMenuState extends State<DetailMenu> {
   }
 
   Widget _renderAddMenu() {
-    return Consumer<CartContext>(
-      builder: (_, cart, w) {
-        widget.menu.count = _cartContext.getFoodCountByIdNew(widget.menu);
-        return Column(
-          children: [
-            widget.menu.count > 0
-                ? Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ButtonItemCountWidget(widget.menu, onAdded: () {
-                  widget.menu.count++;
-                  _cartContext.addItem(widget.menu, 1, true);
-                  setState(() {});
-                }, onRemoved: () {
-                  widget.menu.count--;
-                  _cartContext.addItem(widget.menu, 1, false);
-                  setState(() {});
-                }, itemCount: _cartContext.getFoodCountByIdNew(widget.menu), isContains: cart.containsTemp(widget.menu)),
-              ],
-            )
-                : Container(),
-            SizedBox(height: 25,),
-            RaisedButton(
-              padding: EdgeInsets.all(20),
-              color: widget.menu.foodMenuSelecteds.isEmpty || !_cartContext.hasOptionSelectioned(menuFood) ? Colors.grey : CRIMSON,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              onPressed: () async {
-                if (widget.menu.foodMenuSelecteds.isEmpty && !_cartContext.hasOptionSelectioned(menuFood)) return;
-                if ((widget.menu.count > 0) || (_cartContext.hasSamePricingAsInBag(widget.menu) && _cartContext.hasSameOriginAsInBag(widget.menu))) {
-                  if (widget.menu.count == 0) {
-                    /*var result = await showDialog(
-                      context: context,
-                      builder: (_) => ConfirmationDialog(
-                        title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
-                        content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
-                      ),
-                    );
+    return Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        /* if (showFavorite)
+                          SizedBox(
+                            width: 20,
+                          ),*/
+                         Consumer<CartContext>(builder: (_, cartContext, __) {
+                                // widget.menu.count = widget.menu.quantity;
+                                
+                                // if (widget.menu.quantity == 0) {
+                        if(widget.menu.quantity <= 0){
+                          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                             showDialog(
+                          context: context,
+                          builder: (_) => ConfirmationDialog(
+                            title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
+                            content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
+                          ),
+                        ).then((result) {
+                            if (result is bool && result) {
+                          // _cartContext.removeAllFood(widget.food);
+                          // _cartContext.removeItemAtPosition(widget.position);
+                          // if (!widget.fromRestaurant)
+                            // RouteUtil.goBack(context: context);
+                            RouteUtil.goBack(context: context);
+                        }else{
+                          widget.menu.quantity = 1;
+                          cartContext.refresh();
+                        }
+                        });
+                          });
+                   
 
-                    if (result is bool && result) {
-                      _cartContext.removeItem(widget.menu);
-                      RouteUtil.goBack(context: context);
-                    }*/
-                    //
-                  } else {
-                    widget.menu.count++;
-                    //_cartContext.addAllItem();
-                    _cartContext.addItem(widget.menu,1,true);
-                    RouteUtil.goBack(context: context);
-                  }
-                } else if (!_cartContext.hasSamePricingAsInBag(widget.menu)) {
-                  Fluttertoast.showToast(
-                    msg: AppLocalizations.of(context).translate('priceless_and_not_priceless_not_allowed'),
-                  );
-                } else if (!_cartContext.hasSameOriginAsInBag(widget.menu)) {
-                  Fluttertoast.showToast(
-                    msg: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
-                  );
-                } else {
-                  widget.menu.count++;
-                  _cartContext.addItem(widget.menu, 1, true);
-                  // _cartContext.addAllItem();
-                  RouteUtil.goBack(context: context);
-                }
-                // setState(() {});
-              },
-              child: TextTranslator(
-                AppLocalizations.of(context).translate("add_to_cart") +
-                    '\t\t${widget.menu.count == 0 ? "" : (widget.menu.price?.amount ?? 0 *widget.menu.quantity)}' +
-                    '${(widget.menu.price?.amount ?? 0 *widget.menu.quantity) == 0 ? "" : "€"}',
-                overflow: TextOverflow.ellipsis,
-                softWrap: false,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
-              ),
-            )
-          ],
-        );
-        return widget.menu.count > 0
-            ? Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ButtonItemCountWidget(widget.menu, onAdded: () {
-                    widget.menu.count++;
-                    _cartContext.addItem(widget.menu, 1, true);
-                    setState(() {});
-                  }, onRemoved: () {
-                    widget.menu.count--;
-                    _cartContext.addItem(widget.menu, 1, false);
-                    setState(() {});
-                  }, itemCount: _cartContext.getFoodCountByIdNew(widget.menu), isContains: cart.containsTemp(widget.menu)),
-                ],
-              )
-            : RaisedButton(
-                padding: EdgeInsets.all(20),
-                color: widget.menu.foodMenuSelecteds.isEmpty ? Colors.grey : CRIMSON,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                onPressed: () async {
-                  if (widget.menu.foodMenuSelecteds.isEmpty) return;
-                  if ((widget.menu.count > 0) || (_cartContext.hasSamePricingAsInBag(widget.menu) && _cartContext.hasSameOriginAsInBag(widget.menu))) {
-                    if (widget.menu.count > 0) {
-                      var result = await showDialog(
-                        context: context,
-                        builder: (_) => ConfirmationDialog(
-                          title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
-                          content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
-                        ),
-                      );
+                        
+                    // _cartContext.addItem(widget.food, 0, false);
+                    // if(_cartContext.items.length == 0){
+                    //   // RouteUtil.goBack(context: context);
+                    // }
+            
+                                 
+                                }
+                                return widget.menu.foodMenuSelecteds.isEmpty || !_cartContext.hasOptionSelectioned(menuFood)
+                                    ? Container()
+                                    :
+                                    ButtonItemCountWidget(widget.menu, onAdded: () async {
+                                        // setState(() {
+                                          //  ++ widget.menu.count;
+                                          // widget.menu.quantity = widget.menu.count;
+                                          // if(widget.menu.count > 1)
+                                              // this.isAdded = true;
+                                          // else
+                                            // this.isAdded = false;
+                                        // });
+                                        cartContext.refresh();
+                                      }, onRemoved: () {
+                                        // setState(() {
+                                          // -- widget.menu.count;
+                                          // widget.menu.quantity = widget.menu.count;
+                                          // if (widget.menu.count <= 0) {
+                                          //   widget.menu.count = 0;
+                                          //   this.isAdded = false;
+                                          //   _init();
+                                          // }else if (itemCount == 1){
+                                          //   this.isAdded = false;
+                                          // }
+                                        // });
+                                        cartContext.refresh();
+                                      }, itemCount: widget.menu.quantity, isContains: !(widget.menu.foodMenuSelecteds.isEmpty || !_cartContext.hasOptionSelectioned(menuFood)),
+                                      isSmal: false,);
 
-                      if (result is bool && result) {
-                        _cartContext.removeItem(widget.menu);
-                        RouteUtil.goBack(context: context);
-                      }
-                    } else {
-                      widget.menu.count++;
-                      _cartContext.addItem(widget.menu, 1, true);
-                      // RouteUtil.goBack(context: context);
-                    }
-                  } else if (!_cartContext.hasSamePricingAsInBag(widget.menu)) {
-                    Fluttertoast.showToast(
-                      msg: AppLocalizations.of(context).translate('priceless_and_not_priceless_not_allowed'),
+                              })
+                      ],
                     );
-                  } else if (!_cartContext.hasSameOriginAsInBag(widget.menu)) {
-                    Fluttertoast.showToast(
-                      msg: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
-                    );
-                  } else {
-                    widget.menu.count++;
-                    // _cartContext.addItem(widget.menu, 1, true);
-                    _cartContext.addAllItem();
-                    RouteUtil.goBack(context: context);
-                  }
-                  // setState(() {});
-                },
-                child: TextTranslator(
-                  AppLocalizations.of(context).translate("add_to_cart") +
-                       '\t\t${widget.menu.count == 0 ? "" : (widget.menu.price?.amount ?? 0 *widget.menu.quantity)}' +
-                    '${(widget.menu.price?.amount ?? 0 *widget.menu.quantity) == 0 ? "" : "€"}',
-                  overflow: TextOverflow.ellipsis,
-                  softWrap: false,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                  ),
-                ),
-              );
-      },
-    );
-  }
+    }
 }

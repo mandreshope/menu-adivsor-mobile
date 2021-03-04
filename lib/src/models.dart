@@ -38,7 +38,7 @@ class Food implements Copyable<Food>{
   final String description;
   final dynamic type;
   final List<FoodAttribute> attributes;
-  List<Option> options;
+  List<Option> options = List();
   final bool status;
   final String title;
   final int maxOptions;
@@ -90,7 +90,7 @@ class Food implements Copyable<Food>{
         price: json.containsKey('price') ? Price.fromJson(json['price']) : null,
         type: json['type'] == null ? null : json['type'] is  Map<String, dynamic> ?  FoodType.fromJson(json['type']) : json['type'] as String,
         attributes: fromCommande ? List() : (json['attributes'] as List).map((e) => (e is String) ? FoodAttribute() : FoodAttribute.fromJson(e)).toList(),
-        options: (json['options'] as List).map((e) => Option.fromJson(e)).toList(),
+        options: (json['options'] as List).map((e) =>Option.fromJson(e)).where((element) => element.maxOptions > 0).toList(),
         status: json['status'],
         title: json['title'],
         maxOptions:json['maxOptions'],
@@ -144,6 +144,7 @@ class Food implements Copyable<Food>{
 int get totalPrice{
   int price = (this.price.amount ?? 0) * quantity;
   if (price == 0) return 0;
+  if (this.optionSelected == null) return price;
   this.optionSelected.forEach((element) {
     element.itemOptionSelected.forEach((e) {
       price += (e.price.amount ?? 0) * e.quantity;
@@ -187,7 +188,7 @@ class Menu implements Copyable<Menu>{
   bool isMenu = true;
   bool isFoodForMenu = false;
 
- int quantity = 0;
+ int quantity = 1;
 
   String message;
   List<Option> options = List();
@@ -198,7 +199,7 @@ class Menu implements Copyable<Menu>{
 
   Map<String,Food> _foodMenuSelected = Map();
   Map<String, List<Food>> selectedMenu = Map();
-  int count = 0;
+  int count = 1;
 
   Menu({
     @required this.id,
@@ -328,7 +329,7 @@ int get totalPrice{
         description: json['description'] is Map<String, dynamic> ? json['description']["fr"] : json['description'],
         // restaurant: resto
         type: json['type'],
-        optionSelected: json['options'] != null ? (json['options'] as List).map((e) => Option.fromJson(e)).toList() : [],
+        optionSelected: json['options'] != null ? (json['options'] as List).map((e) => Option.fromJson(e)).where((element) => element.maxOptions > 0).toList() : [],
       );
       _menu.isMenu = true;
       _menu._setPrice();
@@ -379,6 +380,8 @@ class Restaurant {
   final String admin;
   final bool delivery;
   final List<OpeningTimes> openingTimes;
+  final bool surPlace;
+  final bool aEmporter;
 
   int priceDelevery;
 
@@ -402,7 +405,9 @@ class Restaurant {
     this.admin,
     this.priceDelevery,
     this.delivery,
-    this.openingTimes
+    this.openingTimes,
+    this.aEmporter,
+    this.surPlace
   });
 
   factory Restaurant.fromJson(Map<String, dynamic> json) => Restaurant(
@@ -423,6 +428,8 @@ class Restaurant {
         admin: json['admin'],
         priceDelevery:json['deliveryPrice']['amount'],
         delivery:json['delivery'] ?? true,
+        aEmporter:json['aEmporter'] ?? true,
+        surPlace:json['surPlace'] ?? true,
         openingTimes: (json['openingTimes'] != null) ? (json['openingTimes'] as List).map<OpeningTimes>((e) => OpeningTimes.fromJson(e)).toList() : List() 
       );
 
@@ -443,13 +450,7 @@ class Restaurant {
           
           int endhourAM = element.openings[0].end.hour;
           int endminAM = element.openings[0].end.minute;
-
-          //PM
-          int hourPM = element.openings[1].begin.hour;
-          int minPM = element.openings[1].begin.minute;
-
-          int bhourPM = element.openings[1].end.hour;
-          int eminPM = element.openings[1].end.minute;
+          
 
           if (dateNow.hour <= 12){
             timeBegin = TimeOfDay(hour: hourAM, minute: minAM);
@@ -460,13 +461,25 @@ class Restaurant {
               return;
             }
           }else{
-            timeBegin = TimeOfDay(hour: hourPM, minute: minPM);
-            timeEnd = TimeOfDay(hour: bhourPM, minute: eminPM);
-            
-            if (timeNow.timeOfDayToDouble > timeBegin.timeOfDayToDouble && timeNow.timeOfDayToDouble < timeEnd.timeOfDayToDouble){
-              open = true;
+            if(element.openings.length > 1){
+                //PM
+                int hourPM = element.openings[1].begin.hour;
+                int minPM = element.openings[1].begin.minute;
+
+                int bhourPM = element.openings[1].end.hour;
+                int eminPM = element.openings[1].end.minute;
+                  timeBegin = TimeOfDay(hour: hourPM, minute: minPM);
+                  timeEnd = TimeOfDay(hour: bhourPM, minute: eminPM);
+              
+              if (timeNow.timeOfDayToDouble > timeBegin.timeOfDayToDouble && timeNow.timeOfDayToDouble < timeEnd.timeOfDayToDouble){
+                open = true;
+                return;
+              }
+            }else{
+              open = false;
               return;
             }
+          
           }
 
         }else{

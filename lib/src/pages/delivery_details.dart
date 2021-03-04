@@ -30,6 +30,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../models.dart';
 
 class DeliveryDetailsPage extends StatefulWidget {
+  Restaurant restaurant;
+  DeliveryDetailsPage({this.restaurant});
   @override
   _DeliveryDetailsPageState createState() => _DeliveryDetailsPageState();
 }
@@ -59,6 +61,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    _restaurant = widget.restaurant;
     _restaurant.optionLivraison = optionRdv;
     commandContext = Provider.of<CommandContext>(
       context,

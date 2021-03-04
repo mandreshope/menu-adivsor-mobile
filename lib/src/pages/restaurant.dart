@@ -783,7 +783,17 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                                 setState(() {
                                                   _isSearching = true;
                                                 });
-                                              }))
+                                              })),
+                                              SizedBox(width: 10,),
+                                              Container(
+                                                padding: EdgeInsets.all(8),
+                                                decoration: BoxDecoration(
+                                                  color: restaurant.isOpen ? TEAL : CRIMSON,
+                                                  borderRadius: BorderRadius.circular(25)
+                                                ),
+                                                child: Text(restaurant.isOpen ? "Ouvert" : "Férmer",
+                                                style: TextStyle(color: Colors.white,fontWeight: FontWeight.w600,)),
+                                              )
                                       ],
 
                                     )

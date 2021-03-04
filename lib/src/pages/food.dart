@@ -47,6 +47,7 @@ class _FoodPageState extends State<FoodPage> {
   Api api = Api.instance;
   bool loading = true;
   String restaurantName;
+  Restaurant restaurant;
   bool switchingFavorite = false;
   int itemCount = 0;
   CartContext _cartContext;
@@ -130,6 +131,7 @@ class _FoodPageState extends State<FoodPage> {
 
         setState(() {
           restaurantName = res.name;
+          restaurant = res;
           loading = false;
         });
       }).catchError((error) {
@@ -179,6 +181,7 @@ class _FoodPageState extends State<FoodPage> {
       // _cartContext.addItem(foodAdded, 1, true);
       foodAdded.quantity = 1;
     }
+    if (foodAdded.optionSelected == null) isContains = true;
   }
 
   @override
@@ -264,38 +267,72 @@ class _FoodPageState extends State<FoodPage> {
           );
   }
 
-  Widget get mainContent => Container(
-        width: !widget.modalMode ? double.infinity : MediaQuery.of(context).size.width - 60,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            SingleChildScrollView(
-              controller: _scrollController,
-              child: Column(
-                mainAxisSize: widget.fromDelevery ? MainAxisSize.min : MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: double.infinity,
-                    height: MediaQuery.of(context).size.height / 3,
-                    child: _image(),
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  
-                  Center(
-                    child: TextTranslator(
-                      widget.food.name,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 20,
-                        // fontWeight: FontWeight.bold
+  Widget _simple() => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      showFavorite ? SizedBox(
+                                        width: 25,) : Container(),
+                      Spacer(),
+                      Center(
+                        child: TextTranslator(
+                          widget.food.name,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                            // fontWeight: FontWeight.bold
+                          ),
+                        ),
                       ),
-                    ),
+                      Spacer(),
+                      showFavorite
+                            ? IconButton(
+                                onPressed: !switchingFavorite
+                                    ? () async {
+                                        AuthContext authContext = Provider.of<AuthContext>(
+                                          context,
+                                          listen: false,
+                                        );
+
+                                        setState(() {
+                                          switchingFavorite = true;
+                                        });
+                                        if (!isInFavorite)
+                                          await authContext.addToFavoriteFoods(widget.food);
+                                        else
+                                          await authContext.removeFromFavoriteFoods(widget.food);
+                                        setState(() {
+                                          switchingFavorite = false;
+                                          isInFavorite = !isInFavorite;
+                                        });
+                                        Fluttertoast.showToast(
+                                          msg: AppLocalizations.of(context).translate(
+                                            isInFavorite ? 'added_to_favorite' : 'removed_from_favorite',
+                                          ),
+                                        );
+                                      }
+                                    : null,
+                                icon: !switchingFavorite
+                                    ? Icon(
+                                        isInFavorite ? Icons.favorite : Icons.favorite_border,color: isInFavorite ? CRIMSON : Colors.black
+                                      )
+                                    : SizedBox(
+                                        width: 15,
+                                        height: 15,
+                                        child: FittedBox(
+                                          child: CircularProgressIndicator(
+                                            valueColor: AlwaysStoppedAnimation<Color>(
+                                              CRIMSON,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                              )
+                            : Container(),
+                    ],
                   ),
                   loading
                       ? Center(
@@ -364,7 +401,7 @@ class _FoodPageState extends State<FoodPage> {
                   ),
                   Divider(),
                   SizedBox(
-                    height: 30,
+                    height: 10,
                   ),
                   //description
                  /* Padding(
@@ -381,9 +418,7 @@ class _FoodPageState extends State<FoodPage> {
                     height: 10,
                   ),
                   Divider(),*/
-                  SizedBox(
-                    height: 20,
-                  ),
+                  
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 28),
                     child: TextTranslator(
@@ -397,20 +432,158 @@ class _FoodPageState extends State<FoodPage> {
                   SizedBox(
                     height: 12,
                   ),
-                 /* Divider(),
-                  SizedBox(
-                    height: 30,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 28.0),
-                    child: TextTranslator(
-                      AppLocalizations.of(context).translate('attributes'),
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.grey,
-                      ),
+    ],
+  );
+
+  Widget _popular() => loading
+                      ? Center(
+                          child: CupertinoActivityIndicator(
+                          animating: true,
+                        ))
+                      : Padding(
+                        padding: const EdgeInsets.only(left: 15),
+                        child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          showFavorite ? SizedBox(
+                                        width: 25,) : Container(),
+          TextTranslator(
+                            widget.food.name,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 20,
+                              // fontWeight: FontWeight.bold
+                            ),
+                        ),
+                        showFavorite
+                            ? IconButton(
+                                onPressed: !switchingFavorite
+                                    ? () async {
+                                        AuthContext authContext = Provider.of<AuthContext>(
+                                          context,
+                                          listen: false,
+                                        );
+
+                                        setState(() {
+                                          switchingFavorite = true;
+                                        });
+                                        if (!isInFavorite)
+                                          await authContext.addToFavoriteFoods(widget.food);
+                                        else
+                                          await authContext.removeFromFavoriteFoods(widget.food);
+                                        setState(() {
+                                          switchingFavorite = false;
+                                          isInFavorite = !isInFavorite;
+                                        });
+                                        Fluttertoast.showToast(
+                                          msg: AppLocalizations.of(context).translate(
+                                            isInFavorite ? 'added_to_favorite' : 'removed_from_favorite',
+                                          ),
+                                        );
+                                      }
+                                    : null,
+                                icon: !switchingFavorite
+                                    ? Icon(
+                                        isInFavorite ? Icons.favorite : Icons.favorite_border,color: isInFavorite ? CRIMSON : Colors.black
+                                      )
+                                    : SizedBox(
+                                        width: 15,
+                                        height: 15,
+                                        child: FittedBox(
+                                          child: CircularProgressIndicator(
+                                            valueColor: AlwaysStoppedAnimation<Color>(
+                                              CRIMSON,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                              )
+                            : Container(),
+        ],
+      ),
+                    SizedBox(height: 8,),
+                    TextTranslator(
+                        widget.food.description ?? AppLocalizations.of(context).translate('no_description'),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
                     ),
-                  ),*/
+                    SizedBox(height: 16,),
+                    TextTranslator(
+                        "Retrouver le Chez",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                    ),
+                    SizedBox(height: 5,),
+                    InkWell(
+                        onTap: () {
+                                if (widget.fromRestaurant)
+                                  RouteUtil.goBack(context: context);
+                                else
+                                  RouteUtil.goTo(
+                                    context: context,
+                                    child: RestaurantPage(
+                                      restaurant: (widget.food.restaurant is String) ? widget.food.restaurant : widget.food.restaurant['_id'],
+                                    ),
+                                    routeName: restaurantRoute,
+                                  );
+                              },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TextTranslator(
+                                restaurantName,
+                                style: TextStyle(color: Colors.blue, fontSize: 16, decoration: TextDecoration.underline, fontWeight: FontWeight.w600),
+                              ),
+                           TextTranslator(
+                                restaurant.address ?? "",
+                                style: TextStyle(color: Colors.black, fontSize: 16, decoration: TextDecoration.none, fontWeight: FontWeight.bold),
+                              ),
+                           TextTranslator(
+                                restaurant.phoneNumber ?? "",
+                                style: TextStyle(color: Colors.black, fontSize: 16, decoration: TextDecoration.none, fontWeight: FontWeight.bold),
+                              ),
+                          ],
+                        ),
+                    )
+                  
+    ],
+  ),
+                      );
+
+  Widget get mainContent => Container(
+        width: !widget.modalMode ? double.infinity : MediaQuery.of(context).size.width - 60,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            SingleChildScrollView(
+              controller: _scrollController,
+              child: Column(
+                mainAxisSize: widget.fromDelevery ? MainAxisSize.min : MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: double.infinity,
+                    height: MediaQuery.of(context).size.height / 3,
+                    child: _image(),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  /// not popular
+                  !widget.food.isPopular ?
+                  _simple() : 
+                  _popular(),
+                  //attributs
                   Padding(
                     padding: EdgeInsets.only(
                       top: 10,
@@ -532,32 +705,12 @@ class _FoodPageState extends State<FoodPage> {
                                   );
                                 },
                               ),
-
-                              /*RaisedButton(
-                          padding: EdgeInsets.all(8),
-                          color: CRIMSON,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          onPressed: ()=> Navigator.of(context).pop(optionSelected),
-                          child: TextTranslator(
-                            AppLocalizations.of(context)
-                                .translate("validate"),
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ),*/
                             ],
                           ),
                         ),
                   // Text("test"),
                   if (!widget.food.isPopular)
                   if (!widget.fromDelevery) ...[
-                    //  Spacer(),
-                    // if (!this._cartContext.contains(widget.food))
                     SizedBox(
                       height: 10,
                     ),
@@ -606,43 +759,6 @@ class _FoodPageState extends State<FoodPage> {
                                       }, itemCount: foodAdded.quantity, isContains: isContains,
                                       isSmal: false,);
 
-                                //delete all food
-                                /*
-                        Consumer<CartContext>(
-                          builder: (_,cartContext,w){
-                            return itemCount == 0 ? Container() :
-                             IconButton(icon: Icon(Icons.delete_rounded,color:Colors.grey), onPressed: () async {
-                              if ((itemCount == 0) ||
-                                  (cartContext.hasSamePricingAsInBag(
-                                      widget.food) &&
-                                      cartContext.hasSameOriginAsInBag(
-                                          widget.food))) {
-                                if (cartContext.contains(widget.food)) {
-                                  var result = await showDialog(
-                                    context: context,
-                                    builder: (_) => ConfirmationDialog(
-                                      title: AppLocalizations.of(context)
-                                          .translate(
-                                          'confirm_remove_from_cart_title'),
-                                      content: AppLocalizations.of(context)
-                                          .translate(
-                                          'confirm_remove_from_cart_content'),
-                                    ),
-                                  );
-
-                                  if (result is bool && result) {
-                                    cartContext.removeAllFood(widget.food);
-                                    setState(() {
-                                      itemCount = 1;
-                                    });
-                                    RouteUtil.goBack(context: context);
-                                  }
-                                }
-                              }
-                            });
-
-                          },
-                        )*/
                               })
                       ],
                     ),
@@ -687,21 +803,20 @@ class _FoodPageState extends State<FoodPage> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    // add food
-                                    // if (itemCount == 0)
                                     widget.food.isPopular ? Icon(Icons.visibility,color: Colors.white,) : Container(),
                                       FlatButton(
-                                        // padding: EdgeInsets.all(20),
                                         color: Colors.transparent,
-                                            /*itemCount > 0
-                                          ? Colors.teal
-                                          // :*/ /*cartContext.hasOptionSelectioned(foodAdded) ?
-                                            CRIMSON :
-                                            Colors.grey,*/
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(10),
                                         ),
                                         onPressed: () async {
+                                          if (!widget.food.isPopular)
+                                          if (!restaurant.isOpen){
+                                             Fluttertoast.showToast(
+                                                msg: 'Restaurant fermé',
+                                              );
+                                            return;
+                                          }
                                           if (widget.food.isPopular) {
                                             RouteUtil.goTo(
                                               context: context,
@@ -733,10 +848,6 @@ class _FoodPageState extends State<FoodPage> {
                                           }
                                         },
                                         child: TextTranslator(
-                                          /*cartContext.contains(widget.food)
-                                            ? AppLocalizations.of(context)
-                                                .translate('remove_from_cart')
-                                            : */
                                             widget.food.isPopular ? "Voir restaurant" :
                                           AppLocalizations.of(context).translate("add_to_cart") +
                                               '\t\t${itemCount == 0 ? "" : foodAdded.totalPrice/100}' +
@@ -750,26 +861,7 @@ class _FoodPageState extends State<FoodPage> {
                                           ),
                                         ),
                                       ),
-                                    //cartContext.contains(widget.food) ? SizedBox(height: 50,) : Container()
-                                    /* cartContext.contains(widget.food) ?
-                                    FlatButton(child:  Container(
-                                      width: 60,
-                                      height: 60,
-                                      decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.all(Radius.circular(30)),
-                                          color: CRIMSON
-                                      ),
-                                      child: Icon(Icons.add,color: Colors.white,
-                                          size: 35),
-                                    ),
-                                        onPressed: () async {
-                                          int value = ++itemCount;
-                                          _cartContext.addItem(widget.food, value, true);
-                                          setState(() {
-                                            // option.itemOptionSelected = List();
-                                          });
-
-                                        }) : Container(),*/
+                                    
                                   ],
                                 ),
                               ),
@@ -790,91 +882,68 @@ class _FoodPageState extends State<FoodPage> {
                         )
                       : SizedBox(),
                 )),*/
-                /* Positioned.fill(
-              top: 50,
-              left: 0,
+              Align(
+              alignment: Alignment.topCenter,
               // right: 0,
               child: Container(
+                width:double.infinity,
+                height:90,
+                // margin: EdgeInsets.only(top: 20),
                 child: StreamBuilder<bool>(
                   stream: isTransparentStream,
                   initialData: true,
                   builder: (context, snapshot) {
                     return Container(
                       width: double.infinity,
-                      height: 45,
+                      height: 90,
+                      padding: EdgeInsets.only(top:40),
                       color: snapshot.data ? Colors.transparent : CRIMSON,
                       child: 
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          IconButton(
+                          // SizedBox(height: 10,),
+                          Container(
+                            padding: EdgeInsets.only(right: 5),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: CRIMSON
+                            ),
+                            child: Center(
+                              child: IconButton(
                         icon: Icon(
-                          Icons.keyboard_arrow_left,
-                          color: Colors.black,
-                          size: 35,
+                              Icons.keyboard_arrow_left,
+                              color:snapshot.data ? Colors.white : Colors.white,
+                              size: 35,
                         ),
                         onPressed: () => RouteUtil.goBack(context: context),
                       ),
-                      showFavorite
-                            ? IconButton(
-                                onPressed: !switchingFavorite
-                                    ? () async {
-                                        AuthContext authContext = Provider.of<AuthContext>(
-                                          context,
-                                          listen: false,
-                                        );
-
-                                        setState(() {
-                                          switchingFavorite = true;
-                                        });
-                                        if (!isInFavorite)
-                                          await authContext.addToFavoriteFoods(widget.food);
-                                        else
-                                          await authContext.removeFromFavoriteFoods(widget.food);
-                                        setState(() {
-                                          switchingFavorite = false;
-                                          isInFavorite = !isInFavorite;
-                                        });
-                                        Fluttertoast.showToast(
-                                          msg: AppLocalizations.of(context).translate(
-                                            isInFavorite ? 'added_to_favorite' : 'removed_from_favorite',
-                                          ),
-                                        );
-                                      }
-                                    : null,
-                                icon: !switchingFavorite
-                                    ? Icon(
-                                        isInFavorite ? Icons.favorite : Icons.favorite_border,
-                                      )
-                                    : SizedBox(
-                                        width: 15,
-                                        height: 15,
-                                        child: FittedBox(
-                                          child: CircularProgressIndicator(
-                                            valueColor: AlwaysStoppedAnimation<Color>(
-                                              Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                              )
-                            : Container(),
-                        IconButton(
-                            icon: Icon(
-                              FontAwesomeIcons.share,
-                              color: Colors.black,
                             ),
-                            onPressed: () {
-                              Share.share("Menu advisor");
-                            }),
+                          ),
+                      Spacer(),
+                        Container(
+                          padding: EdgeInsets.only(left: 5),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: CRIMSON
+                            ),
+                          child: IconButton(
+                              icon: Icon(
+                                FontAwesomeIcons.share,
+                                color: snapshot.data ? Colors.white : Colors.white,
+                              ),
+                              onPressed: () {
+                                Share.share("Menu advisor");
+                              }),
+                        ),
                         ],
                       ),
                     );
                   }
                 ),
               )
-              ),*/
+              ),
            
           ],
         ),
