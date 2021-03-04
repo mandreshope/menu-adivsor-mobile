@@ -88,6 +88,7 @@ class _SplashState extends State<Splash> {
           context: context,
           child: HomePage(),
           routeName: homeRoute,
+          method: RoutingMethod.replaceLast,
         );
       } else {
         RouteUtil.goTo(

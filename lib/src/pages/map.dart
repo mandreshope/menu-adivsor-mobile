@@ -19,6 +19,7 @@ import 'package:menu_advisor/src/utils/textFormFieldTranslator.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MapPage extends StatefulWidget {
   @override
@@ -195,6 +196,7 @@ _nearestRestaurants = res.where((element) {
       } catch (error) {} finally {
         if (mounted)
           setState(() {
+            
             _loading = false;
           });
       }
@@ -229,6 +231,7 @@ _nearestRestaurants = res.where((element) {
       );
     } finally {
       setState(() {
+        _markers.clear();
         _loading = false;
       });
     }
@@ -262,6 +265,7 @@ _nearestRestaurants = res.where((element) {
                     },
                   onTap: (latlong){
                       setState(() {
+                        _panelController.close();
                         showInfo = false;
                       });
               },
@@ -396,18 +400,29 @@ _nearestRestaurants = res.where((element) {
                             color: Colors.black, fontWeight: FontWeight.w600,
                             fontSize: 12
                         ),),
-                      TextTranslator(
-                        "\t${this.restaurant?.address ?? ""}",
-                        style: TextStyle(
-                            fontSize: 16
+                      Container(
+                        child: TextTranslator(
+                          "\t${this.restaurant?.address ?? ""}",
+                          style: TextStyle(
+                              fontSize: 16,
+                                // color: Colors.blue,
+                                // decoration: TextDecoration.underline
+                          ),
                         ),
                       ),
                       SizedBox(height: 20,),
                       TextTranslator('Tel  ',style: TextStyle(color: Colors.black,fontWeight: FontWeight.w600,fontSize: 12),),
-                      TextTranslator(
-                        "\t${this.restaurant?.phoneNumber ?? ""}",
-                        style: TextStyle(
-                            fontSize: 16
+                      InkWell(
+                          onTap: () async {
+                            
+                          },
+                          child: TextTranslator(
+                          "\t${this.restaurant?.phoneNumber ?? ""}",
+                          style: TextStyle(
+                              fontSize: 16,
+                              // color: Colors.blue,
+                              // decoration: TextDecoration.underline
+                          ),
                         ),
                       ),
                       SizedBox(height: 20,),
@@ -496,7 +511,7 @@ _nearestRestaurants = res.where((element) {
                                                               _panelController.close();
                                                  setState(() {
                                                    this.restaurant = restaurant;
-                                                   showInfo = true;
+                                                  //                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  showInfo = true;
                                                  });
                                                 },
                                                 child: Container(
@@ -520,10 +535,25 @@ _nearestRestaurants = res.where((element) {
                                                             e.content['name'],
                                                           ),
                                                           TextTranslator(
-                                                            e.content['address'],
-                                                          ),
-                                                          TextTranslator(
-                                                            e.content['phoneNumber'],
+                                                              e.content['address'],
+                                                              style: TextStyle(
+                                                                  color: Colors.blue,
+                                                                  decoration: TextDecoration.underline
+                                                                ),
+                                                            ),
+                                                          InkWell(
+                                                            onTap: () async{
+                                                              if (e.content['phoneNumber'] != null)
+                                                                  await launch(
+                                                                "tel:${e.content['phoneNumber']}");
+                                                            },
+                                                            child: TextTranslator(
+                                                              e.content['phoneNumber'],
+                                                              style: TextStyle(
+                                                                color: Colors.blue,
+                                                                decoration: TextDecoration.underline
+                                                              ),
+                                                            ),
                                                           ),
 
                                                         ],
