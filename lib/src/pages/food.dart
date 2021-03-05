@@ -651,7 +651,7 @@ class _FoodPageState extends State<FoodPage> {
                               left: 20.0,
                             ),
                             child: TextTranslator(
-                              AppLocalizations.of(context).translate('no_attribute'),
+                              "",
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.normal,

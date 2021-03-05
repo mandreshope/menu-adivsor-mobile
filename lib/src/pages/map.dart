@@ -605,7 +605,7 @@ _nearestRestaurants = res.where((element) {
                                                               color: restaurant.isOpen ? TEAL : CRIMSON,
                                                               borderRadius: BorderRadius.circular(25)
                                                             ),
-                                                            child: Text(restaurant.isOpen ? "Ouvert" : "Férmer",
+                                                            child: Text(restaurant.isOpen ? "Ouvert" : "Fermé",
                                                             style: TextStyle(color: Colors.white,fontWeight: FontWeight.w600,fontSize: 10)),
                                                           )
                                                         ],

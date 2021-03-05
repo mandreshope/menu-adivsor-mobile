@@ -1034,7 +1034,7 @@ class SheduleDialog extends StatelessWidget {
                   color: TEAL,
                 ),
                 child: Center(
-                  child: TextTranslator("Fermer", textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
+                  child: TextTranslator("Fermé", textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
                 ),
               ),
             )
