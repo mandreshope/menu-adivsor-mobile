@@ -111,7 +111,7 @@ class DataContext extends ChangeNotifier {
 
     try {
       nearestRestaurants.clear();
-      nearestRestaurants = await _api.getRestaurants(
+      List<Restaurant> temp = await _api.getRestaurants(
         filters: {
           "searchCategory": "priority",
           "location": "${jsonEncode(location)}",
@@ -123,6 +123,7 @@ class DataContext extends ChangeNotifier {
       //   nearestRestaurants.add(Restaurant.fromJson(e.content));
       // });
       // nearestRestaurants.reversed;
+      nearestRestaurants = temp.where((element) => element.status).toList();
     } catch (error) {
       print(
         "Error while fetching popular restaurants",

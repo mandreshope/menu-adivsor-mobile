@@ -1,1 +1,1 @@
-const String phonePrefix = "+33"; // test : +261 / prod : +33
+const String phonePrefix = "+261"; // test : +261 / prod : +33

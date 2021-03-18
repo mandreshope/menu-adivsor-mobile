@@ -50,6 +50,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
    Restaurant _restaurant;
 
   CommandContext commandContext;
+  bool isToday = true;
   @override
   void initState() {
     // TODO: implement initState
@@ -475,8 +476,10 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                                   decoration: TextDecoration.none
                                 ),
                                 underline: Container(),
-                                selectedItemBuilder: (_){
-                                  return List.generate(24, (index) => TextTranslator(
+                                selectedItemBuilder: (_){ 
+                                  return List.generate(24, (index){ 
+                                    isToday = index == 0 ;
+                                    return TextTranslator(
                                         index == 0 ? "Aujourd'hui" :
                                         index == 1 ? "Demain" :
                                         "${now.add(Duration(days: index)).dateToString("EE dd MMM")}",
@@ -485,7 +488,8 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                                           color: CRIMSON,
                                           fontWeight: FontWeight.w600
                                         )
-                                        )
+                                        );
+                                        }
                                         );
                                 },
 
@@ -528,7 +532,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                                   return [
                                     for (int i = 0; i < 24; i++)...[
                                       if((DateTime.now().hour == TimeOfDay(hour: i, minute: 00).hour) 
-                                      && DateTime.now().hour >= TimeOfDay(hour: i, minute: 00).hour)
+                                      && DateTime.now().hour >= TimeOfDay(hour: i, minute: 00).hour && isToday)
                                       DropdownMenuItem<TimeOfDay>(
                                         value: TimeOfDay(hour: i, minute: 00),
                                         child: TextTranslator(
@@ -571,7 +575,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                                 items: [
                                   for (int i = 0; i < 24; i++)...[
                                     if((DateTime.now().hour == TimeOfDay(hour: i, minute: 00).hour) 
-                                    && DateTime.now().hour >= TimeOfDay(hour: i, minute: 00).hour)
+                                    && DateTime.now().hour >= TimeOfDay(hour: i, minute: 00).hour && isToday)
                                     DropdownMenuItem<TimeOfDay>(
                                       value: TimeOfDay(hour: i, minute: 00),
                                       child: TextTranslator(

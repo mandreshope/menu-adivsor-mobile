@@ -92,6 +92,12 @@ class _SearchPageState extends State<SearchPage> {
           if (search.type.toString() == "SearchResultType.food"){
             Food f = Food.fromJson(search.content);
             return f.status;
+          }else if(search.type.toString() == "SearchResultType.restaurant"){
+              Restaurant f = Restaurant.fromJson(search.content);
+            return f.status;
+          }else if(search.type.toString() == "SearchResultType.menu"){
+              Menu f = Menu.fromJson(search.content);
+            return f.status;
           }
           return true;
         }).toList();

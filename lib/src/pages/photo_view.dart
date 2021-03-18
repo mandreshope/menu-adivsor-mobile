@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:photo_view/photo_view.dart';
 
 class PhotoViewPage extends StatelessWidget {
@@ -13,10 +14,16 @@ class PhotoViewPage extends StatelessWidget {
         backgroundColor: Colors.black,
       ),
           body: Hero(
-        child: PhotoView(
-          maxScale: 2.0,
-          minScale: 0.5,
-          imageProvider: NetworkImage(img),
+        child: GestureDetector(
+          onTap: (){
+            RouteUtil.goBack(context: context);
+          },
+                  child: PhotoView(
+            maxScale: 2.0,
+            minScale: 0.5,
+            imageProvider: NetworkImage(img),
+            
+          ),
         ),
         tag: tag,
       ),

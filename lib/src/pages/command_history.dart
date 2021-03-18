@@ -279,6 +279,7 @@ try {
     commandByType.forEach((key, value) {
       commandByTypeValue[key] = dateTri == null ? false : true;
       // commandByTypeValue.add(false);
+      if (value.first.createdAt.month == DateTime.now().month) commandByTypeValue[key] = true;
       commandByTypeDate = value.groupBy((c) =>
         c.createdAt.day.toString().padLeft(2,"0") +"/"+ c.createdAt.month.toString().padLeft(2,"0")
       );

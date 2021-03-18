@@ -14,12 +14,15 @@ import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
+import 'package:menu_advisor/src/utils/map_utils.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textFormFieldTranslator.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'map_polyline.dart';
 
 class MapPage extends StatefulWidget {
   @override
@@ -37,13 +40,13 @@ class _MapPageState extends State<MapPage> {
   bool _loading = false;
   Api _api = Api.instance;
 
-  //google maps 
+  //google maps
   Completer<GoogleMapController> _mapController = Completer();
 
   static final _center = LatLng(37.43296265331129, -122.08832357078792);
 
   final Set<Marker> _markers = {};
-  
+
   // ignore: unused_field
   LatLng _lastMapPosition = _center;
 
@@ -64,7 +67,10 @@ class _MapPageState extends State<MapPage> {
       _markers.add(Marker(
         // This marker id can be anything that uniquely identifies each marker.
         markerId: MarkerId(myPosMarkerId),
-        position: LatLng(_currentPosition.latitude, _currentPosition.longitude,),
+        position: LatLng(
+          _currentPosition.latitude,
+          _currentPosition.longitude,
+        ),
         infoWindow: InfoWindow(
           title: AppLocalizations.of(context).translate('you'),
         ),
@@ -76,7 +82,7 @@ class _MapPageState extends State<MapPage> {
   void addAllRestaurantsMarkers() {
     setState(() {
       for (var restaurant in _nearestRestaurants) {
-        String markerId = restaurant.content['location']['coordinates'][1].toString()+restaurant.content['location']['coordinates'][0].toString();
+        String markerId = restaurant.content['location']['coordinates'][1].toString() + restaurant.content['location']['coordinates'][0].toString();
         _markers.add(Marker(
           // This marker id can be anything that uniquely identifies each marker.
           markerId: MarkerId(markerId),
@@ -84,7 +90,7 @@ class _MapPageState extends State<MapPage> {
             restaurant.content['location']['coordinates'][1],
             restaurant.content['location']['coordinates'][0],
           ),
-          onTap: (){
+          onTap: () {
             setState(() {
               this.restaurant = Restaurant.fromJson(restaurant.content);
               this.showInfo = true;
@@ -117,7 +123,7 @@ class _MapPageState extends State<MapPage> {
     super.initState();
 
     _panelController = PanelController();
-    range = Provider.of<SettingContext>(context,listen: false).range;
+    range = Provider.of<SettingContext>(context, listen: false).range;
     _checkForLocationPermission();
 
     _initSearch();
@@ -186,18 +192,17 @@ class _MapPageState extends State<MapPage> {
           type: 'restaurant',
           filters: filters,
           location: {
-            "coordinates":[_currentPosition?.longitude ?? 0,_currentPosition?.latitude ?? 0] ?? [0,0]
+            "coordinates": [_currentPosition?.longitude ?? 0, _currentPosition?.latitude ?? 0] ?? [0, 0]
           },
         );
 
-_nearestRestaurants = res.where((element) {
-  Restaurant restaurant = Restaurant.fromJson(element.content);
-  return restaurant.isOpen == isopen; 
-}).toList();
+        _nearestRestaurants = res.where((element) {
+          Restaurant restaurant = Restaurant.fromJson(element.content);
+          return restaurant.isOpen == isopen && restaurant.status;
+        }).toList();
       } catch (error) {} finally {
         if (mounted)
           setState(() {
-            
             _loading = false;
           });
       }
@@ -216,14 +221,14 @@ _nearestRestaurants = res.where((element) {
         ).languageCode,
         type: 'restaurant',
         location: {
-            "coordinates":[_currentPosition?.longitude ?? 0,_currentPosition?.latitude ?? 0] ?? [0,0]
-          },
+          "coordinates": [_currentPosition?.longitude ?? 0, _currentPosition?.latitude ?? 0] ?? [0, 0]
+        },
       );
       setState(() {
         _nearestRestaurants = results.where((element) {
-  Restaurant restaurant = Restaurant.fromJson(element.content);
-  return restaurant.isOpen == isopen; 
-}).toList();
+          Restaurant restaurant = Restaurant.fromJson(element.content);
+          return restaurant.isOpen == isopen;
+        }).toList();
       });
     } catch (error) {
       print(error.toString());
@@ -260,16 +265,16 @@ _nearestRestaurants = res.where((element) {
                     ),
                     zoomControlsEnabled: false,
                     onCameraMove: _onCameraMove,
-                    markers:_markers,
+                    markers: _markers,
                     onMapCreated: (GoogleMapController controller) {
                       _mapController.complete(controller);
                     },
-                  onTap: (latlong){
+                    onTap: (latlong) {
                       setState(() {
                         _panelController.close();
                         showInfo = false;
                       });
-              },
+                    },
                   )
                 : Center(
                     child: CircularProgressIndicator(),
@@ -320,7 +325,7 @@ _nearestRestaurants = res.where((element) {
                               languageCode: Provider.of<SettingContext>(context).languageCode,
                               fromMap: true,
                               filters: filters,
-                              type: 'restaurant',
+                              type: 'all',
                               range: Provider.of<SettingContext>(context).range,
                             ),
                           );
@@ -342,20 +347,14 @@ _nearestRestaurants = res.where((element) {
                 ),
               ),
             ),
-           Positioned(
+            Positioned(
               bottom: 20,
               right: 20,
               child: FloatingActionButton(
                 onPressed: () async {
                   _updateLocation(null);
                   var map = await _mapController.future;
-                  map.animateCamera(
-                    CameraUpdate.newCameraPosition(
-                      CameraPosition( target: LatLng(_currentPosition.latitude,_currentPosition.longitude),zoom: 15))
-                    )
-                  .catchError((onError) {
-
-                  });
+                  map.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(_currentPosition.latitude, _currentPosition.longitude), zoom: 15))).catchError((onError) {});
                   // _mapController.move(
                   //   LatLng(
                   //     _currentPosition.latitude,
@@ -363,6 +362,10 @@ _nearestRestaurants = res.where((element) {
                   //   ),
                   //   15,
                   // );
+                  setState(() {
+                    this.restaurant = restaurant;
+                    this.showInfo = true;
+                  });
                 },
                 child: Icon(Icons.my_location),
               ),
@@ -375,61 +378,59 @@ _nearestRestaurants = res.where((element) {
                   padding: EdgeInsets.all(15),
                   width: 350,
                   // height: 350,
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15)
-                  ),
+                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(15)),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       TextTranslator(
                         'Nom  ',
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.w600,
-                            fontSize: 12
-                        ),
+                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600, fontSize: 12),
                       ),
                       TextTranslator(
                         "\t${restaurant?.name ?? ""}",
-                        style: TextStyle(
-                            fontSize: 16
-                        ),
+                        style: TextStyle(fontSize: 16),
                       ),
-                      SizedBox(height: 20,),
-                      TextTranslator('Adresse ',
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.w600,
-                            fontSize: 12
-                        ),),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      TextTranslator(
+                        'Adresse ',
+                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600, fontSize: 12),
+                      ),
                       Container(
                         child: TextTranslator(
                           "\t${this.restaurant?.address ?? ""}",
                           style: TextStyle(
-                              fontSize: 16,
-                                // color: Colors.blue,
-                                // decoration: TextDecoration.underline
+                            fontSize: 16,
+                            // color: Colors.blue,
+                            // decoration: TextDecoration.underline
                           ),
                         ),
                       ),
-                      SizedBox(height: 20,),
-                      TextTranslator('Tel  ',style: TextStyle(color: Colors.black,fontWeight: FontWeight.w600,fontSize: 12),),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      TextTranslator(
+                        'Tel  ',
+                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600, fontSize: 12),
+                      ),
                       InkWell(
-                          onTap: () async {
-                            
-                          },
-                          child: TextTranslator(
+                        onTap: () async {},
+                        child: TextTranslator(
                           "\t${this.restaurant?.phoneNumber ?? ""}",
                           style: TextStyle(
-                              fontSize: 16,
-                              // color: Colors.blue,
-                              // decoration: TextDecoration.underline
+                            fontSize: 16,
+                            // color: Colors.blue,
+                            // decoration: TextDecoration.underline
                           ),
                         ),
                       ),
-                      SizedBox(height: 20,),
+                      SizedBox(
+                        height: 20,
+                      ),
                       InkWell(
-                        onTap: (){
+                        onTap: () {
                           RouteUtil.goTo(
                             context: context,
                             child: RestaurantPage(
@@ -441,16 +442,12 @@ _nearestRestaurants = res.where((element) {
                         child: Container(
                             width: double.infinity,
                             height: 45,
-                            decoration: BoxDecoration(
-                                color: CRIMSON,
-                                borderRadius: BorderRadius.circular(12)
-                            ),
+                            decoration: BoxDecoration(color: CRIMSON, borderRadius: BorderRadius.circular(12)),
                             child: Center(
-                              child: TextTranslator("Voir restaurant",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600
-                                ),),
+                              child: TextTranslator(
+                                "Voir restaurant",
+                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                              ),
                             )),
                       ),
                     ],
@@ -459,174 +456,252 @@ _nearestRestaurants = res.where((element) {
               ),
             ),
             SlidingUpPanel(
-                controller: _panelController,
-                  panel: _loading
-                    ? Align(
+              controller: _panelController,
+              panel: _loading
+                  ? Align(
                       alignment: Alignment.topCenter,
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 18),
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
-                          ),
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 18),
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
                         ),
-                      )
-                    : SingleChildScrollView(
-                        child: //_nearestRestaurants.isNotEmpty
-                            // ?
-                             Column(
-                                children: [
-                                  Container(
-                                    width: 90,
-                                    height: 5,
-                                    margin: EdgeInsets.only(top: 15),
-                                    color: Colors.black.withAlpha(90),
-                                  ),
-                                  Container(
-                                    height: 80,
-                                    width: double.infinity,
-                                    child: Center(
-                                      child: 
-                                      Text(_nearestRestaurants.isNotEmpty ? "Voir les restaurants" : "Aucun restaurant trouvé",style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold),
-                                  ),
-                                    )),
-                                  ..._nearestRestaurants
-                                      .map(
-                                        (e) => Builder(
-                                          builder: (_) {
-                                            final Restaurant restaurant = Restaurant.fromJson(e.content);
-                                            return Card(
-                                              elevation: 4.0,
-                                              child: InkWell(
-                                                borderRadius: BorderRadius.circular(0),
-                                                onTap: () async {
-                                                   var map = await _mapController.future;
-                                                              map.animateCamera(
-                                                                CameraUpdate.newCameraPosition(
-                                                                  CameraPosition( target: LatLng(
-                                                                    restaurant.location.coordinates[1],
-                                                                    restaurant.location.coordinates[0],
-                                                                  ), zoom: 25)
-                                                                ))
-                                                              .catchError((onError) {
-
-                                                              });
-                                                              _panelController.close();
-                                                 setState(() {
-                                                   this.restaurant = restaurant;
-                                                  //                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  showInfo = true;
-                                                 });
-                                                },
-                                                child: Container(
-                                                  padding: const EdgeInsets.all(10),
-                                                  child: Row(
-                                                    mainAxisSize: MainAxisSize.max,
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    mainAxisAlignment: MainAxisAlignment.start,
-                                                    children: [
-                                                      FadeInImage.assetNetwork(
-                                                        image: restaurant.imageURL,
-                                                        placeholder: 'assets/images/loading.gif',
-                                                        height: 20,
-                                                      ),
-                                                      SizedBox(width: 20),
-                                                      Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                    mainAxisAlignment: MainAxisAlignment.start,
-                                                        children: [
-                                                          TextTranslator(
-                                                            e.content['name'],
-                                                          ),
-                                                          TextTranslator(
-                                                              e.content['address'],
-                                                              style: TextStyle(
-                                                                  color: Colors.blue,
-                                                                  decoration: TextDecoration.underline
-                                                                ),
-                                                            ),
-                                                          InkWell(
-                                                            onTap: () async{
-                                                              if (e.content['phoneNumber'] != null)
-                                                                  await launch(
-                                                                "tel:${e.content['phoneNumber']}");
-                                                            },
-                                                            child: TextTranslator(
-                                                              e.content['phoneNumber'],
-                                                              style: TextStyle(
-                                                                color: Colors.blue,
-                                                                decoration: TextDecoration.underline
-                                                              ),
-                                                            ),
-                                                          ),
-
-                                                        ],
-                                                      ),
-                                                      Spacer(),
-                                                      Column(
-                                                        children: [
-                                                          IconButton(
-                                                            padding: EdgeInsets.zero,
-                                                            icon: Icon(
-                                                              Icons.remove_red_eye_outlined,
-                                                            ),
-                                                            constraints: BoxConstraints(
-                                                              maxHeight: 26,
-                                                              maxWidth: 26,
-                                                            ),
-                                                            onPressed: () async {
-                                                              // _panelController.close();
-                                                              //  RouteUtil.goTo(
-                                                              //   context: context,
-                                                              //   child: RestaurantPage(
-                                                              //     restaurant: restaurant.id,
-                                                              //   ),
-                                                              //   routeName: restaurantRoute,
-                                                              // );
-                                                              var map = await _mapController.future;
-                                                              map.animateCamera(
-                                                                CameraUpdate.newCameraPosition(
-                                                                  CameraPosition( target: LatLng(
-                                                                    restaurant.location.coordinates[1],
-                                                                    restaurant.location.coordinates[0],
-                                                                  ), zoom: 20)
-                                                                ))
-                                                              .catchError((onError) {
-
-                                                              });
-                                                              _panelController.close();
-                                                              setState(() {
-                                                                this.restaurant = restaurant;
-                                                                //                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  showInfo = true;
-                                                              });
-                                                            },
-                                                          ),
-                                                          Container(
-                                                            padding: EdgeInsets.all(8),
-                                                            decoration: BoxDecoration(
-                                                              color: restaurant.isOpen ? TEAL : CRIMSON,
-                                                              borderRadius: BorderRadius.circular(25)
-                                                            ),
-                                                            child: Text(restaurant.isOpen ? "Ouvert" : "Fermé",
-                                                            style: TextStyle(color: Colors.white,fontWeight: FontWeight.w600,fontSize: 10)),
-                                                          )
-                                                        ],
-                                                      ),
-                                                    ],
+                      ),
+                    )
+                  : SingleChildScrollView(
+                      child: //_nearestRestaurants.isNotEmpty
+                          // ?
+                          Column(
+                      children: [
+                        Container(
+                          width: 90,
+                          height: 5,
+                          margin: EdgeInsets.only(top: 15),
+                          color: Colors.black.withAlpha(90),
+                        ),
+                        Container(
+                            height: 80,
+                            width: double.infinity,
+                            child: Center(
+                              child: Text(
+                                _nearestRestaurants.isNotEmpty ? "Voir les restaurants" : "Aucun restaurant trouvé",
+                                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                              ),
+                            )),
+                        ..._nearestRestaurants
+                            .map(
+                              (e) => Builder(
+                                builder: (_) {
+                                  final Restaurant restaurant = Restaurant.fromJson(e.content);
+                                  return Card(
+                                    elevation: 4.0,
+                                    child: InkWell(
+                                      borderRadius: BorderRadius.circular(0),
+                                      onTap: () async {
+                                        var map = await _mapController.future;
+                                        map
+                                            .animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+                                                target: LatLng(
+                                                  restaurant.location.coordinates[1],
+                                                  restaurant.location.coordinates[0],
+                                                ),
+                                                zoom: 25)))
+                                            .catchError((onError) {});
+                                        _panelController.close();
+                                        setState(() {
+                                          this.restaurant = restaurant;
+                                          showInfo = true;
+                                        });
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.all(10),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.max,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          children: [
+                                            FadeInImage.assetNetwork(
+                                              image: restaurant.imageURL,
+                                              placeholder: 'assets/images/loading.gif',
+                                              height: 20,
+                                              imageErrorBuilder: (_, __, ___) => Icon(
+                          Icons.food_bank_outlined,size: 20,
+                        ),
+                                            ),
+                                            SizedBox(width: 20),
+                                            Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              children: [
+                                                TextTranslator(
+                                                  e.content['name'],
+                                                ),
+                                                TextTranslator(
+                                                  e.content['address'],
+                                                  style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+                                                ),
+                                                InkWell(
+                                                  onTap: () async {
+                                                    if (e.content['phoneNumber'] != null) await launch("tel:${e.content['phoneNumber']}");
+                                                  },
+                                                  child: TextTranslator(
+                                                    e.content['phoneNumber'],
+                                                    style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
                                                   ),
                                                 ),
-                                              ),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(0),
-                                              ),
-                                            );
-                                          },
+                                                SizedBox(
+                                                  height: 15,
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    InkWell(
+                                                      onTap: () async {
+                                                        var map = await _mapController.future;
+                                                        map
+                                                            .animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+                                                                target: LatLng(
+                                                                  restaurant.location.coordinates[1],
+                                                                  restaurant.location.coordinates[0],
+                                                                ),
+                                                                zoom: 20)))
+                                                            .catchError((onError) {});
+                                                        _panelController.close();
+                                                        setState(() {
+                                                          this.restaurant = restaurant;
+                                                          this.showInfo = true;
+                                                        });
+                                                      },
+                                                      child: Container(
+                                                        padding: EdgeInsets.all(8),
+                                                        decoration: BoxDecoration(color: CRIMSON, borderRadius: BorderRadius.circular(5)),
+                                                        child: Text("Voir le réstaurant", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 10)),
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 15,
+                                                    ),
+                                                    InkWell(
+                                                      onTap: () {
+                                                        showModalBottomSheet(
+                                                          backgroundColor: Colors.transparent,
+                                                            context: context,
+                                                            builder: (_) {
+                                                              return Container(
+                                                                // height: 80,
+                                                                decoration: BoxDecoration(
+                                                                  borderRadius: BorderRadius.only(
+                                                                    topRight: Radius.circular(50),
+                                                                    topLeft: Radius.circular(50),
+                                                                    
+                                                                  ),
+                                                                  color: Colors.white
+                                                                ),
+                                                                child: Column(
+                                                                  mainAxisSize: MainAxisSize.min,
+                                                                  children: [
+                                                                    SizedBox(height: 15,),
+                                                                    TextTranslator("Voir l'itineraire sur Google Map : ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                                                                    SizedBox(height: 15,),
+                                                                    Row(
+                                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                                      children: [
+                                                                        InkWell(
+                                                                          onTap: () async {
+                                                                            Position currentPosition = await getCurrentPosition();
+                                                                            var coordinates = restaurant.location.coordinates;
+                                                                            RouteUtil.goTo(
+                                                                                context: context,
+                                                                                child: MapPolylinePage(
+                                                                                  restaurant: restaurant,
+                                                                                  initialPosition: LatLng(currentPosition.latitude, currentPosition.longitude),
+                                                                                  destinationPosition: LatLng(coordinates.last, coordinates.first),
+                                                                                ),
+
+                                                                                routeName: restaurantRoute,
+                                                                              );
+                                                                          },
+                                                                          child: Container(
+                                                                            padding: EdgeInsets.all(8),
+                                                                            decoration: BoxDecoration(color: BRIGHT_RED, borderRadius: BorderRadius.circular(5)),
+                                                                            child: Text("Map interne", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14)),
+                                                                          ),
+                                                                        ),
+                                                                        SizedBox(width: 15,),
+                                                                        InkWell(
+                                                                          onTap: () async {
+                                                                            Position currentPosition = await getCurrentPosition();
+                                                                            var coordinates = restaurant.location.coordinates;
+                                                                            MapUtils.openMap(currentPosition.latitude, currentPosition.longitude,
+                                                                            coordinates.last,coordinates.first);
+                                                                          },
+                                                                          child: Container(
+                                                                            padding: EdgeInsets.all(8),
+                                                                            decoration: BoxDecoration(color: DARK_BLUE, borderRadius: BorderRadius.circular(5)),
+                                                                            child: Text("Map externe", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14)),
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    )
+                                                                    ,SizedBox(height: 25,),
+                                                                  ],
+                                                                ),
+                                                              );
+                                                            });
+                                                      },
+                                                      child: Container(
+                                                        padding: EdgeInsets.all(8),
+                                                        decoration: BoxDecoration(color: BRIGHT_RED, borderRadius: BorderRadius.circular(5)),
+                                                        child: Text("Itineraire", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 10)),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                            Spacer(),
+                                            Column(
+                                              children: [
+                                                IconButton(
+                                                  padding: EdgeInsets.zero,
+                                                  icon: Icon(
+                                                    Icons.remove_red_eye_outlined,
+                                                  ),
+                                                  constraints: BoxConstraints(
+                                                    maxHeight: 26,
+                                                    maxWidth: 26,
+                                                  ),
+                                                  onPressed: () async {
+                                                    // _panelController.close();
+                                                    //  RouteUtil.goTo(
+                                                    //   context: context,
+                                                    //   child: RestaurantPage(
+                                                    //     restaurant: restaurant.id,
+                                                    //   ),
+                                                    //   routeName: restaurantRoute,
+                                                    // );
+                                                  },
+                                                ),
+                                                Container(
+                                                  padding: EdgeInsets.all(8),
+                                                  decoration: BoxDecoration(color: restaurant.isOpen ? TEAL : CRIMSON, borderRadius: BorderRadius.circular(25)),
+                                                  child: Text(restaurant.isOpen ? "Ouvert" : "Fermé", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 10)),
+                                                )
+                                              ],
+                                            ),
+                                          ],
                                         ),
-                                      )
-                                      .toList(),
-                                ],
-                              )
-                      ),
-              ),
-        
+                                      ),
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(0),
+                                    ),
+                                  );
+                                },
+                              ),
+                            )
+                            .toList(),
+                      ],
+                    )),
+            ),
           ],
         ),
       ),

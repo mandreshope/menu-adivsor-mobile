@@ -138,7 +138,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
           listen: false,
         ).languageCode,
         filters: {
-          'type': 'drink',
+          'categorie': 'drink',
           'restaurant': restaurant.id,
         },
       );
@@ -207,7 +207,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
           ).languageCode,
           filters: {
             'restaurant': widget.restaurant,
-            'type': element,
+            'categorie': element,
           },
         );
       }
@@ -643,6 +643,11 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                       width: MediaQuery.of(context).size.width / 3,
                                       height: MediaQuery.of(context).size.width / 3,
                                       fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) => Center(
+                          child: Icon(
+                            Icons.fastfood,size: MediaQuery.of(context).size.width / 3,
+                          ),
+                        ),
                                     ),
                                   ),
                                   onTap: () {
@@ -1162,7 +1167,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                       ),
                 IconButton(icon: Icon(FontAwesomeIcons.share,color: Colors.white,),
                     onPressed: (){
-                      Share.share("Menu advisor");
+                      Share.share("https://menuadvisor.fr/restaurants/${restaurant.id}");
                     }),
               ],
             ),

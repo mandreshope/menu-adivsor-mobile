@@ -334,7 +334,7 @@ class _FoodPageState extends State<FoodPage> {
                             : Container(),
                     ],
                   ),
-                  loading
+                  /*loading
                       ? Center(
                           child: CupertinoActivityIndicator(
                           animating: true,
@@ -358,7 +358,7 @@ class _FoodPageState extends State<FoodPage> {
                               style: TextStyle(color: Colors.blue, fontSize: 20, decoration: TextDecoration.underline, fontWeight: FontWeight.w600),
                             ),
                           ),
-                        ),
+                        ),*/
                   Divider(),
                   Container(
                     width: double.infinity,
@@ -380,6 +380,7 @@ class _FoodPageState extends State<FoodPage> {
                             style: TextStyle(
                               fontSize: 20,
                               color: Colors.black,
+                              fontWeight: FontWeight.bold
                             ),
                           ),
                         ),
@@ -393,6 +394,7 @@ class _FoodPageState extends State<FoodPage> {
                                     style: TextStyle(
                                       fontSize: 20,
                                       color: Colors.black,
+                                      fontWeight: FontWeight.bold
                                     ),
                                   ),
                           ),
@@ -429,9 +431,10 @@ class _FoodPageState extends State<FoodPage> {
                       ),
                     ),
                   ),
-                  SizedBox(
+                  /*SizedBox(
                     height: 12,
-                  ),
+                  ),*/
+                  // Divider(),
     ],
   );
 
@@ -506,7 +509,7 @@ class _FoodPageState extends State<FoodPage> {
       ),
                     SizedBox(height: 8,),
                     TextTranslator(
-                        widget.food.description ?? AppLocalizations.of(context).translate('no_description'),
+                        widget.food.description ?? "",
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -549,6 +552,50 @@ class _FoodPageState extends State<FoodPage> {
                                 restaurant.phoneNumber ?? "",
                                 style: TextStyle(color: Colors.black, fontSize: 16, decoration: TextDecoration.none, fontWeight: FontWeight.bold),
                               ),
+                              // horaire
+                              if (widget.food.isPopular)
+                              loading
+                      ? Center(
+                          child: CupertinoActivityIndicator(
+                          animating: true,
+                        ))
+                      :
+                  Container(
+              // height: 150,
+              padding: EdgeInsets.only(top: 15,right: 10),
+              child: ListView.builder(
+                  itemCount: restaurant.openingTimes.length,
+                  shrinkWrap: true,
+                  padding: EdgeInsets.zero,
+                  itemBuilder: (_, position) {
+                    OpeningTimes op = restaurant.openingTimes[position];
+                    return Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TextTranslator("${op.day}", style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.normal)),
+                            SizedBox(width: 50,),
+                            Column(
+                              children: [
+                                ...op.openings.map((e){
+                                  return TextTranslator(
+                                    "${e.begin.hour.toString()?.padLeft(2, '0')} : ${e.begin.minute.toString()?.padLeft(2, '0')}  -  ${e.end.hour.toString()?.padLeft(2, '0')} : ${e.end.minute.toString()?.padLeft(2, '0')}",
+                                    style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.normal),
+                                  );
+                                }).toList()
+                              ],
+                            )
+                            
+                          ],
+                        ),
+                        // SizedBox(height: 10,),
+                        Divider()
+                      ],
+                    );
+                  }),
+            ),
                           ],
                         ),
                     )
@@ -621,6 +668,9 @@ class _FoodPageState extends State<FoodPage> {
                                                         placeholder: 'assets/images/loading.gif',
                                                         image: attribute.imageURL,
                                                         height: 14,
+                                                        imageErrorBuilder: (_, __, ___) => Icon(
+                          Icons.food_bank_outlined,size: 14,
+                        ),
                                                       ),
                                                       SizedBox(
                                                         width: 5,
@@ -838,20 +888,37 @@ class _FoodPageState extends State<FoodPage> {
                                               );
                                             //}
                                           } else if (!cartContext.hasSamePricingAsInBag(widget.food)) {
-                                            Fluttertoast.showToast(
-                                              msg: AppLocalizations.of(context).translate('priceless_and_not_priceless_not_allowed'),
-                                            );
+                                            showDialog(
+                                            context: context,
+                                            builder: (_) => ConfirmationDialog(
+                                              title: "",
+                                              isSimple: true,
+                                              content: AppLocalizations.of(context).translate('priceless_and_not_priceless_not_allowed'),
+                                            ),
+                                                  );
+
+                                            // Fluttertoast.showToast(
+                                            //   msg: AppLocalizations.of(context).translate('priceless_and_not_priceless_not_allowed'),
+                                            // );
                                           } else if (!cartContext.hasSameOriginAsInBag(widget.food)) {
-                                            Fluttertoast.showToast(
-                                              msg: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
-                                            );
+                                            showDialog(
+                                            context: context,
+                                            builder: (_) => ConfirmationDialog(
+                                              title: "",
+                                              isSimple: true,
+                                              content: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
+                                            ),
+                                                  );
+                                            // Fluttertoast.showToast(
+                                            //   msg: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
+                                            // );
                                           }
                                         },
                                         child: TextTranslator(
                                             widget.food.isPopular ? "Voir restaurant" :
                                           AppLocalizations.of(context).translate("add_to_cart") +
-                                              '\t\t${itemCount == 0 ? "" : foodAdded.totalPrice/100}' +
-                                                '${(itemCount == 0 ? "" : "€")}',
+                                              '\t\t${itemCount == 0 || !cartContext.withPrice ? "" : foodAdded.totalPrice/100}' +
+                                                '${(itemCount == 0 || !cartContext.withPrice ? "" : "€")}',
                                           overflow: TextOverflow.ellipsis,
                                           softWrap: false,
                                           style: TextStyle(
@@ -922,7 +989,7 @@ class _FoodPageState extends State<FoodPage> {
                             ),
                           ),
                       Spacer(),
-                        Container(
+                        /*Container(
                           padding: EdgeInsets.only(left: 5),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
@@ -936,7 +1003,7 @@ class _FoodPageState extends State<FoodPage> {
                               onPressed: () {
                                 Share.share("Menu advisor");
                               }),
-                        ),
+                        ),*/
                         ],
                       ),
                     );
@@ -982,10 +1049,15 @@ class _FoodPageState extends State<FoodPage> {
                               ? Image.network(
                                   widget.food.imageURL,
                                   width: MediaQuery.of(context).size.width - 100,
+                                  errorBuilder: (_, __, ___) => Center(
+                                    child: Icon(
+                          Icons.fastfood,size: MediaQuery.of(context).size.width - 100,
+                        ),
+                                  ),
                                 )
                               : Icon(
                                   Icons.fastfood,
-                                  size: 250,
+                                  size: MediaQuery.of(context).size.width - 100,
                                 ),
                         ),
                       ),
@@ -1007,6 +1079,11 @@ class _FoodPageState extends State<FoodPage> {
                         // width: 4 * MediaQuery.of(context).size.width / 7,
                         width: MediaQuery.of(context).size.width,
                         fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Center(
+                          child: Icon(
+                            Icons.fastfood,size: MediaQuery.of(context).size.width,
+                          ),
+                        ),
                       )
                     : Icon(
                         Icons.fastfood,
@@ -1107,85 +1184,94 @@ class _FoodPageState extends State<FoodPage> {
           label: (i, v) => v.name,
         ),
         choiceBuilder: (_) {
-            return Container(
-            margin: EdgeInsets.only(top: 15),
-            color: Colors.white,
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                SizedBox(
-                  width: 15,
-                ),
-                InkWell(
-                  onTap: () {
-                    RouteUtil.goTo(
-                        context: context,
-                        child: PhotoViewPage(
-                          tag: 'tag:${_.value.imageUrl}',
-                          img: _.value.imageUrl,
-                        ),
-                        routeName: null);
-                  },
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(50),
-                    child: FadeInImage.assetNetwork(
-                      placeholder: 'assets/images/loading.gif',
-                      image: _.value.imageUrl,
-                      height: 50,
-                      width: 50,
-                      fit: BoxFit.cover,
+            return InkWell(
+              onTap: (){
+                _.select(!_.selected);
+              },
+              child: Container(
+              margin: EdgeInsets.only(top: 15),
+              color: Colors.white,
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  SizedBox(
+                    width: 15,
+                  ),
+                  InkWell(
+                    onTap: () {
+                      RouteUtil.goTo(
+                          context: context,
+                          child: PhotoViewPage(
+                            tag: 'tag:${_.value.imageUrl}',
+                            img: _.value.imageUrl,
+                          ),
+                          routeName: null);
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(50),
+                      child: FadeInImage.assetNetwork(
+                        placeholder: 'assets/images/loading.gif',
+                        image: _.value.imageUrl,
+                        imageErrorBuilder: (_,o,s){
+                                                return Icon(Icons.food_bank_outlined,size: 50,color: Colors.grey,);
+                                              },
+                        height: 50,
+                        width: 50,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(
-                  width: 5,
-                ),
-                Text("${_.value.name}"),
-                SizedBox(
-                  width: 5,
-                ),
-                Container(
-                  padding: EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                      // shape: BoxShape.circle,
-                      // color: _.value.price == 0 ? null : Colors.grey[400]
-                      ),
-                  child: !_cartContext.withPrice || _.value.price.amount == null
-                      ? Text("")
-                      : Text(
-                          "${_.value.price.amount == 0 ? '' : _.value.price.amount / 100}${_.value.price.amount == 0 ? '' : "€"}",
-                          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Text("${_.value.name}"),
+                  // SizedBox(
+                  //   width: 5,
+                  // ),
+                   Spacer(),
+                  Container(
+                    padding: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                        // shape: BoxShape.circle,
+                        // color: _.value.price == 0 ? null : Colors.grey[400]
                         ),
-                ),
-                Spacer(),
-                SizedBox(
-                  width: 10,
-                ),
-                Visibility(
-                  visible: !widget.food.isPopular,
-                   child: InkWell(
-                    onTap: () {
-                      _.select(!_.selected);
-                    },
-                    child: _.selected
-                        ? Icon(
-                            Icons.radio_button_checked,
-                            color: CRIMSON,
-                            size: 25,
-                          )
-                        : Icon(
-                            Icons.add_circle_outlined,
-                            color: Colors.grey,
-                            size: 25,
+                    child: !_cartContext.withPrice || _.value.price.amount == null
+                        ? Text("")
+                        : Text(
+                            "${_.value.price.amount == 0 ? '' : _.value.price.amount / 100}${_.value.price.amount == 0 ? '' : "€"}",
+                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
                           ),
                   ),
-                ),
-                SizedBox(
-                  width: 15,
-                )
-              ],
-            ),
-          );
+                  Spacer(),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Visibility(
+                    visible: !widget.food.isPopular,
+                     child: InkWell(
+                      onTap: () {
+                        _.select(!_.selected);
+                      },
+                      child: _.selected
+                          ? Icon(
+                              Icons.check_box,
+                              color: CRIMSON,
+                              size: 25,
+                            )
+                          : Icon(
+                              Icons.add_circle_outlined,
+                              color: Colors.grey,
+                              size: 25,
+                            ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 15,
+                  )
+                ],
+              ),
+          ),
+            );
         },
       );
     }
@@ -1271,6 +1357,9 @@ class _FoodPageState extends State<FoodPage> {
                     child: FadeInImage.assetNetwork(
                       placeholder: 'assets/images/loading.gif',
                       image: _.value.imageUrl,
+                      imageErrorBuilder: (_,o,s){
+                                                return Icon(Icons.food_bank_outlined,size: 50,color: Colors.grey,);
+                                              },
                       height: 50,
                       width: 50,
                       fit: BoxFit.cover,
@@ -1278,8 +1367,8 @@ class _FoodPageState extends State<FoodPage> {
                   ),
                 ),
                 SizedBox(
-                  width: 5,
-                ),
+                    width: 5,
+                  ),
                 Text("${_.value.name}"),
                 Spacer(),
                 Container(

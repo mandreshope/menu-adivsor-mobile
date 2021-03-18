@@ -168,7 +168,7 @@ CommandModel commande;
           _text("|", position),
           Container(
             width: 50,
-            child: _text("${item?.quantity ?? 0} x", position)),
+            child: _text("${item?.quantity ?? 0}x", position)),
           _text("|", position),
           if (item.food?.price?.amount == null) _text("_", position) else _text("${item.food.price.amount/100} ${item.food.price?.currency ?? ""}", position),
         ],

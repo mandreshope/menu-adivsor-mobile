@@ -6,6 +6,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/components/cards.dart';
+import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/pages/confirm_sms.dart';
 import 'package:menu_advisor/src/pages/delivery_details.dart';
@@ -144,6 +145,11 @@ class _OrderPageState extends State<OrderPage> {
                                   width: MediaQuery.of(context).size.width / 4,
                                   height: MediaQuery.of(context).size.width / 4,
                                   fit: BoxFit.contain,
+                                  errorBuilder: (_, __, ___) => Center(
+                          child: Icon(
+                            Icons.fastfood,size:  MediaQuery.of(context).size.width / 4,
+                          ),
+                        ),
                                 ),
                                 SizedBox(
                                   width: 15,
@@ -248,9 +254,19 @@ class _OrderPageState extends State<OrderPage> {
                                 ),
                                 InkWell(
                                   child: Icon(Icons.delete,color: Colors.grey,),
-                                  onTap: (){
-                                    cartContext.clear();
-                                    RouteUtil.goBack(context: context);
+                                  onTap: () async {
+                                    var result = await showDialog(
+                                            context: context,
+                                            builder: (_) => ConfirmationDialog(
+                                              title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
+                                              content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
+                                            ),
+                                                  );
+
+                                               if (result is bool && result) {
+                                            cartContext.clear();
+                                            RouteUtil.goBack(context: context);
+                                               }
                                   },
                                 )
                               ],
@@ -286,7 +302,7 @@ class _OrderPageState extends State<OrderPage> {
                 ),
               ),
               if (widget.withPrice)...[
-                _cartContext.pricelessItems ? Container() :
+                /*_cartContext.pricelessItems ? Container() :
                 Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 20,
@@ -313,7 +329,7 @@ class _OrderPageState extends State<OrderPage> {
                             ),
                           ],
                         ),
-                      ),
+                      ),*/
               Consumer<CartContext>(
                 builder: (_, cartContext, __) => cartContext.pricelessItems
                     ? Container()
@@ -630,7 +646,7 @@ class _OrderPageState extends State<OrderPage> {
                   Row(
                     mainAxisAlignment: !_restaurant.delivery ? MainAxisAlignment.center : MainAxisAlignment.spaceEvenly,
                     children: [
-                      if (!cartContext.pricelessItems || _restaurant.delivery)
+                      if (!cartContext.pricelessItems)
                         !_restaurant.delivery ? Container() : Theme(
                           data: ThemeData(
                             cardColor: commandContext.commandType == 'delivery' ? CRIMSON : Colors.white,
@@ -664,6 +680,35 @@ class _OrderPageState extends State<OrderPage> {
                                     FaIcon(
                                       FontAwesomeIcons.houseUser,
                                     ),
+                                    // frais de livraison
+                                    _cartContext.pricelessItems ? Container() :
+                                    Padding(
+                        padding: const EdgeInsets.only(
+                          top: 5,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            TextTranslator(
+                              'Frais : ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.normal,
+                                fontSize: 10,
+                                color: Colors.grey
+                              ),
+                            ),
+                            Text(
+                              _restaurant?.priceDelevery == null ? "" : '${_restaurant?.priceDelevery/100 ?? ''}€',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 10,
+                                color: Colors.grey
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                                   ],
                                 ),
                               ),
@@ -671,6 +716,7 @@ class _OrderPageState extends State<OrderPage> {
                           ),
                         ),
                         
+                        if(_restaurant.surPlace) 
                         Theme(
                         data: ThemeData(
                           cardColor: commandContext.commandType == 'on_site' ? CRIMSON : Colors.white,
@@ -683,7 +729,7 @@ class _OrderPageState extends State<OrderPage> {
                           child: InkWell(
                             borderRadius: BorderRadius.circular(20),
                             onTap: () {
-                              if (!_restaurant.surPlace){
+                              if (!_restaurant.isOpen){
                                Fluttertoast.showToast(
                                                 msg: 'Restaurant fermé',
                                               );
@@ -717,7 +763,7 @@ class _OrderPageState extends State<OrderPage> {
                           ),
                         ),
                       ),
-                      // if (_restaurant.aEmporter)
+                      if (_restaurant.aEmporter)
                       Theme(
                         data: ThemeData(
                           cardColor: commandContext.commandType == 'takeaway' ? CRIMSON : Colors.white,
@@ -730,7 +776,7 @@ class _OrderPageState extends State<OrderPage> {
                           child: InkWell(
                             borderRadius: BorderRadius.circular(20),
                             onTap: () {
-                              if (!_restaurant.aEmporter){
+                              if (!_restaurant.isOpen){
                                Fluttertoast.showToast(
                                                 msg: 'Restaurant fermé',
                                               );

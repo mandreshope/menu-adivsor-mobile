@@ -123,78 +123,84 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
           });
         },
         choiceBuilder: (_) {
-          return Container(
-            margin: EdgeInsets.only(top: 15),
-            color: Colors.white,
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                SizedBox(
-                  width: 25,
-                ),
-                InkWell(
-                  onTap: () {
-                    RouteUtil.goTo(
-                        context: context,
-                        child: PhotoViewPage(
-                          tag: 'tag:${_.value.imageUrl}',
-                          img: _.value.imageUrl,
-                        ),
-                        routeName: null);
-                  },
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(50),
-                    child: FadeInImage.assetNetwork(
-                      placeholder: 'assets/images/loading.gif',
-                      image: _.value.imageUrl,
-                      height: 35,
-                      width: 35,
-                      fit: BoxFit.cover,
+          return InkWell(
+            onTap: (){
+              _.select(!_.selected);
+            },
+            child: Container(
+              margin: EdgeInsets.only(top: 15),
+              color: Colors.white,
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  SizedBox(
+                    width: 25,
+                  ),
+                  InkWell(
+                    onTap: () {
+                      RouteUtil.goTo(
+                          context: context,
+                          child: PhotoViewPage(
+                            tag: 'tag:${_.value.imageUrl}',
+                            img: _.value.imageUrl,
+                          ),
+                          routeName: null);
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(0),
+                      child: FadeInImage.assetNetwork(
+                        placeholder: 'assets/images/loading.gif',
+                        image: _.value.imageUrl,
+                        imageErrorBuilder: (_,o,s){
+                                                return Icon(Icons.food_bank_outlined,size: 45,color: Colors.grey,);
+                        },
+                        height: 45,
+                        width: 45,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(
-                  width: 5,
-                ),
-                Text("${_.value.name}"),
-                SizedBox(
-                  width: 5,
-                ),
-                Container(
-                  padding: EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                      // shape: BoxShape.circle,
-                      // color: _.value.price == 0 ? null : Colors.grey[400]
-                      ),
-                  child: !_cartContext.withPrice || _.value.price.amount == null
-                      ? Text("")
-                      : Text(
-                          "${_.value.price.amount == 0 ? '' : _.value.price.amount / 100}${_.value.price.amount == 0 ? '' : "€"}",
-                          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                  
+                  Text("${_.value.name}"),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                        // shape: BoxShape.circle,
+                        // color: _.value.price == 0 ? null : Colors.grey[400]
                         ),
-                ),
-                Spacer(),
-                InkWell(
-                  onTap: () {
-                    if (widget.menu.count > 1) return;
-                    _.select(!_.selected);
-                    _cartContext.refresh();
-                  },
-                  child: _.selected ? Icon(
-                        Icons.radio_button_checked,
-                        color: CRIMSON,
-                        size: 25,
-                      )
-                    : Icon(
-                        Icons.add_circle_outlined,
-                        color: Colors.grey,
-                        size: 25,
-                      ),
-                ),
-                SizedBox(width: 10,)
-                    
-                
-              ],
+                    child: !_cartContext.withPrice || _.value.price.amount == null
+                        ? Text("")
+                        : Text(
+                            "${_.value.price.amount == 0 ? '' : _.value.price.amount / 100}${_.value.price.amount == 0 ? '' : "€"}",
+                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                          ),
+                  ),
+                  Spacer(),
+                  InkWell(
+                    onTap: () {
+                      if (widget.menu.count > 1) return;
+                      _.select(!_.selected);
+                      _cartContext.refresh();
+                    },
+                    child: _.selected ? Icon(
+                          Icons.check_box,
+                          color: CRIMSON,
+                          size: 25,
+                        )
+                      : Icon(
+                          Icons.add_circle_outlined,
+                          color: Colors.grey,
+                          size: 25,
+                        ),
+                  ),
+                  SizedBox(width: 10,)
+                      
+                  
+                ],
+              ),
             ),
           );
         },
@@ -278,12 +284,15 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                         routeName: null);
                   },
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(50),
+                    borderRadius: BorderRadius.circular(0),
                     child: FadeInImage.assetNetwork(
                       placeholder: 'assets/images/loading.gif',
                       image: _.value.imageUrl,
-                      height: 35,
-                      width: 35,
+                      height: 45,
+                      imageErrorBuilder: (_,o,s){
+                                                return Icon(Icons.food_bank_outlined,size: 45,color: Colors.grey,);
+                      },
+                      width: 45,
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -292,7 +301,7 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                       width: 5,
                     ),
                     Text("${_.value.name}"),
-                    Spacer(),
+                    
                     Container(
                       padding: EdgeInsets.all(5),
                       decoration: BoxDecoration(

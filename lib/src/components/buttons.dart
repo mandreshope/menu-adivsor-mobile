@@ -10,6 +10,7 @@ import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
 import '../models.dart';
+import 'dialogs.dart';
 
 class RoundedButton extends StatelessWidget {
   /// The child of the rounded button
@@ -163,9 +164,19 @@ class OrderButton extends StatelessWidget {
                                             Icons.delete,
                                             color: Colors.grey,
                                           ),
-                                          onTap: () {
+                                          onTap: () async {
+                                            var result = await showDialog(
+                                            context: context,
+                                            builder: (_) => ConfirmationDialog(
+                                              title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
+                                              content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
+                                            ),
+                                                  );
+
+                                               if (result is bool && result) {
                                             _cartContext.clear();
                                             RouteUtil.goBack(context: context);
+                                               }
                                           },
                                         )
                                       ],

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
@@ -19,6 +20,7 @@ import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:geocoder/geocoder.dart';
 
 import '../models.dart';
 
@@ -95,12 +97,43 @@ class _SummaryState extends State<Summary> {
                   Divider(),
                   // about user
                   if (widget.commande.commandType != 'on_site')...[
-                    TextTranslator(widget.commande.shippingAddress ?? widget.commande.relatedUser["address"],
-                    style: TextStyle(
-                      decoration: TextDecoration.none,
-                      fontSize: 16,
-                      // color: Colors.blue
-                    ),),
+                    InkWell(
+                      onTap: () async {
+                                          Position currentPosition = await getCurrentPosition();
+                                              var coordinates = widget.commande.restaurant.location.coordinates;
+                                              // MapUtils.openMap(currentPosition.latitude, currentPosition.longitude,
+                                              // coordinates.last,coordinates.first);
+                                              String q = widget.commande.shippingAddress ?? widget.commande.relatedUser["address"];
+                                              List<Location> locations = List();
+                                              try{
+                                                locations = await locationFromAddress(q);
+                                              }catch(error){
+                                                Fluttertoast.showToast(
+                                                    msg:
+                                                    'Adresse introvable',
+                                                  );
+                                                  return;
+                                              }
+                                              
+                                              RouteUtil.goTo(
+                                                context: context,
+                                                child: MapPolylinePage(
+                                                  restaurant: widget.commande.restaurant,
+                                                  initialPosition: LatLng(currentPosition.latitude, currentPosition.longitude),
+                                                  destinationPosition: LatLng(locations.first.latitude, locations.first.longitude),
+                                                ),
+
+                                                routeName: restaurantRoute,
+                                              );
+                      },
+                      child: TextTranslator(widget.commande.shippingAddress ?? widget.commande.relatedUser["address"],
+                      style: TextStyle(
+                        decoration: TextDecoration.underline,
+                        fontSize: 16,
+                        color: Colors.blue
+                        // color: Colors.blue
+                      ),),
+                    ),
                     SizedBox(height: 5,),
                     InkWell(
                       onTap: () async {
@@ -134,7 +167,7 @@ class _SummaryState extends State<Summary> {
                   if (widget.commande.menus != null)
                   for (var command in widget.commande.menus) _items(command),
                   if (widget.commande.commandType == 'delivery')...[
-Padding(
+                    Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: Row(
                       children: [
@@ -174,6 +207,34 @@ Padding(
                       ],
                     ),
                   ),
+                  if (widget.commande.commandType == 'delivery')...[
+                    Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextTranslator(
+                          "Option de livraison",
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                        ),
+                        TextTranslator('${widget.commande.optionLivraison}')
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextTranslator(
+                          "Mode de paiement",
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                        ),
+                        TextTranslator('${widget.commande.payed ? "CB" : "à la livrison"}')
+                      ],
+                    ),
+                  ),
+                  ],
                   Divider(),
                   SizedBox(height: 30,),
                   TextTranslator("Commentaire",
@@ -219,6 +280,11 @@ Padding(
               width: MediaQuery.of(context).size.width / 4,
               height: MediaQuery.of(context).size.width / 4,
               fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Center(
+                          child: Icon(
+                            Icons.fastfood,size: MediaQuery.of(context).size.width / 4,
+                          ),
+                        ),
               
             ),
             ),
@@ -274,7 +340,8 @@ Padding(
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 16,
-                            decoration: TextDecoration.underline
+                            decoration: TextDecoration.underline,
+                            color: Colors.blue
                           ),
                         ),
                       ),
@@ -399,7 +466,7 @@ Padding(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              TextTranslator('${commandItem.quantity}', style: TextStyle(fontSize: 16)),
+              TextTranslator('${commandItem.quantity}x', style: TextStyle(fontSize: 16)),
               SizedBox(width: 15),
               InkWell(
                 onTap: (){
@@ -415,6 +482,11 @@ Padding(
                 item.imageURL,
                 width: 40,
                 height: 40,
+                 errorBuilder: (_, __, ___) => Center(
+                          child: Icon(
+                            Icons.fastfood,size: 40,
+                          ),
+                        ),
               ),
               ),
               SizedBox(width: 8),
@@ -458,7 +530,7 @@ Padding(
                     children: [
                       // SizedBox(width: 150),
                       if (itemsOption.quantity != null && itemsOption.quantity > 0)
-                        Text("${itemsOption.quantity} x\t",
+                        Text("${itemsOption.quantity}x\t",
                         style:TextStyle(fontSize: 16,fontWeight: FontWeight.bold)),
                       InkWell(
                         onTap: (){
@@ -478,6 +550,9 @@ RouteUtil.goTo(
                           height: 35,
                           width: 35,
                           fit: BoxFit.cover,
+                          imageErrorBuilder: (_, __, ___) => Icon(
+                          Icons.food_bank_outlined,size: 35,
+                        ),
 
                         ),
                       ),
@@ -569,6 +644,11 @@ RouteUtil.goTo(
                       child: Image.network(
                         item.food.imageURL,
                         width: 35,
+                         errorBuilder: (_, __, ___) => Center(
+                          child: Icon(
+                            Icons.fastfood,size: 35,
+                          ),
+                        ),
                       ),
                     ),
                     SizedBox(width: 8),
@@ -601,7 +681,7 @@ RouteUtil.goTo(
                             SizedBox(width: 150),
 
                             if (itemsOption.quantity != null && itemsOption.quantity > 0)
-                              Text("${itemsOption.quantity} x\t",
+                              Text("${itemsOption.quantity}x\t",
                                   style:TextStyle(fontSize: 16,fontWeight: FontWeight.bold)),
                             InkWell(
                               onTap: (){
@@ -621,6 +701,9 @@ RouteUtil.goTo(
                                 height: 20,
                                 width: 20,
                                 fit: BoxFit.cover,
+                                imageErrorBuilder: (_, __, ___) => Icon(
+                          Icons.food_bank_outlined,size: 20,
+                        ),
 
                               ),
                             ),

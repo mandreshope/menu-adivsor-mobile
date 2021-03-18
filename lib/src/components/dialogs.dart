@@ -23,23 +23,26 @@ import 'package:wave_slider/wave_slider.dart';
 class ConfirmationDialog extends StatelessWidget {
   final String title;
   final String content;
+  final bool isSimple;
 
   const ConfirmationDialog({
     Key key,
     @required this.title,
     @required this.content,
+    this.isSimple = false
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: TextTranslator(
+      title: isSimple ? Container() : TextTranslator(
         title,
       ),
       content: TextTranslator(
         content,
       ),
       actions: [
+        if (!isSimple)
         FlatButton(
           onPressed: () {
             Navigator.of(context).pop(false);
@@ -704,6 +707,11 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                                         Image.network(
                                           e.imageURL,
                                           height: 18,
+                                          errorBuilder: (_, __, ___) => Center(
+                          child: Icon(
+                            Icons.fastfood,size: 18,
+                          ),
+                        ),
                                         ),
                                         SizedBox(
                                           width: 5,
@@ -1174,6 +1182,9 @@ class _AtributesDialogState extends State<AtributesDialog> {
                           image: att.imageURL,
                           height: 25,
                           width: 25,
+                          imageErrorBuilder: (_, __, ___) => Icon(
+                          Icons.food_bank_outlined,size: 25,
+                        ),
                         ),
                         SizedBox(
                           width: 10,

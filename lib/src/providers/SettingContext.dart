@@ -11,7 +11,7 @@ class SettingContext extends ChangeNotifier {
   String _languageCode = 'fr';
   String _languageCodeRstaurant = 'fr';
   Future<void> initialized;
-  int range = 1;
+  int range = 10;
   int loadingIndex = 1;
 
   bool _isRestaurantPage = false;

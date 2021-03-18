@@ -113,19 +113,19 @@ bool loading = true;
 
 
     return Scaffold(
-      /*appBar: AppBar(
+      appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.transparent,
-        leading: IconButton(
+        // backgroundColor: Colors.,
+        /*leading: IconButton(
           icon: Icon(
             Icons.keyboard_arrow_left,
             color: Colors.black,
           ),
           onPressed: () => RouteUtil.goBack(context: context),
-        ),
+        ),*/
         centerTitle: true,
         title: TextTranslator(widget.menu.name),
-      ),*/
+      ),
       body: loading
                       ? Center(
                           child: CircularProgressIndicator(
@@ -140,17 +140,19 @@ bool loading = true;
             controller: _scrollController,
             child: Column(
               mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _renderHeaderPicture(),
-                Divider(),
-                TextTranslator(
+                // _renderHeaderPicture(),
+                // Divider(),
+               /* TextTranslator(
                   widget.menu.name,
                   style: TextStyle(
                     fontSize: 20,
                     color: Colors.black,
                   ),
                 ),
-                Divider(),
+                Divider(),*/
+                SizedBox(height: 25,),
                 Container(
                   width: double.infinity,
                   child: Stack(
@@ -189,6 +191,14 @@ bool loading = true;
                         ),
                     ],
                   ),
+                ),
+                Divider(),
+                Padding(
+                  padding: const EdgeInsets.only(left:15.0,top:8.0,bottom: 8.0,right: 15.0),
+                  child: TextTranslator(widget.menu.description,
+                  style:TextStyle(
+                    fontSize: 18
+                  )),
                 ),
                 Divider(),
                 _renderListPlat(context),
@@ -289,8 +299,8 @@ bool loading = true;
                                         child: TextTranslator(
 
                                           AppLocalizations.of(context).translate("add_to_cart") +
-                                              '\t\t${widget.menu.count == 0 ? "" : widget.menu.totalPrice/100}' +
-                                                '${(widget.menu.count == 0 ? "" : "€")}',
+                                              '\t\t${widget.menu.quantity == 0 || !cartContext.withPrice ? "" : widget.menu.totalPrice/100}' +
+                                                '${(widget.menu.quantity == 0 || !cartContext.withPrice ? "" : "€")}',
                                           overflow: TextOverflow.ellipsis,
                                           softWrap: false,
                                           style: TextStyle(
@@ -311,7 +321,7 @@ bool loading = true;
                       ),
                     ),
                   ),
-            
+         /*   
           Align(
               alignment: Alignment.topCenter,
               // right: 0,
@@ -350,7 +360,7 @@ bool loading = true;
                       ),
                           ),
                         
-                          Container(
+                         /* Container(
                           padding: EdgeInsets.only(left: 5),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
@@ -364,7 +374,7 @@ bool loading = true;
                               onPressed: () {
                                 Share.share("Menu advisor");
                               }),
-                        ),
+                        ),*/
                         ],
                       ),
                     );
@@ -372,6 +382,7 @@ bool loading = true;
                 ),
               )
               ),
+       */
         ],
       ),
     );
@@ -397,6 +408,11 @@ bool loading = true;
                       width: MediaQuery.of(context).size.width,
                       height: 250,
                       fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Center(
+                          child: Icon(
+                            Icons.fastfood,size: 250,
+                          ),
+                        ),
                     )
                   : Icon(
                       Icons.fastfood,
@@ -437,7 +453,7 @@ bool loading = true;
     return widget.menu.foods.isEmpty
         ? Container()
         : Container(
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
+            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(0)),
             margin: EdgeInsets.all(15),
             padding: EdgeInsets.all(25),
             child: Column(
@@ -486,7 +502,17 @@ bool loading = true;
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.start,
                                       children: [
-                                        Radio<String>(
+                                        IconButton(icon: Icon(
+                                          widget.menu.selectedMenu[entry.key]?.first?.id != food.id ? Icons.check_box_outline_blank : Icons.check_box,
+                                          color: widget.menu.selectedMenu[entry.key]?.first?.id != food.id ? Colors.grey : CRIMSON,
+                                        ), onPressed: (){
+                                          print("food selected");
+                                            if (_cartContext.contains(widget.menu)){
+                                               _cartContext.foodMenuSelected[entry.key] = food;
+                                               menuFood = food;
+                                              }
+                                        }),
+                                        /*Radio<String>(
                                           value: widget.menu.selectedMenu[entry.key]?.first?.id,
                                           groupValue: food.id,
                                           onChanged: (value) {
@@ -498,7 +524,7 @@ bool loading = true;
                                           },
                                           activeColor: CRIMSON,
                                           hoverColor: CRIMSON,
-                                        ),
+                                        ),*/
                                         InkWell(
                                           onTap: () {
                                             RouteUtil.goTo(
@@ -510,12 +536,15 @@ bool loading = true;
                                                 routeName: null);
                                           },
                                           child: ClipRRect(
-                                            borderRadius: BorderRadius.circular(50),
+                                            borderRadius: BorderRadius.circular(0),
                                             child: FadeInImage.assetNetwork(
                                               placeholder: 'assets/images/loading.gif',
                                               image: food.imageURL,
-                                              height: 35,
-                                              width: 35,
+                                              imageErrorBuilder: (_,o,s){
+                                                return Icon(Icons.food_bank_outlined,size: 45,color: Colors.grey,);
+                                              },
+                                              height: 45,
+                                              width: 45,
                                               fit: BoxFit.cover,
                                             ),
                                           ),

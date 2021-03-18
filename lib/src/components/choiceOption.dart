@@ -68,7 +68,7 @@ class ChoiceOption extends StatelessWidget {
 
                               }),
                               SizedBox(width: 2,),
-                              Text("${itemsOption.quantity ?? ""}",style: TextStyle(
+                              Text("${itemsOption.quantity ?? ""}${itemsOption.quantity != null ? "x":""}",style: TextStyle(
                                   fontSize: 20
                               ),),
                               SizedBox(width: 2,),
@@ -99,7 +99,9 @@ class ChoiceOption extends StatelessWidget {
                             height: 50,
                             width: 50,
                             fit: BoxFit.cover,
-
+imageErrorBuilder: (_, __, ___) => Icon(
+                          Icons.food_bank_outlined,size: 50,
+                        ),
                           ),
                         ),
                         SizedBox(

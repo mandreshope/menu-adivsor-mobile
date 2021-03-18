@@ -84,6 +84,9 @@ class CategoryCard extends StatelessWidget {
                             child: FadeInImage.assetNetwork(
                               placeholder: 'assets/images/loading.gif',
                               image: imageURL,
+                              imageErrorBuilder: (_, __, ___) => Icon(
+                          Icons.food_bank_outlined,size: 70,
+                        ),
                               height: 70,
                               width: 70,
                               fit: BoxFit.cover,
@@ -403,6 +406,9 @@ class _FoodCardState extends State<FoodCard> {
                                     child: FadeInImage.assetNetwork(
                                     image: widget.food.imageURL,
                                     placeholder: 'assets/images/loading.gif',
+                                    imageErrorBuilder: (_,o,s){
+                                                return Icon(Icons.image,size: 100,color: Colors.grey,);
+                                              },
                                     width: 100,
                                     height: double.infinity,
                                     fit: BoxFit.cover,
@@ -566,9 +572,9 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Hero(
+                  /*Hero(
                     tag: widget.food.id,
-                    child: ClipRRect(
+                    child: */ClipRRect(
                         borderRadius: BorderRadius.only(bottomLeft: Radius.circular(5),topLeft: Radius.circular(5)),
                         child: FadeInImage.assetNetwork(
                         placeholder: 'assets/images/loading.gif',
@@ -577,11 +583,11 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                         height: 100,
                         fit: BoxFit.cover,
                         imageErrorBuilder: (_, __, ___) => Icon(
-                          Icons.food_bank_outlined,
+                          Icons.food_bank_outlined,size: 95,
                         ),
                       ),
                     ),
-                  ),
+                 // ),
                   SizedBox(
                     width: 15.0,
                   ),
@@ -600,7 +606,7 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                           height: 5,
                         ),
                         TextTranslator(
-                          widget.food.description ?? AppLocalizations.of(context).translate('no_description'),
+                          widget.food.description ?? "",
                         ),
                         if (widget.food.attributes.length > 0) ...[
                           SizedBox(
@@ -659,6 +665,9 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                                                             placeholder: 'assets/images/loading.gif',
                                                             image:  attribute.imageURL,
                                                             height: 14,
+                                                            imageErrorBuilder: (_, __, ___) => Icon(
+                          Icons.food_bank_outlined,size: 14,
+                        ),
                                                           ),
                                                           if (expanded)
                                                             SizedBox(
@@ -1385,6 +1394,9 @@ class _RestaurantCardState extends State<RestaurantCard> {
                           placeholder: 'assets/images/loading.gif',
                           width: 120,
                           fit: BoxFit.cover,
+                          imageErrorBuilder: (_, __, ___) => Icon(
+                          Icons.food_bank_outlined,size: 95,
+                        ),
                         ),
                       ),
                   ],
@@ -1509,7 +1521,7 @@ class _BagItemState extends State<BagItem> {
         f.isFoodForMenu ? SizedBox(width: 150,) : Container(),
         f.isFoodForMenu ? Container() :
         TextTranslator(
-          '${widget.food.quantity} x ',
+          '${widget.food.quantity}x ',
           style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 20),
         ),
         SizedBox(
@@ -1666,7 +1678,7 @@ class _BagItemState extends State<BagItem> {
                           SizedBox(width: 15),
                           itemsOption.quantity == null ? Container() :
                           (itemsOption.quantity != null || itemsOption.quantity > 1) ?
-                          TextTranslator('${itemsOption.quantity} x\t', style: TextStyle(fontSize: 16,fontWeight: FontWeight.w600)) :
+                          TextTranslator('${itemsOption.quantity}x\t', style: TextStyle(fontSize: 16,fontWeight: FontWeight.w600)) :
                           Container(),
                            InkWell(
                   onTap: () {
@@ -1683,6 +1695,9 @@ class _BagItemState extends State<BagItem> {
                     child: FadeInImage.assetNetwork(
                       placeholder: 'assets/images/loading.gif',
                       image: itemsOption.imageUrl,
+                      imageErrorBuilder: (_, __, ___) => Icon(
+                          Icons.food_bank_outlined,size: 35,
+                        ),
                       height: 35,
                       width: 35,
                       fit: BoxFit.cover,
@@ -1912,6 +1927,9 @@ class BlogCard extends StatelessWidget {
                           image: blog.imageURL,
                           placeholder: 'assets/images/loading.gif',
                           fit: BoxFit.contain,
+                          imageErrorBuilder: (_, __, ___) => Icon(
+                          Icons.food_bank_outlined,
+                        ),
                         ),
                       ),
                     ),

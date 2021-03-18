@@ -119,7 +119,7 @@ class Api {
     return http.post(
       '$_apiURL/login',
       body: {
-        'phoneNumber': email,
+        'login': email,
         'password': password,
       },
     ).then<User>((response) {
