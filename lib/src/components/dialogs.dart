@@ -897,8 +897,19 @@ class _OptionChoiceDialogState extends State<OptionChoiceDialog> {
                       SizedBox(
                         height: 15,
                       ),
-                      TextTranslator("Vous avez ${option.maxOptions} choix de ${option.title}", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
-                      Container(
+                      
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      
+                      children: [
+                        TextTranslator("${option.title}",
+                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,fontSize: 16),
+                        textAlign: TextAlign.start,),
+                        TextTranslator("Choisissez-en jusqu'à ${option.maxOptions}", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                    
+                      ],
+                    ),Container(
                         child: Padding(
                           padding: const EdgeInsets.only(left: 25.0),
                           child: ChipsChoice.multiple(

@@ -40,6 +40,7 @@ class Food implements Copyable<Food>{
   final List<FoodAttribute> attributes;
   List<Option> options = List();
   final bool status;
+  final bool statut;
   final String title;
   final int maxOptions;
 
@@ -78,7 +79,8 @@ class Food implements Copyable<Food>{
     this.foodAttributes,
     this.isFoodForMenu = false,
     this.isMenu = false,
-    this.idMenu
+    this.idMenu,
+    this.statut
   });
 
   factory Food.fromJson(Map<String, dynamic> json,{bool fromCommande = false}) => Food(
@@ -94,7 +96,8 @@ class Food implements Copyable<Food>{
         status: json['status'],
         title: json['title'],
         maxOptions:json['maxOptions'],
-        description: json['description']
+        description: json['description'],
+        statut: json['statut'],
       );
 
   factory Food.copy(Food food) => Food(
@@ -117,7 +120,8 @@ class Food implements Copyable<Food>{
     // optionSelected: food.optionSelected,
     ratings: food.ratings,
     status: food.status,
-    idMenu: food.idMenu
+    idMenu: food.idMenu,
+    statut: food.statut,
   );
 
   Map<String, dynamic> toJson() {
@@ -388,6 +392,7 @@ class Restaurant {
   final bool surPlace;
   final bool aEmporter;
   final String url;
+  final dynamic category;
 
   int priceDelevery;
 
@@ -414,7 +419,8 @@ class Restaurant {
     this.openingTimes,
     this.aEmporter,
     this.surPlace,
-    this.url
+    this.url,
+    this.category
   });
 
   factory Restaurant.fromJson(Map<String, dynamic> json) => Restaurant(
@@ -438,6 +444,7 @@ class Restaurant {
         aEmporter:json['aEmporter'] ?? true,
         surPlace:json['surPlace'] ?? true,
         url: json['url'] != null ? json['url'] as String : "Menu advisor",
+        category: json['category'],
         openingTimes: (json['openingTimes'] != null) ? (json['openingTimes'] as List).map<OpeningTimes>((e) => OpeningTimes.fromJson(e)).toList() : List() 
       );
 

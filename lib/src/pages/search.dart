@@ -93,7 +93,7 @@ class _SearchPageState extends State<SearchPage> {
         _searchResults = results.where((search){
           if (search.type.toString() == "SearchResultType.food"){
             Food f = Food.fromJson(search.content);
-            return f.status;
+            return f.status && f.statut;
           }else if(search.type.toString() == "SearchResultType.restaurant"){
               Restaurant f = Restaurant.fromJson(search.content);
             return f.status;

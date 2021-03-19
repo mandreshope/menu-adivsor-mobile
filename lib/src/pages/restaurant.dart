@@ -39,11 +39,13 @@ import 'package:menu_advisor/src/utils/extensions.dart';
 class RestaurantPage extends StatefulWidget {
   final String restaurant;
   final bool withPrice;
+  final bool fromQrcode;
 
   const RestaurantPage({
     Key key,
     this.restaurant,
-    this.withPrice = true
+    this.withPrice = true,
+    this.fromQrcode = false
   }) : super(key: key);
 
   @override
@@ -379,14 +381,7 @@ results = await api.search(
           appBar: _isSearching
               ? AppBar(
                   title: TextTranslator(restaurant.name ?? "",),
-                  actions: [
-                    // Icon(Icons.add),
-                    Consumer<SettingContext>(
-                      builder: (context, snapshot,w) {
-                        return Flag(snapshot.languageCodeFlag ?? 'fr', height: 50,width: 50,);
-                      }
-                    )
-                  ],
+                  
                 )
               : null,
           body: loading
@@ -878,7 +873,7 @@ results = await api.search(
                                     fontSize: 16
                                   ),),
                                   SizedBox(width: 5,),
-                                  Icon(restaurant.surPlace ? Icons.check_circle_outline_outlined : Icons.close, color: restaurant.delivery ? TEAL : CRIMSON)
+                                  Icon(restaurant.surPlace ? Icons.check_circle_outline_outlined : Icons.close, color: restaurant.surPlace ? TEAL : CRIMSON)
                                 ],
                               ),
                               SizedBox(width: 15,),
@@ -890,7 +885,7 @@ results = await api.search(
                                     fontSize: 16
                                   ),),
                                   SizedBox(width: 5,),
-                                  Icon(restaurant.aEmporter ? Icons.check_circle_outline_outlined : Icons.close, color: restaurant.delivery ? TEAL : CRIMSON)
+                                  Icon(restaurant.aEmporter ? Icons.check_circle_outline_outlined : Icons.close, color: restaurant.aEmporter ? TEAL : CRIMSON)
                                 ],
                               ),
                             ],

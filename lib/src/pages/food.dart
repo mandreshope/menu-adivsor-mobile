@@ -589,9 +589,61 @@ class _FoodPageState extends State<FoodPage> {
                                 style: TextStyle(color: Colors.blue, fontSize: 16, decoration: TextDecoration.underline, fontWeight: FontWeight.w600),
                               ),
                               SizedBox(height: 5,),
+                              _renderCategorie(),
+                              SizedBox(height: 5,),
+                               Divider(),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  TextTranslator("Livraison",
+                                  style: TextStyle(
+                                    fontSize: 16
+                                  ),),
+                                  SizedBox(width: 5,),
+                                  Icon(restaurant.delivery ? Icons.check_circle_outline_outlined : Icons.close, color: restaurant.delivery ? TEAL : CRIMSON)
+                                ],
+                              ),
+                              SizedBox(width: 15,),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  TextTranslator("Sur place",
+                                  style: TextStyle(
+                                    fontSize: 16
+                                  ),),
+                                  SizedBox(width: 5,),
+                                  Icon(restaurant.surPlace ? Icons.check_circle_outline_outlined : Icons.close, color: restaurant.surPlace ? TEAL : CRIMSON)
+                                ],
+                              ),
+                              SizedBox(width: 15,),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  TextTranslator("A emporter",
+                                  style: TextStyle(
+                                    fontSize: 16
+                                  ),),
+                                  SizedBox(width: 5,),
+                                  Icon(restaurant.aEmporter ? Icons.check_circle_outline_outlined : Icons.close, color: restaurant.aEmporter ? TEAL : CRIMSON)
+                                ],
+                              ),
+                            ],
+                          ),
+                          Divider(),
                            TextTranslator(
                                 restaurant.address ?? "",
                                 style: TextStyle(color: Colors.black, fontSize: 16, decoration: TextDecoration.none, fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(height: 5,),
+                              TextTranslator(
+                                          "Distance : ${Provider.of<SettingContext>(context).distanceBetweenString(restaurant.location.coordinates.last,restaurant.location.coordinates.first)}",
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold
+                                          ),
                               ),
                               SizedBox(height: 5,),
                            TextTranslator(
@@ -743,7 +795,19 @@ class _FoodPageState extends State<FoodPage> {
                                         height: 15,
                                       ),
                                       Collapse(
-                                        title: TextTranslator("Vous avez ${option.maxOptions} choix de ${option.title}", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                                        title: 
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      
+                      children: [
+                        TextTranslator("${option.title}",
+                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,fontSize: 16),
+                        textAlign: TextAlign.start,),
+                        TextTranslator("Choisissez-en jusqu'à ${option.maxOptions}", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                    
+                      ],
+                    ),
                                         body: Container(
                                           child: Padding(padding: const EdgeInsets.all(0), child: _choice(option, option.maxOptions == 1 ? true : false)),
                                         ),
@@ -1485,4 +1549,18 @@ class _FoodPageState extends State<FoodPage> {
       },
     );
   }
+
+  Widget _renderCategorie(){
+    String name = "";
+    for (var type in restaurant.foodTypes)
+      name += type.name + ", ";
+      return TextTranslator(
+        name.isEmpty ? name : name.substring(0,name.length-2),
+        style: TextStyle(
+            fontWeight: FontWeight.bold,
+          fontSize: 16
+        ),
+      );
+  }
+
 }

@@ -669,8 +669,8 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                                                             image:  attribute.imageURL,
                                                             height: 14,
                                                             imageErrorBuilder: (_, __, ___) => Icon(
-                          Icons.food_bank_outlined,size: 14,
-                        ),
+                                                                Icons.food_bank_outlined,size: 14,
+                                                              ),
                                                           ),
                                                           if (expanded)
                                                             SizedBox(
@@ -824,7 +824,7 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       !_cartContext.withPrice ? Text("") :
                   widget.food.price?.amount == null ? Text("") : Padding(
@@ -837,8 +837,21 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                   ),
                   Consumer<CartContext>(
                     builder: (_,cart,w){
-                      return cart.contains(widget.food) ? Icon(Icons.lens_rounded,color: CRIMSON,size: 15,) : Container();
-                    })
+                      return cart.contains(widget.food) ? Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: CRIMSON
+                        ),
+                        child: Text("${cart.getFoodCount(widget.food)}x",
+                        style:TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12
+                        )),
+                      ) : Container();
+                    }),
+                    // Spacer()
                       
                     ],
                   )
@@ -1110,13 +1123,34 @@ class MenuCard extends StatelessWidget {
                     ),
                   ),
                   SizedBox(width: 10,),
-                  TextTranslator(
-                    Provider.of<CartContext>(context).withPrice ?  "${menu.price.amount/100 ?? ""}€" : " ",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                      color: CRIMSON
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      TextTranslator(
+                        Provider.of<CartContext>(context).withPrice ?  "${menu.price.amount/100 ?? ""}€" : " ",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                          color: CRIMSON
+                        ),
+                      ),
+                      Consumer<CartContext>(
+                    builder: (_,cart,w){
+                      return cart.contains(menu) ? Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: CRIMSON
+                        ),
+                        child: Text("${cart.getFoodCount(menu)}x",
+                        style:TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12
+                        )),
+                      ) : Container();
+                    }),
+                    ],
                   ),
                   /*
                   Consumer<CartContext>(
@@ -1351,7 +1385,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                                   ),
                                    SizedBox(height: 5),
                                    TextTranslator(
-                                      widget.restaurant.type ?? "",
+                                        widget.restaurant.category['name'] is String ?  widget.restaurant.category['name'] : widget.restaurant.category['name']["fr"] ?? "",
                                       style: TextStyle(
                                         fontSize: 16,
                                       ),
@@ -1487,16 +1521,22 @@ class _BagItemState extends State<BagItem> {
               if (widget.food.isMenu)...[
                 // _foodRender(_cartContext.foodMenuSelecteds.first),
                 if (_cartContext.foodMenuSelecteds != null)...[
-
+                  if (expand)...[
                   for(Food f in widget.food.foodMenuSelecteds)...[
                     if (f != null)...[
-                      if (expand)...[
+                      // if (expand)...[
                   _foodRender(f),
                       Divider(),
                       _options(f),
-                  Divider(),
-                ],
-                FlatButton(onPressed: (){
+                  // Divider(),
+                // ],
+                
+                      
+                    ] else ...[
+                      Container()
+                    ]
+                  ],],
+FlatButton(onPressed: (){
                   setState(() {
                     expand = !expand;
                   });
@@ -1504,12 +1544,6 @@ class _BagItemState extends State<BagItem> {
                   child: Icon(
                     expand ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down ),
                 ))
-                      
-                    ] else ...[
-                      Container()
-                    ]
-                  ]
-
                 ]
               ],
               if (!widget.food.isMenu && widget.food.optionSelected != null && widget.food.optionSelected.isNotEmpty)...[

@@ -323,7 +323,7 @@ class CartContext extends ChangeNotifier {
     return (totalPrice);
   }
 
-  Food getFood(dynamic food) {
+  dynamic getFood(dynamic food) {
     var f;
     _items.forEach((key) {
       if (key.id == food.id) {
@@ -332,6 +332,16 @@ class CartContext extends ChangeNotifier {
       }
     });
     return f;
+  }
+
+  int getFoodCount(dynamic food) {
+    int count = 0;
+    _items.forEach((key) {
+      if (key.id == food.id) {
+        count += key.quantity;
+      }
+    });
+    return count;
   }
 
   void clear() {

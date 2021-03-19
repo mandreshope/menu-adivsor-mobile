@@ -65,7 +65,18 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                     SizedBox(
                       height: 2,
                     ),
-                    TextTranslator('vous avez ${option.maxOptions} choix de ${option.title}', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      
+                      children: [
+                        TextTranslator("${option.title}",
+                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,fontSize: 16),
+                        textAlign: TextAlign.start,),
+                        TextTranslator("Choisissez-en jusqu'à ${option.maxOptions}", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                    
+                      ],
+                    ),
                     Container(
                       child: Padding(
                         padding: const EdgeInsets.only(left: 25.0),

@@ -162,6 +162,7 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
         child: RestaurantPage(
           restaurant: restaurantId,
           withPrice: withPrice,
+          fromQrcode: true,
         ),
         routeName: restaurantRoute,
         method: RoutingMethod.replaceLast,

@@ -233,6 +233,7 @@ print('$_apiURL/restaurants$query');
   Future<List<Food>> getFoods(
     String lang, {
     Map<String, dynamic> filters,
+    bool fromQrcode = false
   }) {
     String query = '?lang=$lang';
     if (filters != null) {
@@ -256,7 +257,10 @@ print('$_apiURL/restaurants$query');
     ).then<List<Food>>((response) {
       if (response.statusCode == 200) {
         List<dynamic> list = jsonDecode(response.body);
-        return list.map((data) => Food.fromJson(data)).where((element) => element.status).toList();
+        if (fromQrcode){
+          return list.map((data) => Food.fromJson(data)).where((element) => element.statut).toList();  
+        }
+        return list.map((data) => Food.fromJson(data)).where((element) => element.status && element.statut).toList();
       }
 
       return Future.error(
