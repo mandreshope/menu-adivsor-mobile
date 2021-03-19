@@ -507,6 +507,50 @@ class _FoodPageState extends State<FoodPage> {
                             : Container(),
         ],
       ),
+                   Divider(),
+                   // horaire
+                              if (widget.food.isPopular)
+                              loading
+                      ? Center(
+                          child: CupertinoActivityIndicator(
+                          animating: true,
+                        ))
+                      :
+                  InkWell(
+                            onTap: (){
+                              showDialog(context: context,
+                                builder: (_){
+                                  return SheduleDialog(openingTimes: restaurant.openingTimes,);
+                                }
+                              );
+                            },
+                              child: Container(
+                              margin: EdgeInsets.symmetric(horizontal: 20),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.access_time,
+                                    color: CRIMSON,
+                                  ),
+                                  SizedBox(
+                                    width: 25,
+                                  ),
+                                  TextTranslator(
+                                    "Horaire",
+                                    style: TextStyle(fontSize: 18, color: CRIMSON, fontWeight: FontWeight.w600),
+                                    
+                                  ),
+                                  Spacer(),
+                                  Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: CRIMSON,
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                   Divider(),
+                   
                     SizedBox(height: 8,),
                     TextTranslator(
                         widget.food.description ?? "",
@@ -544,58 +588,17 @@ class _FoodPageState extends State<FoodPage> {
                                 restaurantName,
                                 style: TextStyle(color: Colors.blue, fontSize: 16, decoration: TextDecoration.underline, fontWeight: FontWeight.w600),
                               ),
+                              SizedBox(height: 5,),
                            TextTranslator(
                                 restaurant.address ?? "",
                                 style: TextStyle(color: Colors.black, fontSize: 16, decoration: TextDecoration.none, fontWeight: FontWeight.bold),
                               ),
+                              SizedBox(height: 5,),
                            TextTranslator(
                                 restaurant.phoneNumber ?? "",
                                 style: TextStyle(color: Colors.black, fontSize: 16, decoration: TextDecoration.none, fontWeight: FontWeight.bold),
                               ),
-                              // horaire
-                              if (widget.food.isPopular)
-                              loading
-                      ? Center(
-                          child: CupertinoActivityIndicator(
-                          animating: true,
-                        ))
-                      :
-                  Container(
-              // height: 150,
-              padding: EdgeInsets.only(top: 15,right: 10),
-              child: ListView.builder(
-                  itemCount: restaurant.openingTimes.length,
-                  shrinkWrap: true,
-                  padding: EdgeInsets.zero,
-                  itemBuilder: (_, position) {
-                    OpeningTimes op = restaurant.openingTimes[position];
-                    return Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            TextTranslator("${op.day}", style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.normal)),
-                            SizedBox(width: 50,),
-                            Column(
-                              children: [
-                                ...op.openings.map((e){
-                                  return TextTranslator(
-                                    "${e.begin.hour.toString()?.padLeft(2, '0')} : ${e.begin.minute.toString()?.padLeft(2, '0')}  -  ${e.end.hour.toString()?.padLeft(2, '0')} : ${e.end.minute.toString()?.padLeft(2, '0')}",
-                                    style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.normal),
-                                  );
-                                }).toList()
-                              ],
-                            )
-                            
-                          ],
-                        ),
-                        // SizedBox(height: 10,),
-                        Divider()
-                      ],
-                    );
-                  }),
-            ),
+                              
                           ],
                         ),
                     )
@@ -895,7 +898,14 @@ class _FoodPageState extends State<FoodPage> {
                                               isSimple: true,
                                               content: AppLocalizations.of(context).translate('priceless_and_not_priceless_not_allowed'),
                                             ),
-                                                  );
+                                                  ).then((value) {
+                                                    if (value){
+                                                      _cartContext.clear();
+                                                      _cartContext.addItem(foodAdded, 1, true);
+                                              setState(() {});
+                                              RouteUtil.goBack(context: context);
+                                                    }
+                                                  });
 
                                             // Fluttertoast.showToast(
                                             //   msg: AppLocalizations.of(context).translate('priceless_and_not_priceless_not_allowed'),
@@ -908,7 +918,14 @@ class _FoodPageState extends State<FoodPage> {
                                               isSimple: true,
                                               content: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
                                             ),
-                                                  );
+                                                  ).then((value) {
+                                                    if (value){
+                                                      _cartContext.clear();
+                                                      _cartContext.addItem(foodAdded, 1, true);
+                                              setState(() {});
+                                              RouteUtil.goBack(context: context);
+                                                    }
+                                                  });
                                             // Fluttertoast.showToast(
                                             //   msg: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
                                             // );
@@ -1057,7 +1074,7 @@ class _FoodPageState extends State<FoodPage> {
                                 )
                               : Icon(
                                   Icons.fastfood,
-                                  size: MediaQuery.of(context).size.width - 100,
+                                size: MediaQuery.of(context).size.width - 100,
                                 ),
                         ),
                       ),

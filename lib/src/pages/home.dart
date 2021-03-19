@@ -457,7 +457,8 @@ class _HomePageState extends State<HomePage> {
                           RouteUtil.goTo(
                             context: context,
                             child: SearchPage(
-                              type: 'food',
+                              type: 'restaurant',
+                              fromCategory: true,
                               location: {
                                 "coordinates":currentLocation?.coordinates ?? [0,0]
                               },
@@ -616,6 +617,7 @@ class _HomePageState extends State<HomePage> {
                       context: context,
                       child: SearchPage(
                         type: 'restaurant',
+                        fromRestaurantHome: true,
                         location: {
                            "coordinates":currentLocation?.coordinates ?? [0,0]
                         },

@@ -122,3 +122,4 @@ extension Type on MenuType {
 extension Time on TimeOfDay {
   double get timeOfDayToDouble => this.hour + this.minute/60.0;
 }
+

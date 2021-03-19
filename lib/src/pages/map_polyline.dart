@@ -40,7 +40,7 @@ class _MapPolylinePageState extends State<MapPolylinePage> {
   final Map<PolylineId, Polyline> _polylines = {};
   List<LatLng> polylineCoordinates = <LatLng>[];
 
-  bool showInfo = false;
+  bool showInfo = true;
   
   // ignore: unused_field
   LatLng _lastMapPosition = _center;

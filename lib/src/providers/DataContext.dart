@@ -59,6 +59,8 @@ class DataContext extends ChangeNotifier {
 
   String _city = "";
 
+  List<FoodType> foodTypes = [];
+
   setCity(double latitude, double longitude) async {
     _city = await _api.getCityFromCoordinates(latitude, longitude);
   }
@@ -67,6 +69,7 @@ class DataContext extends ChangeNotifier {
 
   DataContext(){
     _fetchAttributes();
+    _fetchFoodType();
   }
 
   Future refresh(String lang, Location location) async {
@@ -238,6 +241,10 @@ class DataContext extends ChangeNotifier {
 
   _fetchAttributes() async {
     _foodAttributes = await _api.getFoodAttributes(); 
+  }
+
+  _fetchFoodType() async {
+    foodTypes = await _api.getFoodTypes(); 
   }
 
   List<FoodAttribute> get foodAttributes => _foodAttributes;

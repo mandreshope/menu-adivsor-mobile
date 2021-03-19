@@ -34,8 +34,10 @@ class _FavoritesPageState extends State<FavoritesPage>
       initialIndex: 0,
       length: 2,
     );
-
-    loadDatas();
+  WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      loadDatas();
+  });
+    
   }
 
   loadDatas() async {
@@ -58,7 +60,7 @@ class _FavoritesPageState extends State<FavoritesPage>
       favoriteFoods.add(food);
     }
 
-    if (mounted)
+    // if (mounted)
       setState(() {
         loadingFavoriteFoods = false;
       });
@@ -74,7 +76,7 @@ class _FavoritesPageState extends State<FavoritesPage>
       favoriteRestaurants.add(restaurant);
     }
 
-    if (mounted)
+    // if (mounted)
       setState(() {
         loadingFavoriteRestaurants = false;
       });

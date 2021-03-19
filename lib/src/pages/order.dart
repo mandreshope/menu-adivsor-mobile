@@ -699,7 +699,7 @@ class _OrderPageState extends State<OrderPage> {
                               ),
                             ),
                             Text(
-                              _restaurant?.priceDelevery == null ? "" : '${_restaurant?.priceDelevery/100 ?? ''}€',
+                              _restaurant?.priceDelevery == null ? "0" : '${_restaurant?.priceDelevery/100 ?? '0'}€',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 10,

@@ -35,31 +35,32 @@ class _DetailMenuState extends State<DetailMenu> {
   CartContext _cartContext;
   // int count = 0;
   Food menuFood;
-  
+
   StreamController<bool> _streamController = StreamController();
   StreamSink<bool> get isTransparentSink => _streamController.sink;
   Stream<bool> get isTransparentStream => _streamController.stream;
 
-ScrollController _scrollController;
-bool isContains = false;
+  ScrollController _scrollController;
+  bool isContains = false;
 
-Restaurant restaurant;
-bool loading = true;
-  
-  _scrollListener(){
+  Restaurant restaurant;
+  bool loading = true;
+
+  _scrollListener() {
     double offset = _scrollController.offset;
-    if (offset <= 50){
+    if (offset <= 50) {
       print("offset $offset");
       isTransparentSink.add(true);
-    }else{
+    } else {
       isTransparentSink.add(false);
     }
   }
-@override
+
+  @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-        _scrollController.removeListener(_scrollListener);
+    _scrollController.removeListener(_scrollListener);
     _streamController.close();
     isTransparentSink.close();
   }
@@ -71,13 +72,13 @@ bool loading = true;
     _init();
   }
 
-  _init(){
+  _init() {
     _scrollController = ScrollController();
     widget.menu.idNewFood = DateTime.now().millisecondsSinceEpoch.toString();
     _cartContext = Provider.of<CartContext>(context, listen: false);
     _cartContext.itemsTemp.clear();
-     widget.menu.foodsGrouped = widget.menu.foods ?? List();
-      widget.menu.count = _cartContext.getFoodCountByIdNew(widget.menu);
+    widget.menu.foodsGrouped = widget.menu.foods ?? List();
+    widget.menu.count = _cartContext.getFoodCountByIdNew(widget.menu);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _scrollController.addListener(_scrollListener);
       Api.instance
@@ -103,15 +104,11 @@ bool loading = true;
           loading = false;
         });
       });
-     
     });
-    
   }
 
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -127,24 +124,25 @@ bool loading = true;
         title: TextTranslator(widget.menu.name),
       ),
       body: loading
-                      ? Center(
-                          child: CircularProgressIndicator(
-                                                valueColor: AlwaysStoppedAnimation<Color>(
-                                                  CRIMSON,
-                                                ),
-                                              ),)
-                      : Stack(
-        fit: StackFit.expand,
-        children: [
-          SingleChildScrollView(
-            controller: _scrollController,
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.start,
+          ? Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  CRIMSON,
+                ),
+              ),
+            )
+          : Stack(
+              fit: StackFit.expand,
               children: [
-                // _renderHeaderPicture(),
-                // Divider(),
-               /* TextTranslator(
+                SingleChildScrollView(
+                  controller: _scrollController,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // _renderHeaderPicture(),
+                      // Divider(),
+                      /* TextTranslator(
                   widget.menu.name,
                   style: TextStyle(
                     fontSize: 20,
@@ -152,176 +150,199 @@ bool loading = true;
                   ),
                 ),
                 Divider(),*/
-                SizedBox(height: 25,),
-                Container(
-                  width: double.infinity,
-                  child: Stack(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(left: 15),
-                        padding: EdgeInsets.all(5),
-                        child: Text(
-                          '€',
-                          style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold),
-                        ),
-                        decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.black),
-                      ),
-                      Positioned(
-                        left: 70,
-                        child: TextTranslator(
-                          'Prix',
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                      if (widget.menu.price != null && widget.menu.price?.amount != null)
-                        Positioned(
-                          right: 25,
-                          child: !_cartContext.withPrice
-                              ? Text("")
-                              : Text(
-                                  '${widget.menu.price.amount / 100} €',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                        ),
-                    ],
-                  ),
-                ),
-                Divider(),
-                Padding(
-                  padding: const EdgeInsets.only(left:15.0,top:8.0,bottom: 8.0,right: 15.0),
-                  child: TextTranslator(widget.menu.description,
-                  style:TextStyle(
-                    fontSize: 18
-                  )),
-                ),
-                Divider(),
-                _renderListPlat(context),
-                widget.menu.foods.isEmpty ? Container() : _renderAddMenu(),
-                SizedBox(
-                  height: 50,
-                ),
-                Consumer<CartContext>(
-                  builder: (_, cart, w) {
-                    return cart.getFoodCountByIdNew(widget.menu) > 0
-                        ? SizedBox(
-                            height: 150,
-                          )
-                        : Container();
-                  },
-                )
-              ],
-            ),
-          ),
-          widget.menu.foods.isNotEmpty
-              ? Container()
-              : Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _renderAddMenu(),
                       SizedBox(
-                        height: 75,
-                      )
-                    ],
-                  )),
-                  //addd to panier
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 0,
-                        // vertical: 20,
+                        height: 25,
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: 
-                            Consumer<CartContext>(
-                                builder: (_, cartContext, __) { 
-                                  widget.menu.count = _cartContext.getFoodCountByIdNew(widget.menu);
-                           return  Container(
-                              color:  widget.menu.foodMenuSelecteds.isEmpty || !_cartContext.hasOptionSelectioned(menuFood) ? Colors.grey : CRIMSON,
-                              width: double.infinity,
-                              height: 45,
-                              child: 
-                              /*  */
-                                
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                   
-                                      FlatButton(
-                                        color: Colors.transparent,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(10),
-                                        ),
-                                        onPressed: () async {
-                                          if (!restaurant.isOpen){
-                                             Fluttertoast.showToast(
-                                                msg: 'Restaurant fermé',
-                                              );
-                                            return;
-                                          }
-                                          if ((widget.menu.count == 0) || (cartContext.hasSamePricingAsInBag(widget.menu) && cartContext.hasSameOriginAsInBag(widget.menu))) {
-                                            if (cartContext.hasOptionSelectioned(menuFood)) {
-                                              _cartContext.addItem(widget.menu, 1, true);
-                                              // setState(() {});
-                                              RouteUtil.goBack(context: context);
-                                            } else
-                                              Fluttertoast.showToast(
-                                                msg: 'Ajouter une option',
-                                              );
-                                            //}
-                                          } else if (!cartContext.hasSamePricingAsInBag(widget.menu)) {
-                                            Fluttertoast.showToast(
-                                              msg: AppLocalizations.of(context).translate('priceless_and_not_priceless_not_allowed'),
-                                            );
-                                          } else if (!cartContext.hasSameOriginAsInBag(widget.menu)) {
-                                            Fluttertoast.showToast(
-                                              msg: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
-                                            );
-                                          }
-                                        },
-                                        child: TextTranslator(
-
-                                          AppLocalizations.of(context).translate("add_to_cart") +
-                                              '\t\t${widget.menu.quantity == 0 || !cartContext.withPrice ? "" : widget.menu.totalPrice/100}' +
-                                                '${(widget.menu.quantity == 0 || !cartContext.withPrice ? "" : "€")}',
-                                          overflow: TextOverflow.ellipsis,
-                                          softWrap: false,
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 20,
-                                          ),
+                      Container(
+                        width: double.infinity,
+                        child: Stack(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(left: 15),
+                              padding: EdgeInsets.all(5),
+                              child: Text(
+                                '€',
+                                style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold),
+                              ),
+                              decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.black),
+                            ),
+                            Positioned(
+                              left: 70,
+                              child: TextTranslator(
+                                'Prix',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                            if (widget.menu.price != null && widget.menu.price?.amount != null)
+                              Positioned(
+                                right: 25,
+                                child: !_cartContext.withPrice
+                                    ? Text("")
+                                    : Text(
+                                        '${widget.menu.price.amount / 100} €',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          color: Colors.black,
                                         ),
                                       ),
-                                    
-                                  ],
-                                ),
-                              );
-                              }
-                            ),
-                          ),
-                        ],
+                              ),
+                          ],
+                        ),
                       ),
+                      Divider(),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 15.0, top: 8.0, bottom: 8.0, right: 15.0),
+                        child: TextTranslator(widget.menu.description, style: TextStyle(fontSize: 18)),
+                      ),
+                      Divider(),
+                      _renderListPlat(context),
+                      widget.menu.foods.isEmpty ? Container() : _renderAddMenu(),
+                      SizedBox(
+                        height: 50,
+                      ),
+                      Consumer<CartContext>(
+                        builder: (_, cart, w) {
+                          return cart.getFoodCountByIdNew(widget.menu) > 0
+                              ? SizedBox(
+                                  height: 150,
+                                )
+                              : Container();
+                        },
+                      )
+                    ],
+                  ),
+                ),
+                widget.menu.foods.isNotEmpty
+                    ? Container()
+                    : Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _renderAddMenu(),
+                            SizedBox(
+                              height: 75,
+                            )
+                          ],
+                        )),
+                //addd to panier
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 0,
+                      // vertical: 20,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Consumer<CartContext>(builder: (_, cartContext, __) {
+                            widget.menu.count = _cartContext.getFoodCountByIdNew(widget.menu);
+                            return Container(
+                              color: widget.menu.foodMenuSelecteds.isEmpty || !_cartContext.hasOptionSelectioned(menuFood) ? Colors.grey : CRIMSON,
+                              width: double.infinity,
+                              height: 45,
+                              child:
+                                  /*  */
+
+                                  Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  FlatButton(
+                                    color: Colors.transparent,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    onPressed: () async {
+                                      if (!restaurant.isOpen) {
+                                        Fluttertoast.showToast(
+                                          msg: 'Restaurant fermé',
+                                        );
+                                        return;
+                                      }
+                                      if ((widget.menu.count == 0) || (cartContext.hasSamePricingAsInBag(widget.menu) && cartContext.hasSameOriginAsInBag(widget.menu))) {
+                                        if (cartContext.hasOptionSelectioned(menuFood)) {
+                                          _cartContext.addItem(widget.menu, 1, true);
+                                          // setState(() {});
+                                          RouteUtil.goBack(context: context);
+                                        } else
+                                          Fluttertoast.showToast(
+                                            msg: 'Ajouter une option',
+                                          );
+                                        //}
+                                      } else if (!cartContext.hasSamePricingAsInBag(widget.menu)) {
+                                        showDialog(
+                                            context: context,
+                                            builder: (_) => ConfirmationDialog(
+                                              title: "",
+                                              isSimple: true,
+                                              content: AppLocalizations.of(context).translate('priceless_and_not_priceless_not_allowed'),
+                                            ),
+                                                  ).then((value) {
+                                                    if (value){
+                                                      _cartContext.clear();
+                                                      _cartContext.addItem(widget.menu, 1, true);
+                                              setState(() {});
+                                              RouteUtil.goBack(context: context);
+                                                    }
+                                                  });
+                                        // Fluttertoast.showToast(
+                                        //   msg: AppLocalizations.of(context).translate('priceless_and_not_priceless_not_allowed'),
+                                        // );
+                                      } else if (!cartContext.hasSameOriginAsInBag(widget.menu)) {
+                                        showDialog(
+                                            context: context,
+                                            builder: (_) => ConfirmationDialog(
+                                              title: "",
+                                              isSimple: true,
+                                              content: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
+                                            ),
+                                                  ).then((value) {
+                                                    if (value){
+                                                      _cartContext.clear();
+                                                      _cartContext.addItem(widget.menu, 1, true);
+                                              setState(() {});
+                                              RouteUtil.goBack(context: context);
+                                                    }
+                                                  });
+                                        // Fluttertoast.showToast(
+                                        //   msg: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
+                                        // );
+                                      }
+                                    },
+                                    child: TextTranslator(
+                                      AppLocalizations.of(context).translate("add_to_cart") +
+                                          '\t\t${widget.menu.quantity == 0 || !cartContext.withPrice ? "" : widget.menu.totalPrice / 100}' +
+                                          '${(widget.menu.quantity == 0 || !cartContext.withPrice ? "" : "€")}',
+                                      overflow: TextOverflow.ellipsis,
+                                      softWrap: false,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                        ),
+                      ],
                     ),
                   ),
-         /*   
+                ),
+                /*   
           Align(
               alignment: Alignment.topCenter,
               // right: 0,
@@ -383,8 +404,8 @@ bool loading = true;
               )
               ),
        */
-        ],
-      ),
+              ],
+            ),
     );
   }
 
@@ -409,10 +430,11 @@ bool loading = true;
                       height: 250,
                       fit: BoxFit.cover,
                       errorBuilder: (_, __, ___) => Center(
-                          child: Icon(
-                            Icons.fastfood,size: 250,
-                          ),
+                        child: Icon(
+                          Icons.fastfood,
+                          size: 250,
                         ),
+                      ),
                     )
                   : Icon(
                       Icons.fastfood,
@@ -502,29 +524,6 @@ bool loading = true;
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.start,
                                       children: [
-                                        IconButton(icon: Icon(
-                                          widget.menu.selectedMenu[entry.key]?.first?.id != food.id ? Icons.check_box_outline_blank : Icons.check_box,
-                                          color: widget.menu.selectedMenu[entry.key]?.first?.id != food.id ? Colors.grey : CRIMSON,
-                                        ), onPressed: (){
-                                          print("food selected");
-                                            if (_cartContext.contains(widget.menu)){
-                                               _cartContext.foodMenuSelected[entry.key] = food;
-                                               menuFood = food;
-                                              }
-                                        }),
-                                        /*Radio<String>(
-                                          value: widget.menu.selectedMenu[entry.key]?.first?.id,
-                                          groupValue: food.id,
-                                          onChanged: (value) {
-                                            print("food selected");
-                                            if (_cartContext.contains(widget.menu)){
-                                               _cartContext.foodMenuSelected[entry.key] = food;
-                                               menuFood = food;
-                                              }
-                                          },
-                                          activeColor: CRIMSON,
-                                          hoverColor: CRIMSON,
-                                        ),*/
                                         InkWell(
                                           onTap: () {
                                             RouteUtil.goTo(
@@ -540,8 +539,12 @@ bool loading = true;
                                             child: FadeInImage.assetNetwork(
                                               placeholder: 'assets/images/loading.gif',
                                               image: food.imageURL,
-                                              imageErrorBuilder: (_,o,s){
-                                                return Icon(Icons.food_bank_outlined,size: 45,color: Colors.grey,);
+                                              imageErrorBuilder: (_, o, s) {
+                                                return Icon(
+                                                  Icons.food_bank_outlined,
+                                                  size: 45,
+                                                  color: Colors.grey,
+                                                );
                                               },
                                               height: 45,
                                               width: 45,
@@ -566,7 +569,33 @@ bool loading = true;
                                         ] else ...[
                                           Spacer(),
                                           food?.price?.amount == null ? Text("") : Text("${food.price.amount / 100} €", style: TextStyle(fontWeight: FontWeight.bold)),
-                                        ]
+                                        ],
+                                        Spacer(),
+                                        IconButton(
+                                            icon: Icon(
+                                              widget.menu.selectedMenu[entry.key]?.first?.id != food.id ? Icons.check_box_outline_blank : Icons.check_box,
+                                              color: widget.menu.selectedMenu[entry.key]?.first?.id != food.id ? Colors.grey : CRIMSON,
+                                            ),
+                                            onPressed: () {
+                                              print("food selected");
+                                              /*                                          if (_cartContext.contains(widget.menu)){
+                                               _cartContext.foodMenuSelected[entry.key] = food;
+                                               menuFood = food;
+                                              }
+*/
+                                              if (widget.menu.count == 0 || widget.menu.count == 1) {
+                                                widget.menu.setFoodMenuSelected(entry.key, food);
+                                                menuFood = food;
+                                                widget.menu.select(_cartContext, entry.key, food, () => menuContext.refresh());
+                                                if (widget.menu.count == 0) {
+                                                  widget.menu.count++;
+                                                  // _cartContext.addItem(widget.menu, 1, true);
+                                                }
+                                              } else {
+                                                // Fluttertoast.showToast(
+                                                //     msg: "Veuillez ajouter le menu dans le panier");
+                                              }
+                                            }),
                                       ],
                                     ),
                                     if (widget.menu.selectedMenu[entry.key]?.first?.id == food.id) ...[
@@ -590,78 +619,79 @@ bool loading = true;
 
   Widget _renderAddMenu() {
     return Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        /* if (showFavorite)
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        /* if (showFavorite)
                           SizedBox(
                             width: 20,
                           ),*/
-                         Consumer<CartContext>(builder: (_, cartContext, __) {
-                                // widget.menu.count = widget.menu.quantity;
-                                
-                                // if (widget.menu.quantity == 0) {
-                        if(widget.menu.quantity <= 0){
-                          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                             showDialog(
-                          context: context,
-                          builder: (_) => ConfirmationDialog(
-                            title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
-                            content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
-                          ),
-                        ).then((result) {
-                            if (result is bool && result) {
-                          // _cartContext.removeAllFood(widget.food);
-                          // _cartContext.removeItemAtPosition(widget.position);
-                          // if (!widget.fromRestaurant)
-                            // RouteUtil.goBack(context: context);
-                            RouteUtil.goBack(context: context);
-                        }else{
-                          widget.menu.quantity = 1;
-                          cartContext.refresh();
-                        }
-                        });
-                          });
-                   
+        Consumer<CartContext>(builder: (_, cartContext, __) {
+          // widget.menu.count = widget.menu.quantity;
 
-                        
-                    // _cartContext.addItem(widget.food, 0, false);
-                    // if(_cartContext.items.length == 0){
-                    //   // RouteUtil.goBack(context: context);
+          // if (widget.menu.quantity == 0) {
+          if (widget.menu.quantity <= 0) {
+            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+              showDialog(
+                context: context,
+                builder: (_) => ConfirmationDialog(
+                  title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
+                  content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
+                ),
+              ).then((result) {
+                if (result is bool && result) {
+                  // _cartContext.removeAllFood(widget.food);
+                  // _cartContext.removeItemAtPosition(widget.position);
+                  // if (!widget.fromRestaurant)
+                  // RouteUtil.goBack(context: context);
+                  RouteUtil.goBack(context: context);
+                } else {
+                  widget.menu.quantity = 1;
+                  cartContext.refresh();
+                }
+              });
+            });
+
+            // _cartContext.addItem(widget.food, 0, false);
+            // if(_cartContext.items.length == 0){
+            //   // RouteUtil.goBack(context: context);
+            // }
+
+          }
+          return widget.menu.foodMenuSelecteds.isEmpty || !_cartContext.hasOptionSelectioned(menuFood)
+              ? Container()
+              : ButtonItemCountWidget(
+                  widget.menu,
+                  onAdded: () async {
+                    // setState(() {
+                    //  ++ widget.menu.count;
+                    // widget.menu.quantity = widget.menu.count;
+                    // if(widget.menu.count > 1)
+                    // this.isAdded = true;
+                    // else
+                    // this.isAdded = false;
+                    // });
+                    cartContext.refresh();
+                  },
+                  onRemoved: () {
+                    // setState(() {
+                    // -- widget.menu.count;
+                    // widget.menu.quantity = widget.menu.count;
+                    // if (widget.menu.count <= 0) {
+                    //   widget.menu.count = 0;
+                    //   this.isAdded = false;
+                    //   _init();
+                    // }else if (itemCount == 1){
+                    //   this.isAdded = false;
                     // }
-            
-                                 
-                                }
-                                return widget.menu.foodMenuSelecteds.isEmpty || !_cartContext.hasOptionSelectioned(menuFood)
-                                    ? Container()
-                                    :
-                                    ButtonItemCountWidget(widget.menu, onAdded: () async {
-                                        // setState(() {
-                                          //  ++ widget.menu.count;
-                                          // widget.menu.quantity = widget.menu.count;
-                                          // if(widget.menu.count > 1)
-                                              // this.isAdded = true;
-                                          // else
-                                            // this.isAdded = false;
-                                        // });
-                                        cartContext.refresh();
-                                      }, onRemoved: () {
-                                        // setState(() {
-                                          // -- widget.menu.count;
-                                          // widget.menu.quantity = widget.menu.count;
-                                          // if (widget.menu.count <= 0) {
-                                          //   widget.menu.count = 0;
-                                          //   this.isAdded = false;
-                                          //   _init();
-                                          // }else if (itemCount == 1){
-                                          //   this.isAdded = false;
-                                          // }
-                                        // });
-                                        cartContext.refresh();
-                                      }, itemCount: widget.menu.quantity, isContains: !(widget.menu.foodMenuSelecteds.isEmpty || !_cartContext.hasOptionSelectioned(menuFood)),
-                                      isSmal: false,);
-
-                              })
-                      ],
-                    );
-    }
+                    // });
+                    cartContext.refresh();
+                  },
+                  itemCount: widget.menu.quantity,
+                  isContains: !(widget.menu.foodMenuSelecteds.isEmpty || !_cartContext.hasOptionSelectioned(menuFood)),
+                  isSmal: false,
+                );
+        })
+      ],
+    );
+  }
 }

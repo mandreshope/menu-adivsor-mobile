@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:firebase_mlkit_language/firebase_mlkit_language.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,6 +14,9 @@ class SettingContext extends ChangeNotifier {
   Future<void> initialized;
   int range = 10;
   int loadingIndex = 1;
+
+  Position position;
+  double distanceWithRestaurant = 0.0;
 
   bool _isRestaurantPage = false;
   bool isDownloadingLang = true;
@@ -98,6 +102,7 @@ class SettingContext extends ChangeNotifier {
 
   SettingContext() {
     initialized = _loadCurrentUserSettings();
+    _listenLocation();
   }
 
   Future<void> _loadCurrentUserSettings() async {
@@ -133,4 +138,27 @@ class SettingContext extends ChangeNotifier {
 
     print("download finish...");
   }
+
+  void _listenLocation() async {
+    Geolocator.getPositionStream()
+    .listen((Position position) {
+      print('Current position stream: ${position.latitude},${position.longitude}');
+        this.position = position;
+      });
+    }
+
+  double distanceBetween(double lat, double long) {
+    distanceWithRestaurant = Geolocator.distanceBetween(position.latitude, position.longitude, lat, long);
+    return distanceWithRestaurant;
+  }
+
+  String distanceBetweenString(double lat, double long) {
+    distanceWithRestaurant = Geolocator.distanceBetween(position.latitude, position.longitude, lat, long);
+    if (distanceWithRestaurant >= 1000) {
+      double km = distanceWithRestaurant/1000;
+      return km.toStringAsFixed(2) + " kilomètres";
+    }
+    return distanceWithRestaurant.toStringAsFixed(2) + " mètres";
+  }
+
 }

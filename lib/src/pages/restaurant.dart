@@ -65,7 +65,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
   Timer timer;
 
   Map<String, dynamic> filters = Map();
-  String type = 'all';
+  String type = '';
 
   bool _isSearching = false;
 
@@ -138,7 +138,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
           listen: false,
         ).languageCode,
         filters: {
-          'categorie': 'drink',
+          'type': 'Boisson',
           'restaurant': restaurant.id,
         },
       );
@@ -196,10 +196,10 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
       });
 
       filters['restaurant'] = restaurant.id;
-      if (restaurant.foodTypes.length > 0) foodType = restaurant.foodTypes.first['tag'];
+      if (restaurant.foodTypes.length > 0) foodType = restaurant.foodTypes.first['name']['fr'];
 
       for (int i = 0; i < restaurant.foodTypes.length; i++) {
-        var element = restaurant.foodTypes[i]['tag'];
+        var element = restaurant.foodTypes[i]['name']["fr"];
         foods[element] = await api.getFoods(
           Provider.of<SettingContext>(
             context,
@@ -207,7 +207,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
           ).languageCode,
           filters: {
             'restaurant': widget.restaurant,
-            'categorie': element,
+            'type': element,
           },
         );
       }
@@ -274,12 +274,31 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
       var results = await api.search(
         searchValue,
         _lang,
-        type: type,
-        range: range,
+        type: "food",
+        range: 10000,
+        filters: filters
+      );
+     /* if (type.isEmpty){
+results = await api.search(
+        searchValue,
+        _lang,
+        type: "food",
+        range: 10000,
+        filters: filters
+      );
+      }else{
+results = await api.search(
+        searchValue,
+        _lang,
+        type: "food",
+        range: 10000,
         filters: {
-          'restaurant': restaurant.id,
+          // 'restaurant': restaurant.id,
+          'type':type ?? ""
         },
       );
+      }*/
+      
       setState(() {
         searchResults = results;
       });
@@ -361,7 +380,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
               ? AppBar(
                   title: TextTranslator(restaurant.name ?? "",),
                   actions: [
-                    Icon(Icons.add),
+                    // Icon(Icons.add),
                     Consumer<SettingContext>(
                       builder: (context, snapshot,w) {
                         return Flag(snapshot.languageCodeFlag ?? 'fr', height: 50,width: 50,);
@@ -410,7 +429,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
           setState(() {
             activeTabIndex = index;
             if (restaurant.foodTypes.length > 0)
-              foodType = restaurant.foodTypes[index]['tag'];
+              foodType = restaurant.foodTypes[index]['name']["fr"];
             else
               foodType = 'all';
           });
@@ -576,6 +595,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                     onPressed: () async {
                       var result = await showDialog<Map<String, dynamic>>(
                         context: context,
+                        barrierDismissible: false,
                         builder: (_) => SearchSettingDialog(
                           languageCode: Provider.of<SettingContext>(context).languageCode,
                           inRestaurant: true,
@@ -587,8 +607,10 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                       if (filters is Map && filters.entries.length > 0) {
                         setState(() {
                           filters = result['filters'];
-                          type = result['type'];
-                          range = result['range'];
+                          // filters.remove("restaurant");
+                          
+                          /*type = filters['foodTypes'];
+                          range = result['range'];*/
                         });
                         _initSearch();
                       }
@@ -619,7 +641,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                     top: false,
                     sliver: SliverAppBar(
                       backgroundColor: Colors.white,
-                      expandedHeight: restaurant.description.isEmpty ? 380 : 410.0,
+                      expandedHeight: restaurant.description.isEmpty ? 400 : 470.0,
                       floating: false,
                       pinned: true,
                       flexibleSpace: FlexibleSpaceBar(
@@ -669,6 +691,28 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                         fontSize: 20,
                                       ),
                                     ),
+                                    SizedBox(height:5),
+                                    _renderCategorie(),
+                                    
+                                   
+                                    SizedBox(height: 5,),
+                                     Row(
+                                       children: [
+                                       /*  Icon(FontAwesomeIcons.mapPin,size: 15,
+                                          color: CRIMSON,),
+                                           SizedBox(
+                                          width: 5,
+                                        ),*/
+                                         TextTranslator(
+                                          "Distance : ${Provider.of<SettingContext>(context).distanceBetweenString(restaurant.location.coordinates.last,restaurant.location.coordinates.first)}",
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold
+                                          ),
+                                    ),
+                                       ],
+                                     ),
+                                    SizedBox(height:5),
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.start,
                                       children: [
@@ -683,6 +727,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                         InkWell(
                                             onTap: () async {
                                               Position currentPosition = await getCurrentPosition();
+                                              // Position currentPosition = Provider.of<SettingContext>(context).position;
                                               var coordinates = restaurant.location.coordinates;
                                               // MapUtils.openMap(currentPosition.latitude, currentPosition.longitude,
                                               // coordinates.last,coordinates.first);
@@ -715,7 +760,9 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                         )
                                       ],
                                     ),
-                                    SizedBox(height: 15,),
+                                    
+                                    
+                                    SizedBox(height: 5,),
                                     InkWell(
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.start,
@@ -753,7 +800,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                             margin: EdgeInsets.only(left: 25),
                                             child: InkWell(
                                               onTap: () async {
-                                                Position currentPosition = await getCurrentPosition();
+                                                Position currentPosition = await getCurrentPosition();;
                                                 var coordinates = restaurant.location.coordinates;
                                                 MapUtils.openMap(currentPosition.latitude, currentPosition.longitude,
                                                 coordinates.last,coordinates.first);
@@ -808,17 +855,58 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                             ),
                           ),
                           Divider(),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  TextTranslator("Livraison",
+                                  style: TextStyle(
+                                    fontSize: 16
+                                  ),),
+                                  SizedBox(width: 5,),
+                                  Icon(restaurant.delivery ? Icons.check_circle_outline_outlined : Icons.close, color: restaurant.delivery ? TEAL : CRIMSON)
+                                ],
+                              ),
+                              SizedBox(width: 15,),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  TextTranslator("Sur place",
+                                  style: TextStyle(
+                                    fontSize: 16
+                                  ),),
+                                  SizedBox(width: 5,),
+                                  Icon(restaurant.surPlace ? Icons.check_circle_outline_outlined : Icons.close, color: restaurant.delivery ? TEAL : CRIMSON)
+                                ],
+                              ),
+                              SizedBox(width: 15,),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  TextTranslator("A emporter",
+                                  style: TextStyle(
+                                    fontSize: 16
+                                  ),),
+                                  SizedBox(width: 5,),
+                                  Icon(restaurant.aEmporter ? Icons.check_circle_outline_outlined : Icons.close, color: restaurant.delivery ? TEAL : CRIMSON)
+                                ],
+                              ),
+                            ],
+                          ),
+                          Divider(),
                           Container(
                             padding: EdgeInsets.only(left: 25),
-                            height: restaurant.description.isEmpty ? 20 : 50,
+                            height: restaurant.description.isEmpty ? 20 : 30,
                             width: double.infinity,
                             child: TextTranslator(
-                              restaurant.description.isEmpty ? "Aucune description fournie" : restaurant.description,
+                              restaurant.description.isEmpty ? "" : restaurant.description,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          Divider(),
+                          restaurant.description.isNotEmpty ? Divider() : Container(),
                           InkWell(
                             onTap: (){
                               showDialog(context: context,
@@ -957,7 +1045,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                   children: [
                     // SizedBox(height: 15,),
                     if (tabController.index == 0)
-                      SizedBox(height: 50,),
+                      SizedBox(height: 75,),
                     Expanded(
                       child: ScrollablePositionedList.separated(
                         itemScrollController: itemScrollController,
@@ -1035,13 +1123,13 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                 SizedBox(
                                   height: 10,
                                 ),
-                                _renderFoodListOfType(restaurant.foodTypes[index]['tag']),
+                                _renderFoodListOfType(restaurant.foodTypes[index]['name']["fr"]),
                               ],
                             );
 
                           }else{
                             if (index == 0){
-                              if (restaurant.foodTypes[index]['tag'] != "drink")
+                              if (restaurant.foodTypes[index]['name']["fr"] != "Boisson")
                                 return Column(
                                   crossAxisAlignment: CrossAxisAlignment.stretch,
                                   children: [
@@ -1070,11 +1158,11 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                     SizedBox(
                                       height: 10,
                                     ),
-                                    _renderFoodListOfType(restaurant.foodTypes[index]['tag']),
+                                    _renderFoodListOfType(restaurant.foodTypes[index]['name']["fr"]),
                                   ],
                                 );
                             }
-                            if (restaurant.foodTypes[index]['tag'] != "drink")
+                            if (restaurant.foodTypes[index]['name']["fr"] != "Boisson")
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
@@ -1091,7 +1179,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                 SizedBox(
                                   height: 10,
                                 ),
-                                _renderFoodListOfType(restaurant.foodTypes[index]['tag']),
+                                _renderFoodListOfType(restaurant.foodTypes[index]['name']["fr"]),
                               ],
                             );
                             return Container();
@@ -1102,7 +1190,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                           padding: const EdgeInsets.symmetric(
                             vertical: 10,
                           ),
-                          child: restaurant.foodTypes[index]['tag'] != "drink" ? Container() : Divider(),
+                          child: restaurant.foodTypes[index]['name']["fr"] != "Boisson" ? Container() : Divider(),
                         ),
                       ),
                     ),
@@ -1409,6 +1497,19 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                         fontWeight: FontWeight.bold)),
               ),
             )));
+  }
+
+  Widget _renderCategorie(){
+    String name = "";
+    for (var type in _foodTypes)
+      name += type.name + ", ";
+      return TextTranslator(
+        name.isEmpty ? name : name.substring(0,name.length-2),
+        style: TextStyle(
+            fontWeight: FontWeight.bold,
+          fontSize: 16
+        ),
+      );
   }
 }
 

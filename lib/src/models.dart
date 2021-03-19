@@ -420,7 +420,7 @@ class Restaurant {
   factory Restaurant.fromJson(Map<String, dynamic> json) => Restaurant(
         id: json['_id'],
         name: json['name'],
-        type: json['type'],
+        type: json['categorie'],
         imageURL: json['imageURL'],
         location: Location.fromJson(
           json['location'],

@@ -42,7 +42,6 @@ class ConfirmationDialog extends StatelessWidget {
         content,
       ),
       actions: [
-        if (!isSimple)
         FlatButton(
           onPressed: () {
             Navigator.of(context).pop(false);
@@ -410,10 +409,12 @@ class SearchSettingDialog extends StatefulWidget {
   final bool inRestaurant;
   final int range;
   final bool isDiscover;
+  final bool fromCategory;
+  final bool fromRestaurantHome;
 
   bool fromMap;
 
-  SearchSettingDialog({Key key, @required this.languageCode, @required this.filters, @required this.type, this.inRestaurant = false, this.range = 1, this.isDiscover = false,this.fromMap = false}) : super(key: key);
+  SearchSettingDialog({Key key, @required this.languageCode,this.fromRestaurantHome = false, @required this.filters, @required this.type, this.inRestaurant = false, this.range = 1, this.isDiscover = false,this.fromMap = false,this.fromCategory = false}) : super(key: key);
 
   @override
   _SearchSettingDialogState createState() => _SearchSettingDialogState();
@@ -428,6 +429,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
   List<String> searchType = List();
 
   String shedule = "ouvert";
+  String categorieType = "";
 
   @override
   void initState() {
@@ -510,8 +512,9 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
               displayTrackball: true,
               // sliderHeight: 50,
             ),*/
-            if (!widget.isDiscover) ...[
-              if (!widget.inRestaurant) ...[
+            if (!widget.fromCategory)...[
+              if (!widget.isDiscover) ...[
+              if (!widget.inRestaurant && !widget.fromRestaurantHome) ...[
                 
                 TextTranslator(
                   AppLocalizations.of(context).translate('search_type'),
@@ -566,7 +569,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
               ]
             ],
                 TextTranslator(
-                  AppLocalizations.of(context).translate('categories'),
+                  widget.inRestaurant ? 'Types' : AppLocalizations.of(context).translate('categories'),
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -580,6 +583,69 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                   physics: BouncingScrollPhysics(),
                   child: Row(
                     children: [
+                      if (widget.inRestaurant)...[
+                        Theme(
+                        data: ThemeData(
+                          brightness: !filters.containsKey('type') ? Brightness.dark : Brightness.light,
+                          cardColor: !filters.containsKey('type') ? CRIMSON : Colors.white,
+                        ),
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(50),
+                            onTap: () {
+                              setState(() {
+                                filters.remove('type');
+                              });
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(10),
+                              child: TextTranslator(
+                                'Tous',
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                        ...Provider.of<DataContext>(context)
+                          .foodTypes
+                          .map(
+                            (e) => Theme(
+                              data: ThemeData(
+                                brightness: filters.containsKey('type') && filters['type'] == e.name['fr'] ? Brightness.dark : Brightness.light,
+                                cardColor: filters.containsKey('type') && filters['type'] == e.name['fr'] ? CRIMSON : Colors.white,
+                              ),
+                              child: Card(
+                                color: filters.containsKey('type') && filters['type'] == e.name['fr'] ? CRIMSON : Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(50),
+                                  onTap: () {
+                                    setState(() {
+                                      filters['type'] = e.name['fr'];
+                                    });
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(10),
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        TextTranslator(
+                                          e.name["fr"],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                      ]else...[
                       Theme(
                         data: ThemeData(
                           brightness: !filters.containsKey('category') ? Brightness.dark : Brightness.light,
@@ -605,6 +671,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                           ),
                         ),
                       ),
+                      
                       ...Provider.of<DataContext>(context)
                           .foodCategories
                           .map(
@@ -623,6 +690,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                                   onTap: () {
                                     setState(() {
                                       filters['category'] = e.id;
+                                      categorieType = e.name["fr"];
                                     });
                                   },
                                   child: Container(
@@ -636,6 +704,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                             ),
                           )
                           .toList(),
+                      ]
                     ],
                   ),
                 ),
@@ -679,6 +748,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                           ),
                         ),
                       ),
+                      
                       ...Provider.of<DataContext>(context)
                           .foodAttributes
                           .map(
@@ -734,6 +804,8 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                   height: 20,
                 ),
            
+            ],
+            
            if (widget.fromMap)...[
 
            
@@ -763,7 +835,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
               alignment: Alignment.centerRight,
               child: RaisedButton(
                 onPressed: () => Navigator.of(context).pop(
-                  {'filters': filters, 'type': type, 'range': distanceAround, "shedule":shedule == "ouvert" ? true : false},
+                  {'filters': filters, 'type': type,'categorie':categorieType, 'range': distanceAround, "shedule":shedule == "ouvert" ? true : false},
                 ),
                 child: TextTranslator(
                   AppLocalizations.of(context).translate('confirm'),
@@ -1042,7 +1114,7 @@ class SheduleDialog extends StatelessWidget {
                   color: TEAL,
                 ),
                 child: Center(
-                  child: TextTranslator("Fermé", textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
+                  child: TextTranslator("Fermer", textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
                 ),
               ),
             )
@@ -1128,8 +1200,10 @@ class _AtributesDialogState extends State<AtributesDialog> {
           Expanded(
             child: ListView.builder(
                 itemCount: attributes.length,
+                shrinkWrap: true,
                 itemBuilder: (_, position) {
                   FoodAttribute att = attributes[position];
+                  if (!att.tag.contains("allergen")) return Container();
                   return ListTile(
                     onTap: () {
                       setState(() {
@@ -1152,6 +1226,21 @@ class _AtributesDialogState extends State<AtributesDialog> {
                     },
                     title: Row(
                       children: [
+                        
+                        FadeInImage.assetNetwork(
+                          placeholder: 'assets/images/loading.gif',
+                          image: att.imageURL,
+                          height: 25,
+                          width: 25,
+                          imageErrorBuilder: (_, __, ___) => Icon(
+                          Icons.food_bank_outlined,size: 25,
+                        ),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        TextTranslator(att.locales),
+                        Spacer(),
                         Checkbox(
                           value: dataContext.isAllAttribute ? false : att.isChecked,
                           onChanged: (value) {
@@ -1177,6 +1266,47 @@ class _AtributesDialogState extends State<AtributesDialog> {
                           hoverColor: CRIMSON,
                           activeColor: CRIMSON,
                         ),
+                      ],
+                    ),
+                  );
+                }),
+          ),
+          if (attributes.where((element) => !element.tag.contains("allergen")).isNotEmpty)...[
+          Padding(
+            padding: EdgeInsets.only(left: 35),
+            child: TextTranslator("Afficher : ", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+          ),
+          Divider(),
+          Expanded(
+            child: ListView.builder(
+                itemCount: attributes.length,
+                shrinkWrap: true,
+                itemBuilder: (_, position) {
+                  FoodAttribute att = attributes[position];
+                  if (att.tag.contains("allergen")) return Container();
+                  return ListTile(
+                    onTap: () {
+                      setState(() {
+                        att.isChecked = !att.isChecked;
+                        if (att.tag.contains("allergen")) {
+                          attributes.forEach((element) {
+                            if (!element.tag.contains("allergen")) {
+                              element.isChecked = false;
+                            }
+                          });
+                        } else {
+                          attributes.forEach((element) {
+                            if (element.tag.contains("allergen")) {
+                              element.isChecked = false;
+                            }
+                          });
+                        }
+                        dataContext.isAllAttribute = false;
+                      });
+                    },
+                    title: Row(
+                      children: [
+                        
                         FadeInImage.assetNetwork(
                           placeholder: 'assets/images/loading.gif',
                           image: att.imageURL,
@@ -1190,11 +1320,39 @@ class _AtributesDialogState extends State<AtributesDialog> {
                           width: 10,
                         ),
                         TextTranslator(att.locales),
+                        Spacer(),
+                        Checkbox(
+                          value: dataContext.isAllAttribute ? false : att.isChecked,
+                          onChanged: (value) {
+                            setState(() {
+                              att.isChecked = value;
+                              if (att.tag.contains("allergen")) {
+                                attributes.forEach((element) {
+                                  if (!element.tag.contains("allergen")) {
+                                    element.isChecked = false;
+                                  }
+                                });
+                              } else {
+                                attributes.forEach((element) {
+                                  if (element.tag.contains("allergen")) {
+                                    element.isChecked = false;
+                                  }
+                                });
+                              }
+                              dataContext.isAllAttribute = false;
+                            });
+                          },
+                          checkColor: Colors.white,
+                          hoverColor: CRIMSON,
+                          activeColor: CRIMSON,
+                        ),
                       ],
                     ),
                   );
+               
                 }),
           ),
+          ],
           InkWell(
             onTap: () {
               List<FoodAttribute> selectedAttributes = List();
@@ -1228,10 +1386,15 @@ showDialogProgress(BuildContext context,{bool barrierDismissible = true}) {
         return Container(
           color: Colors.black.withAlpha(50),
           child: Center(
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(
-                CRIMSON,
-              ),
+            child: Column(
+              children: [
+                CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    CRIMSON,
+                  ),
+                ),
+                // SizedBox(child: ,)
+              ],
             ),
           ),
         );

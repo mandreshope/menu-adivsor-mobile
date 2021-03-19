@@ -160,11 +160,11 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                       ),
                     ),
                   ),
-                  
-                  Text("${_.value.name}"),
                   SizedBox(
                     width: 5,
                   ),
+                  Text("${_.value.name}"),
+                  Spacer(),
                   Container(
                     padding: EdgeInsets.all(5),
                     decoration: BoxDecoration(

@@ -153,11 +153,12 @@ class _FoodCardState extends State<FoodCard> {
   String restaurantName;
   Api api = Api.instance;
   bool loading = true;
+  // CartContext _cartContext;
 
   @override
   void initState() {
     super.initState();
-    
+    // _cartContext = Provider.of<CartContext>(context);
       var restaurantId = widget.food.restaurant is String ? widget.food.restaurant : widget.food.restaurant['_id'];
     api.getRestaurantName(id: restaurantId).then((res) {
       if (mounted)
@@ -271,6 +272,7 @@ class _FoodCardState extends State<FoodCard> {
                                                 fontSize: 16,
                                               ),
                                             ),
+                                            
                                       if (widget.food.price != null && widget.food.price?.amount != null) ...[
                                         SizedBox(height: 5),
                                         Text(
@@ -278,6 +280,7 @@ class _FoodCardState extends State<FoodCard> {
                                           style: TextStyle(
                                             fontSize: 21,
                                             color: Colors.yellow[700],
+                                            fontWeight: FontWeight.bold
                                           ),
                                         ),
                                       ] else
@@ -819,8 +822,27 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                       ],
                     ),
                   ),
-                  !_cartContext.withPrice ? Text("") :
-                  widget.food.price?.amount == null ? Text("") : Text('${widget.food.price.amount / 100}€'),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      !_cartContext.withPrice ? Text("") :
+                  widget.food.price?.amount == null ? Text("") : Padding(
+                    padding: const EdgeInsets.only(top:10),
+                    child: Text('${widget.food.price.amount / 100}€',style: 
+                    TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold
+                    ),),
+                  ),
+                  Consumer<CartContext>(
+                    builder: (_,cart,w){
+                      return cart.contains(widget.food) ? Icon(Icons.lens_rounded,color: CRIMSON,size: 15,) : Container();
+                    })
+                      
+                    ],
+                  )
+                  
                 ],
               ),
             ),
@@ -1327,8 +1349,8 @@ class _RestaurantCardState extends State<RestaurantCard> {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  SizedBox(height: 5),
-                                  TextTranslator(
+                                   SizedBox(height: 5),
+                                   TextTranslator(
                                       widget.restaurant.type ?? "",
                                       style: TextStyle(
                                         fontSize: 16,
@@ -1569,6 +1591,7 @@ class _BagItemState extends State<BagItem> {
                   style: TextStyle(
                     fontSize: 18,
                     color: Colors.grey[600],
+                    fontWeight: FontWeight.bold
                   ),
                 ),
                 ]

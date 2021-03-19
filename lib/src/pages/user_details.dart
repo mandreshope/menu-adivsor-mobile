@@ -69,7 +69,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
       _addressController.text = authContext.currentUser.address ?? "";
     }
 
-    deliveryDate =  now.add(Duration(days: 0));
+    deliveryDate =  now;//.add(Duration(days: 0));
     deliveryTime = TimeOfDay(hour: now.hour,minute: 00);
 
     commandContext.deliveryDate = deliveryDate;
@@ -462,6 +462,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                                       deliveryDate = date;
                                       commandContext.deliveryDate = deliveryDate;
                                       commandContext.deliveryTime = deliveryTime;
+                                      isToday = deliveryDate.day == now.day;
                                     }else {
                                       print('fermé');
                                       Fluttertoast.showToast(msg: 'Le restaurant est fermé');
@@ -478,7 +479,9 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                                 underline: Container(),
                                 selectedItemBuilder: (_){ 
                                   return List.generate(24, (index){ 
-                                    isToday = index == 0 ;
+                                    
+                                    isToday = index == 0 ;  
+                                    
                                     return TextTranslator(
                                         index == 0 ? "Aujourd'hui" :
                                         index == 1 ? "Demain" :
@@ -530,13 +533,15 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                                 value:  deliveryTime,
                                 selectedItemBuilder: (_){
                                   return [
-                                    for (int i = 0; i < 24; i++)...[
-                                      if((DateTime.now().hour == TimeOfDay(hour: i, minute: 00).hour) 
-                                      && DateTime.now().hour >= TimeOfDay(hour: i, minute: 00).hour && isToday)
+                                    if (isToday)...[
+                                    for (int i = DateTime.now().hour; i < 24; i++)
+                                      // if(/*(DateTime.now().hour == TimeOfDay(hour: i, minute: 00).hour) 
+                                      // && DateTime.now().hour >= TimeOfDay(hour: i, minute: 00).hour && */isToday)
                                       DropdownMenuItem<TimeOfDay>(
                                         value: TimeOfDay(hour: i, minute: 00),
                                         child: TextTranslator(
-                                          "${TimeOfDay(hour: i, minute: (DateTime.now().add(Duration(minutes: 15)).minute)).format(context)}",
+                                          // "${TimeOfDay(hour: i, minute: (DateTime.now().add(Duration(minutes: 15)).minute)).format(context)}",
+                                         "${TimeOfDay(hour: i, minute: 00).format(context)}",
                                           style: TextStyle(
                                             fontSize: 18,
                                             color: CRIMSON,
@@ -544,7 +549,9 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                                           ),
                                         )
                                       ),
-                                      if(DateTime.now().hour < TimeOfDay(hour: i, minute: 00).hour)
+                                      // if(DateTime.now().hour < TimeOfDay(hour: i, minute: 00).hour)
+                                    ]else
+                                      for (int i = 0; i < 24; i++)
                                       DropdownMenuItem<TimeOfDay>(
                                         value: TimeOfDay(hour: i, minute: 00),
                                         child: TextTranslator(
@@ -556,7 +563,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                                           ),
                                         )
                                       ),
-                                    ]
+                                    // ]
                                   ];
                                 },
                                 onChanged: (TimeOfDay time) {
@@ -573,29 +580,36 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                                 ),
                                 underline: Container(),
                                 items: [
-                                  for (int i = 0; i < 24; i++)...[
-                                    if((DateTime.now().hour == TimeOfDay(hour: i, minute: 00).hour) 
-                                    && DateTime.now().hour >= TimeOfDay(hour: i, minute: 00).hour && isToday)
-                                    DropdownMenuItem<TimeOfDay>(
-                                      value: TimeOfDay(hour: i, minute: 00),
-                                      child: TextTranslator(
-                                        "${TimeOfDay(hour: i, minute: (DateTime.now().add(Duration(minutes: 15)).minute)).format(context)}",
-                                        style: TextStyle(
-                                          fontSize: 20
-                                        ),
-                                      )
-                                    ),
-                                    if(DateTime.now().hour < TimeOfDay(hour: i, minute: 00).hour)
-                                    DropdownMenuItem<TimeOfDay>(
-                                      value: TimeOfDay(hour: i, minute: 00),
-                                      child: TextTranslator(
-                                        "${TimeOfDay(hour: i, minute: 00).format(context)}",
-                                        style: TextStyle(
-                                          fontSize: 20
-                                        ),
-                                      )
-                                    ),
-                                  ]
+                                  if (isToday)...[
+                                    for (int i = DateTime.now().hour; i < 24; i++)
+                                      // if(/*(DateTime.now().hour == TimeOfDay(hour: i, minute: 00).hour) 
+                                      // && DateTime.now().hour >= TimeOfDay(hour: i, minute: 00).hour && */isToday)
+                                      DropdownMenuItem<TimeOfDay>(
+                                        value: TimeOfDay(hour: i, minute: 00),
+                                        child: TextTranslator(
+                                          // "${TimeOfDay(hour: i, minute: (DateTime.now().add(Duration(minutes: 15)).minute)).format(context)}",
+                                         "${TimeOfDay(hour: i, minute: 00).format(context)}",
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            color: CRIMSON,
+                                            fontWeight: FontWeight.w600
+                                          ),
+                                        )
+                                      ),
+                                      // if(DateTime.now().hour < TimeOfDay(hour: i, minute: 00).hour)
+                                    ]else
+                                      for (int i =0; i < 24; i++)
+                                      DropdownMenuItem<TimeOfDay>(
+                                        value: TimeOfDay(hour: i, minute: 00),
+                                        child: TextTranslator(
+                                          "${TimeOfDay(hour: i, minute: 00).format(context)}",
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            color: CRIMSON,
+                                            fontWeight: FontWeight.w600
+                                          ),
+                                        )
+                                      ),
                                 ],
                               ),
         ),

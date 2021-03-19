@@ -21,10 +21,12 @@ class SearchPage extends StatefulWidget {
   final Map<String, dynamic> filters;
   final bool showButton;
   final Map location;
+  final bool fromCategory;
+  final bool fromRestaurantHome;
 
   final String barTitle;
 
-  SearchPage({this.type = 'all', this.location,this.filters = const {}, this.showButton = false, this.barTitle = 'Rechercher'});
+  SearchPage({this.type = 'all',this.fromRestaurantHome = false ,this.location,this.filters = const {}, this.showButton = false, this.barTitle = 'Rechercher',this.fromCategory = false});
 
   @override
   _SearchPageState createState() => _SearchPageState();
@@ -326,6 +328,8 @@ class _SearchPageState extends State<SearchPage> {
                             builder: (_) => SearchSettingDialog(
                               languageCode: Provider.of<SettingContext>(context).languageCode,
                               filters: filters,
+                              fromCategory: widget.fromCategory,
+                              fromRestaurantHome: widget.fromRestaurantHome,
                               type: type,
                               range: Provider.of<SettingContext>(context).range,
                               isDiscover: widget.barTitle == 'Découvrir' ? true : false,

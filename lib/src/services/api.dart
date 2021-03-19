@@ -805,5 +805,18 @@ Future<Map<String,dynamic>> ConfirmSms(String idCommande, String code,String com
     });
 
   }
+  
+  Future<List<FoodType>> getFoodTypes(){
+    return http.get('$_apiURL/foodTypes').then<List<FoodType>>((response) {
+      if (response.statusCode == 200) {
+        var list = jsonDecode(response.body);
+        return list.map<FoodType>((data) => FoodType.fromJson(data)).toList();
+      }
+
+      return [];
+    });
+  }
+
+
 }
 
