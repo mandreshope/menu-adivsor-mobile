@@ -144,7 +144,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                                     )
                                                     ?.millisecondsSinceEpoch ??
                                                 null,
-                                              priceless: !cartContext.withPrice
+                                              priceless: cartContext.withPrice
                                           );
                                           var commandStr = command.toString();
                                           Command cm = Command.fromJson(command);

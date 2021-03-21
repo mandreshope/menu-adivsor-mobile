@@ -139,6 +139,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
           context,
           listen: false,
         ).languageCode,
+        fromQrcode: widget.fromQrcode,
         filters: {
           'type': 'Boisson',
           'restaurant': restaurant.id,
@@ -207,6 +208,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
             context,
             listen: false,
           ).languageCode,
+          fromQrcode: widget.fromQrcode,
           filters: {
             'restaurant': widget.restaurant,
             'type': element,

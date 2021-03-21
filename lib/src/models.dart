@@ -427,7 +427,7 @@ class Restaurant {
         id: json['_id'],
         name: json['name'],
         type: json['categorie'],
-        imageURL: json['imageURL'],
+        imageURL: json['imageURL'] ?? "",
         location: Location.fromJson(
           json['location'],
         ),
@@ -467,7 +467,7 @@ class Restaurant {
           int endminAM = element.openings[0].end.minute;
           
 
-          if (dateNow.hour <= 12){
+          // if (dateNow.hour <= 12){
             timeBegin = TimeOfDay(hour: hourAM, minute: minAM);
             timeEnd = TimeOfDay(hour: endhourAM, minute: endminAM);
             
@@ -475,7 +475,7 @@ class Restaurant {
               open = true;
               return;
             }
-          }else{
+          // }else{
             if(element.openings.length > 1){
                 //PM
                 int hourPM = element.openings[1].begin.hour;
@@ -490,10 +490,140 @@ class Restaurant {
                 open = true;
                 return;
               }
+            // }else{
+            //   open = false;
+            //   return;
+            // }
+          
+          }
+
+        }else{
+          print("other day...");
+        }
+    });
+    return open;
+  }
+
+  int getFirstOpeningHour(DateTime date, {bool force = false}) {
+    int hour = 0;
+    
+    bool open = false;
+    DateTime dateNow = date;
+    TimeOfDay timeNow = TimeOfDay.fromDateTime(date);
+    TimeOfDay timeBegin;
+    TimeOfDay timeEnd;
+
+    if (force){
+      OpeningTimes time = this.openingTimes.firstWhere((element) => element.day == date.weekDayToString);
+      hour = time.openings.first.begin.hour;
+      return hour;
+    }
+    
+    this.openingTimes.forEach((element) {
+        if (element.day == dateNow.weekDayToString){
+          
+          //AM
+          int hourAM = element.openings[0].begin.hour;
+          int minAM = element.openings[0].begin.minute;
+          
+          int endhourAM = element.openings[0].end.hour;
+          int endminAM = element.openings[0].end.minute;
+          
+
+          if (dateNow.hour <= 12){
+            timeBegin = TimeOfDay(hour: hourAM, minute: minAM);
+            timeEnd = TimeOfDay(hour: endhourAM, minute: endminAM);
+            
+            if (timeNow.timeOfDayToDouble > timeBegin.timeOfDayToDouble){
+ OpeningTimes time = this.openingTimes.firstWhere((element) => element.day == date.weekDayToString);
+              hour = time.openings.first.begin.hour;
+              return;
+            } else if (timeNow.timeOfDayToDouble < timeEnd.timeOfDayToDouble){
+              OpeningTimes time = this.openingTimes.firstWhere((element) => element.day == date.weekDayToString);
+              hour = time.openings.first.end.hour;
+              return;
+            }
+          }else{
+            if(element.openings.length > 1){
+                //PM
+                int hourPM = element.openings[1].begin.hour;
+                int minPM = element.openings[1].begin.minute;
+
+                int bhourPM = element.openings[1].end.hour;
+                int eminPM = element.openings[1].end.minute;
+                  timeBegin = TimeOfDay(hour: hourPM, minute: minPM);
+                  timeEnd = TimeOfDay(hour: bhourPM, minute: eminPM);
+              
+              if (timeNow.timeOfDayToDouble > timeBegin.timeOfDayToDouble){
+                OpeningTimes time = this.openingTimes.firstWhere((element) => element.day == date.weekDayToString);
+                hour = time.openings.first.begin.hour;
+                return;
+              } else if (timeNow.timeOfDayToDouble < timeEnd.timeOfDayToDouble){
+                OpeningTimes time = this.openingTimes.firstWhere((element) => element.day == date.weekDayToString);
+                hour = time.openings.first.end.hour;
+                return;
+              }
             }else{
               open = false;
               return;
             }
+          
+          }
+
+        }else{
+          print("other day...");
+        }
+    });
+
+    return hour;
+  } 
+
+  bool isOpenByDate(DateTime date,TimeOfDay t){
+    
+     bool open = false;
+    DateTime dateNow = date;
+    TimeOfDay timeNow = t;
+    TimeOfDay timeBegin;
+    TimeOfDay timeEnd;
+
+    this.openingTimes.forEach((element) {
+        if (element.day == dateNow.weekDayToString){
+          
+          //AM
+          int hourAM = element.openings[0].begin.hour;
+          int minAM = element.openings[0].begin.minute;
+          
+          int endhourAM = element.openings[0].end.hour;
+          int endminAM = element.openings[0].end.minute;
+          
+
+          // if (dateNow.hour <= 12){
+            timeBegin = TimeOfDay(hour: hourAM, minute: minAM);
+            timeEnd = TimeOfDay(hour: endhourAM, minute: endminAM);
+            
+            if (timeNow.timeOfDayToDouble > timeBegin.timeOfDayToDouble && timeNow.timeOfDayToDouble < timeEnd.timeOfDayToDouble){
+              open = true;
+              return;
+            }
+          // }else{
+            if(element.openings.length > 1){
+                //PM
+                int hourPM = element.openings[1].begin.hour;
+                int minPM = element.openings[1].begin.minute;
+
+                int bhourPM = element.openings[1].end.hour;
+                int eminPM = element.openings[1].end.minute;
+                  timeBegin = TimeOfDay(hour: hourPM, minute: minPM);
+                  timeEnd = TimeOfDay(hour: bhourPM, minute: eminPM);
+              
+              if (timeNow.timeOfDayToDouble > timeBegin.timeOfDayToDouble && timeNow.timeOfDayToDouble < timeEnd.timeOfDayToDouble){
+                open = true;
+                return;
+              }
+            // }else{
+            //   open = false;
+            //   return;
+            // }
           
           }
 

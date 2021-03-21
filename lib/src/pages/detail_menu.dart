@@ -264,12 +264,12 @@ class _DetailMenuState extends State<DetailMenu> {
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                     onPressed: () async {
-                                      if (!restaurant.isOpen) {
-                                        Fluttertoast.showToast(
-                                          msg: 'Restaurant fermé',
-                                        );
-                                        return;
-                                      }
+                                      // if (!restaurant.isOpen) {
+                                      //   Fluttertoast.showToast(
+                                      //     msg: 'Restaurant fermé',
+                                      //   );
+                                      //   return;
+                                      // }
                                       if ((widget.menu.count == 0) || (cartContext.hasSamePricingAsInBag(widget.menu) && cartContext.hasSameOriginAsInBag(widget.menu))) {
                                         if (cartContext.hasOptionSelectioned(menuFood)) {
                                           _cartContext.addItem(widget.menu, 1, true);

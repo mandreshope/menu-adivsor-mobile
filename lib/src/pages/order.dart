@@ -369,12 +369,12 @@ class _OrderPageState extends State<OrderPage> {
                         width: MediaQuery.of(context).size.width - 100,
                         child: FlatButton(
                           onPressed: () async {
-                            if (!_restaurant.isOpen){
-                                             Fluttertoast.showToast(
-                                                msg: 'Restaurant fermé',
-                                              );
-                                            return;
-                                          }
+                            // if (!_restaurant.isOpen){
+                            //                  Fluttertoast.showToast(
+                            //                     msg: 'Restaurant fermé',
+                            //                   );
+                            //                 return;
+                            //               }
                             // _command(commandContext, authContext, cartContext);
                             if (cartContext.pricelessItems || !widget.withPrice) {
                               commandContext.commandType = 'on_site';
@@ -482,7 +482,7 @@ class _OrderPageState extends State<OrderPage> {
                     'foods': 
                 e.foodMenuSelecteds
               }).toList(),
-                priceless: !cartContext.withPrice
+                priceless: cartContext.withPrice
             );
             Command cm = Command.fromJson(command);
 
@@ -577,7 +577,7 @@ class _OrderPageState extends State<OrderPage> {
                     'foods': 
                 e.foodMenuSelecteds
               }).toList(),
-            priceless: !cartContext.withPrice
+            priceless: cartContext.withPrice
         );
         Command cm = Command.fromJson(command);
 
@@ -673,6 +673,7 @@ class _OrderPageState extends State<OrderPage> {
                                   children: [
                                     TextTranslator(
                                       AppLocalizations.of(context).translate('delivery'),
+                                      textAlign: TextAlign.center,
                                     ),
                                     SizedBox(
                                       height: 10,
@@ -699,7 +700,7 @@ class _OrderPageState extends State<OrderPage> {
                               ),
                             ),
                             Text(
-                              _restaurant?.priceDelevery == null ? "0" : '${_restaurant?.priceDelevery/100 ?? '0'}€',
+                              _restaurant?.priceDelevery == null ? "0€" : '${_restaurant?.priceDelevery/100 ?? '0'}€',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 10,
@@ -750,6 +751,7 @@ class _OrderPageState extends State<OrderPage> {
                                 children: [
                                   TextTranslator(
                                     AppLocalizations.of(context).translate('on_site'),
+                                    textAlign: TextAlign.center,
                                   ),
                                   SizedBox(
                                     height: 10,
@@ -796,6 +798,7 @@ class _OrderPageState extends State<OrderPage> {
                                 children: [
                                   TextTranslator(
                                     AppLocalizations.of(context).translate('takeaway'),
+                                    textAlign: TextAlign.center,
                                   ),
                                   SizedBox(
                                     height: 10,

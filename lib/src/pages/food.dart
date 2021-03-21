@@ -589,8 +589,8 @@ class _FoodPageState extends State<FoodPage> {
                                 style: TextStyle(color: Colors.blue, fontSize: 16, decoration: TextDecoration.underline, fontWeight: FontWeight.w600),
                               ),
                               SizedBox(height: 5,),
-                              _renderCategorie(),
-                              SizedBox(height: 5,),
+                              // _renderCategorie(),
+                              // SizedBox(height: 5,),
                                Divider(),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -927,13 +927,13 @@ class _FoodPageState extends State<FoodPage> {
                                           borderRadius: BorderRadius.circular(10),
                                         ),
                                         onPressed: () async {
-                                          if (!widget.food.isPopular)
-                                          if (!restaurant.isOpen){
-                                             Fluttertoast.showToast(
-                                                msg: 'Restaurant fermé',
-                                              );
-                                            return;
-                                          }
+                                          // if (!widget.food.isPopular)
+                                          // if (!restaurant.isOpen){
+                                          //    Fluttertoast.showToast(
+                                          //       msg: 'Restaurant fermé',
+                                          //     );
+                                          //   return;
+                                          // }
                                           if (widget.food.isPopular) {
                                             RouteUtil.goTo(
                                               context: context,

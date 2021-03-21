@@ -504,6 +504,12 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 onPressed: () async {
+
+                  if (!_restaurant.isOpenByDate(deliveryDate,deliveryTime)){
+                     print('fermé');
+                     Fluttertoast.showToast(msg: 'Le restaurant est fermé');
+                     return;
+                  }
                   FormState formState = formKey.currentState;
 
                   if (addrContr.text.isEmpty) {
@@ -586,67 +592,97 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
   }
 
   Widget _datePicker() {
+   
     return Card(
       elevation: 1,
-      color: CRIMSON,
       margin: EdgeInsets.all(0),
-      child: Container(
+        child: Container(
         height: 40,
-        width: MediaQuery.of(context).size.width / 2 - 10,
+        width: MediaQuery.of(context).size.width/2-25,
         padding: EdgeInsets.symmetric(horizontal: 15),
+        
         child: Center(
           child: DropdownButton<DateTime>(
-            elevation: 16,
-            isExpanded: true,
-            isDense: true,
-            value: deliveryDate,
-            onChanged: (DateTime date) {
-              String dayName = DateFormat.EEEE('fr_FR').format(date);
-              setState(() {
-                print(dayName);
-                if (_restaurant.openingTimes.where((v) => v.day.toLowerCase() == dayName).isNotEmpty) {
-                  print('ouvert');
-                  deliveryDate = date;
-                } else {
-                  print('fermé');
-                  Fluttertoast.showToast(msg: 'Le restaurant est fermé');
-                }
-              });
-            },
-            style: TextStyle(color: Colors.grey[700], decoration: TextDecoration.none),
-            underline: Container(),
-            selectedItemBuilder: (_) {
-              return List.generate(
-                  24,
-                  (index) => TextTranslator(
-                      index == 0
-                          ? "Aujourd'hui"
-                          : index == 1
-                              ? "Demain"
-                              : "${now.add(Duration(days: index)).dateToString("EE dd MMM")}",
-                      style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.w600)));
-            },
-            iconEnabledColor: Colors.white,
-            iconDisabledColor: Colors.white,
-            items: [
-              for (int i = 0; i < 4; i++)
-                DropdownMenuItem<DateTime>(
-                    value: now.add(Duration(days: i)),
-                    child: TextTranslator(
-                      i == 0
-                          ? "Aujourd'hui"
-                          : i == 1
-                              ? "Demain"
-                              : "${now.add(Duration(days: i)).dateToString("EE dd MMMM")}",
-                      style: TextStyle(fontSize: 20),
-                    )),
-            ],
-          ),
+                                elevation: 16,
+                                isExpanded: true,
+                                isDense: true,
+                                value:  deliveryDate,
+                                onChanged: (DateTime date) {
+                                  String dayName =  DateFormat.EEEE('fr_FR').format(date);
+                                  setState(() {
+                                    print(dayName);
+                                    if(_restaurant.openingTimes.where((v) =>v.day.toLowerCase() == dayName).isNotEmpty) {
+                                      print('ouvert');
+                                      deliveryDate = date;
+                                      commandContext.deliveryDate = deliveryDate;
+
+                                      if (deliveryDate.day == now.day){
+                                        if (deliveryTime.hour <= now.hour){
+                                          deliveryTime = TimeOfDay(hour: now.hour, minute: 00) ;
+                                        }
+                                      }
+
+                                      else if (deliveryTime.hour <= _restaurant.getFirstOpeningHour(deliveryDate,force: true)){
+                                        deliveryTime = TimeOfDay(hour: _restaurant.getFirstOpeningHour(deliveryDate), minute: 00) ;
+                                      }
+
+                                      commandContext.deliveryTime = deliveryTime;
+                                      // isToday = deliveryDate.day == now.day;
+                                      // print("isToday $isToday");
+
+                                    }else {
+                                      print('fermé');
+                                      Fluttertoast.showToast(msg: 'Le restaurant est fermé');
+                                    }
+                                     
+                                  });
+                                   
+
+                                },
+                                style: TextStyle(
+                                  color: Colors.grey[700],
+                                  decoration: TextDecoration.none
+                                ),
+                                underline: Container(),
+                                selectedItemBuilder: (_){ 
+                                  return List.generate(24, (index){ 
+                                    
+                                    // isToday = index == 0 ;  
+                                    
+                                    return TextTranslator(
+                                        index == 0 ? "Aujourd'hui" :
+                                        index == 1 ? "Demain" :
+                                        "${now.add(Duration(days: index)).dateToString("EE dd MMM")}",
+                                         style: TextStyle(
+                                          fontSize: 18,
+                                          color: CRIMSON,
+                                          fontWeight: FontWeight.w600
+                                        )
+                                        );
+                                        }
+                                        );
+                                },
+
+                                items: [
+                                  for (int i = 0; i < 4; i++)
+                                    DropdownMenuItem<DateTime>(
+                                      value: now.add(Duration(days: i)),
+                                      child: TextTranslator(
+                                        i == 0 ? "Aujourd'hui" :
+                                        i == 1 ? "Demain" :
+                                        "${now.add(Duration(days: i)).dateToString("EE dd MMMM")}",
+                                         style: TextStyle(
+                                          fontSize: 20
+                                        ),)
+                                  ),
+                                ],
+                              ),
         ),
       ),
     );
   }
 
+ 
   Widget _timePicker() {
     return Card(
       elevation: 1,
@@ -666,29 +702,21 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
 
             selectedItemBuilder: (_) {
               return [
-                for (int i = 0; i < 24; i++) ...[
-                  if ((DateTime.now().hour == TimeOfDay(hour: i, minute: 00).hour) && DateTime.now().hour >= TimeOfDay(hour: i, minute: 00).hour)
+                for (int i = 
+              deliveryDate.day == now.day ? now.hour 
+              : _restaurant.getFirstOpeningHour(deliveryDate); i < 24; i++) ...[
+                  // if (deliveryDate.day == now.day && now.hour <= i)...[
                     DropdownMenuItem<TimeOfDay>(
                         value: TimeOfDay(hour: i, minute: 00),
                         child: TextTranslator(
-                          "${TimeOfDay(hour: i, minute: (DateTime.now().add(Duration(minutes: 15)).minute)).format(context)}",
-                          style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.w600),
-                        )),
-                  if (DateTime.now().hour < TimeOfDay(hour: i, minute: 00).hour)
-                    DropdownMenuItem<TimeOfDay>(
-                        value: TimeOfDay(hour: i, minute: 00),
-                        child: TextTranslator(
+                          now.hour == i ? "${TimeOfDay(hour: i, minute: (DateTime.now().add(Duration(minutes: 15)).minute)).format(context)}" :
                           "${TimeOfDay(hour: i, minute: 00).format(context)}",
                           style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.w600),
                         )),
-                ]
+                 
+                  ]
+               
               ];
-              return List.generate(
-                  24,
-                  (index) => TextTranslator(
-                        "${TimeOfDay(hour: index, minute: 00).format(context)}",
-                        style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.w600),
-                      ));
             },
             onChanged: (TimeOfDay time) {
               setState(() {
@@ -703,26 +731,25 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
             ),
             underline: Container(),
             items: [
-              for (int i = 0; i < 24; i++) ...[
-                if ((DateTime.now().hour == TimeOfDay(hour: i, minute: 00).hour) && DateTime.now().hour >= TimeOfDay(hour: i, minute: 00).hour)
-                  DropdownMenuItem<TimeOfDay>(
-                      value: TimeOfDay(hour: i, minute: 00),
-                      child: TextTranslator(
-                        "${TimeOfDay(hour: i, minute: (DateTime.now().add(Duration(minutes: 15)).minute)).format(context)}",
-                        style: TextStyle(fontSize: 20),
-                      )),
-                if (DateTime.now().hour < TimeOfDay(hour: i, minute: 00).hour)
-                  DropdownMenuItem<TimeOfDay>(
-                      value: TimeOfDay(hour: i, minute: 00),
-                      child: TextTranslator(
-                        "${TimeOfDay(hour: i, minute: 00).format(context)}",
-                        style: TextStyle(fontSize: 20),
-                      )),
-              ]
+              for (int i = 
+              deliveryDate.day == now.day ? now.hour 
+              : _restaurant.getFirstOpeningHour(deliveryDate); i < 24; i++) ...[
+                  // if (deliveryDate.day == now.day && now.hour <= i)...[
+                    DropdownMenuItem<TimeOfDay>(
+                        value: TimeOfDay(hour: i, minute: 00),
+                        child: TextTranslator(
+                          now.hour == i ? "${TimeOfDay(hour: i, minute: (DateTime.now().add(Duration(minutes: 15)).minute)).format(context)}" :
+                          "${TimeOfDay(hour: i, minute: 00).format(context)}",
+                          style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.w600),
+                        )),
+                ]
             ],
           ),
         ),
       ),
     );
   }
+ 
+
+
 }

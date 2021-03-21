@@ -99,7 +99,7 @@ class ChoosePayement extends StatelessWidget {
                                                     )
                                                     ?.millisecondsSinceEpoch ??
                                                 null,
-                                              priceless: !cartContext.withPrice
+                                              priceless: cartContext.withPrice
                                           );
             Command cm = Command.fromJson(command);
 

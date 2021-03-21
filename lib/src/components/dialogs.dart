@@ -1398,13 +1398,20 @@ showDialogProgress(BuildContext context,{bool barrierDismissible = true}) {
           color: Colors.black.withAlpha(50),
           child: Center(
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                CircularProgressIndicator(
+                Container(
+                  child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(
                     CRIMSON,
                   ),
                 ),
-                // SizedBox(child: ,)
+                ),
+               
+                SizedBox(height: 20,),
+                TextTranslator("Peut prender quelque minutes...",
+                style: TextStyle(fontSize: 15,color:Colors.white,decoration: TextDecoration.none,fontWeight: FontWeight.w400)) 
               ],
             ),
           ),

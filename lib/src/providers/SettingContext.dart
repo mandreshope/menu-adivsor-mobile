@@ -81,23 +81,27 @@ class SettingContext extends ChangeNotifier {
 
   bool get isSystemSetting => _languageCode == 'fr';
 
-  Future setlanguageCode(String value) {
+  Future setlanguageCode(String value) async {
+    
+    var result = await FirebaseLanguage.instance.modelManager().downloadModel(value);
     _languageCode = value;
     Intl.defaultLocale = value;
     SharedPreferences.getInstance().then((sharedPrefs) {
       sharedPrefs.setString('languageCode', value);
     });
     notifyListeners();
-    return FirebaseLanguage.instance.modelManager().downloadModel(value);
+    return result;
   }
 
-  Future setlanguageCodeRestaurant(String value) {
+  Future setlanguageCodeRestaurant(String value) async {
+    
+    var result = await FirebaseLanguage.instance.modelManager().downloadModel(value);
     _languageCodeRstaurant = value;
     SharedPreferences.getInstance().then((sharedPrefs) {
       sharedPrefs.setString('languageCodeRestaurant', value);
     });
     notifyListeners();
-    return FirebaseLanguage.instance.modelManager().downloadModel(value);
+    return result;
   }
 
   SettingContext() {
