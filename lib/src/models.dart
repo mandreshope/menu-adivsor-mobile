@@ -398,6 +398,7 @@ class Restaurant {
 
   String optionLivraison = "";
   String appartement = "";
+  String codeappartement = "";
   int etage = 0;
 
   Restaurant({

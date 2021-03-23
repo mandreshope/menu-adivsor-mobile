@@ -280,7 +280,8 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
         _lang,
         type: "food",
         range: 10000,
-        filters: filters
+        filters: filters,
+        fromQrcode: widget.fromQrcode
       );
      /* if (type.isEmpty){
 results = await api.search(

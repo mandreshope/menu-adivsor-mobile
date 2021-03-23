@@ -482,7 +482,7 @@ class _OrderPageState extends State<OrderPage> {
                     'foods': 
                 e.foodMenuSelecteds
               }).toList(),
-                priceless: cartContext.withPrice
+                priceless: !cartContext.withPrice
             );
             Command cm = Command.fromJson(command);
 
@@ -577,7 +577,7 @@ class _OrderPageState extends State<OrderPage> {
                     'foods': 
                 e.foodMenuSelecteds
               }).toList(),
-            priceless: cartContext.withPrice
+            priceless: !cartContext.withPrice
         );
         Command cm = Command.fromJson(command);
 

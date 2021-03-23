@@ -63,6 +63,7 @@ class ChoosePayement extends StatelessWidget {
               optionLivraison: restaurant.optionLivraison,
                                             etage: restaurant.etage,
                                             appartement: restaurant.appartement,
+                                            codeappartement: restaurant.codeappartement,
                                             comment: cartContext.comment,
                                             relatedUser: authContext.currentUser?.id ?? null,
                                             commandType: commandContext.commandType,
@@ -99,7 +100,7 @@ class ChoosePayement extends StatelessWidget {
                                                     )
                                                     ?.millisecondsSinceEpoch ??
                                                 null,
-                                              priceless: cartContext.withPrice
+                                              priceless: !cartContext.withPrice
                                           );
             Command cm = Command.fromJson(command);
 

@@ -293,7 +293,7 @@ class _ConfirmSmsState extends State<ConfirmSms> {
                 'foods':
                 e.foodMenuSelecteds
               }).toList(),
-          priceless: cartContext.withPrice
+          priceless: !cartContext.withPrice
 
       );
       Command cm = Command.fromJson(command);

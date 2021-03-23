@@ -48,6 +48,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
   bool sendingCommand = false;
   TextEditingController addrContr = TextEditingController();
   TextEditingController postalCodeContr = TextEditingController();
+  TextEditingController codepostalCodeContr = TextEditingController();
   TextEditingController etageContr = TextEditingController();
 
   bool isCollapseDateTime = false;
@@ -154,6 +155,28 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                               commandContext.deliveryAddress = result.address;
                               
                             },
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.only(
+                            left: 30,
+                            right: 30,
+                            bottom: 30
+                          ),
+                          color: Colors.white,
+                          child: TextFormFieldTranslator(
+                            controller: codepostalCodeContr,
+                            enabled: addrContr.text.isEmpty ? false : true,
+                            keyboardType: TextInputType.streetAddress,
+                            textInputAction: TextInputAction.done,
+                            decoration: InputDecoration(
+                              labelText: "Code Appartement",
+                            ),
+                            onChanged: (value) {
+                              // commandContext.deliveryAddress = value;
+                              _restaurant.codeappartement = codepostalCodeContr.text;
+                            },
+                            
                           ),
                         ),
                         Container(
@@ -694,7 +717,6 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
         padding: EdgeInsets.symmetric(horizontal: 15),
         child: Center(
           child: DropdownButton<TimeOfDay>(
-            // offsetAmount: MediaQuery.of(context).size.height/2 - 50,
             elevation: 0,
             isDense: true,
             isExpanded: true,
@@ -705,7 +727,6 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                 for (int i = 
               deliveryDate.day == now.day ? now.hour 
               : _restaurant.getFirstOpeningHour(deliveryDate); i < 24; i++) ...[
-                  // if (deliveryDate.day == now.day && now.hour <= i)...[
                     DropdownMenuItem<TimeOfDay>(
                         value: TimeOfDay(hour: i, minute: 00),
                         child: TextTranslator(

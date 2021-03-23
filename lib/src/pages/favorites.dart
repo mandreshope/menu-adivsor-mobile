@@ -176,7 +176,9 @@ class _FavoritesPageState extends State<FavoritesPage>
                         child: Column(
                           children: favoriteFoods
                               .map(
-                                (e) => Padding(
+                                (e) {
+                                  e.isPopular = true;
+                                  return Padding(
                                   padding: const EdgeInsets.only(
                                     bottom: 10,
                                   ),
@@ -184,8 +186,8 @@ class _FavoritesPageState extends State<FavoritesPage>
                                     food: e,
                                     imageTag: e.id,
                                   )
-                                ),
-                              )
+                                );
+                              })
                               .toList(),
                         ),
                       )

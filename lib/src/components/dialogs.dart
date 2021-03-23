@@ -413,8 +413,9 @@ class SearchSettingDialog extends StatefulWidget {
   final bool fromRestaurantHome;
 
   bool fromMap;
+  String shedule;
 
-  SearchSettingDialog({Key key, @required this.languageCode,this.fromRestaurantHome = false, @required this.filters, @required this.type, this.inRestaurant = false, this.range = 1, this.isDiscover = false,this.fromMap = false,this.fromCategory = false}) : super(key: key);
+  SearchSettingDialog({Key key, @required this.languageCode,this.fromRestaurantHome = false,this.shedule, @required this.filters, @required this.type, this.inRestaurant = false, this.range = 1, this.isDiscover = false,this.fromMap = false,this.fromCategory = false}) : super(key: key);
 
   @override
   _SearchSettingDialogState createState() => _SearchSettingDialogState();
@@ -428,13 +429,13 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
 
   List<String> searchType = List();
 
-  String shedule = "ouvert";
+  String shedule = "Tous";
   String categorieType = "";
 
   @override
   void initState() {
     super.initState();
-   
+    this.shedule = widget.shedule;
     searchType = [
                       'all',
                       'restaurant',
@@ -512,9 +513,10 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
               displayTrackball: true,
               // sliderHeight: 50,
             ),*/
+            
             if (!widget.fromCategory)...[
               if (!widget.isDiscover) ...[
-              if (!widget.inRestaurant && !widget.fromRestaurantHome) ...[
+              if (!widget.inRestaurant && !widget.fromRestaurantHome && !widget.fromMap) ...[
                 
                 TextTranslator(
                   AppLocalizations.of(context).translate('search_type'),
@@ -526,6 +528,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                 SizedBox(
                   height: 10,
                 ),
+                
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   physics: BouncingScrollPhysics(),
@@ -578,6 +581,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                 SizedBox(
                   height: 10,
                 ),
+                
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   physics: BouncingScrollPhysics(),
@@ -711,6 +715,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                 SizedBox(
                   height: 15,
                 ),
+                if(!widget.fromMap)
                 TextTranslator(
                   AppLocalizations.of(context).translate('attributes'),
                   style: TextStyle(
@@ -718,6 +723,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                if(!widget.fromMap)
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   physics: BouncingScrollPhysics(),
@@ -826,7 +832,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                        this.shedule = value;
                      });
                    }, choiceItems:  C2Choice.listFrom(
-                        source: ["ouvert","fermé"],
+                        source: ["Tous","ouvert","fermé"],
                         value: (i, v) => v,
                         label: (i, v) => v,
                       ),),
@@ -835,7 +841,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
               alignment: Alignment.centerRight,
               child: RaisedButton(
                 onPressed: () => Navigator.of(context).pop(
-                  {'filters': filters, 'type': type,'categorie':categorieType, 'range': distanceAround, "shedule":shedule == "ouvert" ? true : false},
+                  {'filters': filters, 'type': type,'categorie':categorieType, 'range': distanceAround, "shedule":shedule},
                 ),
                 child: TextTranslator(
                   AppLocalizations.of(context).translate('confirm'),

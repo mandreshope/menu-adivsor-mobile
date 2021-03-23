@@ -712,7 +712,7 @@ RouteUtil.goTo(
                             SizedBox(width: 5,),
                             TextTranslator('${itemsOption.item.name}', style: TextStyle(fontSize: 16)),
                             Spacer(),
-                            if (itemsOption.item.price == 0 || widget.commande.priceless)
+                            if (widget.commande.priceless)
                               Text("")
                             else
                               itemsOption.item.price.amount == null ? Text("") : TextTranslator('${itemsOption.item.price.amount/100} €', style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),

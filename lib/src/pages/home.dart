@@ -28,6 +28,7 @@ import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -67,7 +68,7 @@ class _HomePageState extends State<HomePage> {
           context,
           listen: false,
         ).languageCode;
-        await Provider.of<DataContext>(context,listen: false).setCity(currentPosition.latitude, currentPosition.longitude);
+        await Provider.of<DataContext>(context, listen: false).setCity(currentPosition.latitude, currentPosition.longitude);
         Provider.of<DataContext>(
           context,
           listen: false,
@@ -75,7 +76,7 @@ class _HomePageState extends State<HomePage> {
           lang,
           currentLocation,
         );
-        this.city = Provider.of<DataContext>(context,listen: false).getCity();
+        this.city = Provider.of<DataContext>(context, listen: false).getCity();
       } else {
         Position currentPosition = await getCurrentPosition();
         setState(() {
@@ -90,12 +91,12 @@ class _HomePageState extends State<HomePage> {
           listen: false,
         ).languageCode;
 
-        await Provider.of<DataContext>(context,listen: false).setCity(currentPosition.latitude, currentPosition.longitude);
+        await Provider.of<DataContext>(context, listen: false).setCity(currentPosition.latitude, currentPosition.longitude);
         Provider.of<DataContext>(context, listen: false).refresh(
           lang,
           currentLocation,
         );
-        this.city = Provider.of<DataContext>(context,listen: false).getCity();
+        this.city = Provider.of<DataContext>(context, listen: false).getCity();
       }
     });
   }
@@ -191,16 +192,17 @@ class _HomePageState extends State<HomePage> {
                                   Transform.translate(
                                     offset: Offset(
                                       0,
-                                      -130,
+                                      -150,
                                     ),
                                     child: Column(
                                       children: [
+                                        _renderBlog(),
                                         _renderFoodCategories(),
                                         _renderNearestRestaurants(),
 
                                         _renderPopularFoods(),
                                         _renderOnSiteFoods(),
-                                        _renderBlog()
+                                        // _renderBlog()
                                       ],
                                     ),
                                   ),
@@ -209,59 +211,52 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                           Consumer<CartContext>(
-                            builder: (_,cart,w){
-
-                              return cart.items.length == 0 ? Container() : Positioned(
-                                bottom: 20,
-                                right: 20,
-                                child: Stack(
-                                  children: [
-                                    FloatingActionButton(
-                                      onPressed: (){
-                                        RouteUtil.goTo(
-                                          context: context,
-                                          child: OrderPage(
-                                            withPrice: cart.withPrice,
+                            builder: (_, cart, w) {
+                              return cart.items.length == 0
+                                  ? Container()
+                                  : Positioned(
+                                      bottom: 20,
+                                      right: 20,
+                                      child: Stack(
+                                        children: [
+                                          FloatingActionButton(
+                                            onPressed: () {
+                                              RouteUtil.goTo(
+                                                context: context,
+                                                child: OrderPage(
+                                                  withPrice: cart.withPrice,
+                                                ),
+                                                routeName: orderRoute,
+                                              );
+                                            },
+                                            child: FaIcon(
+                                              Icons.shopping_cart_outlined,
+                                              color: Colors.white,
+                                            ),
+                                            backgroundColor: TEAL,
+                                            heroTag: "floating",
                                           ),
-                                          routeName: orderRoute,
-                                        );
-
-                                      },
-                                      child: FaIcon(
-                                        Icons.shopping_cart_outlined,
-                                        color: Colors.white,
-                                      ),
-                                      backgroundColor: TEAL,
-                                      heroTag: "floating",
-                                    ),
-                                    Positioned(
-                                      top: 0,
-                                      right: 0,
-                                      child: Container(
-                                          padding: EdgeInsets.only(bottom: 5),
-                                          decoration: BoxDecoration(
-                                            color: CRIMSON,
-                                            borderRadius: BorderRadius.circular(12.5)
-                                          ),
-                                          child: Center(
-                                            child: Text("${cart.totalItems}",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold
+                                          Positioned(
+                                            top: 0,
+                                            right: 0,
+                                            child: Container(
+                                              padding: EdgeInsets.only(bottom: 5),
+                                              decoration: BoxDecoration(color: CRIMSON, borderRadius: BorderRadius.circular(12.5)),
+                                              child: Center(
+                                                child: Text(
+                                                  "${cart.totalItems}",
+                                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                                ),
                                               ),
-                                            )
-                                            ,
-                                          ),
-                                      width: 25,
-                                        height: 25,
+                                              width: 25,
+                                              height: 25,
+                                            ),
+                                          )
+                                        ],
                                       ),
-                                    )
-                                  ],
-                                ),
-                              );
+                                    );
                             },
                           )
-
                         ],
                       ),
                     ),
@@ -318,7 +313,7 @@ class _HomePageState extends State<HomePage> {
                           context: context,
                           child: SearchPage(
                             location: {
-                              "coordinates":currentLocation?.coordinates ?? [0,0]
+                              "coordinates": currentLocation?.coordinates ?? [0, 0]
                             },
                             filters: {
                               // "city":this.city ?? ""
@@ -460,7 +455,7 @@ class _HomePageState extends State<HomePage> {
                               type: 'restaurant',
                               fromCategory: true,
                               location: {
-                                "coordinates":currentLocation?.coordinates ?? [0,0]
+                                "coordinates": currentLocation?.coordinates ?? [0, 0]
                               },
                               filters: {
                                 "category": category.id,
@@ -591,7 +586,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _renderNearestRestaurants() {
-    
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(
@@ -619,7 +613,7 @@ class _HomePageState extends State<HomePage> {
                         type: 'restaurant',
                         fromRestaurantHome: true,
                         location: {
-                           "coordinates":currentLocation?.coordinates ?? [0,0]
+                          "coordinates": currentLocation?.coordinates ?? [0, 0]
                         },
                         filters: {
                           // 'city':this.city ?? ""
@@ -700,7 +694,7 @@ class _HomePageState extends State<HomePage> {
   Widget _renderOnSiteFoods() {
     return Visibility(
       visible: false,
-          child: Container(
+      child: Container(
         width: double.infinity,
         margin: const EdgeInsets.only(
           bottom: 30,
@@ -727,7 +721,7 @@ class _HomePageState extends State<HomePage> {
                         child: SearchPage(
                           type: 'food',
                           location: {
-                             "coordinates":currentLocation?.coordinates ?? [0,0]
+                            "coordinates": currentLocation?.coordinates ?? [0, 0]
                           },
                           filters: {
                             // "searchCategory": "with_price",
@@ -809,20 +803,21 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _renderBlog() {
-      return Container(
-        width: double.infinity,
-        margin: const EdgeInsets.only(
-          bottom: 30,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(
+        bottom: 30,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          /*
             Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SectionTitle(
+               SectionTitle(
                   "Blog",
                 ),
                 Visibility(
@@ -859,61 +854,145 @@ class _HomePageState extends State<HomePage> {
                 ),
               ],
             ),
-            Consumer<DataContext>(
-              builder: (_, dataContext, __) {
-                var blogs = dataContext.blogs;
-                var loading = dataContext.loadingBlog;
+           */
+          Consumer<DataContext>(
+            builder: (_, dataContext, __) {
+              var blogs = dataContext.blogs;
+              var loading = dataContext.loadingBlog;
 
-                if (loading)
-                  return Container(
-                    height: 200,
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          CRIMSON,
-                        ),
+              if (loading)
+                return Container(
+                  height: 200,
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        CRIMSON,
                       ),
                     ),
-                  );
-
-                if (blogs.length == 0)
-                  return Container(
-                    height: 200,
-                    child: Center(
-                      child: TextTranslator(
-                        "Aucune Blog trouvée",
-                        style: TextStyle(
-                          fontSize: 22,
-                        ),
-                      ),
-                    ),
-                  );
-
-                return SingleChildScrollView(
-                  physics: BouncingScrollPhysics(),
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.only(
-                    left: 20,
-                    right: 20,
-                    bottom: 10,
-                  ),
-                  child: Column(
-                    children: [
-                      for (var blog in blogs)
-                        FadeAnimation(
-                          1,
-                          BlogCard(
-                            blog
-                          )
-                        ),
-                    ],
                   ),
                 );
-              },
-            ),
-          ],
-        ),
-      );
-    }
-  }
 
+              if (blogs.length == 0)
+                return Container(
+                  height: 200,
+                  child: Center(
+                    child: TextTranslator(
+                      "Aucune Blog trouvée",
+                      style: TextStyle(
+                        fontSize: 22,
+                      ),
+                    ),
+                  ),
+                );
+
+              return CarouselSliderBlog(context: context, blogs: blogs);
+
+              return SingleChildScrollView(
+                physics: BouncingScrollPhysics(),
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.only(
+                  left: 20,
+                  right: 20,
+                  bottom: 10,
+                ),
+                child: Column(
+                  children: [
+                    for (var blog in blogs) FadeAnimation(1, BlogCard(blog)),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class CarouselSliderBlog extends StatefulWidget {
+  const CarouselSliderBlog({
+    Key key,
+    @required this.context,
+    @required this.blogs,
+  }) : super(key: key);
+
+  final BuildContext context;
+  final List<Blog> blogs;
+
+  @override
+  _CarouselSliderBlogState createState() => _CarouselSliderBlogState();
+}
+
+class _CarouselSliderBlogState extends State<CarouselSliderBlog> {
+
+  int _current = 0;
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Stack(
+        children: [
+          CarouselSlider(
+            options: CarouselOptions(
+              height: MediaQuery.of(context).size.height / 4.5,
+              autoPlay: true,
+              enlargeCenterPage: false,
+              aspectRatio: 16 / 9,
+              viewportFraction: 1,
+              onPageChanged: (position,_){
+                setState(() {
+                  _current = position;
+                });
+              }
+            ),
+            
+            items: widget.blogs.map((blog) {
+              return Builder(
+                builder: (BuildContext context) {
+                  return BlogCard(blog);
+                },
+              );
+            }).toList(),
+          ),
+          Positioned.fill(
+          bottom: 0,
+          left: 0,
+          child: Container(
+            height: 50,
+            width: double.infinity,
+            // color: Colors.black.withAlpha(150),
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                height: 20,
+                width: double.infinity,
+                color: Colors.black.withAlpha(100),
+                child: Container(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: widget.blogs.map((url) {
+                      int index = widget.blogs.indexOf(url);
+                      return Container(
+                        width: 10.0,
+                        height: 10.0,
+                        margin: EdgeInsets.symmetric(horizontal: 4.0),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          // color : Colors.red
+                          color: _current == index
+                            ? Colors.white
+                            : Colors.grey.withAlpha(150),
+                        ),
+                      );
+                    }).toList(),
+                ),
+              ),
+            ),
+
+        )))
+        ]
+      ),
+    );
+  }
+}

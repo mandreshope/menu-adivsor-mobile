@@ -107,6 +107,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                             optionLivraison: widget.restaurant.optionLivraison,
                                             etage: widget.restaurant.etage,
                                             appartement: widget.restaurant.appartement,
+                                            codeappartement: widget.restaurant.codeappartement,
                                             payed: true,
                                             comment: cartContext.comment,
                                             relatedUser: authContext.currentUser?.id ?? null,
@@ -144,7 +145,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                                     )
                                                     ?.millisecondsSinceEpoch ??
                                                 null,
-                                              priceless: cartContext.withPrice
+                                              priceless: !cartContext.withPrice
                                           );
                                           var commandStr = command.toString();
                                           Command cm = Command.fromJson(command);

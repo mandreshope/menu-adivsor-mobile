@@ -55,7 +55,7 @@ class _MapPageState extends State<MapPage> {
 
   int range;
   PanelController _panelController;
-  bool isopen = true;
+  String isopen = "Tous";
 
   void _onCameraMove(CameraPosition position) {
     _lastMapPosition = position.target;
@@ -198,7 +198,10 @@ class _MapPageState extends State<MapPage> {
 
         _nearestRestaurants = res.where((element) {
           Restaurant restaurant = Restaurant.fromJson(element.content);
-          return restaurant.isOpen == isopen && restaurant.status;
+          if (isopen == "Tous") {
+            return true;
+          }else
+            return (restaurant.isOpen == (isopen == "ouvert" ? true : false)) && restaurant.status;
         }).toList();
       } catch (error) {} finally {
         if (mounted)
@@ -326,6 +329,7 @@ class _MapPageState extends State<MapPage> {
                               fromMap: true,
                               filters: filters,
                               type: 'all',
+                              shedule: isopen,
                               range: Provider.of<SettingContext>(context).range,
                             ),
                           );

@@ -518,7 +518,6 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
         padding: EdgeInsets.symmetric(horizontal: 15),
         child: Center(
           child: DropdownButton<TimeOfDay>(
-            // offsetAmount: MediaQuery.of(context).size.height/2 - 50,
             elevation: 0,
             isDense: true,
             isExpanded: true,
@@ -529,7 +528,6 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                 for (int i = 
               deliveryDate.day == now.day ? now.hour 
               : _restaurant.getFirstOpeningHour(deliveryDate); i < 24; i++) ...[
-                  // if (deliveryDate.day == now.day && now.hour <= i)...[
                     DropdownMenuItem<TimeOfDay>(
                         value: TimeOfDay(hour: i, minute: 00),
                         child: TextTranslator(
@@ -558,7 +556,6 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
               for (int i = 
               deliveryDate.day == now.day ? now.hour 
               : _restaurant.getFirstOpeningHour(deliveryDate); i < 24; i++) ...[
-                  // if (deliveryDate.day == now.day && now.hour <= i)...[
                     DropdownMenuItem<TimeOfDay>(
                         value: TimeOfDay(hour: i, minute: 00),
                         child: TextTranslator(
@@ -566,20 +563,6 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                           "${TimeOfDay(hour: i, minute: 00).format(context)}",
                           style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.w600),
                         )),
-                  // ]
-                 /* else
-                  if(deliveryDate.day != now.day && _restaurant.getFirstOpeningHour(deliveryDate) <=  i)...[ 
-                    DropdownMenuItem<TimeOfDay>(
-                        value: TimeOfDay(hour: i, minute: 00),
-                        child: TextTranslator(
-                          "${TimeOfDay(hour: i, minute: 00).format(context)}",
-                          style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.w600),
-                        )),
-                        ]*/
-                        //else Container()
-                    /*else   DropdownMenuItem<TimeOfDay>(
-                        value: TimeOfDay(hour: i, minute: 00),
-                        child: Container()),*/
                 
                 ]
             ],

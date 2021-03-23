@@ -165,8 +165,8 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                         imageErrorBuilder: (_,o,s){
                                                 return Icon(Icons.food_bank_outlined,size: 45,color: Colors.grey,);
                         },
-                        height: 45,
-                        width: 45,
+                        height: 65,
+                        width: 65,
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -299,11 +299,11 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                     child: FadeInImage.assetNetwork(
                       placeholder: 'assets/images/loading.gif',
                       image: _.value.imageUrl,
-                      height: 45,
+                      height: 65,
                       imageErrorBuilder: (_,o,s){
                                                 return Icon(Icons.food_bank_outlined,size: 45,color: Colors.grey,);
                       },
-                      width: 45,
+                      width: 65,
                       fit: BoxFit.cover,
                     ),
                   ),

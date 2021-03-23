@@ -379,6 +379,7 @@ print('$_apiURL/restaurants$query');
     Map<String, dynamic> filters,
     int range = 20,
     Map location,
+    bool fromQrcode = false
   }) {
     String searchQuery;
     
@@ -398,7 +399,12 @@ print('$_apiURL/restaurants$query');
     return http.get('$_apiURL/search$searchQuery').then<List<SearchResult>>((response) {
       if (response.statusCode == 200) {
         List<dynamic> results = jsonDecode(response.body);
-        return results.map((e) => SearchResult.fromJson(e)).where((element) => element.content['status'] ?? true).toList();
+        if (fromQrcode){
+          return results.map((e) => SearchResult.fromJson(e)).toList();
+        }else{
+          return results.map((e) => SearchResult.fromJson(e)).where((element) => element.content['status'] ?? true).toList();
+        }
+        
       }
 
       return Future.error(
@@ -589,6 +595,7 @@ print('$_apiURL/restaurants$query');
     bool priceless,
     String optionLivraison = 'out',
     String appartement,
+    String codeappartement,
     int etage,
     bool payed = false,
   }) async {
@@ -607,8 +614,9 @@ print('$_apiURL/restaurants$query');
         'menus':menu,
         'comment':comment,
         'priceless':priceless,
-        'optionLivraison':'out',
+        'optionLivraison':optionLivraison,
         'appartement':appartement,
+        'codeAppartement':codeappartement,
         'etage':etage,
         'payed':payed
       });

@@ -947,29 +947,6 @@ class _DrinkCardState extends State<DrinkCard> {
             ),
             routeName: foodRoute,
           );
-          /*if (cartContext.contains(widget.food)) {
-            var result = await showDialog(
-              context: context,
-              builder: (_) => ConfirmationDialog(
-                title: AppLocalizations.of(context)
-                    .translate('confirm_remove_from_cart_title'),
-                content: AppLocalizations.of(context)
-                    .translate('confirm_remove_from_cart_content'),
-              ),
-            );
-
-            if (result is bool && result) {
-              cartContext.removeItem(widget.food);
-            }
-          } else {
-            bool result = await showDialog<bool>(
-              context: context,
-              builder: (_) => AddToBagDialog(
-                food: widget.food,
-              ),
-            );
-            if (result is bool && result) {}
-          }*/
         },
         child: Card(
           elevation: 2.0,
@@ -1017,7 +994,7 @@ class _DrinkCardState extends State<DrinkCard> {
                           ),
                           if (widget.food.price != null && widget.food.price?.amount != null)
                             Text(
-                              '${widget.food.price.amount / 100}€',
+                             !cartContext.withPrice ? "" : '${widget.food.price.amount / 100}€',
                               style: TextStyle(
                                 fontSize: 18,
                                 color: Colors.grey[600],
@@ -1100,6 +1077,8 @@ class MenuCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
+                        _renderListPlat(context,_controller),
+                        SizedBox(height: 10,),
                         TextTranslator(
                           menu.name ?? "",
                           style: TextStyle(
@@ -1111,21 +1090,25 @@ class MenuCard extends StatelessWidget {
                           menu.description ?? "",
                           style: TextStyle(),
                         ),*/
-                        SizedBox(height: 10,),
-                        _renderListPlat(context,_controller)
+                        
+                        
 
                       ],
 
                   ),
                   Expanded(
-                    child: CustomPaint(
-                      painter: PointPainter(),
+                    child: Container(
+                      margin: EdgeInsets.only(top: 25),
+                      child: CustomPaint(
+                        painter: PointPainter(),
+                      ),
                     ),
                   ),
                   SizedBox(width: 10,),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
+                      SizedBox(height: 20,),
                       TextTranslator(
                         Provider.of<CartContext>(context).withPrice ?  "${menu.price.amount/100 ?? ""}€" : " ",
                         style: TextStyle(
@@ -1959,6 +1942,55 @@ class BlogCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return Container(
+      child: Stack(
+              fit: StackFit.loose,
+                children: [
+                  Hero(
+                      tag: 'tag:${blog.imageURL}',
+                      child: Container(
+                        // height: 190,
+                        width: double.infinity,
+                        child: FadeInImage.assetNetwork(
+                          image: blog.imageURL,
+                          placeholder: 'assets/images/loading.gif',
+                          fit: BoxFit.cover,
+                          imageErrorBuilder: (_, __, ___) => Icon(
+                          Icons.food_bank_outlined,
+                        ),
+                        ),
+                      ),
+                    ),
+                 /* Positioned.fill(
+                    bottom: 0,
+                    left: 0,
+                    child: Container(
+                      height: 50,
+                      width: double.infinity,
+                      // color: Colors.black.withAlpha(150),
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Container(
+                          height: 50,
+                          width: double.infinity,
+                          color: Colors.black.withAlpha(150),
+                          child: Center(
+                            child: TextTranslator(
+                              blog.title,
+                              style: TextStyle(
+                                color:Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                  ))*/
+                ],
+            ),
+    );
     return Card(
       elevation: 4,
       color: Colors.white,

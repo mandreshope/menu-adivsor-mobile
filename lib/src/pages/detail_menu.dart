@@ -517,7 +517,7 @@ class _DetailMenuState extends State<DetailMenu> {
                             child: Card(
                               elevation: 2,
                               child: Container(
-                                margin: EdgeInsets.all(15),
+                                // margin: EdgeInsets.all(15),
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
@@ -546,8 +546,8 @@ class _DetailMenuState extends State<DetailMenu> {
                                                   color: Colors.grey,
                                                 );
                                               },
-                                              height: 45,
-                                              width: 45,
+                                              height: 75,
+                                              width: 75,
                                               fit: BoxFit.cover,
                                             ),
                                           ),
