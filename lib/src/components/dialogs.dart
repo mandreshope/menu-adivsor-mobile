@@ -571,6 +571,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
               
               ]
             ],
+            if(type != 'food')
                 TextTranslator(
                   widget.inRestaurant ? 'Types' : AppLocalizations.of(context).translate('categories'),
                   style: TextStyle(
@@ -578,10 +579,11 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                if(type != 'food')
                 SizedBox(
                   height: 10,
                 ),
-                
+                if(type != 'food')
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   physics: BouncingScrollPhysics(),
@@ -613,6 +615,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                           ),
                         ),
                       ),
+                      if(type != 'food')
                         ...Provider.of<DataContext>(context)
                           .foodTypes
                           .map(
@@ -650,6 +653,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                           )
                           .toList(),
                       ]else...[
+                        if(type != 'food')
                       Theme(
                         data: ThemeData(
                           brightness: !filters.containsKey('category') ? Brightness.dark : Brightness.light,
@@ -675,7 +679,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                           ),
                         ),
                       ),
-                      
+                      if(type != 'food')
                       ...Provider.of<DataContext>(context)
                           .foodCategories
                           .map(
@@ -1249,9 +1253,11 @@ class _AtributesDialogState extends State<AtributesDialog> {
                           image: att.imageURL,
                           height: 25,
                           width: 25,
-                          imageErrorBuilder: (_, __, ___) => Icon(
-                          Icons.food_bank_outlined,size: 25,
-                        ),
+                          imageErrorBuilder: (_, __, ___) => Container(
+                                width: 25,
+                                height: 25,
+                                color: Colors.white,
+                              ),
                         ),
                         SizedBox(
                           width: 10,
@@ -1329,9 +1335,11 @@ class _AtributesDialogState extends State<AtributesDialog> {
                           image: att.imageURL,
                           height: 25,
                           width: 25,
-                          imageErrorBuilder: (_, __, ___) => Icon(
-                          Icons.food_bank_outlined,size: 25,
-                        ),
+                          imageErrorBuilder: (_, __, ___) => Container(
+                                width: 25,
+                                height: 25,
+                                color: Colors.white,
+                              ),
                         ),
                         SizedBox(
                           width: 10,
@@ -1416,7 +1424,7 @@ showDialogProgress(BuildContext context,{bool barrierDismissible = true}) {
                 ),
                
                 SizedBox(height: 20,),
-                TextTranslator("Peut prender quelque minutes...",
+                TextTranslator("Peut prendre quelque minutes...",
                 style: TextStyle(fontSize: 15,color:Colors.white,decoration: TextDecoration.none,fontWeight: FontWeight.w400)) 
               ],
             ),

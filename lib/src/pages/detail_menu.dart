@@ -38,13 +38,13 @@ class _DetailMenuState extends State<DetailMenu> {
 
   StreamController<bool> _streamController = StreamController();
   StreamSink<bool> get isTransparentSink => _streamController.sink;
-  Stream<bool> get isTransparentStream => _streamController.stream;
+  Stream<bool> get isTransparentStream => _streamController.stream.asBroadcastStream();
 
   ScrollController _scrollController;
   bool isContains = false;
 
   Restaurant restaurant;
-  bool loading = true;
+  bool loading = false;
 
   _scrollListener() {
     double offset = _scrollController.offset;
@@ -70,17 +70,25 @@ class _DetailMenuState extends State<DetailMenu> {
     // TODO: implement initState
     super.initState();
     _init();
+    print("menu type ${widget.menu.type}");
   }
 
   _init() {
-    _scrollController = ScrollController();
+          _scrollController = ScrollController();
     widget.menu.idNewFood = DateTime.now().millisecondsSinceEpoch.toString();
     _cartContext = Provider.of<CartContext>(context, listen: false);
     _cartContext.itemsTemp.clear();
     widget.menu.foodsGrouped = widget.menu.foods ?? List();
     widget.menu.count = _cartContext.getFoodCountByIdNew(widget.menu);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+
+      
       _scrollController.addListener(_scrollListener);
+      if (widget.menu.restaurant is String){
+         setState(() {
+          // restaurant = res;
+          loading = true;
+        });
       Api.instance
           .getRestaurant(
         id: widget.menu.restaurant,
@@ -97,6 +105,7 @@ class _DetailMenuState extends State<DetailMenu> {
           loading = false;
         });
       }).catchError((error) {
+        print(error.toString());
         Fluttertoast.showToast(
           msg: AppLocalizations.of(context).translate('connection_error'),
         );
@@ -104,6 +113,12 @@ class _DetailMenuState extends State<DetailMenu> {
           loading = false;
         });
       });
+      }
+      // else{
+      //   setState(() {
+      //     loading = false;
+      //   });
+      // }
     });
   }
 
@@ -154,8 +169,12 @@ class _DetailMenuState extends State<DetailMenu> {
                         height: 25,
                       ),
                       Container(
+                                  margin: EdgeInsets.only(left: 15),
+                                  child: _renderTitlePlat(context)),
+                                Divider(),
+                      Container(
                         width: double.infinity,
-                        child: Stack(
+                         child: Stack(
                           children: [
                             Container(
                               margin: EdgeInsets.only(left: 15),
@@ -179,15 +198,19 @@ class _DetailMenuState extends State<DetailMenu> {
                             if (widget.menu.price != null && widget.menu.price?.amount != null)
                               Positioned(
                                 right: 25,
-                                child: !_cartContext.withPrice
+                                child: !_cartContext.withPrice || widget.menu.type == MenuType.priceless.value
                                     ? Text("")
-                                    : Text(
-                                        '${widget.menu.price.amount / 100} €',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          color: Colors.black,
-                                        ),
-                                      ),
+                                    : Consumer<CartContext>(
+                                      builder: (context, snapshot,_) {
+                                        return Text(
+                                            widget.menu.type == MenuType.per_food.value ? '${widget.menu.totalPrice / 100} €' : '${widget.menu.price.amount / 100} €',
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              color: Colors.black,
+                                            ),
+                                          );
+                                      }
+                                    ),
                               ),
                           ],
                         ),
@@ -282,39 +305,39 @@ class _DetailMenuState extends State<DetailMenu> {
                                         //}
                                       } else if (!cartContext.hasSamePricingAsInBag(widget.menu)) {
                                         showDialog(
-                                            context: context,
-                                            builder: (_) => ConfirmationDialog(
-                                              title: "",
-                                              isSimple: true,
-                                              content: AppLocalizations.of(context).translate('priceless_and_not_priceless_not_allowed'),
-                                            ),
-                                                  ).then((value) {
-                                                    if (value){
-                                                      _cartContext.clear();
-                                                      _cartContext.addItem(widget.menu, 1, true);
-                                              setState(() {});
-                                              RouteUtil.goBack(context: context);
-                                                    }
-                                                  });
+                                          context: context,
+                                          builder: (_) => ConfirmationDialog(
+                                            title: "",
+                                            isSimple: true,
+                                            content: AppLocalizations.of(context).translate('priceless_and_not_priceless_not_allowed'),
+                                          ),
+                                        ).then((value) {
+                                          if (value) {
+                                            _cartContext.clear();
+                                            _cartContext.addItem(widget.menu, 1, true);
+                                            setState(() {});
+                                            RouteUtil.goBack(context: context);
+                                          }
+                                        });
                                         // Fluttertoast.showToast(
                                         //   msg: AppLocalizations.of(context).translate('priceless_and_not_priceless_not_allowed'),
                                         // );
                                       } else if (!cartContext.hasSameOriginAsInBag(widget.menu)) {
                                         showDialog(
-                                            context: context,
-                                            builder: (_) => ConfirmationDialog(
-                                              title: "",
-                                              isSimple: true,
-                                              content: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
-                                            ),
-                                                  ).then((value) {
-                                                    if (value){
-                                                      _cartContext.clear();
-                                                      _cartContext.addItem(widget.menu, 1, true);
-                                              setState(() {});
-                                              RouteUtil.goBack(context: context);
-                                                    }
-                                                  });
+                                          context: context,
+                                          builder: (_) => ConfirmationDialog(
+                                            title: "",
+                                            isSimple: true,
+                                            content: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
+                                          ),
+                                        ).then((value) {
+                                          if (value) {
+                                            _cartContext.clear();
+                                            _cartContext.addItem(widget.menu, 1, true);
+                                            setState(() {});
+                                            RouteUtil.goBack(context: context);
+                                          }
+                                        });
                                         // Fluttertoast.showToast(
                                         //   msg: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
                                         // );
@@ -322,8 +345,8 @@ class _DetailMenuState extends State<DetailMenu> {
                                     },
                                     child: TextTranslator(
                                       AppLocalizations.of(context).translate("add_to_cart") +
-                                          '\t\t${widget.menu.quantity == 0 || !cartContext.withPrice ? "" : widget.menu.totalPrice / 100}' +
-                                          '${(widget.menu.quantity == 0 || !cartContext.withPrice ? "" : "€")}',
+                                          '\t\t${widget.menu.quantity == 0 || !cartContext.withPrice || widget.menu.type == MenuType.priceless.value ? "" : widget.menu.totalPrice / 100}' +
+                                          '${(widget.menu.quantity == 0 || !cartContext.withPrice || widget.menu.type == MenuType.priceless.value ? "" : "€")}',
                                       overflow: TextOverflow.ellipsis,
                                       softWrap: false,
                                       style: TextStyle(
@@ -342,68 +365,6 @@ class _DetailMenuState extends State<DetailMenu> {
                     ),
                   ),
                 ),
-                /*   
-          Align(
-              alignment: Alignment.topCenter,
-              // right: 0,
-              child: Container(
-                width:double.infinity,
-                height:90,
-                // margin: EdgeInsets.only(top: 20),
-                child: StreamBuilder<bool>(
-                  stream: isTransparentStream,
-                  initialData: true,
-                  builder: (context, snapshot) {
-                    return Container(
-                      width: double.infinity,
-                      height: 90,
-                      padding: EdgeInsets.only(top:40),
-                      color: snapshot.data ? Colors.transparent : CRIMSON,
-                      child: 
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // SizedBox(height: 10,),
-                          Container(
-                             padding: EdgeInsets.only(right: 5),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: CRIMSON
-                            ),
-                            child: IconButton(
-                        icon: Icon(
-                            Icons.keyboard_arrow_left,
-                            color:snapshot.data ? Colors.white : Colors.white,
-                            size: 35,
-                        ),
-                        onPressed: () => RouteUtil.goBack(context: context),
-                      ),
-                          ),
-                        
-                         /* Container(
-                          padding: EdgeInsets.only(left: 5),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: CRIMSON
-                            ),
-                          child: IconButton(
-                              icon: Icon(
-                                FontAwesomeIcons.share,
-                                color: snapshot.data ? Colors.white : Colors.white,
-                              ),
-                              onPressed: () {
-                                Share.share("Menu advisor");
-                              }),
-                        ),*/
-                        ],
-                      ),
-                    );
-                  }
-                ),
-              )
-              ),
-       */
               ],
             ),
     );
@@ -421,9 +382,10 @@ class _DetailMenuState extends State<DetailMenu> {
                   ),
                   routeName: null);
             },
-            child: Hero(
-              tag: widget.menu.id,
-              child: widget.menu.imageURL != null
+            // child: Hero(
+            //   tag: widget.menu.id,
+              child: 
+              widget.menu.imageURL != null
                   ? Image.network(
                       widget.menu.imageURL,
                       width: MediaQuery.of(context).size.width,
@@ -441,7 +403,7 @@ class _DetailMenuState extends State<DetailMenu> {
                       size: 250,
                     ),
             ),
-          )
+          // )
 
           /* Positioned.fill(
               bottom: 0,
@@ -470,6 +432,15 @@ class _DetailMenuState extends State<DetailMenu> {
               ))*/
         ],
       );
+
+  Widget _renderTitlePlat(context) {
+    String name = "";
+    for (var entry in widget.menu.foodsGrouped.entries) name += entry.key + " + ";
+    return TextTranslator(
+      name.isEmpty ? name : name.substring(0, name.length - 2),
+      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+    );
+  }
 
   Widget _renderListPlat(context) {
     return widget.menu.foods.isEmpty
@@ -540,11 +511,11 @@ class _DetailMenuState extends State<DetailMenu> {
                                               placeholder: 'assets/images/loading.gif',
                                               image: food.imageURL,
                                               imageErrorBuilder: (_, o, s) {
-                                                return Icon(
-                                                  Icons.food_bank_outlined,
-                                                  size: 45,
-                                                  color: Colors.grey,
-                                                );
+                                                return Container(
+                                width: 75,
+                                height: 75,
+                                color: Colors.white,
+                              );
                                               },
                                               height: 75,
                                               width: 75,

@@ -192,7 +192,7 @@ class _HomePageState extends State<HomePage> {
                                   Transform.translate(
                                     offset: Offset(
                                       0,
-                                      -150,
+                                      -130,
                                     ),
                                     child: Column(
                                       children: [
@@ -931,15 +931,17 @@ class _CarouselSliderBlogState extends State<CarouselSliderBlog> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      
       child: Stack(
         children: [
           CarouselSlider(
             options: CarouselOptions(
               height: MediaQuery.of(context).size.height / 4.5,
               autoPlay: true,
-              enlargeCenterPage: false,
+              enlargeCenterPage: true,
               aspectRatio: 16 / 9,
-              viewportFraction: 1,
+              viewportFraction: 0.8,
+
               onPageChanged: (position,_){
                 setState(() {
                   _current = position;
@@ -955,7 +957,8 @@ class _CarouselSliderBlogState extends State<CarouselSliderBlog> {
               );
             }).toList(),
           ),
-          Positioned.fill(
+          // dots
+          /*Positioned.fill(
           bottom: 0,
           left: 0,
           child: Container(
@@ -967,7 +970,7 @@ class _CarouselSliderBlogState extends State<CarouselSliderBlog> {
               child: Container(
                 height: 20,
                 width: double.infinity,
-                color: Colors.black.withAlpha(100),
+                color: Colors.transparent,
                 child: Container(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -989,8 +992,7 @@ class _CarouselSliderBlogState extends State<CarouselSliderBlog> {
                 ),
               ),
             ),
-
-        )))
+        )))*/
         ]
       ),
     );

@@ -127,6 +127,7 @@ class DataContext extends ChangeNotifier {
       // });
       // nearestRestaurants.reversed;
       nearestRestaurants = temp.where((element) => element.status).toList();
+      nearestRestaurants.sort((a,b)=> a.priority.compareTo(b.priority));
     } catch (error) {
       print(
         "Error while fetching popular restaurants",

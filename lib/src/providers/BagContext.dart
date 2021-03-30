@@ -64,7 +64,7 @@ class CartContext extends ChangeNotifier {
       }
       // _itemsTemp.sort((a, b) => a.name.compareTo(b.name));
 
-      currentOrigin = (item.restaurant is String) ? item.restaurant : item.restaurant['_id'];
+      currentOrigin = (item.restaurant is String) ? item.restaurant : item is Menu ? item.restaurant.id : item.restaurant['_id'];
       notifyListeners();
       return true;
     }
@@ -299,15 +299,8 @@ class CartContext extends ChangeNotifier {
 
     if (food.isMenu) {
       if (food.type == "per_food") {
-        if (food.price != null && food.price.amount != null) totalPrice += (food.price.amount / 100) * count;
-      } else if (food.type == "priceless") {
-      } else if (food.type == "fixed_price") {
-        if (food.price != null && food.price.amount != null) totalPrice += (food.price.amount / 100) * count;
-      }
-    } else {
-      if (food.price != null && food.price.amount != null) totalPrice += (food.price.amount / 100) * count;
-    }
-
+        // if (food.price != null && food.price.amount != null) totalPrice += (food.price.amount / 100) * count;
+        
     List<List<Option>> _values = _options[food.id];
     if (_values != null) {
       List<Option> _temp = _values.expand((element) => element).toList();
@@ -316,6 +309,26 @@ class CartContext extends ChangeNotifier {
           if (itemOption.price != null && itemOption.price.amount != null) totalPrice += itemOption.price.amount.toDouble() / 100;
         });
       });
+    }
+
+      } else if (food.type == "priceless") {
+      } else if (food.type == "fixed_price") {
+        if (food.price != null && food.price.amount != null) totalPrice += (food.price.amount / 100) * count;
+      }
+    } else {
+      if (food.price != null && food.price.amount != null) totalPrice += (food.price.amount / 100) * count;
+      
+    List<List<Option>> _values = _options[food.id];
+    if (_values != null) {
+      List<Option> _temp = _values.expand((element) => element).toList();
+      _temp.forEach((option) {
+        option.itemOptionSelected?.forEach((itemOption) {
+          if (itemOption.price != null && itemOption.price.amount != null) totalPrice += itemOption.price.amount.toDouble() / 100;
+        });
+      });
+    }
+
+
     }
 
     // totalPrice += (food.price?.amount == null ? 00 : food.price.amount / 100)*count;

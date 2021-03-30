@@ -13,8 +13,10 @@ class PhotoViewPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.black,
       ),
-          body: Hero(
-        child: GestureDetector(
+          body: 
+        //   Hero(
+        // child: 
+        GestureDetector(
           onTap: (){
             RouteUtil.goBack(context: context);
           },
@@ -25,8 +27,8 @@ class PhotoViewPage extends StatelessWidget {
             
           ),
         ),
-        tag: tag,
-      ),
+      //   tag: tag,
+      // ),
     );
   }
 }

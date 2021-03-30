@@ -100,7 +100,7 @@ class _SearchPageState extends State<SearchPage> {
             return f.status;
           }else if(search.type.toString() == "SearchResultType.menu"){
               Menu f = Menu.fromJson(search.content);
-            return f.status;
+            return f.status && f.statut;
           }
           return true;
         }).toList();
@@ -193,7 +193,7 @@ class _SearchPageState extends State<SearchPage> {
                               if (!_loading)
                                 for (MapEntry<String, List<SearchResult>> values in _searchResultsGrouped.entries)...[
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
                                       Container(
                                         // padding: const EdgeInsets.only(top: 15,left: 15,bottom: 15),
@@ -227,7 +227,7 @@ class _SearchPageState extends State<SearchPage> {
                                               bottom: 10,
                                             ),
                                             child: FoodCard(
-                                              food: Food.fromJson(e.content),
+                                              food: Food.fromJson(e.content,isPopular: true),
                                             ),
                                           )
                                         else if (e.type.toString() == 'SearchResultType.menu')
@@ -265,7 +265,7 @@ class _SearchPageState extends State<SearchPage> {
                                   //       food: Food.fromJson(e.content),
                                   //     ),
                                   //   );
-                                  // else if (e.type.toString() == 'SearchResultType.menu')
+                                  // else if (e.type.toString() == '')
                                   //   return Padding(
                                   //     padding: const EdgeInsets.only(
                                   //       bottom: 10,

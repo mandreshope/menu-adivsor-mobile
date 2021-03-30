@@ -158,12 +158,16 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                           routeName: null);
                     },
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(0),
+                      borderRadius: BorderRadius.circular(50),
                       child: FadeInImage.assetNetwork(
                         placeholder: 'assets/images/loading.gif',
                         image: _.value.imageUrl,
                         imageErrorBuilder: (_,o,s){
-                                                return Icon(Icons.food_bank_outlined,size: 45,color: Colors.grey,);
+                                                return Container(
+                                width: 65,
+                                height: 65,
+                                color: Colors.white,
+                              );
                         },
                         height: 65,
                         width: 65,
@@ -182,7 +186,7 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                         // shape: BoxShape.circle,
                         // color: _.value.price == 0 ? null : Colors.grey[400]
                         ),
-                    child: !_cartContext.withPrice || _.value.price.amount == null
+                    child: !_cartContext.withPrice || _.value.price.amount == null || widget.menu.type == 'priceless'
                         ? Text("")
                         : Text(
                             "${_.value.price.amount == 0 ? '' : _.value.price.amount / 100}${_.value.price.amount == 0 ? '' : "€"}",
@@ -295,13 +299,17 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                         routeName: null);
                   },
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(0),
+                    borderRadius: BorderRadius.circular(50),
                     child: FadeInImage.assetNetwork(
                       placeholder: 'assets/images/loading.gif',
                       image: _.value.imageUrl,
                       height: 65,
                       imageErrorBuilder: (_,o,s){
-                                                return Icon(Icons.food_bank_outlined,size: 45,color: Colors.grey,);
+                                                return Container(
+                                width: 65,
+                                height: 65,
+                                color: Colors.white,
+                              );
                       },
                       width: 65,
                       fit: BoxFit.cover,
@@ -319,7 +327,7 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                         // shape: BoxShape.circle,
                         // color: _.value.price == 0 ? null : Colors.grey[400]
                       ),
-                      child: !_cartContext.withPrice || _.value.price.amount == null ? Text("") : Text("${_.value.price.amount == 0 ? '': _.value.price.amount/100}${_.value.price.amount == 0 ? '': "€"}",
+                      child: !_cartContext.withPrice || _.value.price.amount == null || widget.menu.type == 'priceless' ? Text("") : Text("${_.value.price.amount == 0 ? '': _.value.price.amount/100}${_.value.price.amount == 0 ? '': "€"}",
                         style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),),
                     ),
                     Spacer(),

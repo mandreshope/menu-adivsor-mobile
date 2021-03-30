@@ -485,6 +485,7 @@ print('$_apiURL/restaurants$query');
   Future<List<Menu>> getMenus(String lang, String id) => http.get('$_apiURL/restaurants/$id/menus?lang=$lang').then<List<Menu>>(
   // Future<List<Menu>> getMenus(String lang, String id) => http.get('$_apiURL/restaurants/$id/menus').then<List<Menu>>(
         (response) {
+          print("$_apiURL/restaurants/$id/menus?lang=$lang");
           if (response.statusCode == 200) {
             List<dynamic> datas = jsonDecode(response.body);
             return datas.map<Menu>((e) => Menu.fromJson(e,fromCommand: true)).toList();
@@ -598,6 +599,7 @@ print('$_apiURL/restaurants$query');
     String codeappartement,
     int etage,
     bool payed = false,
+    bool paiementLivraison = false
   }) async {
     await _refreshTokens();
     try{
@@ -618,7 +620,8 @@ print('$_apiURL/restaurants$query');
         'appartement':appartement,
         'codeAppartement':codeappartement,
         'etage':etage,
-        'payed':payed
+        'payed':payed,
+        'paiementLivraison':paiementLivraison
       });
       print(post);
       return http

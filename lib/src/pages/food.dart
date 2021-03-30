@@ -723,9 +723,11 @@ class _FoodPageState extends State<FoodPage> {
                                                         placeholder: 'assets/images/loading.gif',
                                                         image: attribute.imageURL,
                                                         height: 14,
-                                                        imageErrorBuilder: (_, __, ___) => Icon(
-                          Icons.food_bank_outlined,size: 14,
-                        ),
+                                                        imageErrorBuilder: (_, __, ___) => Container(
+                                width: 14,
+                                height: 14,
+                                color: Colors.white,
+                              ),
                                                       ),
                                                       SizedBox(
                                                         width: 5,
@@ -1124,8 +1126,8 @@ class _FoodPageState extends State<FoodPage> {
                     },
                     child: Container(
                       child: Center(
-                        child: Hero(
-                          tag: widget.imageTag ?? 'foodImage${widget.food.id}',
+                        // child: Hero(
+                        //   tag: widget.imageTag ?? 'foodImage${widget.food.id}',
                           child: widget.food.imageURL != null
                               ? Image.network(
                                   widget.food.imageURL,
@@ -1140,7 +1142,7 @@ class _FoodPageState extends State<FoodPage> {
                                   Icons.fastfood,
                                 size: MediaQuery.of(context).size.width - 100,
                                 ),
-                        ),
+                        // ),
                       ),
                     ),
                   ),
@@ -1152,8 +1154,8 @@ class _FoodPageState extends State<FoodPage> {
         child: Stack(
           children: [
             InkWell(
-              child: Hero(
-                tag: widget.imageTag ?? 'foodImage${widget.food.id}',
+              // child: Hero(
+              //   tag: widget.imageTag ?? 'foodImage${widget.food.id}',
                 child: widget.food.imageURL != null
                     ? Image.network(
                         widget.food.imageURL,
@@ -1170,7 +1172,7 @@ class _FoodPageState extends State<FoodPage> {
                         Icons.fastfood,
                         size: 250,
                       ),
-              ),
+              // ),
               onTap: () {
                 return;
                 RouteUtil.goTo(
@@ -1294,7 +1296,11 @@ class _FoodPageState extends State<FoodPage> {
                         placeholder: 'assets/images/loading.gif',
                         image: _.value.imageUrl,
                         imageErrorBuilder: (_,o,s){
-                                                return Icon(Icons.food_bank_outlined,size: 50,color: Colors.grey,);
+                                                return Container(
+                                width: 50,
+                                height: 50,
+                                color: Colors.white,
+                              );
                                               },
                         height: 50,
                         width: 50,
@@ -1439,7 +1445,11 @@ class _FoodPageState extends State<FoodPage> {
                       placeholder: 'assets/images/loading.gif',
                       image: _.value.imageUrl,
                       imageErrorBuilder: (_,o,s){
-                                                return Icon(Icons.food_bank_outlined,size: 50,color: Colors.grey,);
+                                                return Container(
+                                width: 50,
+                                height: 50,
+                                color: Colors.white,
+                              );
                                               },
                       height: 50,
                       width: 50,

@@ -22,11 +22,13 @@ import 'package:provider/provider.dart';
 class PaymentCardListPage extends StatefulWidget {
   final bool isPaymentStep;
   final Restaurant restaurant;
+  final String typedePayment;
 
   const PaymentCardListPage({
     Key key,
     this.isPaymentStep = false,
-    this.restaurant
+    this.restaurant,
+    this.typedePayment
   }) : super(key: key);
 
   @override

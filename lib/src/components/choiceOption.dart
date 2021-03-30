@@ -99,9 +99,11 @@ class ChoiceOption extends StatelessWidget {
                             height: 50,
                             width: 50,
                             fit: BoxFit.cover,
-imageErrorBuilder: (_, __, ___) => Icon(
-                          Icons.food_bank_outlined,size: 50,
-                        ),
+imageErrorBuilder: (_, __, ___) => Container(
+                                width: 50,
+                                height: 50,
+                                color: Colors.white,
+                              ),
                           ),
                         ),
                         SizedBox(

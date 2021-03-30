@@ -115,6 +115,7 @@ try {
       commandType: commandType
     ); 
 } catch (e) {
+  print(e);
   this.commands = List();
 }
 

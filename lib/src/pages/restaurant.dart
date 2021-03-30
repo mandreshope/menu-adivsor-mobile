@@ -126,6 +126,9 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
     )
         .then((res) async {
       restaurant = res;
+      if (!restaurant.accessible){
+        RouteUtil.goBack(context: context);
+      }
       AuthContext authContext = Provider.of<AuthContext>(
         context,
         listen: false,
@@ -655,8 +658,8 @@ results = await api.search(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 InkWell(
-                                  child: Hero(
-                                    tag: 'tag:${restaurant.imageURL}',
+                                  // child: Hero(
+                                  //   tag: 'tag:${restaurant.imageURL}',
                                     child: Image.network(
                                       restaurant.imageURL,
                                       // width: 4 * MediaQuery.of(context).size.width / 7,
@@ -667,7 +670,7 @@ results = await api.search(
                           child: Icon(
                             Icons.fastfood,size: MediaQuery.of(context).size.width / 3,
                           ),
-                        ),
+                        // ),
                                     ),
                                   ),
                                   onTap: () {

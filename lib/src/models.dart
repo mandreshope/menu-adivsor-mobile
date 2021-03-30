@@ -80,10 +80,11 @@ class Food implements Copyable<Food>{
     this.isFoodForMenu = false,
     this.isMenu = false,
     this.idMenu,
-    this.statut
+    this.statut,
+    this.isPopular = false
   });
 
-  factory Food.fromJson(Map<String, dynamic> json,{bool fromCommande = false}) => Food(
+  factory Food.fromJson(Map<String, dynamic> json,{bool fromCommande = false,bool isPopular = false}) => Food(
         id: json['_id'],
         name: json['name'] is Map<String, dynamic> ? json['name']["fr"] : json['name'],
         imageURL: json['imageURL'],
@@ -98,6 +99,7 @@ class Food implements Copyable<Food>{
         maxOptions:json['maxOptions'],
         description: json['description'],
         statut: json['statut'],
+        isPopular: isPopular
       );
 
   factory Food.copy(Food food) => Food(
@@ -184,9 +186,10 @@ class Menu implements Copyable<Menu>{
   final dynamic name;
   final dynamic description;
   final List<Food> foods;
-  final bool status;
+  bool status;
+  bool statut;
   List<Food> foodSelected = List();
-  String restaurant;
+  dynamic restaurant;
   Price price;
   String type;
 
@@ -219,7 +222,8 @@ class Menu implements Copyable<Menu>{
     this.message,
     this.optionSelected,
     this.price,
-    this.status
+    this.status,
+    this.statut
   });
 
   _setPrice() {
@@ -286,16 +290,19 @@ class Menu implements Copyable<Menu>{
 
   
 int get totalPrice{
-  int price = (this.price.amount ?? 0) * quantity;
-  if (price == 0) return 0;
-  this.foodSelected.forEach((food) {
-    price += food.totalPrice;
+  int price = 0;
+  
+  if (type == MenuType.per_food.value){
+    this._foodMenuSelected.forEach((key,food) {
+      food.quantity = 1;
+    price += food.totalPrice * quantity;
   });
-  /*this.optionSelected.forEach((element) {
-    element.itemOptionSelected.forEach((e) {
-      price += (e.price.amount ?? 0) * e.quantity;
-    });
-  });*/
+  }else if (type == MenuType.fixed_price.value){
+   price = (this.price.amount ?? 0) * quantity;
+  }else{
+    price = 0;
+  }
+  
 
   return price;
 
@@ -334,15 +341,19 @@ int get totalPrice{
         imageURL: json['imageURL'],
         foods: json['foods'] is List ? json['foods']?.map<Food>((data) => Food.fromJson(data,fromCommande: fromCommand))?.toList() ?? [] : [],
         description: json['description'] is Map<String, dynamic> ? json['description']["fr"] : json['description'],
-        // restaurant: resto
+        restaurant: json['restaurant'] is String ? json['restaurant'] : Restaurant.fromJson(json["restaurant"]),
         type: json['type'],
-        status :json["status"] ?? true,
+        // status :json["status"] ?? true,
         optionSelected: json['options'] != null ? (json['options'] as List).map((e) => Option.fromJson(e)).where((element) => element.maxOptions > 0).toList() : [],
       );
       _menu.isMenu = true;
       _menu._setPrice();
       
-      
+      if (_menu.foods.isNotEmpty){
+        Food food = _menu.foods.first;
+        _menu.statut = food.statut;
+        _menu.status = food.status;
+      }
       return _menu;
     }
 
@@ -385,7 +396,7 @@ class Restaurant {
   final List<String> foods;
   final List<dynamic> foodTypes;
   final String phoneNumber;
-  final bool status;
+  bool status;
   final String admin;
   final bool delivery;
   final List<OpeningTimes> openingTimes;
@@ -393,6 +404,8 @@ class Restaurant {
   final bool aEmporter;
   final String url;
   final dynamic category;
+  final int priority;
+  final bool accessible;
 
   int priceDelevery;
 
@@ -421,10 +434,15 @@ class Restaurant {
     this.aEmporter,
     this.surPlace,
     this.url,
-    this.category
+    this.category,
+    this.priority,
+    this.accessible,
+    this.etage
   });
 
-  factory Restaurant.fromJson(Map<String, dynamic> json) => Restaurant(
+  factory Restaurant.fromJson(Map<String, dynamic> json) {
+    
+    Restaurant res = Restaurant(
         id: json['_id'],
         name: json['name'],
         type: json['categorie'],
@@ -438,7 +456,8 @@ class Restaurant {
         foods: (json['foods'] as List).map<String>((e) => e).toList(),
         foodTypes: json['foodTypes'] ?? [],
         phoneNumber: json['phoneNumber'] ?? [],
-        status: json['status'],
+        status: json['referencement'],
+        accessible: json['status'],
         admin: json['admin'],
         priceDelevery:json['deliveryPrice']['amount'],
         delivery:json['delivery'] ?? true,
@@ -446,8 +465,17 @@ class Restaurant {
         surPlace:json['surPlace'] ?? true,
         url: json['url'] != null ? json['url'] as String : "Menu advisor",
         category: json['category'],
+        priority: json['priority'],
         openingTimes: (json['openingTimes'] != null) ? (json['openingTimes'] as List).map<OpeningTimes>((e) => OpeningTimes.fromJson(e)).toList() : List() 
       );
+
+        if (!res.accessible){
+          res.status = false;
+        }
+
+        return res;
+      
+      }
 
 
   bool get isOpen {
@@ -721,7 +749,11 @@ class Command {
   String comment;
   final bool priceless;
   final String optionLivraison;
+  final String codeappartement;
+  final String appartement;
   final bool payed;
+  int etage;
+  dynamic paiementLivraison;
 
   Command({
     this.id,
@@ -741,7 +773,11 @@ class Command {
     this.comment,
     this.priceless,
     this.payed,
-    this.optionLivraison
+    this.optionLivraison,
+    this.codeappartement,
+    this.etage,
+    this.appartement,
+    this.paiementLivraison
   });
 
   factory Command.fromJson(Map<String, dynamic> json) => Command(
@@ -763,7 +799,11 @@ class Command {
         ),
         priceless: json['priceless'] ?? false,
         optionLivraison: json['optionLivraison'],
-        payed: json["payed"]["status"]
+        codeappartement:json['codeAppartement'] ?? "",
+        appartement:json['appartement'] ?? "",
+        payed: json["payed"]["status"],
+        etage:json['etage'] ?? 0,
+        paiementLivraison:json['paiementLivraison'] ?? false,
       );
 
 

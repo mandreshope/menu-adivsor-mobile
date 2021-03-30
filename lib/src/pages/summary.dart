@@ -146,6 +146,44 @@ class _SummaryState extends State<Summary> {
                         color: Colors.blue
                       )),
                     ),
+                    SizedBox(height: 5,),
+                    if (widget.commande.commandType == 'delivery')...[
+                    InkWell(
+                      onTap: () async {
+                        // await launch("tel:${widget.commande.restaurant.phoneNumber}");
+                      },
+                      child: TextTranslator("Appartement : " + widget.commande.appartement,
+                      style: TextStyle(
+                        // decoration: TextDecoration.underline,
+                        fontSize: 16,
+                        // color: Colors.blue
+                      )),
+                    ),
+                    SizedBox(height: 5,),
+                    InkWell(
+                      onTap: () async {
+                        // await launch("tel:${widget.commande.restaurant.phoneNumber}");
+                      },
+                      child: TextTranslator("Etage : " + widget.commande.etage.toString(),
+                      style: TextStyle(
+                        // decoration: TextDecoration.underline,
+                        fontSize: 16,
+                        // color: Colors.blue
+                      )),
+                    ),
+                    SizedBox(height: 5,),
+                    InkWell(
+                      onTap: () async {
+                        // await launch("tel:${widget.commande.restaurant.phoneNumber}");
+                      },
+                      child: TextTranslator("Code appartemment : " + widget.commande.codeappartement,
+                      style: TextStyle(
+                        // decoration: TextDecoration.underline,
+                        fontSize: 16,
+                        // color: Colors.blue
+                      )),
+                    ),
+                    ],
                     Divider(),
                   ],
                   //commande id
@@ -217,7 +255,8 @@ class _SummaryState extends State<Summary> {
                           "Option de livraison",
                           style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                         ),
-                        TextTranslator('${widget.commande.optionLivraison}')
+                        TextTranslator(widget.commande.optionLivraison == 'behind_the_door' ? 'Devant la porte' 
+                          : widget.commande.optionLivraison == 'on_the_door' ? 'Rdv à la porte' : "A l'exterieur")
                       ],
                     ),
                   ),
@@ -230,7 +269,7 @@ class _SummaryState extends State<Summary> {
                           "Mode de paiement",
                           style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                         ),
-                        TextTranslator('${widget.commande.payed ? "CB" : "à la livrison"}')
+                        TextTranslator('${widget.commande.paiementLivraison ? "A la livraison" : "CB"}')
                       ],
                     ),
                   ),
@@ -479,7 +518,7 @@ class _SummaryState extends State<Summary> {
                         routeName: null);                    
                 },
                 child: Image.network(
-                item.imageURL,
+                item.imageURL ?? "",
                 width: 40,
                 height: 40,
                  errorBuilder: (_, __, ___) => Center(
@@ -492,6 +531,9 @@ class _SummaryState extends State<Summary> {
               SizedBox(width: 8),
               TextTranslator('${item.name}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               Spacer(),
+              item.isMenu ?
+widget.commande.priceless || item.type == MenuType.per_food.value || item.type == MenuType.priceless.value ? Text(" ") : item.price?.amount == null ? Text("_") : Text("${item.price.amount / 100} €", style: TextStyle(fontSize: 16))
+              :
               widget.commande.priceless ? Text(" ") : item.price?.amount == null ? Text("_") : Text("${item.price.amount / 100} €", style: TextStyle(fontSize: 16)),
             ],
           ),
@@ -546,13 +588,15 @@ RouteUtil.goTo(
                         borderRadius: BorderRadius.circular(50),
                         child: FadeInImage.assetNetwork(
                           placeholder: 'assets/images/loading.gif',
-                          image: itemsOption.item.imageUrl,
+                          image: itemsOption.item.imageUrl ?? "",
                           height: 35,
                           width: 35,
                           fit: BoxFit.cover,
-                          imageErrorBuilder: (_, __, ___) => Icon(
-                          Icons.food_bank_outlined,size: 35,
-                        ),
+                          imageErrorBuilder: (_, __, ___) => Container(
+                                width: 35,
+                                height: 35,
+                                color: Colors.white,
+                              ),
 
                         ),
                       ),
@@ -642,7 +686,7 @@ RouteUtil.goTo(
                         routeName: null);
                       },
                       child: Image.network(
-                        item.food.imageURL,
+                        item.food.imageURL ?? "",
                         width: 35,
                          errorBuilder: (_, __, ___) => Center(
                           child: Icon(
@@ -701,9 +745,11 @@ RouteUtil.goTo(
                                 height: 20,
                                 width: 20,
                                 fit: BoxFit.cover,
-                                imageErrorBuilder: (_, __, ___) => Icon(
-                          Icons.food_bank_outlined,size: 20,
-                        ),
+                                imageErrorBuilder: (_, __, ___) => Container(
+                                width: 20,
+                                height: 20,
+                                color: Colors.white,
+                              ),
 
                               ),
                             ),
@@ -740,134 +786,5 @@ Widget _renderComment(String comment) => Container(
     textAlign: TextAlign.justify,
   ),
 );
-
-  /*Widget _options() {
-    // int i = 0;
-    List<Option> options = _cartContext.options[widget.food.id]
-        .expand((element) => element)
-        .toList();
-    var o = _cartContext.options[widget.food.id];
-    return Container(
-      margin: EdgeInsets.only(left: MediaQuery.of(context).size.width/4),
-      child: Column(
-        children: [
-          for (int a=0;a<o.length;a++)...[
-            Container(
-              padding: EdgeInsets.only(top:15,bottom: 15),
-              color: a%2 == 0 ? Colors.grey.withAlpha(50) : Colors.white,
-              child: Column(
-                children: [
-                  for (Option option in o[a])...[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        SizedBox(width: 15),
-                        TextTranslator('${option.title}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,color: Colors.black,decoration: TextDecoration.underline)),
-                        SizedBox(width: 5),
-                      ],
-                    ),
-                    SizedBox(height: 15,),
-                    for (ItemsOption itemsOption in option.itemOptionSelected)...[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          SizedBox(width: 15),
-                          TextTranslator('${itemsOption.name}', style: TextStyle(fontSize: 16)),
-                          Spacer(),
-                          /*Image.network(
-                          item.imageURL,
-                          width: 25,
-                        ),*/
-                          // SizedBox(width: 8),
-                          if (itemsOption.price == 0 || widget.withPrice)
-                            Text("")
-                          else
-                            itemsOption.price.amount == null ? Text("") : TextTranslator('${itemsOption.price.amount/100} €', style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
-                          // Spacer(),
-                          // item.price?.amount == null ? Text("_") : Text("${item.price.amount / 100} €", style: TextStyle(fontSize: 16)),
-                        ],
-                      ),
-
-                    ],
-                    // Divider(),
-                  ]
-                ],
-              ),
-            ),
-            // Divider()
-          ]
-        ],
-      ),
-    );
-    // for (int a=0;a<o.length;a++){
-    return Container(
-      child: Column(
-        children: [
-
-          for (int i = 0; i < options.length;i++) ...[
-
-            Container(
-              color: (((i)%o.length-2))%o.length == 0 ? CRIMSON : Colors.green,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  SizedBox(width: 150),
-                  TextTranslator('${options[i].title}',
-                      style: TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold)),
-                  SizedBox(width: 5),
-                  // TextTranslator('(x${option.items.length})', style: TextStyle(fontSize: 16)),
-                  /*Image.network(
-                            item.imageURL,
-                            width: 25,
-                          ),*/
-                  // SizedBox(width: 8),
-
-                  // Spacer(),
-                  // item.price?.amount == null ? Text("_") : Text("${item.price.amount / 100} €", style: TextStyle(fontSize: 16)),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 5,
-            ),
-            for (ItemsOption itemsOption
-            in options[i].itemOptionSelected) ...[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  SizedBox(width: 150),
-                  TextTranslator('${itemsOption.name}',
-                      style: TextStyle(fontSize: 16)),
-                  Spacer(),
-                  /*Image.network(
-                          item.imageURL,
-                          width: 25,
-                        ),*/
-                  // SizedBox(width: 8),
-                  if (itemsOption.price == 0 || !widget.withPrice)
-                    Text("")
-                  else
-                    itemsOption.price.amount == null
-                        ? Text("")
-                        : TextTranslator(
-                        '${itemsOption.price.amount / 100} €',
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.normal)),
-                  // Spacer(),
-                  // item.price?.amount == null ? Text("_") : Text("${item.price.amount / 100} €", style: TextStyle(fontSize: 16)),
-                ],
-              ),
-            ],
-            Divider(),
-          ]
-        ],
-      ),
-    );
-
-    // }
-
-  }*/
 
 }

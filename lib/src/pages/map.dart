@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
+import 'package:menu_advisor/src/components/map_window_marker.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/restaurant.dart';
@@ -37,7 +38,7 @@ class _MapPageState extends State<MapPage> {
   Timer _timer;
   List<SearchResult> _nearestRestaurants = [];
   Map<String, dynamic> filters = Map();
-  bool _loading = false;
+  bool _loading = true;
   Api _api = Api.instance;
 
   //google maps
@@ -62,7 +63,9 @@ class _MapPageState extends State<MapPage> {
   }
 
   Future<void> addMyPosMarker() async {
+    // BitmapDescriptor bitmapDescriptor = await MapUtils.createCustomMarkerBitmap(context,"2");
     setState(() {
+      
       String myPosMarkerId = 'myPos';
       _markers.add(Marker(
         // This marker id can be anything that uniquely identifies each marker.
@@ -75,6 +78,7 @@ class _MapPageState extends State<MapPage> {
           title: AppLocalizations.of(context).translate('you'),
         ),
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+        // icon: bitmapDescriptor
       ));
     });
   }
@@ -122,11 +126,13 @@ class _MapPageState extends State<MapPage> {
   void initState() {
     super.initState();
 
+
     _panelController = PanelController();
+    
     range = Provider.of<SettingContext>(context, listen: false).range;
     _checkForLocationPermission();
 
-    _initSearch();
+    _updateLocation(null).then((value) => _initSearch());
 
     _updateLocationInterval = Timer.periodic(
       Duration(
@@ -134,15 +140,21 @@ class _MapPageState extends State<MapPage> {
       ),
       _updateLocation,
     );
+
+    
+    Timer.periodic(Duration(milliseconds: 80), (timer) {
+      _panelController.open();
+      timer.cancel();
+     });
   }
 
-  void _updateLocation(Timer timer) async {
+  Future<void> _updateLocation(Timer timer) async {
     if (!mounted) return;
 
     Position position = await Geolocator.getCurrentPosition();
     print('Current position: ${position.latitude},${position.longitude}');
 
-    if (!mounted) return;
+    // if (!mounted) return;
 
     setState(() {
       _currentPosition = position;
@@ -150,6 +162,7 @@ class _MapPageState extends State<MapPage> {
 
     addMyPosMarker();
     addAllRestaurantsMarkers();
+    return;
   }
 
   void _checkForLocationPermission() async {
@@ -201,7 +214,7 @@ class _MapPageState extends State<MapPage> {
           if (isopen == "Tous") {
             return true;
           }else
-            return (restaurant.isOpen == (isopen == "ouvert" ? true : false)) && restaurant.status;
+            return (restaurant.isOpen == (isopen == "Ouvert" ? true : false)) && restaurant.status;
         }).toList();
       } catch (error) {} finally {
         if (mounted)
@@ -230,7 +243,12 @@ class _MapPageState extends State<MapPage> {
       setState(() {
         _nearestRestaurants = results.where((element) {
           Restaurant restaurant = Restaurant.fromJson(element.content);
-          return restaurant.isOpen == isopen;
+          if (isopen == "Tous"){
+            return true;
+          }else if (isopen == "ouvert"){
+            return restaurant.isOpen;
+          }
+           return !restaurant.isOpen;
         }).toList();
       });
     } catch (error) {
@@ -374,92 +392,15 @@ class _MapPageState extends State<MapPage> {
                 child: Icon(Icons.my_location),
               ),
             ),
-            Visibility(
-              visible: showInfo,
-              child: Align(
-                alignment: Alignment.center,
-                child: Container(
-                  padding: EdgeInsets.all(15),
-                  width: 350,
-                  // height: 350,
-                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(15)),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      TextTranslator(
-                        'Nom  ',
-                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600, fontSize: 12),
-                      ),
-                      TextTranslator(
-                        "\t${restaurant?.name ?? ""}",
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      TextTranslator(
-                        'Adresse ',
-                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600, fontSize: 12),
-                      ),
-                      Container(
-                        child: TextTranslator(
-                          "\t${this.restaurant?.address ?? ""}",
-                          style: TextStyle(
-                            fontSize: 16,
-                            // color: Colors.blue,
-                            // decoration: TextDecoration.underline
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      TextTranslator(
-                        'Tel  ',
-                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600, fontSize: 12),
-                      ),
-                      InkWell(
-                        onTap: () async {},
-                        child: TextTranslator(
-                          "\t${this.restaurant?.phoneNumber ?? ""}",
-                          style: TextStyle(
-                            fontSize: 16,
-                            // color: Colors.blue,
-                            // decoration: TextDecoration.underline
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      InkWell(
-                        onTap: () {
-                          RouteUtil.goTo(
-                            context: context,
-                            child: RestaurantPage(
-                              restaurant: this.restaurant.id,
-                            ),
-                            routeName: restaurantRoute,
-                          );
-                        },
-                        child: Container(
-                            width: double.infinity,
-                            height: 45,
-                            decoration: BoxDecoration(color: CRIMSON, borderRadius: BorderRadius.circular(12)),
-                            child: Center(
-                              child: TextTranslator(
-                                "Voir restaurant",
-                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-                              ),
-                            )),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            SlidingUpPanel(
+            // showinfo
+            if (restaurant != null && showInfo)
+            Positioned(
+              bottom: 120,
+              left: 0,
+              right: 0,
+              child: MapWindowMarker(position: this._currentPosition,restaurant: this.restaurant,)),
+           
+             SlidingUpPanel(
               controller: _panelController,
               panel: _loading
                   ? Align(
@@ -526,10 +467,12 @@ class _MapPageState extends State<MapPage> {
                                             FadeInImage.assetNetwork(
                                               image: restaurant.imageURL,
                                               placeholder: 'assets/images/loading.gif',
-                                              height: 20,
-                                              imageErrorBuilder: (_, __, ___) => Icon(
-                          Icons.food_bank_outlined,size: 20,
-                        ),
+                                              height: 50,
+                                              imageErrorBuilder: (_, __, ___) => Container(
+                                width: 50,
+                                height: 50,
+                                color: Colors.white,
+                              ),
                                             ),
                                             SizedBox(width: 20),
                                             Column(
@@ -538,10 +481,13 @@ class _MapPageState extends State<MapPage> {
                                               children: [
                                                 TextTranslator(
                                                   e.content['name'],
+                                                  style: TextStyle(
+                                                    fontSize: 16
+                                                  ),
                                                 ),
                                                 TextTranslator(
                                                   e.content['address'],
-                                                  style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+                                                  style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline,fontSize: 16),
                                                 ),
                                                 InkWell(
                                                   onTap: () async {
@@ -549,13 +495,13 @@ class _MapPageState extends State<MapPage> {
                                                   },
                                                   child: TextTranslator(
                                                     e.content['phoneNumber'],
-                                                    style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+                                                    style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline,fontSize: 16),
                                                   ),
                                                 ),
                                                 SizedBox(
                                                   height: 15,
                                                 ),
-                                                Row(
+                                                /*Row(
                                                   children: [
                                                     InkWell(
                                                       onTap: () async {
@@ -583,88 +529,14 @@ class _MapPageState extends State<MapPage> {
                                                     SizedBox(
                                                       width: 15,
                                                     ),
-                                                    InkWell(
-                                                      onTap: () {
-                                                        showModalBottomSheet(
-                                                          backgroundColor: Colors.transparent,
-                                                            context: context,
-                                                            builder: (_) {
-                                                              return Container(
-                                                                // height: 80,
-                                                                decoration: BoxDecoration(
-                                                                  borderRadius: BorderRadius.only(
-                                                                    topRight: Radius.circular(50),
-                                                                    topLeft: Radius.circular(50),
-                                                                    
-                                                                  ),
-                                                                  color: Colors.white
-                                                                ),
-                                                                child: Column(
-                                                                  mainAxisSize: MainAxisSize.min,
-                                                                  children: [
-                                                                    SizedBox(height: 15,),
-                                                                    TextTranslator("Voir l'itineraire sur Google Map : ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                                                                    SizedBox(height: 15,),
-                                                                    Row(
-                                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                                      children: [
-                                                                        InkWell(
-                                                                          onTap: () async {
-                                                                            Position currentPosition = await getCurrentPosition();
-                                                                            var coordinates = restaurant.location.coordinates;
-                                                                            RouteUtil.goTo(
-                                                                                context: context,
-                                                                                child: MapPolylinePage(
-                                                                                  restaurant: restaurant,
-                                                                                  initialPosition: LatLng(currentPosition.latitude, currentPosition.longitude),
-                                                                                  destinationPosition: LatLng(coordinates.last, coordinates.first),
-                                                                                ),
-
-                                                                                routeName: restaurantRoute,
-                                                                              );
-                                                                          },
-                                                                          child: Container(
-                                                                            padding: EdgeInsets.all(8),
-                                                                            decoration: BoxDecoration(color: BRIGHT_RED, borderRadius: BorderRadius.circular(5)),
-                                                                            child: Text("Map interne", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14)),
-                                                                          ),
-                                                                        ),
-                                                                        SizedBox(width: 15,),
-                                                                        InkWell(
-                                                                          onTap: () async {
-                                                                            Position currentPosition = await getCurrentPosition();
-                                                                            var coordinates = restaurant.location.coordinates;
-                                                                            MapUtils.openMap(currentPosition.latitude, currentPosition.longitude,
-                                                                            coordinates.last,coordinates.first);
-                                                                          },
-                                                                          child: Container(
-                                                                            padding: EdgeInsets.all(8),
-                                                                            decoration: BoxDecoration(color: DARK_BLUE, borderRadius: BorderRadius.circular(5)),
-                                                                            child: Text("Map externe", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14)),
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    )
-                                                                    ,SizedBox(height: 25,),
-                                                                  ],
-                                                                ),
-                                                              );
-                                                            });
-                                                      },
-                                                      child: Container(
-                                                        padding: EdgeInsets.all(8),
-                                                        decoration: BoxDecoration(color: BRIGHT_RED, borderRadius: BorderRadius.circular(5)),
-                                                        child: Text("Itineraire", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 10)),
-                                                      ),
-                                                    ),
                                                   ],
-                                                )
+                                                )*/
                                               ],
                                             ),
                                             Spacer(),
                                             Column(
                                               children: [
-                                                IconButton(
+                                                /*IconButton(
                                                   padding: EdgeInsets.zero,
                                                   icon: Icon(
                                                     Icons.remove_red_eye_outlined,
@@ -683,7 +555,7 @@ class _MapPageState extends State<MapPage> {
                                                     //   routeName: restaurantRoute,
                                                     // );
                                                   },
-                                                ),
+                                                ),*/
                                                 Container(
                                                   padding: EdgeInsets.all(8),
                                                   decoration: BoxDecoration(color: restaurant.isOpen ? TEAL : CRIMSON, borderRadius: BorderRadius.circular(25)),

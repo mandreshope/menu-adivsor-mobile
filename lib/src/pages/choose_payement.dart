@@ -38,6 +38,7 @@ class ChoosePayement extends StatelessWidget {
               child: PaymentCardListPage(
                 isPaymentStep: true,
                 restaurant: restaurant,
+                typedePayment: "Carte bancaire",
               ),
               routeName: paymentCardListRoute,
             );
@@ -60,6 +61,7 @@ class ChoosePayement extends StatelessWidget {
             AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
 
             var command = await Api.instance.sendCommand(
+              paiementLivraison: true,
               optionLivraison: restaurant.optionLivraison,
                                             etage: restaurant.etage,
                                             appartement: restaurant.appartement,

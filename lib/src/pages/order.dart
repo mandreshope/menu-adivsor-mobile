@@ -778,12 +778,12 @@ class _OrderPageState extends State<OrderPage> {
                           child: InkWell(
                             borderRadius: BorderRadius.circular(20),
                             onTap: () {
-                              if (!_restaurant.isOpen){
+                              /*if (!_restaurant.isOpen){
                                Fluttertoast.showToast(
                                                 msg: 'Restaurant fermé',
                                               );
                                             return;
-                                            }
+                                            }*/
                               commandContext.commandType = 'takeaway';
                               _command(commandContext, authContext, cartContext);
                             },
