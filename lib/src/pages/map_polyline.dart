@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:menu_advisor/src/components/map_window_marker.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
@@ -81,9 +82,9 @@ class _MapPolylinePageState extends State<MapPolylinePage> {
         // This marker id can be anything that uniquely identifies each marker.
         markerId: MarkerId(destPosMarkerId),
         position: LatLng(_destinationPosition.latitude, _destinationPosition.longitude,),
-        /*infoWindow: InfoWindow(
+        infoWindow: InfoWindow(
           title: "${widget.restaurant.name}",
-        ),*/
+        ),
         onTap: (){
           setState(() {
             showInfo = true;
@@ -190,6 +191,7 @@ class _MapPolylinePageState extends State<MapPolylinePage> {
               markers:_markers,
               onMapCreated: (GoogleMapController controller) {
                 _mapController.complete(controller);
+                controller.showMarkerInfoWindow(MarkerId('destPos'));
               },
             )
           : Center(
@@ -208,6 +210,7 @@ class _MapPolylinePageState extends State<MapPolylinePage> {
                 .catchError((onError) {
 
                 });
+                map.showMarkerInfoWindow(MarkerId('destPos'));
                 // _mapController.move(
                 //   LatLng(
                 //     _currentPosition.latitude,
@@ -223,15 +226,17 @@ class _MapPolylinePageState extends State<MapPolylinePage> {
           Visibility(
             visible: showInfo,
             child: Align(
-              alignment: Alignment.center,
-              child: Container(
+              alignment: Alignment.bottomCenter,
+              child:MapWindowMarker(position: this._currentPosition,restaurant: widget.restaurant,fromMapItineraire: true,),          
+  /*            
+               Container(
                 padding: EdgeInsets.all(15),
                 width: 350,
                 // height: 350,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(15)
-                ),
+                ), 
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
@@ -292,6 +297,7 @@ class _MapPolylinePageState extends State<MapPolylinePage> {
                   ],
                 ),
               ),
+*/           
             ),
           )
         ],

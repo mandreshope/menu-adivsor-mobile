@@ -77,6 +77,7 @@ class _MapPageState extends State<MapPage> {
         infoWindow: InfoWindow(
           title: AppLocalizations.of(context).translate('you'),
         ),
+
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
         // icon: bitmapDescriptor
       ));
@@ -86,7 +87,7 @@ class _MapPageState extends State<MapPage> {
   void addAllRestaurantsMarkers() {
     setState(() {
       for (var restaurant in _nearestRestaurants) {
-        String markerId = restaurant.content['location']['coordinates'][1].toString() + restaurant.content['location']['coordinates'][0].toString();
+        String markerId = restaurant.content['name'] + restaurant.content['location']['coordinates'][1].toString() + restaurant.content['location']['coordinates'][0].toString();
         _markers.add(Marker(
           // This marker id can be anything that uniquely identifies each marker.
           markerId: MarkerId(markerId),
@@ -100,10 +101,10 @@ class _MapPageState extends State<MapPage> {
               this.showInfo = true;
             });
           },
-          /*
+          
           infoWindow: InfoWindow(
-            title: "${restaurant.content['name']}\n${restaurant.content['address']}\n${restaurant.content['phoneNumber']}",
-            onTap: (){
+            title: "${restaurant.content['name']}",
+            /*onTap: (){
               RouteUtil.goTo(
                 context: context,
                 child: RestaurantPage(
@@ -111,9 +112,9 @@ class _MapPageState extends State<MapPage> {
                 ),
                 routeName: restaurantRoute,
               );
-            }
+            }*/
           ),
-          */
+          
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
         ));
       }
@@ -384,6 +385,7 @@ class _MapPageState extends State<MapPage> {
                   //   ),
                   //   15,
                   // );
+                  map.showMarkerInfoWindow(MarkerId('myPos'));
                   setState(() {
                     this.restaurant = restaurant;
                     this.showInfo = true;
@@ -451,6 +453,8 @@ class _MapPageState extends State<MapPage> {
                                                 ),
                                                 zoom: 25)))
                                             .catchError((onError) {});
+                                            String markerId = e.content['name'] + e.content['location']['coordinates'][1].toString() + e.content['location']['coordinates'][0].toString();
+                                            map.showMarkerInfoWindow(MarkerId(markerId));
                                         _panelController.close();
                                         setState(() {
                                           this.restaurant = restaurant;
@@ -501,61 +505,13 @@ class _MapPageState extends State<MapPage> {
                                                 SizedBox(
                                                   height: 15,
                                                 ),
-                                                /*Row(
-                                                  children: [
-                                                    InkWell(
-                                                      onTap: () async {
-                                                        var map = await _mapController.future;
-                                                        map
-                                                            .animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-                                                                target: LatLng(
-                                                                  restaurant.location.coordinates[1],
-                                                                  restaurant.location.coordinates[0],
-                                                                ),
-                                                                zoom: 20)))
-                                                            .catchError((onError) {});
-                                                        _panelController.close();
-                                                        setState(() {
-                                                          this.restaurant = restaurant;
-                                                          this.showInfo = true;
-                                                        });
-                                                      },
-                                                      child: Container(
-                                                        padding: EdgeInsets.all(8),
-                                                        decoration: BoxDecoration(color: CRIMSON, borderRadius: BorderRadius.circular(5)),
-                                                        child: Text("Voir le réstaurant", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 10)),
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      width: 15,
-                                                    ),
-                                                  ],
-                                                )*/
+                                                
                                               ],
                                             ),
                                             Spacer(),
                                             Column(
                                               children: [
-                                                /*IconButton(
-                                                  padding: EdgeInsets.zero,
-                                                  icon: Icon(
-                                                    Icons.remove_red_eye_outlined,
-                                                  ),
-                                                  constraints: BoxConstraints(
-                                                    maxHeight: 26,
-                                                    maxWidth: 26,
-                                                  ),
-                                                  onPressed: () async {
-                                                    // _panelController.close();
-                                                    //  RouteUtil.goTo(
-                                                    //   context: context,
-                                                    //   child: RestaurantPage(
-                                                    //     restaurant: restaurant.id,
-                                                    //   ),
-                                                    //   routeName: restaurantRoute,
-                                                    // );
-                                                  },
-                                                ),*/
+                                               
                                                 Container(
                                                   padding: EdgeInsets.all(8),
                                                   decoration: BoxDecoration(color: restaurant.isOpen ? TEAL : CRIMSON, borderRadius: BorderRadius.circular(25)),

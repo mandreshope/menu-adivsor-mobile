@@ -13,7 +13,8 @@ import 'package:menu_advisor/src/utils/textTranslator.dart';
 class MapWindowMarker extends StatelessWidget {
   final Restaurant restaurant;
   final Position position;
-  const MapWindowMarker({Key key, this.restaurant,this.position}) : super(key: key);
+  final bool fromMapItineraire;
+  const MapWindowMarker({Key key, this.restaurant,this.position,this.fromMapItineraire = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -169,78 +170,81 @@ class MapWindowMarker extends StatelessWidget {
                         ),
                       ),
                       SizedBox(width: 10,),
-                      InkWell(
-                                                          onTap: () {
-                                                            showModalBottomSheet(
-                                                              backgroundColor: Colors.transparent,
-                                                                context: context,
-                                                                builder: (_) {
-                                                                  return Container(
-                                                                    // height: 80,
-                                                                    decoration: BoxDecoration(
-                                                                      borderRadius: BorderRadius.only(
-                                                                        topRight: Radius.circular(50),
-                                                                        topLeft: Radius.circular(50),
-                                                                        
+                      Visibility(
+                        visible: !this.fromMapItineraire,
+                                              child: InkWell(
+                                                            onTap: () {
+                                                              showModalBottomSheet(
+                                                                backgroundColor: Colors.transparent,
+                                                                  context: context,
+                                                                  builder: (_) {
+                                                                    return Container(
+                                                                      // height: 80,
+                                                                      decoration: BoxDecoration(
+                                                                        borderRadius: BorderRadius.only(
+                                                                          topRight: Radius.circular(50),
+                                                                          topLeft: Radius.circular(50),
+                                                                          
+                                                                        ),
+                                                                        color: Colors.white
                                                                       ),
-                                                                      color: Colors.white
-                                                                    ),
-                                                                    child: Column(
-                                                                      mainAxisSize: MainAxisSize.min,
-                                                                      children: [
-                                                                        SizedBox(height: 15,),
-                                                                        TextTranslator("Voir l'itineraire sur Google Map : ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                                                                        SizedBox(height: 15,),
-                                                                        Row(
-                                                                          mainAxisAlignment: MainAxisAlignment.center,
-                                                                          children: [
-                                                                            InkWell(
-                                                                              onTap: () async {
-                                                                                var coordinates = restaurant.location.coordinates;
-                                                                                RouteUtil.goTo(
-                                                                                    context: context,
-                                                                                    child: MapPolylinePage(
-                                                                                      restaurant: restaurant,
-                                                                                      initialPosition: LatLng(position.latitude, position.longitude),
-                                                                                      destinationPosition: LatLng(coordinates.last, coordinates.first),
-                                                                                    ),
+                                                                      child: Column(
+                                                                        mainAxisSize: MainAxisSize.min,
+                                                                        children: [
+                                                                          SizedBox(height: 15,),
+                                                                          TextTranslator("Voir l'itineraire sur Google Map : ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                                                                          SizedBox(height: 15,),
+                                                                          Row(
+                                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                                            children: [
+                                                                              InkWell(
+                                                                                onTap: () async {
+                                                                                  var coordinates = restaurant.location.coordinates;
+                                                                                  RouteUtil.goTo(
+                                                                                      context: context,
+                                                                                      child: MapPolylinePage(
+                                                                                        restaurant: restaurant,
+                                                                                        initialPosition: LatLng(position.latitude, position.longitude),
+                                                                                        destinationPosition: LatLng(coordinates.last, coordinates.first),
+                                                                                      ),
 
-                                                                                    routeName: "",
-                                                                                  );
-                                                                              },
-                                                                              child: Container(
-                                                                                padding: EdgeInsets.all(8),
-                                                                                decoration: BoxDecoration(color: BRIGHT_RED, borderRadius: BorderRadius.circular(5)),
-                                                                                child: Text("Map interne", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14)),
+                                                                                      routeName: "",
+                                                                                    );
+                                                                                },
+                                                                                child: Container(
+                                                                                  padding: EdgeInsets.all(8),
+                                                                                  decoration: BoxDecoration(color: BRIGHT_RED, borderRadius: BorderRadius.circular(5)),
+                                                                                  child: Text("Map interne", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14)),
+                                                                                ),
                                                                               ),
-                                                                            ),
-                                                                            SizedBox(width: 15,),
-                                                                            InkWell(
-                                                                              onTap: () async {
-                                                                                var coordinates = restaurant.location.coordinates;
-                                                                                MapUtils.openMap(position.latitude, position.longitude,
-                                                                                coordinates.last,coordinates.first);
-                                                                              },
-                                                                              child: Container(
-                                                                                padding: EdgeInsets.all(8),
-                                                                                decoration: BoxDecoration(color: DARK_BLUE, borderRadius: BorderRadius.circular(5)),
-                                                                                child: Text("Map externe", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14)),
+                                                                              SizedBox(width: 15,),
+                                                                              InkWell(
+                                                                                onTap: () async {
+                                                                                  var coordinates = restaurant.location.coordinates;
+                                                                                  MapUtils.openMap(position.latitude, position.longitude,
+                                                                                  coordinates.last,coordinates.first);
+                                                                                },
+                                                                                child: Container(
+                                                                                  padding: EdgeInsets.all(8),
+                                                                                  decoration: BoxDecoration(color: DARK_BLUE, borderRadius: BorderRadius.circular(5)),
+                                                                                  child: Text("Map externe", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14)),
+                                                                                ),
                                                                               ),
-                                                                            ),
-                                                                          ],
-                                                                        )
-                                                                        ,SizedBox(height: 25,),
-                                                                      ],
-                                                                    ),
-                                                                  );
-                                                                });
-                                                          },
-                                                          child: Container(
-                                                            padding: EdgeInsets.all(8),
-                                                            decoration: BoxDecoration(color: BRIGHT_RED, borderRadius: BorderRadius.circular(50)),
-                                                            child: Text("Itineraire", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12)),
+                                                                            ],
+                                                                          )
+                                                                          ,SizedBox(height: 25,),
+                                                                        ],
+                                                                      ),
+                                                                    );
+                                                                  });
+                                                            },
+                                                            child: Container(
+                                                              padding: EdgeInsets.all(8),
+                                                              decoration: BoxDecoration(color: BRIGHT_RED, borderRadius: BorderRadius.circular(50)),
+                                                              child: Text("Itineraire", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12)),
+                                                            ),
                                                           ),
-                                                        ),
+                      ),
                     ],
                   )
                 ],

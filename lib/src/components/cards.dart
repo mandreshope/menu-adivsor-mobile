@@ -79,36 +79,36 @@ class CategoryCard extends StatelessWidget {
                         )
                       : /*Hero(
                           // tag: 'tag:$imageURL',
-                          child: */ClipRRect(
-                            borderRadius: BorderRadius.circular(50),
-                            child: FadeInImage.assetNetwork(
-                              placeholder: 'assets/images/loading.gif',
-                              image: imageURL,
-                              imageErrorBuilder: (_, __, ___) => Container(
-                                width: 70,
-                                height: 70,
-                                color: Colors.white,
-                              ),
-                              height: 70,
+                          child: */
+                      ClipRRect(
+                          borderRadius: BorderRadius.circular(50),
+                          child: FadeInImage.assetNetwork(
+                            placeholder: 'assets/images/loading.gif',
+                            image: imageURL,
+                            imageErrorBuilder: (_, __, ___) => Container(
                               width: 70,
-                              fit: BoxFit.cover,
+                              height: 70,
+                              color: Colors.white,
                             ),
+                            height: 70,
+                            width: 70,
+                            fit: BoxFit.cover,
                           ),
-                        // ),
+                        ),
+                  // ),
                 ),
                 SizedBox(
                   height: 10,
                 ),
                 TextTranslator(
-                    name,
-                    style: TextStyle(
-                      color: DARK_BLUE,
-                      fontFamily: 'Golden Ranger',
-                      fontSize: 18,
-                    ),
-                    maxLines: 2,
-                    textAlign: TextAlign.center,
-                  
+                  name,
+                  style: TextStyle(
+                    color: DARK_BLUE,
+                    fontFamily: 'Golden Ranger',
+                    fontSize: 18,
+                  ),
+                  maxLines: 2,
+                  textAlign: TextAlign.center,
                 ),
                 SizedBox(
                   height: 15,
@@ -140,11 +140,11 @@ class FoodCard extends StatefulWidget {
   final Food food;
   final bool minified;
   final String imageTag;
-  final  bool withPrice;
+  final bool withPrice;
 
   final bool showButton;
 
-  const FoodCard({Key key, @required this.food, this.minified = false, this.imageTag, this.showButton = false,this.withPrice = true}) : super(key: key);
+  const FoodCard({Key key, @required this.food, this.minified = false, this.imageTag, this.showButton = false, this.withPrice = true}) : super(key: key);
 
   @override
   _FoodCardState createState() => _FoodCardState();
@@ -161,7 +161,7 @@ class _FoodCardState extends State<FoodCard> {
   void initState() {
     super.initState();
     // _cartContext = Provider.of<CartContext>(context);
-      var restaurantId = widget.food.restaurant is String ? widget.food.restaurant : widget.food.restaurant['_id'];
+    var restaurantId = widget.food.restaurant is String ? widget.food.restaurant : widget.food.restaurant['_id'];
     api.getRestaurantName(id: restaurantId).then((res) {
       if (mounted)
         setState(() {
@@ -170,14 +170,13 @@ class _FoodCardState extends State<FoodCard> {
         });
     }).catchError((error) {
       restaurantName = AppLocalizations.of(context).translate('no_associated_restaurant');
-    });  
+    });
     // Timer.periodic(Duration(milliseconds: 5), (time){
     //   setState(() {
     //     loading = false;
     //   });
     //   time.cancel();
     // });
-    
   }
 
   @override
@@ -274,16 +273,11 @@ class _FoodCardState extends State<FoodCard> {
                                                 fontSize: 16,
                                               ),
                                             ),
-                                            
                                       if (widget.food.price != null && widget.food.price?.amount != null) ...[
                                         SizedBox(height: 5),
                                         Text(
                                           Provider.of<CartContext>(context).withPrice ? "${widget.food.price.amount / 100}€" : "",
-                                          style: TextStyle(
-                                            fontSize: 21,
-                                            color: Colors.yellow[700],
-                                            fontWeight: FontWeight.bold
-                                          ),
+                                          style: TextStyle(fontSize: 21, color: Colors.yellow[700], fontWeight: FontWeight.bold),
                                         ),
                                       ] else
                                         ...[]
@@ -306,10 +300,10 @@ class _FoodCardState extends State<FoodCard> {
                                             isContains: cartContext.contains(widget.food),
                                             itemCount: cartContext.getCount(widget.food),
                                             onAdded: (value) {
-                                              cartContext.addItem(widget.food, value,true);
+                                              cartContext.addItem(widget.food, value, true);
                                             },
                                             onRemoved: (value) {
-                                              value == 0 ? cartContext.removeItem(widget.food) : cartContext.addItem(widget.food, value,false);
+                                              value == 0 ? cartContext.removeItem(widget.food) : cartContext.addItem(widget.food, value, false);
                                             },
                                           );
                                         return RawMaterialButton(
@@ -328,67 +322,69 @@ class _FoodCardState extends State<FoodCard> {
                                             ),
                                             padding: widget.food.isPopular ? EdgeInsets.zero : EdgeInsets.all(5.0),
                                             child: FaIcon(
-                                             widget.food.isPopular ? Icons.visibility : cartContext.contains(widget.food) ? FontAwesomeIcons.minus : FontAwesomeIcons.plus,
+                                              widget.food.isPopular
+                                                  ? Icons.visibility
+                                                  : cartContext.contains(widget.food)
+                                                      ? FontAwesomeIcons.minus
+                                                      : FontAwesomeIcons.plus,
                                               size: widget.food.isPopular ? 22 : 10,
                                               color: widget.food.isPopular ? Colors.white : Colors.black,
-
                                             ),
                                           ),
-                                          onPressed: 
-                                          widget.food.isPopular ? () => RouteUtil.goTo(
-                                              context: context,
-                                              child: FoodPage(
-                                                food: widget.food,
-                                                imageTag: widget.imageTag,
-                                                restaurantName: restaurantName,
-                                              ),
-                                              routeName: foodRoute,
-                                            ) :
-                                          !cartContext.contains(widget.food) ? 
-                                          () => RouteUtil.goTo(
-                                                context: context,
-                                                child: FoodPage(
-                                                  food: widget.food,
-                                                  imageTag: widget.imageTag,
-                                                  restaurantName: restaurantName,
-                                                ),
-                                                routeName: foodRoute,
-                                              ) :
-                                          
-                                          (cartContext.itemCount == 0) ||
-                                                  (cartContext.pricelessItems && widget.food.price?.amount == null) ||
-                                                  (!cartContext.pricelessItems && widget.food.price?.amount != null)
-                                              ? () async {
-                                                  if (cartContext.contains(widget.food)) {
-                                                    var result = await showDialog(
-                                                      context: context,
-                                                      builder: (_) => ConfirmationDialog(
-                                                        title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
-                                                        content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
-                                                      ),
-                                                    );
+                                          onPressed: widget.food.isPopular
+                                              ? () => RouteUtil.goTo(
+                                                    context: context,
+                                                    child: FoodPage(
+                                                      food: widget.food,
+                                                      imageTag: widget.imageTag,
+                                                      restaurantName: restaurantName,
+                                                    ),
+                                                    routeName: foodRoute,
+                                                  )
+                                              : !cartContext.contains(widget.food)
+                                                  ? () => RouteUtil.goTo(
+                                                        context: context,
+                                                        child: FoodPage(
+                                                          food: widget.food,
+                                                          imageTag: widget.imageTag,
+                                                          restaurantName: restaurantName,
+                                                        ),
+                                                        routeName: foodRoute,
+                                                      )
+                                                  : (cartContext.itemCount == 0) ||
+                                                          (cartContext.pricelessItems && widget.food.price?.amount == null) ||
+                                                          (!cartContext.pricelessItems && widget.food.price?.amount != null)
+                                                      ? () async {
+                                                          if (cartContext.contains(widget.food)) {
+                                                            var result = await showDialog(
+                                                              context: context,
+                                                              builder: (_) => ConfirmationDialog(
+                                                                title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
+                                                                content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
+                                                              ),
+                                                            );
 
-                                                    if (result is bool && result) {
-                                                      cartContext.removeAllFood(widget.food);
+                                                            if (result is bool && result) {
+                                                              cartContext.removeAllFood(widget.food);
 
-                                                      // RouteUtil.goBack(
-                                                      //     context: context);
-                                                    }
-                                                  } else if (!cartContext.hasSameOriginAsInBag(widget.food)) {
-                                                    Fluttertoast.showToast(
-                                                      msg: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
-                                                    );
-                                                  } else
-                                                    showDialog(
-                                                      context: context,
-                                                      builder: (_) => AddToBagDialog(
-                                                        food: widget.food,
-                                                      ),
-                                                    );
-                                                }
-                                              : () {
-                                                  Fluttertoast.showToast(msg: 'Vous ne pouvez pas à la fois commander des articles sans prix et avec prix');
-                                                },
+                                                              // RouteUtil.goBack(
+                                                              //     context: context);
+                                                            }
+                                                          } else if (!cartContext.hasSameOriginAsInBag(widget.food)) {
+                                                            Fluttertoast.showToast(
+                                                              msg: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
+                                                            );
+                                                          } else
+                                                            showDialog(
+                                                              context: context,
+                                                              builder: (_) => AddToBagDialog(
+                                                                food: widget.food,
+                                                              ),
+                                                            );
+                                                        }
+                                                      : () {
+                                                          Fluttertoast.showToast(msg: 'Vous ne pouvez pas à la fois commander des articles sans prix et avec prix');
+                                                        },
                                         );
                                       },
                                     ),
@@ -402,34 +398,34 @@ class _FoodCardState extends State<FoodCard> {
                             ],
                           ),
                         ),
-                     Container(
-                      // child: Hero(
+                        Container(
+                          // child: Hero(
                           // tag: widget.imageTag ?? 'foodImage${widget.food.id}',
                           child: widget.food.imageURL != null
                               ? ClipRRect(
-                                    borderRadius: BorderRadius.only(bottomRight: Radius.circular(widget.showButton ? 10 : 30),topRight: Radius.circular(widget.showButton ? 10 : 30)),
-                                    child: FadeInImage.assetNetwork(
+                                  borderRadius: BorderRadius.only(bottomRight: Radius.circular(widget.showButton ? 10 : 30), topRight: Radius.circular(widget.showButton ? 10 : 30)),
+                                  child: FadeInImage.assetNetwork(
                                     image: widget.food.imageURL,
                                     placeholder: 'assets/images/loading.gif',
-                                    imageErrorBuilder: (_,o,s){
-                                                return Container(
-                                                    width: 100,
-                                                    height: double.infinity,
-                                                    color: Colors.white,
-                                                  );
-                                              },
+                                    imageErrorBuilder: (_, o, s) {
+                                      return Container(
+                                        width: 100,
+                                        height: double.infinity,
+                                        color: Colors.white,
+                                      );
+                                    },
                                     width: 100,
                                     height: double.infinity,
                                     fit: BoxFit.cover,
                                   ),
-                              )
+                                )
                               : Container(
-                        width: 80,
-                        height: 80,
-                        color: Colors.white,
-                      ),
-                        // ),
-                    ),
+                                  width: 80,
+                                  height: 80,
+                                  color: Colors.white,
+                                ),
+                          // ),
+                        ),
                       ],
                     ),
                   ),
@@ -499,11 +495,7 @@ class RestaurantFoodCard extends StatefulWidget {
   final Food food;
   final bool withPrice;
 
-  const RestaurantFoodCard({
-    Key key,
-    this.food,
-    this.withPrice
-  }) : super(key: key);
+  const RestaurantFoodCard({Key key, this.food, this.withPrice}) : super(key: key);
 
   @override
   _RestaurantFoodCardState createState() => _RestaurantFoodCardState();
@@ -515,8 +507,7 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
   bool loading = true;
   bool showOptions = false;
 
-  List<Option> options = [
-  ];
+  List<Option> options = [];
 
   CartContext _cartContext;
 
@@ -525,27 +516,26 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
     // TODO: implement initState
     super.initState();
 
-    _cartContext = Provider.of<CartContext>(context,listen: false);
-     if(_cartContext.contains(widget.food) && widget.food.options.length > 0){
-       showOptions = false;
-     }
-     if (widget.food.options.length == 0) showOptions = true;
+    _cartContext = Provider.of<CartContext>(context, listen: false);
+    if (_cartContext.contains(widget.food) && widget.food.options.length > 0) {
+      showOptions = false;
+    }
+    if (widget.food.options.length == 0) showOptions = true;
 
     options = widget.food.options;
   }
 
   @override
   Widget build(BuildContext context) {
-
     return InkWell(
       onTap: () async {
         //if (!expanded){}
-          // setState(() {
-          //   expanded = true;
-          // });
-      
+        // setState(() {
+        //   expanded = true;
+        // });
+
         //else {
-          /*var result = await showDialog(
+        /*var result = await showDialog(
             context: context,
             builder: (_) => Container(
               child: Dialog(
@@ -559,19 +549,18 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
               ),
             ),
           );*/
-         RouteUtil.goTo(
-            context: context,
-            child: Material(
-              child: FoodPage(
-                food: widget.food,
-                imageTag: widget.food.id,
-                fromRestaurant: true,
-              ),
+        RouteUtil.goTo(
+          context: context,
+          child: Material(
+            child: FoodPage(
+              food: widget.food,
+              imageTag: widget.food.id,
+              fromRestaurant: true,
             ),
-            routeName: foodRoute,
-          );
+          ),
+          routeName: foodRoute,
+        );
         //}
-        
       },
       child: Card(
         child: Stack(
@@ -584,22 +573,23 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                 children: [
                   /*Hero(
                     tag: widget.food.id,
-                    child: */ClipRRect(
-                        borderRadius: BorderRadius.only(bottomLeft: Radius.circular(5),topLeft: Radius.circular(5)),
-                        child: FadeInImage.assetNetwork(
-                        placeholder: 'assets/images/loading.gif',
-                        image: widget.food.imageURL,
+                    child: */
+                  ClipRRect(
+                    borderRadius: BorderRadius.only(bottomLeft: Radius.circular(5), topLeft: Radius.circular(5)),
+                    child: FadeInImage.assetNetwork(
+                      placeholder: 'assets/images/loading.gif',
+                      image: widget.food.imageURL,
+                      width: 95,
+                      height: 100,
+                      fit: BoxFit.cover,
+                      imageErrorBuilder: (_, __, ___) => Container(
                         width: 95,
                         height: 100,
-                        fit: BoxFit.cover,
-                        imageErrorBuilder: (_, __, ___) => Container(
-                                width: 95,
-                                height: 100,
-                                color: Colors.white,
-                              ),
+                        color: Colors.white,
                       ),
                     ),
-                 // ),
+                  ),
+                  // ),
                   SizedBox(
                     width: 15.0,
                   ),
@@ -607,7 +597,9 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(height: 10,),
+                        SizedBox(
+                          height: 10,
+                        ),
                         TextTranslator(
                           widget.food.name,
                           style: TextStyle(
@@ -625,96 +617,92 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                             height: 5,
                           ),
                           Consumer<DataContext>(
-                            builder: (_, dataContext, __) =>
-                             InkWell(
-                               onTap: (){
-                                  setState(() {
-                                    expanded = true;
-                                  });
-                               },
-                                child: Container(
-                                 padding: EdgeInsets.only(bottom: expanded ? 20 : 0),
-                                 height: expanded ? 46 : 20,
-                                 child: 
-                                 ListView(
-                                  // spacing: expanded ? 5 : 5,
-                                  // runSpacing: 5,
-                                  scrollDirection: Axis.horizontal,
-                                  children: widget.food.attributes
-                                      .map(
-                                        (attribute) => Padding(
-                                          padding: expanded ? const EdgeInsets.symmetric(horizontal: 5,vertical: 0.8) : const EdgeInsets.symmetric(horizontal: 5,vertical: 0),
-                                          child: FittedBox(
-                                            child: Card(
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(
-                                                  20,
-                                                ),
-                                              ),
-                                              elevation: expanded ? 0.5 : 0,
-                                              margin: EdgeInsets.zero,
-                                              child: Padding(
-                                                padding: expanded
-                                                    ? const EdgeInsets.all(
-                                                        8,
-                                                      )
-                                                    : const EdgeInsets.symmetric(
-                                                        vertical: 1,
-                                                        horizontal: 1,
+                              builder: (_, dataContext, __) => InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        expanded = true;
+                                      });
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.only(bottom: expanded ? 20 : 0),
+                                      height: expanded ? 46 : 20,
+                                      child: ListView(
+                                        // spacing: expanded ? 5 : 5,
+                                        // runSpacing: 5,
+                                        scrollDirection: Axis.horizontal,
+                                        children: widget.food.attributes
+                                            .map(
+                                              (attribute) => Padding(
+                                                padding: expanded ? const EdgeInsets.symmetric(horizontal: 5, vertical: 0.8) : const EdgeInsets.symmetric(horizontal: 5, vertical: 0),
+                                                child: FittedBox(
+                                                  child: Card(
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.circular(
+                                                        20,
                                                       ),
-                                                child: Builder(
-                                                  builder: (_) {
-                                                    // var attribute = dataContext.attributes.firstWhere(
-                                                    //   (element) => element['tag'] == e,
-                                                    //   orElse: null,
-                                                    // );
-
-                                                    return Row(
-                                                      children: [
-                                                       // for (var attribute in dataContext.attributes)
-                                                       ...[
-                                                          FadeInImage.assetNetwork(
-                                                            placeholder: 'assets/images/loading.gif',
-                                                            image:  attribute.imageURL,
-                                                            height: 14,
-                                                            imageErrorBuilder: (_, __, ___) => Container(
-                                width: 14,
-                                height: 14,
-                                color: Colors.white,
-                              ),
-                                                          ),
-                                                          if (expanded)
-                                                            SizedBox(
-                                                              width: 5,
+                                                    ),
+                                                    elevation: expanded ? 0.5 : 0,
+                                                    margin: EdgeInsets.zero,
+                                                    child: Padding(
+                                                      padding: expanded
+                                                          ? const EdgeInsets.all(
+                                                              8,
+                                                            )
+                                                          : const EdgeInsets.symmetric(
+                                                              vertical: 1,
+                                                              horizontal: 1,
                                                             ),
+                                                      child: Builder(
+                                                        builder: (_) {
+                                                          // var attribute = dataContext.attributes.firstWhere(
+                                                          //   (element) => element['tag'] == e,
+                                                          //   orElse: null,
+                                                          // );
 
-                                                        if (expanded)
-                                                          TextTranslator(
-                                                            attribute.locales,
-                                                          ),
-                                                        ]
-
-                                                      ],
-                                                    );
-                                                  },
+                                                          return Row(
+                                                            children: [
+                                                              // for (var attribute in dataContext.attributes)
+                                                              ...[
+                                                                FadeInImage.assetNetwork(
+                                                                  placeholder: 'assets/images/loading.gif',
+                                                                  image: attribute.imageURL,
+                                                                  height: 14,
+                                                                  imageErrorBuilder: (_, __, ___) => Container(
+                                                                    width: 14,
+                                                                    height: 14,
+                                                                    color: Colors.white,
+                                                                  ),
+                                                                ),
+                                                                if (expanded)
+                                                                  SizedBox(
+                                                                    width: 5,
+                                                                  ),
+                                                                if (expanded)
+                                                                  TextTranslator(
+                                                                    attribute.locales,
+                                                                  ),
+                                                              ]
+                                                            ],
+                                                          );
+                                                        },
+                                                      ),
+                                                    ),
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ),
-                                        ),
-                                      )
-                                      .toList(),
-                            ),
-                               ),
-                             )
-                            // Container()
-                             ),
+                                            )
+                                            .toList(),
+                                      ),
+                                    ),
+                                  )
+                              // Container()
+                              ),
                           // ),
                         ],
 
                         // options
                         // options
-                      /*  if (showOptions)...[
+                        /*  if (showOptions)...[
                           // SizedBox(height: 25,),
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 25),
@@ -837,36 +825,29 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      !_cartContext.withPrice ? Text("") :
-                  widget.food.price?.amount == null ? Text("") : Padding(
-                    padding: const EdgeInsets.only(top:10),
-                    child: Text('${widget.food.price.amount / 100}€',style: 
-                    TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold
-                    ),),
-                  ),
-                  Consumer<CartContext>(
-                    builder: (_,cart,w){
-                      return cart.contains(widget.food) ? Container(
-                        padding: EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: CRIMSON
-                        ),
-                        child: Text("${cart.getFoodCount(widget.food)}x",
-                        style:TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12
-                        )),
-                      ) : Container();
-                    }),
-                    // Spacer()
-                      
+                      !_cartContext.withPrice
+                          ? Text("")
+                          : widget.food.price?.amount == null
+                              ? Text("")
+                              : Padding(
+                                  padding: const EdgeInsets.only(top: 10),
+                                  child: Text(
+                                    '${widget.food.price.amount / 100}€',
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                      Consumer<CartContext>(builder: (_, cart, w) {
+                        return cart.contains(widget.food)
+                            ? Container(
+                                padding: EdgeInsets.all(8),
+                                decoration: BoxDecoration(shape: BoxShape.circle, color: CRIMSON),
+                                child: Text("${cart.getFoodCount(widget.food)}x", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                              )
+                            : Container();
+                      }),
+                      // Spacer()
                     ],
                   )
-                  
                 ],
               ),
             ),
@@ -973,20 +954,21 @@ class _DrinkCardState extends State<DrinkCard> {
                   mainAxisSize: MainAxisSize.max,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                   /* Hero(
+                    /* Hero(
                       tag: widget.food.id,
-                      child: */widget.food.imageURL != null
-                          ? CircleAvatar(
-                              backgroundImage: NetworkImage(
-                                widget.food.imageURL,
-                              ),
-                              onBackgroundImageError: (_, __) {},
-                              backgroundColor: Colors.grey,
-                              maxRadius: 20,
-                            )
-                          : Icon(
-                              Icons.fastfood,
+                      child: */
+                    widget.food.imageURL != null
+                        ? CircleAvatar(
+                            backgroundImage: NetworkImage(
+                              widget.food.imageURL,
                             ),
+                            onBackgroundImageError: (_, __) {},
+                            backgroundColor: Colors.grey,
+                            maxRadius: 20,
+                          )
+                        : Icon(
+                            Icons.fastfood,
+                          ),
                     // ),
                     SizedBox(
                       width: 10,
@@ -1005,7 +987,7 @@ class _DrinkCardState extends State<DrinkCard> {
                           ),
                           if (widget.food.price != null && widget.food.price?.amount != null)
                             Text(
-                             !cartContext.withPrice ? "" : '${widget.food.price.amount / 100}€',
+                              !cartContext.withPrice ? "" : '${widget.food.price.amount / 100}€',
                               style: TextStyle(
                                 fontSize: 18,
                                 color: Colors.grey[600],
@@ -1032,31 +1014,20 @@ class MenuCard extends StatelessWidget {
   int count = 0;
   final bool withPrice;
 
-  MenuCard({
-    Key key,
-    @required this.menu,
-    @required this.lang,
-    this.restaurant,
-    this.withPrice
-  }) : super(key: key);
+  MenuCard({Key key, @required this.menu, @required this.lang, this.restaurant, this.withPrice}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     MenuContext _controller = Provider.of<MenuContext>(context, listen: false);
     CartContext _cartContext = Provider.of<CartContext>(context, listen: false);
-    if (restaurant != null)
-    menu.restaurant = restaurant;
+    if (restaurant != null) menu.restaurant = restaurant;
     // _controller.menu = menu;
     menu.foodsGrouped = menu.foods ?? List();
     // count = _cartContext.getCount(menu);
 
     return InkWell(
-      onTap: (){
-        RouteUtil.goTo(
-            context: context,
-            child: DetailMenu(menu: Menu.clone(menu)),
-            routeName: null
-        );
+      onTap: () {
+        RouteUtil.goTo(context: context, child: DetailMenu(menu: Menu.clone(menu)), routeName: null);
       },
       child: Card(
         shape: RoundedRectangleBorder(
@@ -1073,7 +1044,7 @@ class MenuCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                 /* menu.imageURL != null
+                  /* menu.imageURL != null
                       ? FadeInImage.assetNetwork(placeholder: 'assets/images/loading.gif', image: menu.imageURL, width: 100, height: 100, fit: BoxFit.contain)
                       : SizedBox(
                           width: 40,
@@ -1086,27 +1057,20 @@ class MenuCard extends StatelessWidget {
                         ),*/
                   SizedBox(width: 5.0),
                   Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        
-                        // SizedBox(height: 10,),
-                        TextTranslator(
-                          menu.name ?? "",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18
-                          ),
-                        ),
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      // SizedBox(height: 10,),
+                      TextTranslator(
+                        menu.name ?? "",
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                      ),
                       /*  TextTranslator(
                           menu.description ?? "",
                           style: TextStyle(),
                         ),*/
-                        _renderListPlat(context,_controller),
-                        
-
-                      ],
-
+                      _renderListPlat(context, _controller),
+                    ],
                   ),
                   Expanded(
                     child: Container(
@@ -1116,35 +1080,26 @@ class MenuCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(width: 10,),
+                  SizedBox(
+                    width: 10,
+                  ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       // SizedBox(height: 5,),
                       TextTranslator(
-                        !Provider.of<CartContext>(context).withPrice || menu.type == MenuType.priceless.value || menu.type == MenuType.per_food.value ?  " " : "${menu.price.amount/100 ?? ""}€",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          color: CRIMSON
-                        ),
+                        !Provider.of<CartContext>(context).withPrice || menu.type == MenuType.priceless.value || menu.type == MenuType.per_food.value ? " " : "${menu.price.amount / 100 ?? ""}€",
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: CRIMSON),
                       ),
-                      Consumer<CartContext>(
-                        builder: (_,cart,w){
-                          return cart.contains(menu) ? Container(
-                            padding: EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: CRIMSON
-                            ),
-                            child: Text("${cart.getFoodCount(menu)}x",
-                            style:TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12
-                            )),
-                          ) : Container();
-                        }),
+                      Consumer<CartContext>(builder: (_, cart, w) {
+                        return cart.contains(menu)
+                            ? Container(
+                                padding: EdgeInsets.all(8),
+                                decoration: BoxDecoration(shape: BoxShape.circle, color: CRIMSON),
+                                child: Text("${cart.getFoodCount(menu)}x", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                              )
+                            : Container();
+                      }),
                     ],
                   ),
                 ],
@@ -1154,23 +1109,16 @@ class MenuCard extends StatelessWidget {
         ),
       ),
     );
-
   }
 
-
-  Widget _renderListPlat(context,controller){
+  Widget _renderListPlat(context, controller) {
     String name = "";
-    for (var entry in menu.foodsGrouped.entries)
-      name += entry.key + " + ";
-      return TextTranslator(
-        name.isEmpty ? name : name.substring(0,name.length-2),
-        style: TextStyle(
-            fontWeight: FontWeight.bold,
-          fontSize: 14
-        ),
-      );
+    for (var entry in menu.foodsGrouped.entries) name += entry.key + " + ";
+    return TextTranslator(
+      name.isEmpty ? name : name.substring(0, name.length - 2),
+      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+    );
   }
-
 }
 
 class RestaurantCard extends StatefulWidget {
@@ -1178,7 +1126,7 @@ class RestaurantCard extends StatefulWidget {
   final bool fromHome;
   final bool withPrice;
 
-  const RestaurantCard({Key key, @required this.restaurant, this.fromHome = false,this.withPrice = true}) : super(key: key);
+  const RestaurantCard({Key key, @required this.restaurant, this.fromHome = false, this.withPrice = true}) : super(key: key);
 
   @override
   _RestaurantCardState createState() => _RestaurantCardState();
@@ -1239,14 +1187,13 @@ class _RestaurantCardState extends State<RestaurantCard> {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                   SizedBox(height: 5),
-                                   TextTranslator(
-                                        widget.restaurant.category['name'] is String ?  widget.restaurant.category['name'] : widget.restaurant.category['name']["fr"] ?? "",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                      ),
+                                  SizedBox(height: 5),
+                                  TextTranslator(
+                                    widget.restaurant.category['name'] is String ? widget.restaurant.category['name'] : widget.restaurant.category['name']["fr"] ?? "",
+                                    style: TextStyle(
+                                      fontSize: 16,
                                     ),
-                                  
+                                  ),
                                 ],
                               ),
                             ),
@@ -1301,19 +1248,19 @@ class _RestaurantCardState extends State<RestaurantCard> {
                     ),
                     // Hero(
                     //     tag: "tag:${widget.restaurant.imageURL}",
-                        // child:
-                         FadeInImage.assetNetwork(
-                          image: widget.restaurant.imageURL,
-                          placeholder: 'assets/images/loading.gif',
-                          width: 120,
-                          fit: BoxFit.cover,
-                          imageErrorBuilder: (_, __, ___) => Container(
-                                width: 125,
-                                height: 70,
-                                color: Colors.white,
-                              ),
-                        ),
-                      // ),
+                    // child:
+                    FadeInImage.assetNetwork(
+                      image: widget.restaurant.imageURL,
+                      placeholder: 'assets/images/loading.gif',
+                      width: 120,
+                      fit: BoxFit.cover,
+                      imageErrorBuilder: (_, __, ___) => Container(
+                        width: 125,
+                        height: 70,
+                        color: Colors.white,
+                      ),
+                    ),
+                    // ),
                   ],
                 ),
               ),
@@ -1333,8 +1280,7 @@ class BagItem extends StatefulWidget {
   bool withPrice;
   int position;
 
-
-  BagItem({Key key, @required this.food, this.position,@required this.count, this.activeDelete = true, this.imageTag,this.withPrice = true}) : super(key: key);
+  BagItem({Key key, @required this.food, this.position, @required this.count, this.activeDelete = true, this.imageTag, this.withPrice = true}) : super(key: key);
 
   @override
   _BagItemState createState() => _BagItemState();
@@ -1377,86 +1323,93 @@ class _BagItemState extends State<BagItem> {
             children: [
               _foodRender(widget.food),
               //
-              if (widget.food.isMenu)...[
+              if (widget.food.isMenu) ...[
                 // _foodRender(_cartContext.foodMenuSelecteds.first),
-                if (_cartContext.foodMenuSelecteds != null)...[
-                  if (expand)...[
-                  for(Food f in widget.food.foodMenuSelecteds)...[
-                    if (f != null)...[
-                      // if (expand)...[
-                  _foodRender(f),
-                      Divider(),
-                      _options(f,menu: widget.food),
-                  // Divider(),
-                // ],
-                
-                      
-                    ] else ...[
-                      Container()
-                    ]
-                  ],],
-FlatButton(onPressed: (){
-                  setState(() {
-                    expand = !expand;
-                  });
-                }, child: Center(
-                  child: Icon(
-                    expand ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down ),
-                ))
+                if (_cartContext.foodMenuSelecteds != null) ...[
+                  if (expand) ...[
+                    for (Food f in widget.food.foodMenuSelecteds) ...[
+                      if (f != null) ...[
+                        // if (expand)...[
+                        _foodRender(f),
+                        Divider(),
+                        _options(f, menu: widget.food),
+                        // Divider(),
+                        // ],
+                      ] else ...[
+                        Container()
+                      ]
+                    ],
+                  ],
+                  FlatButton(
+                      onPressed: () {
+                        setState(() {
+                          expand = !expand;
+                        });
+                      },
+                      child: Center(
+                        child: Icon(expand ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down),
+                      ))
                 ]
               ],
-              if (!widget.food.isMenu && widget.food.optionSelected != null && widget.food.optionSelected.isNotEmpty)...[
+              if (!widget.food.isMenu && widget.food.optionSelected != null && widget.food.optionSelected.isNotEmpty) ...[
                 Divider(),
-                if (expand)...[
+                if (expand) ...[
                   _options(widget.food),
                   Divider(),
                 ],
-                FlatButton(onPressed: (){
-                  setState(() {
-                    expand = !expand;
-                  });
-                }, child: Center(
-                  child: Icon(
-                    expand ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down ),
-                ))
+                FlatButton(
+                    onPressed: () {
+                      setState(() {
+                        expand = !expand;
+                      });
+                    },
+                    child: Center(
+                      child: Icon(expand ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down),
+                    ))
               ]
-                  // Divider(),
-
+              // Divider(),
             ],
           ),
         ),
       ),
     );
   }
-  Widget _foodRender(dynamic f,{Menu menu}) {
+
+  Widget _foodRender(dynamic f, {Menu menu}) {
     return Row(
       mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        f.isFoodForMenu ? SizedBox(width: 150,) : Container(),
-        f.isFoodForMenu ? Container() :
-        TextTranslator(
-          '${widget.food.quantity}x ',
-          style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 20),
-        ),
+        f.isFoodForMenu
+            ? SizedBox(
+                width: 150,
+              )
+            : Container(),
+        f.isFoodForMenu
+            ? Container()
+            : TextTranslator(
+                '${widget.food.quantity}x ',
+                style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 20),
+              ),
         SizedBox(
           width: 10,
         ),
         f.imageURL != null
             ? /*Hero(
                           tag: widget.imageTag ?? widget.food.id,
-        child:*/ CircleAvatar(
-          backgroundImage: NetworkImage(
-            f.imageURL,
-          ),
-          onBackgroundImageError: (_, __) {},
-          backgroundColor: Colors.grey,
-          maxRadius: 20,
-        )
-        // )
+        child:*/
+            CircleAvatar(
+                backgroundImage: NetworkImage(
+                  f.imageURL,
+                ),
+                onBackgroundImageError: (_, __) {},
+                backgroundColor: Colors.grey,
+                maxRadius: 20,
+              )
+            // )
             : Icon(
-          Icons.fastfood,
-        ),
+                Icons.fastfood,
+              ),
         SizedBox(
           width: 10,
         ),
@@ -1472,30 +1425,29 @@ FlatButton(onPressed: (){
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              f.isFoodForMenu ? Container() :
-              TextTranslator(
-                widget.food?.description ?? "",
-                style: TextStyle(fontSize: widget.food?.description == null ? 0 : 15, fontWeight: FontWeight.bold, color: Colors.grey[600]),
-              ),
-              if (widget.food.price?.amount != null)...[
-                f.isFoodForMenu ? Container() :
-                widget.food.isMenu ? Text(
-                  !_cartContext.withPrice || widget.food.type == MenuType.priceless.value ? "" :  widget.food.type == MenuType.per_food.value ?  '${(widget.food.totalPrice.toDouble()/widget.food.quantity)/100}€' : '${widget.food.price.amount/100}€',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.grey[600],
-                    fontWeight: FontWeight.bold
-                  ),
-                ) :
-                Text(
-                  !_cartContext.withPrice || (menu != null && menu?.type == MenuType.priceless.value)? "" : '${widget.food.price.amount/100}€',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.grey[600],
-                    fontWeight: FontWeight.bold
-                  ),
-                ),
-                ]
+              f.isFoodForMenu
+                  ? Container()
+                  : TextTranslator(
+                      widget.food?.description ?? "",
+                      style: TextStyle(fontSize: widget.food?.description == null ? 0 : 15, fontWeight: FontWeight.bold, color: Colors.grey[600]),
+                    ),
+              if (widget.food.price?.amount != null) ...[
+                f.isFoodForMenu
+                    ? Container()
+                    : widget.food.isMenu
+                        ? Text(
+                            !_cartContext.withPrice || widget.food.type == MenuType.priceless.value
+                                ? ""
+                                : widget.food.type == MenuType.per_food.value
+                                    ? '${(widget.food.totalPrice.toDouble() / widget.food.quantity) / 100}€'
+                                    : '${widget.food.price.amount / 100}€',
+                            style: TextStyle(fontSize: 18, color: Colors.grey[600], fontWeight: FontWeight.bold),
+                          )
+                        : Text(
+                            !_cartContext.withPrice || (menu != null && menu?.type == MenuType.priceless.value) ? "" : '${widget.food.price.amount / 100}€',
+                            style: TextStyle(fontSize: 18, color: Colors.grey[600], fontWeight: FontWeight.bold),
+                          ),
+              ]
             ],
           ),
         ),
@@ -1503,18 +1455,15 @@ FlatButton(onPressed: (){
         SizedBox(
           width: 15,
         ),
-        f.isFoodForMenu ? Container() :
-        ButtonItemCountWidget(
-          widget.food, 
-          onAdded: (){
-            setState(() {
-              _cartContext.refresh();
-            });
-          }, 
-          onRemoved: () async {
-            
-            if(widget.food.quantity <= 0){
-              var result = await showDialog(
+        f.isFoodForMenu
+            ? Container()
+            : ButtonItemCountWidget(widget.food, onAdded: () {
+                setState(() {
+                  _cartContext.refresh();
+                });
+              }, onRemoved: () async {
+                if (widget.food.quantity <= 0) {
+                  var result = await showDialog(
                     context: context,
                     builder: (_) => ConfirmationDialog(
                       title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
@@ -1526,20 +1475,19 @@ FlatButton(onPressed: (){
                     // _cartContext.removeAllFood(widget.food);
                     _cartContext.removeItemAtPosition(widget.position);
                     // if (!widget.fromRestaurant)
-                      // RouteUtil.goBack(context: context);
-                  }else{
+                    // RouteUtil.goBack(context: context);
+                  } else {
                     widget.food.quantity = 1;
                   }
-              // _cartContext.addItem(widget.food, 0, false);
-              // if(_cartContext.items.length == 0){
-              //   // RouteUtil.goBack(context: context);
-              // }
-            }            
-            setState(() {
-              _cartContext.refresh();
-            });
-
-          }, itemCount: widget.food.quantity, isContains: _cartContext.contains(widget.food)),
+                  // _cartContext.addItem(widget.food, 0, false);
+                  // if(_cartContext.items.length == 0){
+                  //   // RouteUtil.goBack(context: context);
+                  // }
+                }
+                setState(() {
+                  _cartContext.refresh();
+                });
+              }, itemCount: widget.food.quantity, isContains: _cartContext.contains(widget.food)),
         /*CircleButton(
           backgroundColor: Colors.white,padding: EdgeInsets.zero,
           child: Icon(
@@ -1568,6 +1516,7 @@ FlatButton(onPressed: (){
       ],
     );
   }
+
   Widget _options(Food f, {Menu menu}) {
     // int i = 0;
     /*List<Option> options = _cartContext.options[widget.food.id]
@@ -1579,89 +1528,91 @@ FlatButton(onPressed: (){
       child: Column(
         children: [
           // for (Option option in options)...[
-            Container(
-              padding: EdgeInsets.only(top:15,bottom: 15,left: MediaQuery.of(context).size.width/3,right: 25),
-              // color: a%2 == 0 ? Colors.grey.withAlpha(20) : Colors.white,
-              child: Column(
-                children: [
-                  for (Option option in options)...[
+          Container(
+            padding: EdgeInsets.only(top: 15, bottom: 15, left: MediaQuery.of(context).size.width / 3, right: 25),
+            // color: a%2 == 0 ? Colors.grey.withAlpha(20) : Colors.white,
+            child: Column(
+              children: [
+                for (Option option in options) ...[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SizedBox(width: 15),
+                      TextTranslator('${option.title}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black, decoration: TextDecoration.underline)),
+                      SizedBox(width: 5),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+
+                  for (ItemsOption itemsOption in option?.itemOptionSelected?.toList()) ...[
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         SizedBox(width: 15),
-                        TextTranslator('${option.title}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,color: Colors.black,decoration: TextDecoration.underline)),
-                        SizedBox(width: 5),
-                      ],
-                    ),
-                    SizedBox(height: 15,),
-
-                    for (ItemsOption itemsOption in option?.itemOptionSelected?.toList())...[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          SizedBox(width: 15),
-                          itemsOption.quantity == null ? Container() :
-                          (itemsOption.quantity != null || itemsOption.quantity > 1) ?
-                          TextTranslator('${itemsOption.quantity}x\t', style: TextStyle(fontSize: 16,fontWeight: FontWeight.w600)) :
-                          Container(),
-                           InkWell(
-                  onTap: () {
-                    RouteUtil.goTo(
-                        context: context,
-                        child: PhotoViewPage(
-                          tag: 'tag:${itemsOption.imageUrl}',
-                          img: itemsOption.imageUrl,
-                        ),
-                        routeName: null);
-                  },
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(50),
-                    child: FadeInImage.assetNetwork(
-                      placeholder: 'assets/images/loading.gif',
-                      image: itemsOption.imageUrl,
-                      imageErrorBuilder: (_, __, ___) => Container(
+                        itemsOption.quantity == null
+                            ? Container()
+                            : (itemsOption.quantity != null || itemsOption.quantity > 1)
+                                ? TextTranslator('${itemsOption.quantity}x\t', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600))
+                                : Container(),
+                        InkWell(
+                          onTap: () {
+                            RouteUtil.goTo(
+                                context: context,
+                                child: PhotoViewPage(
+                                  tag: 'tag:${itemsOption.imageUrl}',
+                                  img: itemsOption.imageUrl,
+                                ),
+                                routeName: null);
+                          },
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(50),
+                            child: FadeInImage.assetNetwork(
+                              placeholder: 'assets/images/loading.gif',
+                              image: itemsOption.imageUrl,
+                              imageErrorBuilder: (_, __, ___) => Container(
                                 width: 35,
                                 height: 35,
                                 color: Colors.white,
                               ),
-                      height: 35,
-                      width: 35,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                          SizedBox(
-                            width: 5,
+                              height: 35,
+                              width: 35,
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                          TextTranslator('${itemsOption.name}', style: TextStyle(fontSize: 16)),
-                          Spacer(),
-                          /*Image.network(
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        TextTranslator('${itemsOption.name}', style: TextStyle(fontSize: 16)),
+                        Spacer(),
+                        /*Image.network(
                           item.imageURL,
                           width: 25,
                         ),*/
-                          // SizedBox(width: 8),
-                          if (itemsOption.price == 0 || !widget.withPrice || (menu != null && menu?.type == MenuType.priceless.value))
-                            Text("")
-                          else
-                            itemsOption.price.amount == null  ? Text("") : TextTranslator('${itemsOption.price.amount/100} €', style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
-                          // Spacer(),
-                          // item.price?.amount == null ? Text("_") : Text("${item.price.amount / 100} €", style: TextStyle(fontSize: 16)),
-                        ],
-                      ),
-
-                    ],
-                    // Divider(),
-                  ]
-                ],
-              ),
+                        // SizedBox(width: 8),
+                        if (itemsOption.price == 0 || !widget.withPrice || (menu != null && menu?.type == MenuType.priceless.value))
+                          Text("")
+                        else
+                          itemsOption.price.amount == null ? Text("") : TextTranslator('${itemsOption.price.amount / 100} €', style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
+                        // Spacer(),
+                        // item.price?.amount == null ? Text("_") : Text("${item.price.amount / 100} €", style: TextStyle(fontSize: 16)),
+                      ],
+                    ),
+                  ],
+                  // Divider(),
+                ]
+              ],
             ),
-            // Divider()
+          ),
+          // Divider()
           // ]
         ],
       ),
     );
     // for (int a=0;a<o.length;a++){
-  /*
+    /*
       return Container(
         child: Column(
           children: [
@@ -1729,7 +1680,6 @@ FlatButton(onPressed: (){
       );
 */
     // }
-
   }
 }
 
@@ -1749,8 +1699,10 @@ class CommandHistoryItem extends StatelessWidget {
         RouteUtil.goTo(
           context: context,
           child: Material(
-            child: Summary(commande: command,fromHistory: true,)
-          ),
+              child: Summary(
+            commande: command,
+            fromHistory: true,
+          )),
           routeName: foodRoute,
         );
       },
@@ -1766,7 +1718,7 @@ class CommandHistoryItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               TextTranslator('${command.restaurant.name}'),
-              TextTranslator('${command.code?.toString()?.padLeft(6,'0')}', style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold)),
+              TextTranslator('${command.code?.toString()?.padLeft(6, '0')}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               // SizedBox(width: 15),
               // Image.network(
               //   item.imageURL,
@@ -1778,13 +1730,10 @@ class CommandHistoryItem extends StatelessWidget {
               Column(
                 children: [
                   TextTranslator("${command.createdAt.dateToString('dd/MM/yy HH:mm')}", style: TextStyle(fontSize: 16)),
-                  if (command.shippingTime != null)
-                    TextTranslator("${command.shippingTime.dateToString('dd/MM/yy HH:mm')}", style: TextStyle(fontSize: 16)),
-
+                  if (command.shippingTime != null) TextTranslator("${command.shippingTime.dateToString('dd/MM/yy HH:mm')}", style: TextStyle(fontSize: 16)),
                 ],
               )
               // if (command.createdAt != null)
-
             ],
           ),
         ),
@@ -1795,31 +1744,29 @@ class CommandHistoryItem extends StatelessWidget {
   Widget _validated() {
     Color color;
     String title = "";
-    if (!command.validated && !command.revoked){
+    if (!command.validated && !command.revoked) {
       title = "En attente";
       color = Colors.orange;
-    }else if (command.validated){
+    } else if (command.validated) {
       title = "Valider";
       color = TEAL;
-    }else if (command.revoked){
+    } else if (command.revoked) {
       title = "Refuser";
       color = CRIMSON;
     }
 
-
     return Container(
-                      padding: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.horizontal(left: Radius.circular(15), right: Radius.circular(15)),
-                        color: color,
-                      ),
-                      child: TextTranslator(
-                        title,
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12),
-                      ),
-                    );
+      padding: EdgeInsets.all(5),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.horizontal(left: Radius.circular(15), right: Radius.circular(15)),
+        color: color,
+      ),
+      child: TextTranslator(
+        title,
+        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12),
+      ),
+    );
   }
-
 }
 
 class BlogCard extends StatelessWidget {
@@ -1828,183 +1775,91 @@ class BlogCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-   return Card(
-     elevation: 4,
-     color: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
-     child: Container(
-       
-        child: Stack(
-                fit: StackFit.loose,
-                  children: [
-                    // Hero(
-                    //     tag: 'tag:${blog.imageURL}',
-                        // child: 
-                        Container(
-                          // height: 190,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-         borderRadius: BorderRadius.circular(20),
-       ),
-                          child: FadeInImage.assetNetwork(
-                            image: blog.imageURL,
-                            placeholder: 'assets/images/loading.gif',
-                            fit: BoxFit.contain,
-                            imageErrorBuilder: (_, __, ___) => Container(
-                              color: Colors.white,
-                            )
-                          ),
-                        ),
-                      // ),
-                   Positioned.fill(
-                      bottom: 0,
-                      left: 0,
-                      child: Container(
-                        height: 50,
-                        width: double.infinity,
-                        // color: Colors.black.withAlpha(150),
-                        child: Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Container(
-                            height: 35,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20),bottomRight: Radius.circular(20)),
-                              color: Colors.black.withAlpha(150),
-                            ),
-                            child: Center(
-                              child: TextTranslator(
-                                blog.title,
-                                style: TextStyle(
-                                  color:Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-
-                    ))
-,
-                    Positioned(
-                      top: 0,
-                      right: 0,
-                      child: Card(
-                        
-                        elevation: 4,
-     color: CRIMSON,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(150),
-      ),
-                        child: IconButton(icon: Icon(Icons.shopping_cart_outlined,size: 25,color: Colors.white,), onPressed: () async {
-                          print("add to shop...");
-                          if (await canLaunch(blog.url))
-                            launch(blog.url);
-                        }),
-                      ))
-
-                  ],
-              ),
-      ),
-   );
     return Card(
       elevation: 4,
       color: Colors.white,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(5),
       ),
       child: Container(
-        height: 400,
-        width: MediaQuery.of(context).size.width - 50,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
+        child: Stack(
+          fit: StackFit.loose,
           children: [
-            Stack(
-              fit: StackFit.loose,
-                children: [
-                  // Hero(
-                  //     tag: 'tag:${blog.imageURL}',
-                      // child:
-                       Container(
-                        height: 190,
-                        width: double.infinity,
-                        child: FadeInImage.assetNetwork(
-                          image: blog.imageURL,
-                          placeholder: 'assets/images/loading.gif',
-                          fit: BoxFit.contain,
-                          imageErrorBuilder: (_, __, ___) => Container(
-                                width: double.infinity,
-                                height: 190,
-                                color: Colors.white,
-                              ),
-                        ),
-                      ),
-                    // ),
-                  Positioned.fill(
-                    bottom: 0,
-                    left: 0,
-                    child: Container(
-                      height: 50,
-                      width: double.infinity,
-                      // color: Colors.black.withAlpha(150),
-                      child: Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Container(
-                          height: 50,
-                          width: double.infinity,
-                          color: Colors.black.withAlpha(150),
-                          child: Center(
-                            child: TextTranslator(
-                              blog.title,
-                              style: TextStyle(
-                                color:Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+            // Hero(
+            //     tag: 'tag:${blog.imageURL}',
+            // child:
 
-                  ))
-                ],
-            ),
-            Padding(
-              padding: EdgeInsets.all(10),
-              child:TextTranslator(
-                blog.description,
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
-                  style:TextStyle(
-                    fontSize: 15
-                )
-              )
-            ),
-            Spacer(),
-            Container(width: double.infinity,height: 1,color:Colors.grey[200]),
-            InkWell(
-              onTap: () async{
-                if (await canLaunch(blog.url))
-                  launch(blog.url);
-              },
-              child: Container(
-                height: 50,
-                child: Center(
-                  child: TextTranslator(
-                    "Acheter maintenant",
-                    style: TextStyle(
-                      fontSize:16,
-                      color: CRIMSON,
-                      fontWeight: FontWeight.bold
-                    )
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  height: 150,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: FadeInImage.assetNetwork(
+                      image: blog.imageURL,
+                      placeholder: 'assets/images/loading.gif',
+                      fit: BoxFit.contain,
+                      imageErrorBuilder: (_, __, ___) => Container(
+                            color: Colors.white,
+                          )),
+                ),
+                // ),
+                Divider(),
+                Container(
+                  // height: 50,
+                  width: double.infinity,
+                  // color: Colors.black.withAlpha(150),
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      // height: 35,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        // borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20), bottomRight: Radius.circular(20)),
+                        // color: Colors.black.withAlpha(150),
+                      ),
+                      child: Center(
+                        child: TextTranslator(
+                          blog.title,
+                          style: TextStyle(color: Colors.grey[600], fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            )
+                Container(
+                  child: Center(
+                    child: TextTranslator(
+                      blog.description
+                    ),
+                  ),
+                )
+              ],
+            ),
+
+            Positioned(
+                top: 0,
+                right: 0,
+                child: Card(
+                  elevation: 4,
+                  color: CRIMSON,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(150),
+                  ),
+                  child: IconButton(
+                      icon: Icon(
+                        Icons.shopping_cart_outlined,
+                        size: 25,
+                        color: Colors.white,
+                      ),
+                      onPressed: () async {
+                        print("add to shop...");
+                        if (await canLaunch(blog.url)) launch(blog.url);
+                      }),
+                ))
           ],
         ),
       ),

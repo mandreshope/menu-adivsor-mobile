@@ -811,50 +811,6 @@ class _HomePageState extends State<HomePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /*
-            Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-               SectionTitle(
-                  "Blog",
-                ),
-                Visibility(
-                  visible: false,
-                  child: Container(
-                    margin: const EdgeInsets.only(
-                      right: 30,
-                    ),
-                    child: GestureDetector(
-                      onTap: () {
-                        RouteUtil.goTo(
-                          context: context,
-                          child: SearchPage(
-                            type: 'food',
-                            location: {
-                              "coordinates":currentLocation?.coordinates ?? [0,0]
-                            },
-                            filters: {
-                              // "searchCategory": "with_price",
-                              // "price.amount":null,
-                              "searchCategory": "onsite"
-                              // "city":this.city ?? ""
-                            },
-                          ),
-                          routeName: searchRoute,
-                        );
-                      },
-                      child: TextTranslator(
-                        AppLocalizations.of(context).translate("see_all"),
-                        style: Theme.of(context).textTheme.caption,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-           */
           Consumer<DataContext>(
             builder: (_, dataContext, __) {
               var blogs = dataContext.blogs;
@@ -862,7 +818,7 @@ class _HomePageState extends State<HomePage> {
 
               if (loading)
                 return Container(
-                  height: 200,
+                  height: 250,
                   child: Center(
                     child: CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(
@@ -887,20 +843,6 @@ class _HomePageState extends State<HomePage> {
 
               return CarouselSliderBlog(context: context, blogs: blogs);
 
-              return SingleChildScrollView(
-                physics: BouncingScrollPhysics(),
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.only(
-                  left: 20,
-                  right: 20,
-                  bottom: 10,
-                ),
-                child: Column(
-                  children: [
-                    for (var blog in blogs) FadeAnimation(1, BlogCard(blog)),
-                  ],
-                ),
-              );
             },
           ),
         ],
@@ -936,12 +878,12 @@ class _CarouselSliderBlogState extends State<CarouselSliderBlog> {
         children: [
           CarouselSlider(
             options: CarouselOptions(
-              height: MediaQuery.of(context).size.height / 4.5,
+              height: MediaQuery.of(context).size.height / 3.8,
               autoPlay: true,
               enlargeCenterPage: true,
               aspectRatio: 16 / 9,
-              viewportFraction: 0.8,
-
+              viewportFraction: 0.90,
+              
               onPageChanged: (position,_){
                 setState(() {
                   _current = position;

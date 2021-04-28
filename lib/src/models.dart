@@ -292,17 +292,28 @@ class Menu implements Copyable<Menu>{
 int get totalPrice{
   int price = 0;
   
-  if (type == MenuType.per_food.value){
-    this._foodMenuSelected.forEach((key,food) {
-      food.quantity = 1;
-    price += food.totalPrice * quantity;
-  });
-  }else if (type == MenuType.fixed_price.value){
-   price = (this.price.amount ?? 0) * quantity;
-  }else{
-    price = 0;
-  }
   
+  if (type == MenuType.priceless.value) return 0;
+
+  this._foodMenuSelected.forEach((key,food) {
+      food.quantity = 1;
+      if (type == MenuType.fixed_price.value){
+        food.optionSelected?.forEach((option) {
+            option?.itemOptionSelected?.forEach((item) {
+              if (item.price?.amount != null)
+              price += item.price.amount * item.quantity; 
+            });
+        });
+      }else{
+        price += food.totalPrice * quantity;
+      }
+  });
+
+  if (type == MenuType.fixed_price.value){
+    price += (this.price.amount ?? 0) ;
+  }
+
+  price = price * quantity;
 
   return price;
 
