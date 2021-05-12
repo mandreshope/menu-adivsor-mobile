@@ -48,15 +48,15 @@ class _HomePageState extends State<HomePage> {
 
     StripeService.init();
 
-    checkPermission().then((LocationPermission permission) async {
+    Geolocator.checkPermission().then((LocationPermission permission) async {
       if (permission == LocationPermission.deniedForever) {
         setState(() {
           geolocationDenied = true;
           loading = false;
         });
       } else if (permission == LocationPermission.denied) {
-        await requestPermission();
-        Position currentPosition = await getCurrentPosition();
+        await Geolocator.requestPermission();
+        Position currentPosition = await Geolocator.getCurrentPosition();
         setState(() {
           currentLocation = Location(
             type: "Point",
@@ -78,7 +78,9 @@ class _HomePageState extends State<HomePage> {
         );
         this.city = Provider.of<DataContext>(context, listen: false).getCity();
       } else {
-        Position currentPosition = await getCurrentPosition();
+        Position currentPosition = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.medium);
+
         setState(() {
           currentLocation = Location(
             type: "Point",
@@ -447,7 +449,7 @@ class _HomePageState extends State<HomePage> {
                       1,
                       CategoryCard(
                         imageURL: category.imageURL,
-                        name: category.name[Provider.of<SettingContext>(context).languageCode],
+                        name: category.name,
                         onPressed: () {
                           RouteUtil.goTo(
                             context: context,

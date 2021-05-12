@@ -512,7 +512,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         RaisedButton(
                           onPressed: () {
                            showDialog<String>(context: context,
-                                                  child: MessageDialog(message: "",)).then((value) async {
+                                                  builder:(_) => MessageDialog(message: "",)).then((value) async {
                                                       print(value);
                                                       //widget.food.message = value;
                                                   
@@ -525,7 +525,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                       target: null);
                                                       showDialog(
                                                         barrierDismissible: false,
-                                                        context: context,child: Center(
+                                                        context: context,builder:(_) => Center(
                                                         child: CircularProgressIndicator(
                                                                             valueColor: AlwaysStoppedAnimation<Color>(
                                                                               CRIMSON,

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:chips_choice/chips_choice.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_balloon_slider/flutter_balloon_slider.dart';
@@ -427,15 +429,22 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
   int distanceAround; // 20 km
   ValueNotifier<double> _slider1Value = ValueNotifier<double>(0.0);
 
-  List<String> searchType = List();
+  List<String> searchType = [];
 
   String shedule = "Tous";
   String categorieType = "";
 
+  List<FoodCategory> _foodCategories;
+  List<FoodCategory> _foodCategoriesSelected = [];
+  DataContext _dataContext;
+
+  List<FoodAttribute> _foodAttribut;
+  List<FoodAttribute> _foodAttributSelected = [];
+
   @override
   void initState() {
     super.initState();
-    this.shedule = widget.shedule;
+    this.shedule = widget.shedule ?? "Tous";
     searchType = [
                       'all',
                       'restaurant',
@@ -446,6 +455,10 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
     distanceAround = widget.range;
     type = widget.type;
     filters.addAll(widget.filters);
+    _dataContext = Provider.of<DataContext>(context,listen: false);
+    _foodCategories = _dataContext.foodCategories;
+    _foodAttribut = _dataContext.foodAttributes;
+
   }
 
   @override
@@ -621,11 +634,11 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                           .map(
                             (e) => Theme(
                               data: ThemeData(
-                                brightness: filters.containsKey('type') && filters['type'] == e.name['fr'] ? Brightness.dark : Brightness.light,
-                                cardColor: filters.containsKey('type') && filters['type'] == e.name['fr'] ? CRIMSON : Colors.white,
+                                brightness: filters.containsKey('type') && filters['type'] == e.name ? Brightness.dark : Brightness.light,
+                                cardColor: filters.containsKey('type') && filters['type'] == e.name ? CRIMSON : Colors.white,
                               ),
                               child: Card(
-                                color: filters.containsKey('type') && filters['type'] == e.name['fr'] ? CRIMSON : Colors.white,
+                                color: filters.containsKey('type') && filters['type'] == e.name ? CRIMSON : Colors.white,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(50),
                                 ),
@@ -633,7 +646,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                                   borderRadius: BorderRadius.circular(50),
                                   onTap: () {
                                     setState(() {
-                                      filters['type'] = e.name['fr'];
+                                      filters['type'] = e.name;
                                     });
                                   },
                                   child: Container(
@@ -642,7 +655,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
                                         TextTranslator(
-                                          e.name["fr"],
+                                          e.name,
                                         ),
                                       ],
                                     ),
@@ -667,6 +680,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                             borderRadius: BorderRadius.circular(50),
                             onTap: () {
                               setState(() {
+                                _foodCategoriesSelected.clear();
                                 filters.remove('category');
                               });
                             },
@@ -680,38 +694,51 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                         ),
                       ),
                       if(type != 'food')
-                      ...Provider.of<DataContext>(context)
-                          .foodCategories
-                          .map(
-                            (e) => Theme(
+                      ChipsChoice.multiple(
+                        value: _foodCategoriesSelected,
+                        choiceBuilder: (_){
+                           return Theme(
                               data: ThemeData(
-                                brightness: filters.containsKey('category') && filters['category'] == e.id ? Brightness.dark : Brightness.light,
-                                cardColor: filters.containsKey('category') && filters['category'] == e.id ? CRIMSON : Colors.white,
+                                brightness: _.selected ? Brightness.dark : Brightness.light,
+                                cardColor: _.selected ? CRIMSON : Colors.white,
                               ),
                               child: Card(
-                                color: filters.containsKey('category') && filters['category'] == e.id ? CRIMSON : Colors.white,
+                                color: _.selected ? CRIMSON : Colors.white,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(50),
                                 ),
                                 child: InkWell(
                                   borderRadius: BorderRadius.circular(50),
                                   onTap: () {
-                                    setState(() {
-                                      filters['category'] = e.id;
-                                      categorieType = e.name["fr"];
-                                    });
+                                    _.select(!_.selected);
                                   },
                                   child: Container(
                                     padding: const EdgeInsets.all(10),
                                     child: TextTranslator(
-                                      e.name[Provider.of<SettingContext>(context).languageCode],
+                                      _.value.name,
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                          )
-                          .toList(),
+                            );                      
+                        },
+                        
+                        onChanged: (value){
+                          setState(() {
+                            _foodCategoriesSelected = value.cast<FoodCategory>();  
+                            print(_foodCategoriesSelected.toString());
+                            filters['category'] = _foodCategoriesSelected.map<String>((e) => e.id).toList();
+                          });
+                        }, 
+                        choiceItems: C2Choice.listFrom(
+                                                meta: (position, item){
+
+                                                },
+                                                source: _foodCategories,
+                                                value: (i, v) => v,
+                                                label: (i, v) => v.name,
+                                              ),
+                                            ),
                       ]
                     ],
                   ),
@@ -728,7 +755,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                   ),
                 ),
                 if(!widget.fromMap)
-                SingleChildScrollView(
+               SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   physics: BouncingScrollPhysics(),
                   child: Row(
@@ -746,6 +773,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                             borderRadius: BorderRadius.circular(50),
                             onTap: () {
                               setState(() {
+                                _foodAttributSelected.clear();
                                 filters.remove('attributes');
                               });
                             },
@@ -758,17 +786,16 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                           ),
                         ),
                       ),
-                      
-                      ...Provider.of<DataContext>(context)
-                          .foodAttributes
-                          .map(
-                            (e) => Theme(
+                      ChipsChoice.multiple(
+                        value: _foodAttributSelected,
+                        choiceBuilder: (_){
+                           return Theme(
                               data: ThemeData(
-                                brightness: filters.containsKey('attributes') && filters['attributes'] == e.sId ? Brightness.dark : Brightness.light,
-                                cardColor: filters.containsKey('attributes') && filters['attributes'] == e.sId ? CRIMSON : Colors.white,
+                                brightness: _.selected ? Brightness.dark : Brightness.light,
+                                cardColor: _.selected ? CRIMSON : Colors.white,
                               ),
                               child: Card(
-                                color: filters.containsKey('attributes') && filters['attributes'] == e.sId ? CRIMSON : Colors.white,
+                                color: _.selected ? CRIMSON : Colors.white,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(50),
                                 ),
@@ -776,7 +803,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                                   borderRadius: BorderRadius.circular(50),
                                   onTap: () {
                                     setState(() {
-                                      filters['attributes'] = e.sId;
+                                      _.select(!_.selected);
                                     });
                                   },
                                   child: Container(
@@ -785,31 +812,49 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
                                         Image.network(
-                                          e.imageURL,
+                                        _.value.imageURL,
                                           height: 18,
                                           errorBuilder: (_, __, ___) => Center(
-                          child: Icon(
-                            Icons.fastfood,size: 18,
-                          ),
-                        ),
+                                            child: Icon(
+                                              Icons.fastfood,size: 18,
+                                            ),
+                                          ),
                                         ),
                                         SizedBox(
                                           width: 5,
                                         ),
                                         TextTranslator(
-                                          e.locales,
+                                          _.value.locales,
                                         ),
                                       ],
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                          )
-                          .toList(),
+                            );
+                                                
+                        },
+                        
+                        onChanged: (value){
+                          setState(() {
+                            _foodAttributSelected = value.cast<FoodAttribute>();  
+                            print(_foodAttributSelected.toString());
+                            filters['attributes'] = _foodAttributSelected.map<String>((e) => e.sId).toList();
+                          });
+                        }, 
+                        choiceItems: C2Choice.listFrom(
+                                                meta: (position, item){
+
+                                                },
+                                                source: _foodAttribut,
+                                                value: (i, v) => v,
+                                                label: (i, v) => v.locales,
+                                              ),
+                                            ),
                     ],
                   ),
                 ),
+                
                 SizedBox(
                   height: 20,
                 ),

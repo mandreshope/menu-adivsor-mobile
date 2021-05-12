@@ -1,4 +1,3 @@
-import 'package:copyable/copyable.dart';
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/types.dart';
@@ -25,9 +24,15 @@ class FoodCategory {
         "name": name,
         "imageURL": imageURL,
       };
+
+    @override
+  String toString() {
+    // TODO: implement toString
+    return this.id;
+  }  
 }
 
-class Food implements Copyable<Food>{
+class Food {
   final String id;
   final String name;
   final FoodCategory category;
@@ -59,6 +64,8 @@ class Food implements Copyable<Food>{
 
   String idNewFood = "";
 
+  Price additionalPrice;
+
   Food({
     @required this.id,
     @required this.name,
@@ -87,18 +94,18 @@ class Food implements Copyable<Food>{
   factory Food.fromJson(Map<String, dynamic> json,{bool fromCommande = false,bool isPopular = false}) => Food(
         id: json['_id'],
         name: json['name'] is Map<String, dynamic> ? json['name']["fr"] : json['name'],
-        imageURL: json['imageURL'],
+        imageURL: (json['imageURL'] as String).contains("localhost:8080") ? "" : json['imageURL'],
         category: json.containsKey('category') && json['category'] != null && json['category'] is Map<String, dynamic> ? FoodCategory.fromJson(json['category']) : null,
         restaurant: json['restaurant'],
         price: json.containsKey('price') ? Price.fromJson(json['price']) : null,
         type: json['type'] == null ? null : json['type'] is  Map<String, dynamic> ?  FoodType.fromJson(json['type']) : json['type'] as String,
         attributes: fromCommande ? List() : (json['attributes'] as List).map((e) => (e is String) ? FoodAttribute() : FoodAttribute.fromJson(e)).toList(),
         options: (json['options'] as List).map((e) =>Option.fromJson(e)).where((element) => element.maxOptions > 0).toList(),
-        status: json['status'],
+        status: json['status'] ?? true,
         title: json['title'],
         maxOptions:json['maxOptions'],
         description: json['description'],
-        statut: json['statut'],
+        statut: json['statut'] ?? true,
         isPopular: isPopular
       );
 
@@ -161,37 +168,21 @@ int get totalPrice{
 
 }
 
-  @override
-  Food copy() {
-    // TODO: implement copy
-    return this;
-  }
-  @override
-  Food copyWith() {
-    // TODO: implement copyWith
-    throw UnimplementedError();
-  }
-
-  @override
-  Food copyWithMaster(Food master) {
-    // TODO: implement copyWithMaster
-    throw UnimplementedError();
-  }
-
 }
 
-class Menu implements Copyable<Menu>{
+class Menu{
   final String id;
   final String imageURL;
   final dynamic name;
   final dynamic description;
-  final List<Food> foods;
+  final List<MenuFood> foods;
   bool status;
   bool statut;
   List<Food> foodSelected = List();
   dynamic restaurant;
   Price price;
   String type;
+  int priority;
 
   bool isMenu = true;
   bool isFoodForMenu = false;
@@ -223,25 +214,26 @@ class Menu implements Copyable<Menu>{
     this.optionSelected,
     this.price,
     this.status,
-    this.statut
+    this.statut,
+    this.priority
   });
 
   _setPrice() {
     price = Price(amount: 0,currency: "€");
     this.foods?.forEach((f){
-          f.isFoodForMenu = true;
-          f.idMenu = this.id;
-         if (f.price != null && f.price.amount != null) price.amount += f.price.amount;
+          f.food.isFoodForMenu = true;
+          f.food.idMenu = this.id;
+         if (f.food.price != null && f.food.price.amount != null) price.amount += f.food.price.amount;
         });
         print("prince ${price.amount}");
         
   }
 
 
-  Map<String, List<Food>> _foodsGrouped;
-  set foodsGrouped(List<Food> foods) => _foodsGrouped = foods.groupBy((f) {
+  Map<String, List<MenuFood>> _foodsGrouped;
+  set foodsGrouped(List<MenuFood> foods) => _foodsGrouped = foods.groupBy((f) {
     // f.isMenu = true;
-    return (f.type is String) ? f.type : (f.type.name is String) ? f.type.name : f.type.name["fr"];
+    return (f.food.type is String) ? f.food.type : (f.food.type.name is String) ? f.food.type.name : f.food.type.name;
   });
   get foodsGrouped => _foodsGrouped;
 
@@ -307,6 +299,11 @@ int get totalPrice{
       }else{
         price += food.totalPrice * quantity;
       }
+      if (type == MenuType.fixed_price.value){
+        if (food.additionalPrice != null){
+          price += food.additionalPrice.amount;
+        }
+      }
   });
 
   if (type == MenuType.fixed_price.value){
@@ -335,7 +332,7 @@ int get totalPrice{
       imageURL: menu.imageURL,
       restaurant: menu.restaurant,
       price: menu.price,
-      foods: menu.foods.map((f) => Food.copy(f)).toList(),
+      foods: menu.foods.map((f) => MenuFood.copy(f)).toList(),
       status: menu.status
     );
 
@@ -348,23 +345,25 @@ int get totalPrice{
     
     Menu _menu = Menu(
         id: json['_id'],
-        name: json['name'] == null ? "" : json['name'] is Map<String, dynamic> ? json['name']["fr"] : json['name'],
-        imageURL: json['imageURL'],
-        foods: json['foods'] is List ? json['foods']?.map<Food>((data) => Food.fromJson(data,fromCommande: fromCommand))?.toList() ?? [] : [],
-        description: json['description'] is Map<String, dynamic> ? json['description']["fr"] : json['description'],
+        name: json['name'],
+        imageURL: json['imageURL'] ?? "",
+        foods: json['foods'] is List ? json['foods']?.map<MenuFood>((data) => MenuFood.fromJSON(data))?.toList() ?? [] : [],
+        description: json['description'],
         restaurant: json['restaurant'] is String ? json['restaurant'] : Restaurant.fromJson(json["restaurant"]),
-        type: json['type'],
+        type: json['type'], 
+        priority: json['priority'],
         // status :json["status"] ?? true,
         optionSelected: json['options'] != null ? (json['options'] as List).map((e) => Option.fromJson(e)).where((element) => element.maxOptions > 0).toList() : [],
       );
       _menu.isMenu = true;
-      _menu._setPrice();
+      if (!fromCommand)
+        _menu._setPrice();
       
-      if (_menu.foods.isNotEmpty){
-        Food food = _menu.foods.first;
-        _menu.statut = food.statut;
-        _menu.status = food.status;
-      }
+      // if (_menu.foods.isNotEmpty){
+      //   Food food = _menu.foods.first;
+      //   _menu.statut = food.statut;
+      //   _menu.status = food.status;
+      // }
       return _menu;
     }
 
@@ -372,27 +371,33 @@ int get totalPrice{
         "_id":this.id,
         "name":this.name,
         "imageURL":this.imageURL,
-        "foods":this.foods.map((v) => v.toJson()).toList(),
+        "foods":this.foods.map((v) => v.food.toJson()).toList(),
         "description":this.description
       };
 
-  @override
-  Menu copy() {
-    // TODO: implement copy
-    return this;
+}
+
+class MenuFood {
+  dynamic food;
+  Price addtionalPrice;
+
+  MenuFood({this.food,this.addtionalPrice});
+  factory MenuFood.fromJSON(var json) => MenuFood(
+    food: (json['food'] is String) ? json['food'] : Food.fromJson(json['food']),
+    addtionalPrice: Price.fromJson(json['additionalPrice'])
+  );
+
+  factory MenuFood.copy(MenuFood menuFood) {
+    MenuFood mFood =
+          MenuFood(
+          food: Food.copy(menuFood.food),
+          addtionalPrice: Price.Copy(menuFood.addtionalPrice)
+        );
+    mFood.food.additionalPrice = mFood.addtionalPrice;
+    return mFood;
+
   }
 
-  @override
-  Menu copyWith() {
-    // TODO: implement copyWith
-    throw UnimplementedError();
-  }
-
-  @override
-  Menu copyWithMaster(Menu master) {
-    // TODO: implement copyWithMaster
-    throw UnimplementedError();
-  }
 }
 
 class Restaurant {
@@ -405,7 +410,8 @@ class Restaurant {
   final String description;
   final List<String> menus;
   final List<String> foods;
-  final List<dynamic> foodTypes;
+  final List<FoodType> foodTypes;
+  final String fixPhoneNumber;
   final String phoneNumber;
   bool status;
   final String admin;
@@ -414,7 +420,7 @@ class Restaurant {
   final bool surPlace;
   final bool aEmporter;
   final String url;
-  final dynamic category;
+  final List<dynamic> category;
   final int priority;
   final bool accessible;
 
@@ -448,7 +454,8 @@ class Restaurant {
     this.category,
     this.priority,
     this.accessible,
-    this.etage
+    this.etage,
+    this.fixPhoneNumber
   });
 
   factory Restaurant.fromJson(Map<String, dynamic> json) {
@@ -465,17 +472,17 @@ class Restaurant {
         description: json['description'] ?? '',
         menus: (json['menus'] as List).map<String>((e) => e).toList(),
         foods: (json['foods'] as List).map<String>((e) => e).toList(),
-        foodTypes: json['foodTypes'] ?? [],
-        phoneNumber: json['phoneNumber'] ?? [],
+        foodTypes: (json['foodTypes'] as List).map<FoodType>((e) => FoodType.fromJson(e)).toList() ?? [],
+        phoneNumber: json['phoneNumber'] ?? "",
         status: json['referencement'],
         accessible: json['status'],
-        admin: json['admin'],
+        admin: json['admin'] is String ? json['admin'] : json['admin']['_id'],
         priceDelevery:json['deliveryPrice']['amount'],
         delivery:json['delivery'] ?? true,
         aEmporter:json['aEmporter'] ?? true,
         surPlace:json['surPlace'] ?? true,
         url: json['url'] != null ? json['url'] as String : "Menu advisor",
-        category: json['category'],
+       // category: (json['category'] as List).map((e) => e).toList(),
         priority: json['priority'],
         openingTimes: (json['openingTimes'] != null) ? (json['openingTimes'] as List).map<OpeningTimes>((e) => OpeningTimes.fromJson(e)).toList() : List() 
       );
@@ -627,7 +634,7 @@ class Restaurant {
     TimeOfDay timeEnd;
 
     this.openingTimes.forEach((element) {
-        if (element.day == dateNow.weekDayToString){
+        if (element.day.toLowerCase() == dateNow.weekDayToString.toLowerCase()){
           
           //AM
           int hourAM = element.openings[0].begin.hour;
@@ -673,6 +680,15 @@ class Restaurant {
     });
     return open;
   }
+  
+  String get categories {
+    String cat = "";
+    this.category?.forEach((element) {
+      cat += " - ${element is String ? element : element['name']}";
+    });
+    return cat;
+  }
+
 
 }
 
@@ -704,7 +720,7 @@ class User {
                 []
             : [],*/
             paymentCards: json['paymentCards'] is List
-            ? (json['paymentCards'] as List).cast<String>() ??
+            ? (json['paymentCards'] as List).map((e) => e).toList() ??
                 []
             : [],
         address: json['address'],
@@ -917,7 +933,7 @@ class CommandItem {
     if (json['item'] is String)
       food = json['item'];
     if (isMenu){
- menu = json['item'] != null ? Menu.fromJson(json['item'],fromCommand: true) : null;
+      menu = json['item'] != null ? Menu.fromJson(json['item'],fromCommand: true) : null;
  /*if (json['foods'] != null)
           foods = json['foods'] is List ? json['foods']?.map<Food>((data)
             {
@@ -974,13 +990,18 @@ class FoodType {
   String id;
   dynamic tag;
   dynamic name;
+  int priority;
 
   FoodType({this.tag,this.name,this.id});
 
-  FoodType.fromJson(Map<String, dynamic> json) {
-    tag = json['tag'];
-    name = json['name'];
-    id = json["_id"];
+  FoodType.fromJson(var json) {
+    if (json is String) id = json;
+    else {
+      tag = json['tag'];
+      name = (json['name'] is String) ? json['name'] : json['name']["fr"];
+      id = json["_id"];
+      priority = json["priority"];
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -1021,6 +1042,14 @@ class FoodAttribute {
     data['__v'] = this.iV;
     return data;
   }
+
+  @override
+  String toString() {
+    // TODO: implement toString
+    return this.sId;
+  }
+
+
 }
 
 //placemark

@@ -147,7 +147,9 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
           'type': 'Boisson',
           'restaurant': restaurant.id,
         },
-      );
+      ).catchError((onError){
+        print(onError);
+      });
 
       tabController = TabController(
         vsync: this,
@@ -156,7 +158,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
       );
 
       _segmentChilder = Map();
-
+      restaurant.foodTypes.sort((a,b) => a.priority.compareTo(b.priority));
       _restaurantContext.init( restaurant.foodTypes);
       _foodTypes = _restaurantContext.foodTypes;
 
@@ -202,10 +204,12 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
       });
 
       filters['restaurant'] = restaurant.id;
-      if (restaurant.foodTypes.length > 0) foodType = restaurant.foodTypes.first['name']['fr'];
+      // if (restaurant.foodTypes.length > 0) foodType = restaurant.foodTypes.first.name;
+
+      restaurant.foodTypes.sort((a,b) => a.priority.compareTo(b.priority));
 
       for (int i = 0; i < restaurant.foodTypes.length; i++) {
-        var element = restaurant.foodTypes[i]['name']["fr"];
+        var element = restaurant.foodTypes[i].name;
         foods[element] = await api.getFoods(
           Provider.of<SettingContext>(
             context,
@@ -230,7 +234,11 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
       menus = await api.getMenus(
         _lang,
         restaurant.id,
-      );
+      ).catchError((onError){
+        print(onError);
+      });
+
+      menus.sort((a,b)=>  a.priority.compareTo(b.priority));
 
       /*await Future.forEach(menus, (element){
         return Future.forEach(element.foods, (element) => element = api.getFood(id: element.id,lang: "fr"));
@@ -286,27 +294,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
         filters: filters,
         fromQrcode: widget.fromQrcode
       );
-     /* if (type.isEmpty){
-results = await api.search(
-        searchValue,
-        _lang,
-        type: "food",
-        range: 10000,
-        filters: filters
-      );
-      }else{
-results = await api.search(
-        searchValue,
-        _lang,
-        type: "food",
-        range: 10000,
-        filters: {
-          // 'restaurant': restaurant.id,
-          'type':type ?? ""
-        },
-      );
-      }*/
-      
+
       setState(() {
         searchResults = results;
       });
@@ -316,7 +304,7 @@ results = await api.search(
         msg: AppLocalizations.of(context).translate('connection_issue'),
       );
     } finally {
-      setState(() {
+      setState(() { 
         searchLoading = false;
       });
     }
@@ -430,7 +418,7 @@ results = await api.search(
           setState(() {
             activeTabIndex = index;
             if (restaurant.foodTypes.length > 0)
-              foodType = restaurant.foodTypes[index]['name']["fr"];
+              foodType = restaurant.foodTypes[index].name;
             else
               foodType = 'all';
           });
@@ -791,6 +779,34 @@ results = await api.search(
                                               "tel:${restaurant.phoneNumber}");
                                       },
                                     ),
+                                    SizedBox(height: 5,),
+                                    InkWell(
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: [
+                                          Icon(
+                                            FontAwesomeIcons.sms,
+                                            size: 15,
+                                            color: CRIMSON,
+                                          ),
+                                          SizedBox(
+                                            width: 5,
+                                          ),
+                                          TextTranslator(
+                                            "${restaurant.phoneNumber ?? "0"}",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold, fontSize: 18, color: Colors.blue,
+                                              decoration: TextDecoration.underline,),
+                                            
+                                          )
+                                        ],
+                                      ),
+                                      onTap: () async {
+                                        if (restaurant.phoneNumber != null)
+                                          await launch(
+                                              "sms:${restaurant.phoneNumber}");
+                                      },
+                                    ),
                                     SizedBox(height: 15,),
                                     Row(
                                       children: [
@@ -1114,7 +1130,7 @@ results = await api.search(
                                 Padding(
                                   padding: const EdgeInsets.only(left: 15),
                                   child: TextTranslator(
-                                    restaurant.foodTypes[index - 1]["name"]["fr"] ?? "",
+                                    restaurant.foodTypes[index - 1].name ?? "",
                                     style: TextStyle(
                                       fontSize: 18,
                                     ),
@@ -1124,15 +1140,15 @@ results = await api.search(
                                 SizedBox(
                                   height: 10,
                                 ),
-                                _renderFoodListOfType(restaurant.foodTypes[index]['name']["fr"]),
+                                _renderFoodListOfType(restaurant.foodTypes[index].name),
                               ],
                             );
 
                           }else{
                             if (index == 0){
-                              if (restaurant.foodTypes[index]['name']["fr"] != "Boisson")
+                              if (restaurant.foodTypes[index].name != "Boisson")
                                 return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Padding(
                                       padding: const EdgeInsets.only(left: 15),
@@ -1149,7 +1165,7 @@ results = await api.search(
                                     Padding(
                                       padding: const EdgeInsets.only(left: 15),
                                       child: TextTranslator(
-                                        restaurant.foodTypes[index]["name"][Provider.of<SettingContext>(context).languageCode] ?? "",
+                                        restaurant.foodTypes[index].name ?? "",
                                         style: TextStyle(
                                           fontSize: 18,
                                         ),
@@ -1159,18 +1175,18 @@ results = await api.search(
                                     SizedBox(
                                       height: 10,
                                     ),
-                                    _renderFoodListOfType(restaurant.foodTypes[index]['name']["fr"]),
+                                    _renderFoodListOfType(restaurant.foodTypes[index].name),
                                   ],
                                 );
                             }
-                            if (restaurant.foodTypes[index]['name']["fr"] != "Boisson")
+                            if (restaurant.foodTypes[index].name != "Boisson")
                             return Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.only(left: 15),
                                   child: TextTranslator(
-                                    restaurant.foodTypes[index]["name"][Provider.of<SettingContext>(context).languageCode] ?? "",
+                                    restaurant.foodTypes[index].name ?? "",
                                     style: TextStyle(
                                       fontSize: 18,
                                     ),
@@ -1180,7 +1196,7 @@ results = await api.search(
                                 SizedBox(
                                   height: 10,
                                 ),
-                                _renderFoodListOfType(restaurant.foodTypes[index]['name']["fr"]),
+                                _renderFoodListOfType(restaurant.foodTypes[index].name),
                               ],
                             );
                             return Container();
@@ -1191,7 +1207,7 @@ results = await api.search(
                           padding: const EdgeInsets.symmetric(
                             vertical: 10,
                           ),
-                          child: restaurant.foodTypes[index]['name']["fr"] != "Boisson" ? Container() : Divider(),
+                          child: restaurant.foodTypes[index].name != "Boisson" ? Container() : Divider(),
                         ),
                       ),
                     ),

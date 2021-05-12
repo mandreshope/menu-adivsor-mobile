@@ -15,7 +15,7 @@ Future main() async {
   await AppLocalizations.instance.load();
 
   await [
-    Permission.storage,Permission.location
+    Permission.storage,Permission.location,Permission.locationAlways,Permission.locationWhenInUse
   ].request();
 
   runApp(

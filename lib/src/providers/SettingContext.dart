@@ -64,12 +64,15 @@ class SettingContext extends ChangeNotifier {
         return 'us';
       case 'ja':
         return 'jp';
+      case 'zh-CN':
       case 'zh':
         return 'cn';
       case 'ko':
         return 'kr';
       case 'ar':
         return "ae";
+      case 'nl':
+        return 'de';
     }
     return code;
   }
@@ -94,11 +97,16 @@ class SettingContext extends ChangeNotifier {
   }
 
   Future setlanguageCodeRestaurant(String value) async {
-    
-    var result = await FirebaseLanguage.instance.modelManager().downloadModel(value);
-    _languageCodeRstaurant = value;
+    String lang = value;
+    if (value == 'zh-CN'){
+      lang = 'zh';
+    }else if (value == 'nl'){
+      lang = 'de';
+    }
+    var result = await FirebaseLanguage.instance.modelManager().downloadModel(lang);
+    _languageCodeRstaurant = lang;
     SharedPreferences.getInstance().then((sharedPrefs) {
-      sharedPrefs.setString('languageCodeRestaurant', value);
+      sharedPrefs.setString('languageCodeRestaurant', lang);
     });
     notifyListeners();
     return result;
@@ -146,7 +154,7 @@ class SettingContext extends ChangeNotifier {
   void _listenLocation() async {
     Geolocator.getPositionStream()
     .listen((Position position) {
-      print('Current position stream: ${position.latitude},${position.longitude}');
+      // print('Current position stream: ${position.latitude},${position.longitude}');
         this.position = position;
       });
     }

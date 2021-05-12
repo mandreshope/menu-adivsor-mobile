@@ -68,7 +68,6 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
-                      
                       children: [
                         TextTranslator("${option.title}",
                         style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,fontSize: 16),

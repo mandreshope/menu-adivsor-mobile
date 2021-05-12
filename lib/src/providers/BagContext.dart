@@ -90,15 +90,6 @@ class CartContext extends ChangeNotifier {
     });
   }*/
 
-  bool removeFoodItemMenu(String idFood, String idOption) {
-    _items.forEach((food) {
-      if (food.isFoodForMenu) {
-        food.optionSelected.forEach((f) {
-          if (f.sId == idOption) f.itemOptionSelected.clear();
-        });
-      }
-    });
-  }
 
   // Map<dynamic, int> get items => _items;
   List<dynamic> get items => _items;
@@ -403,9 +394,9 @@ class CartContext extends ChangeNotifier {
     return hasOption;
   }
 
-  Food getFoodForMenu(Menu menu) {
-    Food food = menu.foods.first;
-  }
+  // Food getFoodForMenu(Menu menu) {
+  //   Food food = menu.foods.first;
+  // }
 
   int getFoodCountByIdNew(dynamic food) {
     int count = _itemsTemp.where((element) => element.idNewFood == food.idNewFood).toList().length;

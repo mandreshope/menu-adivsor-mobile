@@ -258,7 +258,7 @@ print('$_apiURL/restaurants$query');
       if (response.statusCode == 200) {
         List<dynamic> list = jsonDecode(response.body);
         if (fromQrcode){
-          return list.map((data) => Food.fromJson(data)).where((element) => element.statut).toList();  
+          return list.map((data) => Food.fromJson(data)).where((element) => element.status).toList();  
         }
         return list.map((data) => Food.fromJson(data)).where((element) => element.status && element.statut).toList();
       }
@@ -304,8 +304,10 @@ print('$_apiURL/restaurants$query');
   Future<Restaurant> getRestaurant({
     String id,
     String lang,
-  }) =>
-      http.get(
+  }) 
+      {
+       print("'$_apiURL/restaurants/$id?lang=$lang'");  
+       return  http.get(
         '$_apiURL/restaurants/$id?lang=$lang',
         headers: {
           "authorization": "Bearer $_accessToken",
@@ -317,7 +319,7 @@ print('$_apiURL/restaurants$query');
         return Future.error(
           jsonDecode(response.body),
         );
-      });
+      });}
 
   Future<bool> addToFavoriteFood(Food food) async {
     await _refreshTokens();
@@ -487,7 +489,7 @@ print('$_apiURL/restaurants$query');
         (response) {
           print("$_apiURL/restaurants/$id/menus?lang=$lang");
           if (response.statusCode == 200) {
-            List<dynamic> datas = jsonDecode(response.body);
+            List datas = jsonDecode(response.body);
             return datas.map<Menu>((e) => Menu.fromJson(e,fromCommand: true)).toList();
           }
 
@@ -599,30 +601,48 @@ print('$_apiURL/restaurants$query');
     String codeappartement,
     int etage,
     bool payed = false,
-    bool paiementLivraison = false
+    bool paiementLivraison = false,
+    bool isDelivery = false
   }) async {
     await _refreshTokens();
     try{
-      var post = jsonEncode({
-        'relatedUser': relatedUser,
-        'commandType': commandType,
-        'totalPrice': totalPrice.toString(),
-        'restaurant': restaurant,
-        'items': items,
-        'shippingTime': shippingTime,
-        'shippingAddress': shippingAddress,
-        'shipAsSoonAsPossible': shipAsSoonAsPossible,
-        'customer': customer,
-        'menus':menu,
-        'comment':comment,
-        'priceless':priceless,
-        'optionLivraison':optionLivraison,
-        'appartement':appartement,
-        'codeAppartement':codeappartement,
-        'etage':etage,
-        'payed':payed,
-        'paiementLivraison':paiementLivraison
-      });
+      var post ;
+      if (isDelivery)
+        post = jsonEncode({
+          'relatedUser': relatedUser,
+          'commandType': commandType,
+          'totalPrice': totalPrice.toString(),
+          'restaurant': restaurant,
+          'items': items,
+          'shippingTime': shippingTime,
+          'shippingAddress': shippingAddress,
+          'shipAsSoonAsPossible': shipAsSoonAsPossible,
+          'customer': customer,
+          'menus':menu,
+          'comment':comment,
+          'priceless':priceless,
+          'optionLivraison':optionLivraison,
+          'appartement':appartement,
+          'codeAppartement':codeappartement,
+          'etage':etage,
+          'payed':payed,
+          'paiementLivraison':paiementLivraison
+        });
+        else
+         post = jsonEncode({
+          'relatedUser': relatedUser,
+          'commandType': commandType,
+          'totalPrice': totalPrice.toString(),
+          'restaurant': restaurant,
+          'items': items,
+          'shippingTime': shippingTime,
+          'shippingAddress': shippingAddress,
+          'shipAsSoonAsPossible': shipAsSoonAsPossible,
+          'customer': customer,
+          'menus':menu,
+          'comment':comment,
+          'priceless':priceless,
+        });
       print(post);
       return http
           .post(
@@ -633,17 +653,30 @@ print('$_apiURL/restaurants$query');
         },
         body: post,
       )
-          .then<Map>((response) {
+          .then<Map>((response) async {
         if (response.statusCode != 200)
           return Future.error(
             jsonDecode(response.body),
           );
 
         return jsonDecode(response.body);
+
       });
     } catch (error){
       print(error);
     }
+
+  }
+
+  Future getCommand(String idCommande) {
+
+    return http.get("$_apiURL/commands/$idCommande",
+    headers:{
+        'content-type': 'application/json',
+        "authorization": "Bearer $_accessToken",
+      }).then((response) => 
+      (response.statusCode != 200) ? Future.error(jsonDecode(response.body)) : jsonDecode(response.body) 
+      );
 
   }
 

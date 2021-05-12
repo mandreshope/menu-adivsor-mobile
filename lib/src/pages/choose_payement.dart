@@ -62,6 +62,7 @@ class ChoosePayement extends StatelessWidget {
 
             var command = await Api.instance.sendCommand(
               paiementLivraison: true,
+              isDelivery: true,
               optionLivraison: restaurant.optionLivraison,
                                             etage: restaurant.etage,
                                             appartement: restaurant.appartement,

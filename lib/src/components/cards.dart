@@ -102,12 +102,13 @@ class CategoryCard extends StatelessWidget {
                 ),
                 TextTranslator(
                   name,
+                  isAutoSizeText: true,
                   style: TextStyle(
                     color: DARK_BLUE,
                     fontFamily: 'Golden Ranger',
                     fontSize: 18,
                   ),
-                  maxLines: 2,
+                  maxLines: 1,
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(
@@ -1189,7 +1190,8 @@ class _RestaurantCardState extends State<RestaurantCard> {
                                   ),
                                   SizedBox(height: 5),
                                   TextTranslator(
-                                    widget.restaurant.category['name'] is String ? widget.restaurant.category['name'] : widget.restaurant.category['name']["fr"] ?? "",
+                                    // widget.restaurant.category['name'] is String ? widget.restaurant.category['name'] : widget.restaurant.category['name']["fr"] ?? "",
+                                    widget.restaurant.categories,
                                     style: TextStyle(
                                       fontSize: 16,
                                     ),
@@ -1394,6 +1396,9 @@ class _BagItemState extends State<BagItem> {
         SizedBox(
           width: 10,
         ),
+
+        f.isMenu ? Container() :
+
         f.imageURL != null
             ? /*Hero(
                           tag: widget.imageTag ?? widget.food.id,

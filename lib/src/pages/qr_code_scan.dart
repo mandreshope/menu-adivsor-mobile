@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/pages/restaurant.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
+import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
+import 'package:provider/provider.dart';
 import 'package:provider/provider.dart';
 // import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:qrcode/qrcode.dart';
@@ -23,17 +26,21 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
   bool flashOn = false;
   bool loading = false;
   CartContext _cartContext;
+  SettingContext _settingContext;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    _cartContext = Provider.of<CartContext>(context, listen: false);
+    _settingContext = Provider.of<SettingContext>(context, listen: false);
+    _cartContext.withPrice = true;
     _onQRViewCreated(controller);
   }
 
   @override
   Widget build(BuildContext context) {
-    _cartContext = Provider.of<CartContext>(context,listen: false);
+    
     return Scaffold(
       appBar: AppBar(
         title: TextTranslator("Scan code QR"),
@@ -111,14 +118,12 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
               ),
             ),
             Center(
-                  child: Container(
-                    width: MediaQuery.of(context).size.width / 1.2,
-                    height: MediaQuery.of(context).size.width / 1.2,
-                    decoration: BoxDecoration(
-                        color: Colors.blue.withAlpha(50),
-                        border: Border.all(color: Colors.blue, width: 1)),
-                  ),
-                ),
+              child: Container(
+                width: MediaQuery.of(context).size.width / 1.2,
+                height: MediaQuery.of(context).size.width / 1.2,
+                decoration: BoxDecoration(color: Colors.blue.withAlpha(50), border: Border.all(color: Colors.blue, width: 1)),
+              ),
+            ),
           ],
         ),
       ),
@@ -127,7 +132,7 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
 
   void _onQRViewCreated(QRCaptureController controller) {
     this.controller = controller;
-   /*bool withPrice = !"https://preprod-api.clicar.fr/restaurants/5fde0bc875e5035bf72a8efe/qrcode.png".contains("?option");
+    /*bool withPrice = !"https://preprod-api.clicar.fr/restaurants/5fde0bc875e5035bf72a8efe/qrcode.png".contains("?option");
     _cartContext.withPrice = withPrice;
     RouteUtil.goTo(
         context: context,
@@ -140,7 +145,7 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
       );*/
     controller.onCapture((String scanData) async {
       controller.pause();
-      if (!scanData.startsWith(RegExp(r'https://(www\.|)preprod-api.clicar.fr/restaurants/'))) {
+      if (!scanData.startsWith(RegExp(r'^(http|https)://(www\.|)menuadvisor.fr/restaurants/'))) {
         Fluttertoast.showToast(
           msg: AppLocalizations.of(context).translate('invalid_qr_code'),
         );
@@ -152,21 +157,35 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
         loading = true;
       });
       List<String> datas = scanData.split('/');
-      String restaurantId = datas[datas.length - 2];
-      
-      bool withPrice = !scanData.contains("?option");
+      String restaurantId = datas.last.split("?")[0];
+
+      bool withPrice = !scanData.contains("?option=priceless");
       _cartContext.withPrice = withPrice;
+
+      bool haveLangage = scanData.contains('language');
+      String language = "";
+
+      //change restaurant language      
+      if (haveLangage){
+        language = scanData.substring(scanData.length-2,scanData.length);
+        print("language = $language");
+        showDialogProgress(context);
+        
+        await _settingContext.setlanguageCodeRestaurant(language);
+        dismissDialogProgress(context);
+      }
+
       
-      RouteUtil.goTo(
-        context: context,
-        child: RestaurantPage(
-          restaurant: restaurantId,
-          withPrice: withPrice,
-          fromQrcode: true,
-        ),
-        routeName: restaurantRoute,
-        method: RoutingMethod.replaceLast,
-      );
+        RouteUtil.goTo(
+          context: context,
+          child: RestaurantPage(
+            restaurant: restaurantId,
+            withPrice: withPrice,
+            fromQrcode: true,
+          ),
+          routeName: restaurantRoute,
+          method: RoutingMethod.replaceLast,
+        );
     });
   }
 

@@ -425,7 +425,7 @@ class _SummaryState extends State<Summary> {
                     backgroundColor: CRIMSON,
                     onPressed: (){
                       showDialog<String>(context: context,
-                      child: MessageDialog(message: message,)).then((value) async {
+                      builder:(_) => MessageDialog(message: message,)).then((value) async {
                           print(value);
                           //widget.food.message = value;
                        
@@ -438,7 +438,7 @@ class _SummaryState extends State<Summary> {
                           target: widget.commande.restaurant.admin);
                           showDialog(
                             barrierDismissible: false,
-                            context: context,child: Center(
+                            context: context,builder:(_) => Center(
                             child: CircularProgressIndicator(
                                                 valueColor: AlwaysStoppedAnimation<Color>(
                                                   CRIMSON,

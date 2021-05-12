@@ -6,9 +6,11 @@ import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/map_polyline.dart';
 import 'package:menu_advisor/src/pages/restaurant.dart';
+import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/utils/map_utils.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
+import 'package:provider/provider.dart';
 
 class MapWindowMarker extends StatelessWidget {
   final Restaurant restaurant;
@@ -75,11 +77,28 @@ class MapWindowMarker extends StatelessWidget {
                   SizedBox(
                     width: 5,
                   ),
-                  TextTranslator(restaurant.category['name'] is String ?  this.restaurant.category['name'] : this.restaurant.category['name']["fr"] ?? "",),
+                  TextTranslator(restaurant.categories,),
                   SizedBox(
                     width: 5,
                   ),
-                  TextTranslator(this.restaurant.address),
+                  Container(
+                    width: MediaQuery.of(context).size.width - 150.0,
+                    child: TextTranslator(
+                      this.restaurant.address,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      ),
+                  ),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  TextTranslator(
+                    "Distance : ${Provider.of<SettingContext>(context).distanceBetweenString(restaurant.location.coordinates.last,restaurant.location.coordinates.first)}",
+                    style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold
+                    ),
+                  ),
                   SizedBox(
                     width: 5,
                   ),
@@ -246,7 +265,10 @@ class MapWindowMarker extends StatelessWidget {
                                                           ),
                       ),
                     ],
-                  )
+                  ),
+                  SizedBox(
+                    width: 15,
+                  ),
                 ],
               )
             

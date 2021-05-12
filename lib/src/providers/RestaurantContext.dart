@@ -21,12 +21,12 @@ class RestaurantContext with ChangeNotifier {
     });
     notifyListeners();
   }
-
+ 
   init(dynamic types){
     foodTypes.clear();
     for (int i=0; i< types.length; i++){
-      if (types[i]['tag'] != 'drink'){
-        foodTypes.add(FoodTypeItem(name: types[i]['name']['fr']));
+      if (types[i].tag != 'drink'){
+        foodTypes.add(FoodTypeItem(name: types[i].name));
         // _segmentChilder[i] = _segmentWidget(restaurant.foodTypes[i]['name']['fr']);
       }
     }

@@ -132,9 +132,9 @@ class _SearchPageState extends State<SearchPage> {
       });
     } catch (error) {
       print(error.toString());
-      Fluttertoast.showToast(
+      /*Fluttertoast.showToast(
         msg: AppLocalizations.of(context).translate('connection_issue'),
-      );
+      );*/
     } finally {
       setState(() {
         _loading = false;

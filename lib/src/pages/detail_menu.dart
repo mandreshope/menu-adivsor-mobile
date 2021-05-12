@@ -34,7 +34,7 @@ class _DetailMenuState extends State<DetailMenu> {
   // MenuContext _controller;
   CartContext _cartContext;
   // int count = 0;
-  Food menuFood;
+  Food _food;
 
   StreamController<bool> _streamController = StreamController();
   StreamSink<bool> get isTransparentSink => _streamController.sink;
@@ -78,7 +78,10 @@ class _DetailMenuState extends State<DetailMenu> {
     widget.menu.idNewFood = DateTime.now().millisecondsSinceEpoch.toString();
     _cartContext = Provider.of<CartContext>(context, listen: false);
     _cartContext.itemsTemp.clear();
-    widget.menu.foodsGrouped = widget.menu.foods ?? List();
+    
+    // sort food type by priority
+    widget.menu.foods.sort((a,b) => a.food.type.priority.compareTo(b.food.type.priority));
+    widget.menu.foodsGrouped = widget.menu.foods ?? [];
     widget.menu.count = _cartContext.getFoodCountByIdNew(widget.menu);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
 
@@ -270,7 +273,7 @@ class _DetailMenuState extends State<DetailMenu> {
                           child: Consumer<CartContext>(builder: (_, cartContext, __) {
                             widget.menu.count = _cartContext.getFoodCountByIdNew(widget.menu);
                             return Container(
-                              color: widget.menu.foodMenuSelecteds.isEmpty || !_cartContext.hasOptionSelectioned(menuFood) ? Colors.grey : CRIMSON,
+                              color: widget.menu.foodMenuSelecteds.isEmpty || !_cartContext.hasOptionSelectioned(_food) ? Colors.grey : CRIMSON,
                               width: double.infinity,
                               height: 45,
                               child:
@@ -294,7 +297,7 @@ class _DetailMenuState extends State<DetailMenu> {
                                       //   return;
                                       // }
                                       if ((widget.menu.count == 0) || (cartContext.hasSamePricingAsInBag(widget.menu) && cartContext.hasSameOriginAsInBag(widget.menu))) {
-                                        if (cartContext.hasOptionSelectioned(menuFood)) {
+                                        if (cartContext.hasOptionSelectioned(_food)) {
                                           _cartContext.addItem(widget.menu, 1, true);
                                           // setState(() {});
                                           RouteUtil.goBack(context: context);
@@ -467,15 +470,15 @@ class _DetailMenuState extends State<DetailMenu> {
                         ),
                       ),
                       Divider(),
-                      for (var food in entry.value) ...[
+                      for (var menuFood in entry.value) ...[
                         Consumer<CartContext>(builder: (context, menuContext, w) {
                           return InkWell(
                             onTap: () {
                               // if (_cartContext.contains(widget.menu)){
                               if (widget.menu.count == 0 || widget.menu.count == 1) {
-                                widget.menu.setFoodMenuSelected(entry.key, food);
-                                menuFood = food;
-                                widget.menu.select(_cartContext, entry.key, food, () => menuContext.refresh());
+                                widget.menu.setFoodMenuSelected(entry.key, menuFood.food);
+                                _food = menuFood.food;
+                                widget.menu.select(_cartContext, entry.key, menuFood.food, () => menuContext.refresh());
                                 if (widget.menu.count == 0) {
                                   widget.menu.count++;
                                   // _cartContext.addItem(widget.menu, 1, true);
@@ -500,8 +503,8 @@ class _DetailMenuState extends State<DetailMenu> {
                                             RouteUtil.goTo(
                                                 context: context,
                                                 child: PhotoViewPage(
-                                                  tag: 'tag:${food.imageURL}',
-                                                  img: food.imageURL,
+                                                  tag: 'tag:${menuFood.food.imageURL}',
+                                                  img: menuFood.food.imageURL,
                                                 ),
                                                 routeName: null);
                                           },
@@ -509,7 +512,7 @@ class _DetailMenuState extends State<DetailMenu> {
                                             borderRadius: BorderRadius.circular(0),
                                             child: FadeInImage.assetNetwork(
                                               placeholder: 'assets/images/loading.gif',
-                                              image: food.imageURL,
+                                              image: menuFood.food.imageURL,
                                               imageErrorBuilder: (_, o, s) {
                                                 return Container(
                                 width: 75,
@@ -529,35 +532,37 @@ class _DetailMenuState extends State<DetailMenu> {
                                         Align(
                                           alignment: Alignment.center,
                                           child: TextTranslator(
-                                            food.name,
+                                            menuFood.food.name,
                                             textAlign: TextAlign.center,
                                           ),
                                         ),
-                                        if (widget.menu.type == MenuType.fixed_price.value) ...[
-                                          Text(" ")
+                                        if (widget.menu.type == MenuType.fixed_price.value && _cartContext.withPrice) ...[
+                                          Spacer(),
+                                          menuFood.food.additionalPrice.amount == 0 ? Text("") : Text("+ ${(menuFood.food.additionalPrice.amount/100)} €", style: TextStyle(fontWeight: FontWeight.bold))
                                         ] else if (widget.menu.type == MenuType.priceless.value) ...[
                                           Text(" ")
                                         ] else ...[
                                           Spacer(),
-                                          food?.price?.amount == null ? Text("") : Text("${food.price.amount / 100} €", style: TextStyle(fontWeight: FontWeight.bold)),
+                                          if (_cartContext.withPrice)
+                                          menuFood.food?.price?.amount == null ? Text("") : Text("${menuFood.food.price.amount / 100} €", style: TextStyle(fontWeight: FontWeight.bold)),
                                         ],
                                         Spacer(),
                                         IconButton(
                                             icon: Icon(
-                                              widget.menu.selectedMenu[entry.key]?.first?.id != food.id ? Icons.check_box_outline_blank : Icons.check_box,
-                                              color: widget.menu.selectedMenu[entry.key]?.first?.id != food.id ? Colors.grey : CRIMSON,
+                                              widget.menu.selectedMenu[entry.key]?.first?.id != menuFood.food.id ? Icons.check_box_outline_blank : Icons.check_box,
+                                              color: widget.menu.selectedMenu[entry.key]?.first?.id != menuFood.food.id ? Colors.grey : CRIMSON,
                                             ),
                                             onPressed: () {
                                               print("food selected");
                                               /*                                          if (_cartContext.contains(widget.menu)){
                                                _cartContext.foodMenuSelected[entry.key] = food;
-                                               menuFood = food;
+                                               _food = food;
                                               }
 */
                                               if (widget.menu.count == 0 || widget.menu.count == 1) {
-                                                widget.menu.setFoodMenuSelected(entry.key, food);
-                                                menuFood = food;
-                                                widget.menu.select(_cartContext, entry.key, food, () => menuContext.refresh());
+                                                widget.menu.setFoodMenuSelected(entry.key, menuFood.food);
+                                                _food = menuFood.food;
+                                                widget.menu.select(_cartContext, entry.key, menuFood.food, () => menuContext.refresh());
                                                 if (widget.menu.count == 0) {
                                                   widget.menu.count++;
                                                   // _cartContext.addItem(widget.menu, 1, true);
@@ -569,8 +574,8 @@ class _DetailMenuState extends State<DetailMenu> {
                                             }),
                                       ],
                                     ),
-                                    if (widget.menu.selectedMenu[entry.key]?.first?.id == food.id) ...[
-                                      MenuItemFoodOption(food: food, menu: widget.menu, withPrice: _cartContext.withPrice, subMenu: entry.key)
+                                    if (widget.menu.selectedMenu[entry.key]?.first?.id == menuFood.food.id) ...[
+                                      MenuItemFoodOption(food: menuFood.food, menu: widget.menu, withPrice: _cartContext.withPrice, subMenu: entry.key)
                                       // Container()
                                     ] else
                                       Container()
@@ -628,7 +633,7 @@ class _DetailMenuState extends State<DetailMenu> {
             // }
 
           }
-          return widget.menu.foodMenuSelecteds.isEmpty || !_cartContext.hasOptionSelectioned(menuFood)
+          return widget.menu.foodMenuSelecteds.isEmpty || !_cartContext.hasOptionSelectioned(_food)
               ? Container()
               : ButtonItemCountWidget(
                   widget.menu,
@@ -658,7 +663,7 @@ class _DetailMenuState extends State<DetailMenu> {
                     cartContext.refresh();
                   },
                   itemCount: widget.menu.quantity,
-                  isContains: !(widget.menu.foodMenuSelecteds.isEmpty || !_cartContext.hasOptionSelectioned(menuFood)),
+                  isContains: !(widget.menu.foodMenuSelecteds.isEmpty || !_cartContext.hasOptionSelectioned(_food)),
                   isSmal: false,
                 );
         })

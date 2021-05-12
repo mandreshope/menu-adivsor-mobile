@@ -16,28 +16,28 @@ extension FormatDate on DateTime {
     final DateTime dateNow = DateTime.now();
     switch (dateNow.weekday) {
       case 1:
-        return "Lundi";
+        return "lundi";
         break;
       case 2:
-        return "Mardi";
+        return "mardi";
         break;
       case 3:
-        return "Mercredi";
+        return "mercredi";
         break;
       case 4:
-        return "Jeudi";
+        return "jeudi";
         break;
       case 5:
-        return "Vendredi";
+        return "vendredi";
         break;
       case 6:
-        return "Samedi";
+        return "samedi";
         break;
       case 7:
-        return "Dimanche";
+        return "dimanche";
         break;
       default:
-        return "Lundi";
+        return "lundi";
     }
   }
 

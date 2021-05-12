@@ -489,9 +489,13 @@ class _MapPageState extends State<MapPage> {
                                                     fontSize: 16
                                                   ),
                                                 ),
-                                                TextTranslator(
-                                                  e.content['address'],
-                                                  style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline,fontSize: 16),
+                                                Container(
+                                                  width: MediaQuery.of(context).size.width - 150.0,
+                                                  child: TextTranslator(
+                                                    e.content['address'],
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline,fontSize: 16),
+                                                  ),
                                                 ),
                                                 InkWell(
                                                   onTap: () async {

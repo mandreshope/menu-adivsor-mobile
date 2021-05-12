@@ -54,6 +54,7 @@ class AuthContext extends ChangeNotifier {
           .then<bool>((User user) async {
         final sharedPrefs = await SharedPreferences.getInstance();
         await sharedPrefs.setBool("remember_password", isPasswordRemember);
+        // currentUser = await _api.getMe();
         currentUser = user;
         if (isPasswordRemember) {
           await sharedPrefs.setString('email', email);

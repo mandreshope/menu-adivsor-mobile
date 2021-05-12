@@ -39,6 +39,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
   bool isPaying = false;
   bool isDeletingPaymentCard = false;
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,8 +62,77 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          for (PaymentCard creditCard in user.paymentCards)
-                            Material(
+                           for (var c in user.paymentCards.toList())
+                          _renderPayement(c,cartContext,authContext,commandContext)
+                          ],
+                      ),
+                    )
+                  : Container(
+                      width: double.infinity,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.warning,
+                            size: 80,
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 40.0,
+                            ),
+                            child: TextTranslator(
+                              AppLocalizations.of(context).translate('no_payment_card').replaceFirst('\$', '+'),
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 22,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+            },
+          ),
+          if (isPaying || isDeletingPaymentCard)
+            Container(
+              color: Colors.black45,
+              child: Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
+                ),
+              ),
+            )
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          RouteUtil.goTo(
+            context: context,
+            child: PaymentCardDetailsPage(
+              isPaymentStep: Provider.of<AuthContext>(
+                    context,
+                    listen: false,
+                  ).currentUser ==
+                  null,
+            ),
+            routeName: addPaymentCardRoute,
+          );
+        },
+        child: Icon(Icons.add),
+      ),
+    );
+  }
+
+  Widget _renderPayement(c,cartContext,authContext,commandContext) {
+    //  for (var c in user.paymentCards){
+       PaymentCard creditCard = PaymentCard.fromJson(c);
+                          return  Material(
                               color: Colors.transparent,
                               child: InkWell(
                                 onLongPress: () async {
@@ -108,6 +178,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                           var command = await Api.instance.sendCommand(
                                             optionLivraison: widget.restaurant.optionLivraison,
                                             etage: widget.restaurant.etage,
+                                            isDelivery: true,
                                             appartement: widget.restaurant.appartement,
                                             codeappartement: widget.restaurant.codeappartement,
                                             payed: true,
@@ -219,69 +290,8 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                   expiryDate: '${creditCard.expiryMonth}/${creditCard.expiryYear}',
                                 ),
                               ),
-                            ),
-                        ],
-                      ),
-                    )
-                  : Container(
-                      width: double.infinity,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.warning,
-                            size: 80,
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 40.0,
-                            ),
-                            child: TextTranslator(
-                              AppLocalizations.of(context).translate('no_payment_card').replaceFirst('\$', '+'),
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 22,
-                                letterSpacing: 1.2,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-            },
-          ),
-          if (isPaying || isDeletingPaymentCard)
-            Container(
-              color: Colors.black45,
-              child: Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
-                ),
-              ),
-            )
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          RouteUtil.goTo(
-            context: context,
-            child: PaymentCardDetailsPage(
-              isPaymentStep: Provider.of<AuthContext>(
-                    context,
-                    listen: false,
-                  ).currentUser ==
-                  null,
-            ),
-            routeName: addPaymentCardRoute,
-          );
-        },
-        child: Icon(Icons.add),
-      ),
-    );
+                            );
+                      // }
   }
+
 }
