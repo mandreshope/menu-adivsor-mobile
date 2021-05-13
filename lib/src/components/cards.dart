@@ -997,6 +997,15 @@ class _DrinkCardState extends State<DrinkCard> {
                         ],
                       ),
                     ),
+                    Consumer<CartContext>(builder: (_, cart, w) {
+                        return cart.contains(widget.food)
+                            ? Container(
+                                padding: EdgeInsets.all(8),
+                                decoration: BoxDecoration(shape: BoxShape.circle, color: CRIMSON),
+                                child: Text("${cart.getFoodCount(widget.food)}x", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                              )
+                            : Container();
+                      }),
                   ],
                 ),
               ),
@@ -1089,7 +1098,7 @@ class MenuCard extends StatelessWidget {
                     children: [
                       // SizedBox(height: 5,),
                       TextTranslator(
-                        !Provider.of<CartContext>(context).withPrice || menu.type == MenuType.priceless.value || menu.type == MenuType.per_food.value ? " " : "${menu.price.amount / 100 ?? ""}€",
+                        !Provider.of<CartContext>(context).withPrice || menu.type == MenuType.priceless.value || menu.type == MenuType.per_food.value || menu.price?.amount == null ?  " " : "${menu.price.amount / 100 ?? ""}€",
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: CRIMSON),
                       ),
                       Consumer<CartContext>(builder: (_, cart, w) {

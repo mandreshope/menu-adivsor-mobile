@@ -53,7 +53,7 @@ class CartContext extends ChangeNotifier {
 
   bool hasSameOriginAsInBag(dynamic item) => currentOrigin == null || ((item.restaurant is String) ? item.restaurant : item.restaurant['_id']) == currentOrigin;
 
-  bool hasSamePricingAsInBag(dynamic item) => (pricelessItems && (item.price == null || item.price.amount == null)) || (!pricelessItems && item.price != null && item.price.amount != null);
+  bool hasSamePricingAsInBag(dynamic item) => !withPrice ? true : (pricelessItems && (item.price == null || item.price.amount == null)) || (!pricelessItems && item.price != null && item.price.amount != null);
 
   bool addItem(dynamic item, number, bool isAdd) {
     if (itemCount == 0 || (hasSamePricingAsInBag(item) && hasSameOriginAsInBag(item))) {
@@ -354,6 +354,7 @@ class CartContext extends ChangeNotifier {
     _options.clear();
     comment = "";
     _foodMenuSelected.clear();
+    withPrice = true;
     notifyListeners();
   }
 

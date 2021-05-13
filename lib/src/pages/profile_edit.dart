@@ -6,6 +6,7 @@ import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
+import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textFormFieldTranslator.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
@@ -215,6 +216,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
         Fluttertoast.showToast(
           msg: AppLocalizations.of(context).translate('profile_updated'),
         );
+        RouteUtil.goBack(context: context);
       } catch (error) {
         setState(() {
           inProgress = false;

@@ -34,7 +34,6 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
     super.initState();
     _cartContext = Provider.of<CartContext>(context, listen: false);
     _settingContext = Provider.of<SettingContext>(context, listen: false);
-    _cartContext.withPrice = true;
     _onQRViewCreated(controller);
   }
 

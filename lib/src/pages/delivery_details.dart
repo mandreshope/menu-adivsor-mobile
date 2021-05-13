@@ -559,7 +559,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                         sendingCommand = true;
                       });
                       String code = await Api.instance.sendCode(relatedUser: authContext.currentUser?.id ?? null, customer: customer, commandType: commandContext.commandType);
-
+                      // String code = "1234";
                       RouteUtil.goTo(
                         context: context,
                         child: ConfirmSms(

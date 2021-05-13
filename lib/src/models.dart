@@ -382,10 +382,14 @@ class MenuFood {
   Price addtionalPrice;
 
   MenuFood({this.food,this.addtionalPrice});
-  factory MenuFood.fromJSON(var json) => MenuFood(
+  factory MenuFood.fromJSON(var json) {
+    MenuFood mFood = MenuFood(
     food: (json['food'] is String) ? json['food'] : Food.fromJson(json['food']),
     addtionalPrice: Price.fromJson(json['additionalPrice'])
   );
+    mFood.food.isFoodForMenu = true;
+    return mFood;
+  }
 
   factory MenuFood.copy(MenuFood menuFood) {
     MenuFood mFood =
@@ -394,6 +398,7 @@ class MenuFood {
           addtionalPrice: Price.Copy(menuFood.addtionalPrice)
         );
     mFood.food.additionalPrice = mFood.addtionalPrice;
+    mFood.food.isFoodForMenu = true;
     return mFood;
 
   }
