@@ -296,17 +296,8 @@ class _DetailMenuState extends State<DetailMenu> {
                                       //   );
                                       //   return;
                                       // }
-                                      if ((widget.menu.count == 0) || (cartContext.hasSamePricingAsInBag(widget.menu) && cartContext.hasSameOriginAsInBag(widget.menu))) {
-                                        if (cartContext.hasOptionSelectioned(_food)) {
-                                          _cartContext.addItem(widget.menu, 1, true);
-                                          // setState(() {});
-                                          RouteUtil.goBack(context: context);
-                                        } else
-                                          Fluttertoast.showToast(
-                                            msg: 'Ajouter une option',
-                                          );
-                                        //}
-                                      } else if (!cartContext.hasSamePricingAsInBag(widget.menu)) {
+
+                                      if (!cartContext.hasSamePricingAsInBag(widget.menu)) {
                                         showDialog(
                                           context: context,
                                           builder: (_) => ConfirmationDialog(
@@ -344,7 +335,17 @@ class _DetailMenuState extends State<DetailMenu> {
                                         // Fluttertoast.showToast(
                                         //   msg: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
                                         // );
-                                      }
+                                      }else {
+                                        if (cartContext.hasOptionSelectioned(_food)) {
+                                          _cartContext.addItem(widget.menu, 1, true);
+                                          // setState(() {});
+                                          RouteUtil.goBack(context: context);
+                                        } else
+                                          Fluttertoast.showToast(
+                                            msg: 'Ajouter une option',
+                                          );
+                                        //}
+                                      } 
                                     },
                                     child: TextTranslator(
                                       AppLocalizations.of(context).translate("add_to_cart") +

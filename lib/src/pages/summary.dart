@@ -60,7 +60,6 @@ class _SummaryState extends State<Summary> {
          isLoading = false;
        });
     }
-
     return WillPopScope(
       onWillPop: () async {
         if (widget.fromHistory) {
@@ -127,7 +126,7 @@ class _SummaryState extends State<Summary> {
                                               );
                       },
                       child: TextTranslator(
-                        widget.commande.shippingAddress ?? widget.commande.relatedUser != null ? widget.commande.relatedUser["address"] : widget.commande.customer['name'],
+                        widget.commande.shippingAddress ?? "" ,
                       style: TextStyle(
                         decoration: TextDecoration.underline,
                         fontSize: 16,

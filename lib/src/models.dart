@@ -359,8 +359,8 @@ int get totalPrice{
         optionSelected: json['options'] != null ? (json['options'] as List).map((e) => Option.fromJson(e)).where((element) => element.maxOptions > 0).toList() : [],
       );
       _menu.isMenu = true;
-      if (!fromCommand)
-        _menu._setPrice();
+      // if (!fromCommand)
+        // _menu._setPrice();
       
       /*if (_menu.foods.isNotEmpty){
         Food food = _menu.foods.first.food;
