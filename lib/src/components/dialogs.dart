@@ -451,13 +451,21 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                       'food',
                     ];
 
-                  
+    
     distanceAround = widget.range;
     type = widget.type;
     filters.addAll(widget.filters);
     _dataContext = Provider.of<DataContext>(context,listen: false);
     _foodCategories = _dataContext.foodCategories;
     _foodAttribut = _dataContext.foodAttributes;
+    _foodAttribut.forEach((element) {
+      if (filters.containsKey('attributes')){
+        List<String> f = filters['attributes'];
+        if (f.contains(element.sId)){
+          _foodAttributSelected.add(element);
+        }
+      }
+    });
 
   }
 

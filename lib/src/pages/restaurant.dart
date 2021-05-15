@@ -285,20 +285,21 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
     
     searchFood = searchResult.where((element) 
      {
-       bool result = false;
+       bool filter = false;
+       bool isType = false;
        if (type.isEmpty && attributes.isEmpty)
         return true && element.name.toLowerCase().contains(searchValue.toLowerCase()) ;
 
       element.attributes.forEach((att) {
-        if (attributes.contains(att.sId)) result = true;
+        if (attributes.contains(att.sId)) filter = true;
        });
       // if (element.type category != null)
-        if (type.toLowerCase() ==  element.type.name.toLowerCase()) 
-          result = true;
+        if (type.toLowerCase() ==  element.type.name.toLowerCase() || type.isEmpty) 
+          isType = true;
         else 
-          result = false;
+          isType = false;
 
-      return result && element.name.toLowerCase().contains(searchValue);
+      return filter && isType && element.name.toLowerCase().contains(searchValue);
      }
     ).toList();
     setState(() {
