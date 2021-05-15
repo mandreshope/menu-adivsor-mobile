@@ -460,7 +460,7 @@ class _HomePageState extends State<HomePage> {
                                 "coordinates": currentLocation?.coordinates ?? [0, 0]
                               },
                               filters: {
-                                "category": category.id,
+                                "category": [category.id],
                                 // "city":this.city ?? ""
                                 // 'nearest': 'nearest'
                               },

@@ -444,6 +444,9 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
   @override
   void initState() {
     super.initState();
+    
+    distanceAround = widget.range;
+    if (!widget.isDiscover){
     this.shedule = widget.shedule ?? "Tous";
     searchType = [
                       'all',
@@ -452,12 +455,14 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                     ];
 
     
-    distanceAround = widget.range;
+
+    
     type = widget.type;
     filters.addAll(widget.filters);
     _dataContext = Provider.of<DataContext>(context,listen: false);
     _foodCategories = _dataContext.foodCategories;
     _foodAttribut = _dataContext.foodAttributes;
+
     _foodAttribut.forEach((element) {
       if (filters.containsKey('attributes')){
         List<String> f = filters['attributes'];
@@ -467,6 +472,15 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
       }
     });
 
+_foodCategories.forEach((element) {
+      if (filters.containsKey('category')){
+        List<String> f = filters['category'];
+        if (f.contains(element.id)){
+          _foodCategoriesSelected.add(element);
+        }
+      }
+    });
+}
   }
 
   @override
@@ -571,6 +585,20 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                                 onTap: () {
                                   setState(() {
                                     type = e;
+                                    if (type == 'all'){
+                                      _foodAttributSelected.clear();
+                                      filters.remove('attributes');
+
+                                      _foodCategoriesSelected.clear();
+                                      filters.remove('category');
+                                    
+                                    }else if (type == 'food'){
+                                      _foodCategoriesSelected.clear();
+                                      filters.remove('category');
+                                    }else{
+                                      _foodAttributSelected.clear();
+                                      filters.remove('attributes');
+                                    }
                                   });
                                 },
                                 child: Container(
@@ -592,7 +620,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
               
               ]
             ],
-            if(type != 'food')
+            if(type == 'restaurant' || widget.fromMap || widget.inRestaurant)
                 TextTranslator(
                   widget.inRestaurant ? 'Types' : AppLocalizations.of(context).translate('categories'),
                   style: TextStyle(
@@ -600,11 +628,11 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                if(type != 'food')
+                if(type == 'restaurant' || widget.fromMap || widget.inRestaurant)
                 SizedBox(
                   height: 10,
                 ),
-                if(type != 'food')
+                if(type == 'restaurant' || widget.fromMap || widget.inRestaurant)
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   physics: BouncingScrollPhysics(),
@@ -674,7 +702,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                           )
                           .toList(),
                       ]else...[
-                        if(type != 'food')
+                    if(type != 'food')
                       Theme(
                         data: ThemeData(
                           brightness: !filters.containsKey('category') ? Brightness.dark : Brightness.light,
@@ -754,7 +782,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                 SizedBox(
                   height: 15,
                 ),
-                if(!widget.fromMap)
+                if(!widget.fromMap && type != 'all' && type != 'restaurant')
                 TextTranslator(
                   AppLocalizations.of(context).translate('attributes'),
                   style: TextStyle(
@@ -762,7 +790,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                if(!widget.fromMap)
+                if(!widget.fromMap && type != 'all' && type != 'restaurant')
                SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   physics: BouncingScrollPhysics(),

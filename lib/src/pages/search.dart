@@ -84,7 +84,7 @@ class _SearchPageState extends State<SearchPage> {
           context,
           listen: false,
         ).languageCode,
-        type: type,
+        type: filters.containsKey("category") && !filters.containsKey("attributes") ? type = 'restaurant' : type,
         filters: filters,
         range: range,
         location: widget.location
