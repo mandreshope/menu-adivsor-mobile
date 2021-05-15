@@ -126,7 +126,8 @@ class _SummaryState extends State<Summary> {
                                                 routeName: restaurantRoute,
                                               );
                       },
-                      child: TextTranslator(widget.commande.shippingAddress ?? widget.commande.relatedUser["address"],
+                      child: TextTranslator(
+                        widget.commande.shippingAddress ?? widget.commande.relatedUser != null ? widget.commande.relatedUser["address"] : widget.commande.customer['name'],
                       style: TextStyle(
                         decoration: TextDecoration.underline,
                         fontSize: 16,
@@ -139,7 +140,8 @@ class _SummaryState extends State<Summary> {
                       onTap: () async {
                         await launch("tel:${widget.commande.restaurant.phoneNumber}");
                       },
-                      child: TextTranslator(widget.commande.relatedUser["phoneNumber"],
+                      child: TextTranslator(
+                        widget.commande.relatedUser != null ? widget.commande.relatedUser["phoneNumber"] : widget.commande.customer['phoneNumber'],
                       style: TextStyle(
                         decoration: TextDecoration.underline,
                         fontSize: 16,
