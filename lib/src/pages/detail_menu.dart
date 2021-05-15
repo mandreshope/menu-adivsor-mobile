@@ -74,12 +74,12 @@ class _DetailMenuState extends State<DetailMenu> {
   }
 
   _init() {
-          _scrollController = ScrollController();
+    _scrollController = ScrollController();
     widget.menu.idNewFood = DateTime.now().millisecondsSinceEpoch.toString();
     _cartContext = Provider.of<CartContext>(context, listen: false);
     _cartContext.itemsTemp.clear();
     
-    // sort food type by priority
+    // sort menu type by priority
     widget.menu.foods.sort((a,b) => a.food.type.priority.compareTo(b.food.type.priority));
     widget.menu.foodsGrouped = widget.menu.foods ?? [];
     widget.menu.count = _cartContext.getFoodCountByIdNew(widget.menu);
@@ -206,7 +206,7 @@ class _DetailMenuState extends State<DetailMenu> {
                                     : Consumer<CartContext>(
                                       builder: (context, snapshot,_) {
                                         return Text(
-                                            widget.menu.type == MenuType.per_food.value ? '${widget.menu.totalPrice / 100} €' : '${widget.menu.price.amount / 100} €',
+                                            widget.menu.type == MenuType.per_food.value || widget.menu.price?.amount == null ? '${widget.menu.totalPrice / 100} €' : '${widget.menu.price.amount / 100} €',
                                             style: TextStyle(
                                               fontSize: 20,
                                               color: Colors.black,

@@ -213,9 +213,13 @@ class _MapPageState extends State<MapPage> {
         _nearestRestaurants = res.where((element) {
           Restaurant restaurant = Restaurant.fromJson(element.content);
           if (isopen == "Tous") {
-            return true;
-          }else
-            return (restaurant.isOpen == (isopen == "Ouvert" ? true : false)) && restaurant.status;
+            return restaurant.status && restaurant.accessible;
+          }else if (isopen == "ouvert"){
+            return restaurant.isOpen && restaurant.status && restaurant.accessible;
+          }else{
+            return !restaurant.isOpen && restaurant.status && restaurant.accessible;
+          }
+            // return (restaurant.isOpen == (isopen == "Ouvert" ? true : false)) && restaurant.status;
         }).toList();
       } catch (error) {} finally {
         if (mounted)

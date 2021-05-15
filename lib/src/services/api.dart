@@ -306,7 +306,7 @@ print('$_apiURL/restaurants$query');
     String lang,
   }) 
       {
-       print("'$_apiURL/restaurants/$id?lang=$lang'");  
+       print("'$_apiURL/restaurants/$id?lang=$lang'");
        return  http.get(
         '$_apiURL/restaurants/$id?lang=$lang',
         headers: {
@@ -484,13 +484,28 @@ print('$_apiURL/restaurants$query');
     );
   }
 
-  Future<List<Menu>> getMenus(String lang, String id) => http.get('$_apiURL/restaurants/$id/menus?lang=$lang').then<List<Menu>>(
+  Future<List<Menu>> getMenus(String lang, String id,{bool fromCommand = true}) => http.get('$_apiURL/restaurants/$id/menus?lang=$lang').then<List<Menu>>(
   // Future<List<Menu>> getMenus(String lang, String id) => http.get('$_apiURL/restaurants/$id/menus').then<List<Menu>>(
         (response) {
           print("$_apiURL/restaurants/$id/menus?lang=$lang");
           if (response.statusCode == 200) {
             List datas = jsonDecode(response.body);
-            return datas.map<Menu>((e) => Menu.fromJson(e,fromCommand: true)).toList();
+            return datas.map<Menu>((e) => Menu.fromJson(e,fromCommand: fromCommand)).toList();
+          }
+
+          return Future.error(
+            jsonDecode(response.body),
+          );
+        },
+      );
+
+  Future<Menu> getMenu(String id) => http.get('$_apiURL/menus/$id').then<Menu>(
+  // Future<List<Menu>> getMenus(String lang, String id) => http.get('$_apiURL/restaurants/$id/menus').then<List<Menu>>(
+        (response) {
+          print("$_apiURL/menus/$id");
+          if (response.statusCode == 200) {
+            var menu = jsonDecode(response.body);
+            return Menu.fromJson(menu);
           }
 
           return Future.error(

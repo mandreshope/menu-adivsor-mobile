@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/types.dart';
@@ -96,7 +98,7 @@ class Food {
         name: json['name'] is Map<String, dynamic> ? json['name']["fr"] : json['name'],
         imageURL: (json['imageURL'] as String).contains("localhost:8080") ? "" : json['imageURL'],
         category: json.containsKey('category') && json['category'] != null && json['category'] is Map<String, dynamic> ? FoodCategory.fromJson(json['category']) : null,
-        restaurant: json['restaurant'],
+        restaurant: json['restaurant_object'] !=null ? json['restaurant_object'] : json['restaurant'],
         price: json.containsKey('price') ? Price.fromJson(json['price']) : null,
         type: json['type'] == null ? null : json['type'] is  Map<String, dynamic> ?  FoodType.fromJson(json['type']) : json['type'] as String,
         attributes: fromCommande ? List() : (json['attributes'] as List).map((e) => (e is String) ? FoodAttribute() : FoodAttribute.fromJson(e)).toList(),
@@ -307,7 +309,7 @@ int get totalPrice{
   });
 
   if (type == MenuType.fixed_price.value){
-    price += (this.price.amount ?? 0) ;
+    price += (this.price?.amount ?? 0) ;
   }
 
   price = price * quantity;
@@ -352,6 +354,7 @@ int get totalPrice{
         restaurant: json['restaurant'] is String ? json['restaurant'] : Restaurant.fromJson(json["restaurant"]),
         type: json['type'], 
         priority: json['priority'],
+        price: Price.fromJson(json['price']),
         // status :json["status"] ?? true,
         optionSelected: json['options'] != null ? (json['options'] as List).map((e) => Option.fromJson(e)).where((element) => element.maxOptions > 0).toList() : [],
       );
@@ -359,11 +362,11 @@ int get totalPrice{
       if (!fromCommand)
         _menu._setPrice();
       
-      // if (_menu.foods.isNotEmpty){
-      //   Food food = _menu.foods.first;
-      //   _menu.statut = food.statut;
-      //   _menu.status = food.status;
-      // }
+      /*if (_menu.foods.isNotEmpty){
+        Food food = _menu.foods.first.food;
+        _menu.statut = food.statut;
+        _menu.status = food.status;
+      }*/
       return _menu;
     }
 
@@ -387,7 +390,12 @@ class MenuFood {
     food: (json['food'] is String) ? json['food'] : Food.fromJson(json['food']),
     addtionalPrice: Price.fromJson(json['additionalPrice'])
   );
+  if (mFood.food is String){
+
+  }else{
     mFood.food.isFoodForMenu = true;
+  }
+    
     return mFood;
   }
 
@@ -425,7 +433,7 @@ class Restaurant {
   final bool surPlace;
   final bool aEmporter;
   final String url;
-  final List<dynamic> category;
+  final dynamic category;
   final int priority;
   final bool accessible;
 
@@ -487,7 +495,7 @@ class Restaurant {
         aEmporter:json['aEmporter'] ?? true,
         surPlace:json['surPlace'] ?? true,
         url: json['url'] != null ? json['url'] as String : "Menu advisor",
-       // category: (json['category'] as List).map((e) => e).toList(),
+        category: json['category'],
         priority: json['priority'],
         openingTimes: (json['openingTimes'] != null) ? (json['openingTimes'] as List).map<OpeningTimes>((e) => OpeningTimes.fromJson(e)).toList() : List() 
       );
@@ -689,7 +697,7 @@ class Restaurant {
   String get categories {
     String cat = "";
     this.category?.forEach((element) {
-      cat += " - ${element is String ? element : element['name']}";
+      cat += " - ${element['name'] is String ? element['name'] : element['name']['fr'] }";
     });
     return cat;
   }

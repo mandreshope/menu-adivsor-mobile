@@ -1606,94 +1606,20 @@ class _BagItemState extends State<BagItem> {
                           width: 25,
                         ),*/
                         // SizedBox(width: 8),
-                        if (itemsOption.price == 0 || !widget.withPrice || (menu != null && menu?.type == MenuType.priceless.value))
+                        if (itemsOption.price.amount == 0 || !widget.withPrice || (menu != null && menu?.type == MenuType.priceless.value))
                           Text("")
                         else
-                          itemsOption.price.amount == null ? Text("") : TextTranslator('${itemsOption.price.amount / 100} €', style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
-                        // Spacer(),
-                        // item.price?.amount == null ? Text("_") : Text("${item.price.amount / 100} €", style: TextStyle(fontSize: 16)),
-                      ],
+                          itemsOption.price?.amount == null ? Text("") : TextTranslator('${itemsOption.price.amount / 100} €', style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
+                        ],
                     ),
                   ],
-                  // Divider(),
                 ]
               ],
             ),
           ),
-          // Divider()
-          // ]
         ],
       ),
     );
-    // for (int a=0;a<o.length;a++){
-    /*
-      return Container(
-        child: Column(
-          children: [
-
-            for (int i = 0; i < options.length;i++) ...[
-
-              Container(
-                color: (((i)%o.length-2))%o.length == 0 ? CRIMSON : Colors.green,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    SizedBox(width: 150),
-                    TextTranslator('${options[i].title}',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold)),
-                    SizedBox(width: 5),
-                    // TextTranslator('(x${option.items.length})', style: TextStyle(fontSize: 16)),
-                    /*Image.network(
-                            item.imageURL,
-                            width: 25,
-                          ),*/
-                    // SizedBox(width: 8),
-
-                    // Spacer(),
-                    // item.price?.amount == null ? Text("_") : Text("${item.price.amount / 100} €", style: TextStyle(fontSize: 16)),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 5,
-              ),
-              for (ItemsOption itemsOption
-              in options[i].itemOptionSelected) ...[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    SizedBox(width: 150),
-                    TextTranslator('${itemsOption.name}',
-                        style: TextStyle(fontSize: 16)),
-                    Spacer(),
-                    /*Image.network(
-                          item.imageURL,
-                          width: 25,
-                        ),*/
-                    // SizedBox(width: 8),
-                    if (itemsOption.price == 0 || !widget.withPrice)
-                      Text("")
-                    else
-                      itemsOption.price.amount == null
-                          ? Text("")
-                          : TextTranslator(
-                          '${itemsOption.price.amount / 100} €',
-                          style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.normal)),
-                    // Spacer(),
-                    // item.price?.amount == null ? Text("_") : Text("${item.price.amount / 100} €", style: TextStyle(fontSize: 16)),
-                  ],
-                ),
-              ],
-              Divider(),
-            ]
-          ],
-        ),
-      );
-*/
-    // }
   }
 }
 
@@ -1807,8 +1733,9 @@ class BlogCard extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  height: 150,
+                  height: 160,
                   width: double.infinity,
+                  padding: EdgeInsets.only(bottom: 5,top: 5),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5),
                   ),

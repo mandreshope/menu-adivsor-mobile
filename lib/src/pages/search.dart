@@ -94,13 +94,13 @@ class _SearchPageState extends State<SearchPage> {
           if (search.type.toString() == "SearchResultType.food"){
             Food f = Food.fromJson(search.content);
             f.isPopular = true;
-            return f.status && f.statut;
+            return f.restaurant['referencement'] && f.restaurant['status'];
           }else if(search.type.toString() == "SearchResultType.restaurant"){
               Restaurant f = Restaurant.fromJson(search.content);
-            return f.status;
+            return f.status && f.accessible;
           }else if(search.type.toString() == "SearchResultType.menu"){
               Menu f = Menu.fromJson(search.content);
-            return f.status && f.statut;
+            return f.restaurant.status && f.restaurant.accessible;
           }
           return true;
         }).toList();

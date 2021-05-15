@@ -62,7 +62,9 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
   int activeTabIndex = 0;
 
   String searchValue = '';
-  List<SearchResult> searchResults = [];
+  List<SearchResult> searchResults = []; // fafana rehefa mandeha tsara
+
+  List<Food> searchResult = [];
   Api api = Api.instance;
   Timer timer;
 
@@ -96,6 +98,8 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
 
   RestaurantContext _restaurantContext;
   AutoScrollController _autoScrollController;
+
+  List<Food> searchFood = [];
 
   @override
   void initState() {
@@ -184,18 +188,6 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
 
         }
 
-        // tabController.animateTo(itemPositionsListener.itemPositions.value.first.index);
-
-        //print("_scrollController.offset ${_scrollController.offset}");
-        /*if (_scrollController.offset >= 215) {
-          setState(() {
-            _canScrollListRestaurant = true;
-          });
-        } else {
-          // setState(() {
-          _canScrollListRestaurant = false;
-          // });
-        }*/
       });
 
       _scrollController.addListener(() {
@@ -221,6 +213,8 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
             'type': element,
           },
         );
+        // searchResult.addAll(foods[element].where((element) => element.type.tag != "drink").toList());
+        searchResult.addAll(foods[element]);
       }
       foods.forEach((key, value) {
         value.forEach((element) {
@@ -234,6 +228,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
       menus = await api.getMenus(
         _lang,
         restaurant.id,
+        fromCommand: false
       ).catchError((onError){
         print(onError);
       });
@@ -259,29 +254,57 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
 
   void _onChanged(String value) {
     setState(() {
-      searchResults = List();
+      // searchResults = List();
       searchLoading = true;
       searchValue = value;
     });
 
-    if (timer?.isActive ?? false) {
-      timer.cancel();
-    }
+    _initSearch();
 
-    timer = Timer(
-      Duration(seconds: 1),
-      _initSearch,
-    );
+    // if (timer?.isActive ?? false) {
+    //   timer.cancel();
+    // }
+
+    // timer = Timer(
+    //   Duration(seconds: 1),
+    //   _initSearch,
+    // );
   }
 
   Future _initSearch() async {
+    
     if (searchValue == '') {
-      timer?.cancel();
+      // timer?.cancel();
       return;
     }
 
-    if (!mounted) return;
+    // if (!mounted) return;
+    
+    String type = filters.containsKey('type') ? filters['type'] : "";
+    List<String> attributes = filters.containsKey('attributes') ? filters['attributes'] : [];
+    
+    searchFood = searchResult.where((element) 
+     {
+       bool result = false;
+       if (type.isEmpty && attributes.isEmpty)
+        return true && element.name.toLowerCase().contains(searchValue.toLowerCase()) ;
 
+      element.attributes.forEach((att) {
+        if (attributes.contains(att.sId)) result = true;
+       });
+      // if (element.type category != null)
+        if (type.toLowerCase() ==  element.type.name.toLowerCase()) 
+          result = true;
+        else 
+          result = false;
+
+      return result && element.name.toLowerCase().contains(searchValue);
+     }
+    ).toList();
+    setState(() {
+      searchLoading = false;
+    });
+/*
     setState(() {
       searchLoading = true;
     });
@@ -307,7 +330,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
       setState(() { 
         searchLoading = false;
       });
-    }
+    }*/
   }
 
   _toggleFavorite() async {
@@ -358,20 +381,6 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
         context: context,
         locale: Locale(_lang),
         child: Scaffold(
-          /*floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                builder: (_) => BagModal(),
-                backgroundColor: Colors.transparent,
-              );
-            },
-            child: FaIcon(
-              FontAwesomeIcons.shoppingBag,
-              color: Colors.white,
-            ),
-          ),*/
           appBar: _isSearching
               ? AppBar(
                   title: TextTranslator(restaurant.name ?? "",),
@@ -465,7 +474,10 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
     );
   }
 
-  Widget _renderSearchView() {
+  Widget  _renderSearchView() {
+
+    
+
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -481,7 +493,6 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                 ? Center(
                     child: TextTranslator(
                       AppLocalizations.of(context).translate('start_by_typing_your_research'),
-                      
                     ),
                   )
                 : Container(
@@ -502,41 +513,54 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                               
                             ),
                           ),
-                        ...searchResults.map((SearchResult e) {
-                          if (e.type.toString() == 'SearchResultType.restaurant')
-                            return Padding(
-                              padding: const EdgeInsets.only(
-                                bottom: 10,
-                              ),
-                              child: RestaurantCard(
-                                restaurant: Restaurant.fromJson(e.content),
-                                withPrice: widget.withPrice,
-                              ),
-                            );
-                          else if (e.type.toString() == 'SearchResultType.food')
-                            return Padding(
+
+                        ...searchFood.map((e) => 
+                           Padding(
                               padding: const EdgeInsets.only(
                                 bottom: 10,
                               ),
                               child: FoodCard(
-                                food: Food.fromJson(e.content),
+                                food: e,
                                 withPrice: widget.withPrice,
                               ),
-                            );
-                          else if (e.type.toString() == 'SearchResultType.menu')
-                            return Padding(
-                              padding: const EdgeInsets.only(
-                                bottom: 10,
-                              ),
-                              child: MenuCard(
-                                lang: _lang,
-                                withPrice: widget.withPrice,
-                                menu: Menu.fromJson(e.content,resto: widget.restaurant),
-                              ),
-                            );
+                            )
+                        ).toList()
 
-                          return null;
-                        }).toList(),
+                        // ...searchResults.map((SearchResult e) {
+                        //   if (e.type.toString() == 'SearchResultType.restaurant')
+                        //     return Padding(
+                        //       padding: const EdgeInsets.only(
+                        //         bottom: 10,
+                        //       ),
+                        //       child: RestaurantCard(
+                        //         restaurant: Restaurant.fromJson(e.content),
+                        //         withPrice: widget.withPrice,
+                        //       ),
+                        //     );
+                        //   else if (e.type.toString() == 'SearchResultType.food')
+                        //     return Padding(
+                        //       padding: const EdgeInsets.only(
+                        //         bottom: 10,
+                        //       ),
+                        //       child: FoodCard(
+                        //         food: Food.fromJson(e.content),
+                        //         withPrice: widget.withPrice,
+                        //       ),
+                        //     );
+                        //   else if (e.type.toString() == 'SearchResultType.menu')
+                        //     return Padding(
+                        //       padding: const EdgeInsets.only(
+                        //         bottom: 10,
+                        //       ),
+                        //       child: MenuCard(
+                        //         lang: _lang,
+                        //         withPrice: widget.withPrice,
+                        //         menu: Menu.fromJson(e.content,resto: widget.restaurant),
+                        //       ),
+                        //     );
+
+                        //   return null;
+                        // }).toList(),
                       ],
                     ),
                   ),
@@ -655,9 +679,12 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                       height: MediaQuery.of(context).size.width / 3,
                                       fit: BoxFit.cover,
                                       errorBuilder: (_, __, ___) => Center(
-                          child: Icon(
-                            Icons.fastfood,size: MediaQuery.of(context).size.width / 3,
-                          ),
+                                      child: Container(
+                                        width: MediaQuery.of(context).size.width / 3,
+                                                  height: MediaQuery.of(context).size.width / 3,
+                                                  color: Colors.white,
+                                      
+                                      ),
                         // ),
                                     ),
                                   ),
@@ -777,34 +804,6 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                         if (restaurant.phoneNumber != null)
                                           await launch(
                                               "tel:${restaurant.phoneNumber}");
-                                      },
-                                    ),
-                                    SizedBox(height: 5,),
-                                    InkWell(
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: [
-                                          Icon(
-                                            FontAwesomeIcons.sms,
-                                            size: 15,
-                                            color: CRIMSON,
-                                          ),
-                                          SizedBox(
-                                            width: 5,
-                                          ),
-                                          TextTranslator(
-                                            "${restaurant.phoneNumber ?? "0"}",
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold, fontSize: 18, color: Colors.blue,
-                                              decoration: TextDecoration.underline,),
-                                            
-                                          )
-                                        ],
-                                      ),
-                                      onTap: () async {
-                                        if (restaurant.phoneNumber != null)
-                                          await launch(
-                                              "sms:${restaurant.phoneNumber}");
                                       },
                                     ),
                                     SizedBox(height: 15,),
@@ -1414,7 +1413,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                   fontSize: 22,
                 ),
               ),
-              SizedBox(height: 800,)
+              // SizedBox(height: 800,)
             ],
           );
   }
@@ -1518,10 +1517,11 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
 
   Widget _renderCategorie(){
     String name = "";
-    for (var type in _foodTypes)
-      name += type.name + ", ";
+    for (var category in restaurant.category)
+      name += category['name']['fr'] + ", ";
       return TextTranslator(
         name.isEmpty ? name : name.substring(0,name.length-2),
+        isAutoSizeText: true,
         style: TextStyle(
             fontWeight: FontWeight.bold,
           fontSize: 16

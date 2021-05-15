@@ -122,10 +122,7 @@ class DataContext extends ChangeNotifier {
           // 'NEAREST': 'nearest',
         },
       );
-      // _searchResult.take(5).forEach((e) {
-      //   nearestRestaurants.add(Restaurant.fromJson(e.content));
-      // });
-      // nearestRestaurants.reversed;
+      
       nearestRestaurants = temp.where((element) => element.status).toList();
       nearestRestaurants.sort((a,b)=> a.priority.compareTo(b.priority));
     } catch (error) {
@@ -160,10 +157,8 @@ class DataContext extends ChangeNotifier {
       _popularFoods.forEach((element) {
         element.isPopular = true;
       });
-      popularFoods = _popularFoods.where((element) => element.status && element.statut).toList();
-      // _searchResult.take(5).forEach((e) {
-      //   popularFoods.add(Food.fromJson(e.content));
-      // });
+      popularFoods = _popularFoods.where((f) => f.restaurant['referencement'] && f.restaurant['status']).toList();
+      
     } catch (error) {
       print(error);
     } finally {
