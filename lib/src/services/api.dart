@@ -37,8 +37,11 @@ class Api {
   Future resendConfirmationCode({String registrationToken}) {
     if (registrationToken == null) return Future.error(Exception('No registration token provided'));
 
+    final String url = '$_apiURL/users/resend-confirmation-code';
+    print("$logTrace $url");
+
     return http.post(
-      '$_apiURL/users/resend-confirmation-code',
+      url,
       body: {
         'token': registrationToken,
       },
@@ -51,8 +54,11 @@ class Api {
         Exception('Registration token or confirmation code not provided'),
       );
 
+    final String url = '$_apiURL/users/confirm-account';
+    print("$logTrace $url");
+
     return http.post(
-      '$_apiURL/users/confirm-account',
+      url,
       body: {
         'token': registrationToken,
         'code': code.toString(),
@@ -117,8 +123,11 @@ class Api {
   static Api get instance => _instance ?? Api._privateConstructor();
 
   Future<User> login(String email, String password) {
+    final String url = '$_apiURL/login';
+    print("$logTrace $url");
+
     return http.post(
-      '$_apiURL/login',
+      url,
       body: {
         'login': email,
         'password': password,
@@ -145,7 +154,10 @@ class Api {
   }
 
   Future<String> register({String email, String phoneNumber, String password, String firstName, String lastName}) {
-    return http.post('$_apiURL/users/register',
+    final String url = '$_apiURL/users/register';
+    print("$logTrace $url");
+
+    return http.post(url,
         body: jsonEncode({
           'email': email,
           'password': password,
@@ -169,7 +181,10 @@ class Api {
   Future confirmPhoneNumber({
     String code,
   }) {
-    return http.post('$_apiURL/users/confirm-account',
+    final String url = '$_apiURL/users/confirm-account';
+    print("$logTrace $url");
+
+    return http.post(url,
         body: jsonEncode({
           'token': _accessToken,
           'code': code,
@@ -200,8 +215,10 @@ class Api {
         }
       }
     }
-    print('$_apiURL/restaurants$query');
-    return http.get('$_apiURL/restaurants$query').then<List<Restaurant>>((response) {
+    final String url = '$_apiURL/restaurants$query';
+    print("$logTrace $url");
+
+    return http.get(url).then<List<Restaurant>>((response) {
       if (response.statusCode == 200) {
         List<dynamic> list = jsonDecode(response.body);
         return list.map((data) => Restaurant.fromJson(data)).toList();
@@ -226,10 +243,11 @@ class Api {
       }
     }
 
-    print('$_apiURL/foods$query');
+    final String url = '$_apiURL/foods$query';
+    print("$logTrace $url");
 
     return http.get(
-      '$_apiURL/foods$query',
+      url,
       headers: {
         "authorization": "Bearer $_accessToken",
       },
@@ -250,35 +268,41 @@ class Api {
 
   Future<List<FoodCategory>> getFoodCategories(
     String lang,
-  ) =>
-      http.get('$_apiURL/foodCategories?lang=$lang').then<List<FoodCategory>>((response) {
-        if (response.statusCode == 200) {
-          List<dynamic> list = jsonDecode(response.body);
-          return list.map((data) => FoodCategory.fromJson(data)).toList();
-        }
+  ) {
+    final String url = '$_apiURL/foodCategories?lang=$lang';
+    print("$logTrace $url");
+    return http.get(url).then<List<FoodCategory>>((response) {
+      if (response.statusCode == 200) {
+        List<dynamic> list = jsonDecode(response.body);
+        return list.map((data) => FoodCategory.fromJson(data)).toList();
+      }
 
-        return Future.error(
-          jsonDecode(response.body),
-        );
-      });
+      return Future.error(
+        jsonDecode(response.body),
+      );
+    });
+  }
 
   Future<Food> getFood({
     String id,
     String lang,
-  }) =>
-      http.get(
-        '$_apiURL/foods/$id?lang=$lang',
-        headers: {
-          "authorization": "Bearer $_accessToken",
-        },
-      ).then<Food>((response) {
-        print(response.body);
-        if (response.statusCode == 200) return Food.fromJson(jsonDecode(response.body));
+  }) {
+    final String url = '$_apiURL/foods/$id?lang=$lang';
+    print("$logTrace $url");
+    return http.get(
+      url,
+      headers: {
+        "authorization": "Bearer $_accessToken",
+      },
+    ).then<Food>((response) {
+      print(response.body);
+      if (response.statusCode == 200) return Food.fromJson(jsonDecode(response.body));
 
-        return Future.error(
-          jsonDecode(response.body),
-        );
-      });
+      return Future.error(
+        jsonDecode(response.body),
+      );
+    });
+  }
 
   Future<Restaurant> getRestaurant({
     String id,
