@@ -5,7 +5,6 @@ import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/add_payment_card.dart';
-import 'package:menu_advisor/src/pages/confirm_sms.dart';
 import 'package:menu_advisor/src/pages/summary.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
@@ -24,12 +23,7 @@ class PaymentCardListPage extends StatefulWidget {
   final Restaurant restaurant;
   final String typedePayment;
 
-  const PaymentCardListPage({
-    Key key,
-    this.isPaymentStep = false,
-    this.restaurant,
-    this.typedePayment
-  }) : super(key: key);
+  const PaymentCardListPage({Key key, this.isPaymentStep = false, this.restaurant, this.typedePayment}) : super(key: key);
 
   @override
   _PaymentCardListPageState createState() => _PaymentCardListPageState();
@@ -38,7 +32,6 @@ class PaymentCardListPage extends StatefulWidget {
 class _PaymentCardListPageState extends State<PaymentCardListPage> {
   bool isPaying = false;
   bool isDeletingPaymentCard = false;
-
 
   @override
   Widget build(BuildContext context) {
@@ -61,10 +54,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                       padding: const EdgeInsets.all(20),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                           for (var c in user.paymentCards.toList())
-                          _renderPayement(c,cartContext,authContext,commandContext)
-                          ],
+                        children: [for (var c in user.paymentCards.toList()) _renderPayement(c, cartContext, authContext, commandContext)],
                       ),
                     )
                   : Container(
@@ -129,122 +119,104 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
     );
   }
 
-  Widget _renderPayement(c,cartContext,authContext,commandContext) {
+  Widget _renderPayement(c, cartContext, authContext, commandContext) {
     //  for (var c in user.paymentCards){
-       PaymentCard creditCard = PaymentCard.fromJson(c);
-                          return  Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                onLongPress: () async {
-                                  var result = await showDialog(
-                                    context: context,
-                                    builder: (_) => ConfirmationDialog(
-                                      title: AppLocalizations.of(context).translate('confirm_remove_payment_card_title'),
-                                      content: AppLocalizations.of(context).translate('confirm_remove_payment_card_content'),
-                                    ),
-                                  );
+    PaymentCard creditCard = PaymentCard.fromJson(c);
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onLongPress: () async {
+          var result = await showDialog(
+            context: context,
+            builder: (_) => ConfirmationDialog(
+              title: AppLocalizations.of(context).translate('confirm_remove_payment_card_title'),
+              content: AppLocalizations.of(context).translate('confirm_remove_payment_card_content'),
+            ),
+          );
 
-                                  if (result is bool && result) {
-                                    // Remove card
-                                    setState(() {
-                                      isDeletingPaymentCard = true;
-                                    });
-                                    try {
-                                      await authContext.removePaymentCard(creditCard);
-                                    } catch (error) {
-                                      Fluttertoast.showToast(
-                                        msg: AppLocalizations.of(context).translate('error_deleting_payment_card'),
-                                      );
-                                    }
-                                    setState(() {
-                                      isDeletingPaymentCard = false;
-                                    });
-                                  }
-                                },
-                                onTap: widget.isPaymentStep
-                                    ? () async {
-                                        setState(() {
-                                          isPaying = true;
-                                        });
-                                        try {
-                                          StripeTransactionResponse payment = await StripeService.payViaExistingCard(
-                                            amount: (cartContext.totalPrice * 100).floor().toString(),
-                                            card: creditCard,
-                                            currency: 'eur',
-                                          );
+          if (result is bool && result) {
+            // Remove card
+            setState(() {
+              isDeletingPaymentCard = true;
+            });
+            try {
+              await authContext.removePaymentCard(creditCard);
+            } catch (error) {
+              Fluttertoast.showToast(
+                msg: AppLocalizations.of(context).translate('error_deleting_payment_card'),
+              );
+            }
+            setState(() {
+              isDeletingPaymentCard = false;
+            });
+          }
+        },
+        onTap: widget.isPaymentStep
+            ? () async {
+                setState(() {
+                  isPaying = true;
+                });
+                try {
+                  StripeTransactionResponse payment = await StripeService.payViaExistingCard(
+                    amount: (cartContext.totalPrice * 100).floor().toString(),
+                    card: creditCard,
+                    currency: 'eur',
+                  );
 
+                  if (payment.success) {
+                    var command = await Api.instance.sendCommand(
+                        optionLivraison: widget.restaurant.optionLivraison,
+                        etage: widget.restaurant.etage,
+                        isDelivery: true,
+                        appartement: widget.restaurant.appartement,
+                        codeappartement: widget.restaurant.codeappartement,
+                        payed: true,
+                        comment: cartContext.comment,
+                        relatedUser: authContext.currentUser?.id ?? null,
+                        commandType: commandContext.commandType,
+                        items: cartContext.items
+                            .where((e) => !e.isMenu)
+                            .map((e) => {'quantity': e.quantity, 'item': e.id, 'options': e.optionSelected != null ? e.optionSelected : [], 'comment': e.message})
+                            .toList(),
+                        restaurant: cartContext.currentOrigin,
+                        totalPrice: ((cartContext.totalPrice * 100) + (widget.restaurant.priceDelevery != null ? widget.restaurant.priceDelevery : 0).toDouble()).round(),
+                        menu: cartContext.items.where((e) => e.isMenu).map((e) => {'quantity': e.quantity, 'item': e.id, 'foods': e.foodMenuSelecteds}).toList(),
+                        shippingAddress: commandContext.deliveryAddress,
+                        shipAsSoonAsPossible: commandContext.deliveryDate == null && commandContext.deliveryTime == null,
+                        shippingTime: commandContext.deliveryDate
+                                ?.add(
+                                  Duration(
+                                    minutes: commandContext.deliveryTime.hour * 60 + commandContext.deliveryTime.minute,
+                                  ),
+                                )
+                                ?.millisecondsSinceEpoch ??
+                            null,
+                        priceless: !cartContext.withPrice);
+                    var commandStr = command.toString();
+                    Command cm = Command.fromJson(command);
 
-                                          if (payment.success) {
-                                          var command = await Api.instance.sendCommand(
-                                            optionLivraison: widget.restaurant.optionLivraison,
-                                            etage: widget.restaurant.etage,
-                                            isDelivery: true,
-                                            appartement: widget.restaurant.appartement,
-                                            codeappartement: widget.restaurant.codeappartement,
-                                            payed: true,
-                                            comment: cartContext.comment,
-                                            relatedUser: authContext.currentUser?.id ?? null,
-                                            commandType: commandContext.commandType,
-                                            items: cartContext
-                                                      .items
-                                                      .where(
-                                                          (e) => !e.isMenu)
-                                                      .map((e) => {
-                                                            'quantity': e.quantity,
-                                                            'item': e.id,
-                                                            'options': e.optionSelected != null ? 
-                                                            e.optionSelected : [],
-                                                            'comment':
-                                                                e.message
-                                                          })
-                                                      .toList(),
-                                                  restaurant: cartContext.currentOrigin,
-                                              totalPrice: ((cartContext.totalPrice * 100) + (widget.restaurant.priceDelevery != null ? widget.restaurant.priceDelevery : 0).toDouble() ).round(),
-                                            menu:cartContext.items.where(
-                                                  (e) => e.isMenu).map(
-                                                    (e) => 
-                                                    {
-                                                      'quantity': e.quantity,
-                                                      'item': e.id,
-                                                      'foods': 
-                                                  e.foodMenuSelecteds
-                                                }).toList(),shippingAddress: commandContext.deliveryAddress,
-                                            shipAsSoonAsPossible: commandContext.deliveryDate == null && commandContext.deliveryTime == null,
-                                            shippingTime: commandContext.deliveryDate
-                                                    ?.add(
-                                                      Duration(
-                                                        minutes: commandContext.deliveryTime.hour * 60 + commandContext.deliveryTime.minute,
-                                                      ),
-                                                    )
-                                                    ?.millisecondsSinceEpoch ??
-                                                null,
-                                              priceless: !cartContext.withPrice
-                                          );
-                                          var commandStr = command.toString();
-                                          Command cm = Command.fromJson(command);
+                    Api.instance.setCommandToPayedStatus(
+                      true,
+                      id: command['_id'],
+                      paymentIntentId: payment.paymentIntentId,
+                    );
+                    Fluttertoast.showToast(
+                      msg: AppLocalizations.of(
+                        context,
+                      ).translate('success'),
+                    );
 
-                                            Api.instance.setCommandToPayedStatus(
-                                              true,
-                                              id: command['_id'],
-                                              paymentIntentId: payment.paymentIntentId,
-                                            );
-                                            Fluttertoast.showToast(
-                                              msg: AppLocalizations.of(
-                                                context,
-                                              ).translate('success'),
-                                            );
+                    Provider.of<CartContext>(
+                      context,
+                      listen: false,
+                    ).clear();
+                    Provider.of<CommandContext>(
+                      context,
+                      listen: false,
+                    ).clear();
+                    Provider.of<MenuContext>(context, listen: false).clear();
 
-                                            Provider.of<CartContext>(
-                                              context,
-                                              listen: false,
-                                            ).clear();
-                                            Provider.of<CommandContext>(
-                                              context,
-                                              listen: false,
-                                            ).clear();
-                                            Provider.of<MenuContext>(context,listen: false).clear();
-
-                                            /*RouteUtil.goToAndRemoveUntil(
+                    /*RouteUtil.goToAndRemoveUntil(
                                               context: context,
                                               child: ConfirmSms(
                                                 command: cm,
@@ -253,45 +225,43 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                               predicate: (route) => route.settings.name == homeRoute,
                                             );*/
 
-                                            commandContext.clear();
-                                            cartContext.clear();
-                                            Provider.of<MenuContext>(context,listen: false).clear();
-                                            Fluttertoast.showToast(
-                                              msg:
-                                              'Votre commande a été bien reçu.',
-                                            );
+                    commandContext.clear();
+                    cartContext.clear();
+                    Provider.of<MenuContext>(context, listen: false).clear();
+                    Fluttertoast.showToast(
+                      msg: 'Votre commande a été bien reçu.',
+                    );
 
-                                            RouteUtil.goTo(
-                                              context: context,
-                                              child: Summary(commande: cm),
-                                              routeName: confirmEmailRoute,
-                                            );
-                                          } else {
-                                            Fluttertoast.showToast(
-                                              msg: 'Echec du paiemenet',
-                                            );
-                                          }
-                                        } catch (error) {
-                                          Fluttertoast.showToast(
-                                            msg: 'Echec du paiemenet. Carte invalide',
-                                          );
-                                        } finally {
-                                          setState(() {
-                                            isPaying = false;
-                                          });
-                                        }
-                                      }
-                                    : null,
-                                child: CreditCardWidget(
-                                  cardHolderName: creditCard.owner,
-                                  showBackView: false,
-                                  cvvCode: creditCard.securityCode.toString(),
-                                  cardNumber: creditCard.cardNumber.toString(),
-                                  expiryDate: '${creditCard.expiryMonth}/${creditCard.expiryYear}',
-                                ),
-                              ),
-                            );
-                      // }
+                    RouteUtil.goTo(
+                      context: context,
+                      child: Summary(commande: cm),
+                      routeName: confirmEmailRoute,
+                    );
+                  } else {
+                    Fluttertoast.showToast(
+                      msg: 'Echec du paiemenet',
+                    );
+                  }
+                } catch (error) {
+                  Fluttertoast.showToast(
+                    msg: 'Echec du paiemenet. Carte invalide',
+                  );
+                } finally {
+                  setState(() {
+                    isPaying = false;
+                  });
+                }
+              }
+            : null,
+        child: CreditCardWidget(
+          cardHolderName: creditCard.owner,
+          showBackView: false,
+          cvvCode: creditCard.securityCode.toString(),
+          cardNumber: creditCard.cardNumber.toString(),
+          expiryDate: '${creditCard.expiryMonth}/${creditCard.expiryYear}',
+        ),
+      ),
+    );
+    // }
   }
-
 }

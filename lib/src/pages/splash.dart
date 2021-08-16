@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/animations/FadeAnimation.dart';
 import 'package:menu_advisor/src/components/logo.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
@@ -10,11 +9,9 @@ import 'package:menu_advisor/src/pages/login.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
-import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Splash extends StatefulWidget {
   final Color textColor;
@@ -47,10 +44,7 @@ class _SplashState extends State<Splash> {
         seconds: 4,
       ),
       () async {
-
         _init();
-
-
       },
     );
   }
@@ -61,10 +55,7 @@ class _SplashState extends State<Splash> {
       listen: false,
     );
 
-    final SettingContext settingContext = Provider.of<SettingContext>(
-        context,
-        listen: false
-    );
+    final SettingContext settingContext = Provider.of<SettingContext>(context, listen: false);
 
     // Loading user
     setState(() {
@@ -75,7 +66,7 @@ class _SplashState extends State<Splash> {
 
     authContext.initialized.then((value) {
       _autoLogin(authContext);
-    }).catchError((onError){
+    }).catchError((onError) {
       _autoLogin(authContext);
     });
   }
@@ -172,17 +163,18 @@ class _SplashState extends State<Splash> {
                         CircularProgressIndicator(
                           valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
                         ),
-                        SizedBox(height: 15,),
-                        Consumer<SettingContext>(
-
-                          builder: (context, snapshot,w) {
-                            return TextTranslator("Chargement... ",style: TextStyle(
+                        SizedBox(
+                          height: 15,
+                        ),
+                        Consumer<SettingContext>(builder: (context, snapshot, w) {
+                          return TextTranslator(
+                            "Chargement... ",
+                            style: TextStyle(
                               color: Colors.black,
                               fontSize: 15,
-
-                            ),);
-                          }
-                        )
+                            ),
+                          );
+                        })
                       ],
                     ),
                   ),

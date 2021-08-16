@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/pages/command_history.dart';
 import 'package:menu_advisor/src/pages/home.dart';
 import 'package:menu_advisor/src/pages/login.dart';
 import 'package:menu_advisor/src/pages/map.dart';
-import 'package:menu_advisor/src/pages/order.dart';
 import 'package:menu_advisor/src/pages/profile.dart';
 import 'package:menu_advisor/src/pages/qr_code_scan.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
-import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
@@ -34,9 +32,8 @@ class SectionTitle extends StatelessWidget {
       ),
       margin: const EdgeInsets.only(bottom: 10),
       child: TextTranslator(
-          text,
-          style: Theme.of(context).textTheme.headline5,
-        
+        text,
+        style: Theme.of(context).textTheme.headline5,
       ),
     );
   }
@@ -66,6 +63,7 @@ class ScaffoldWithBottomMenu extends StatelessWidget {
           child: FloatingActionButton(
             backgroundColor: CRIMSON,
             onPressed: () {
+              print("$logTrace Qr code scanner Btn");
               RouteUtil.goTo(
                 context: context,
                 child: QRCodeScanPage(),
@@ -158,9 +156,8 @@ class ScaffoldWithBottomMenu extends StatelessWidget {
                           child: LoginPage(),
                           routeName: loginRoute,
                         );
-
-                   },
-                 ),
+                    },
+                  ),
                 ),
               ),
               Expanded(

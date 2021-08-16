@@ -2,8 +2,7 @@ import 'package:flutter/services.dart';
 
 class NumberCardInputFormatter extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
     if (newValue.selection.baseOffset == 0) return newValue;
 
     if (newValue.selection.baseOffset > 8) return oldValue;
@@ -19,8 +18,7 @@ class NumberCardInputFormatter extends TextInputFormatter {
 
 class ExpiryDateInputFormatter extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
     String newText;
 
     if (newValue.selection.baseOffset < 2)

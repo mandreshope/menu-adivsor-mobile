@@ -1,11 +1,7 @@
-import 'dart:convert';
-
 import 'package:firebase_mlkit_language/firebase_mlkit_language.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
-import 'package:menu_advisor/src/models.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingContext extends ChangeNotifier {
@@ -85,7 +81,6 @@ class SettingContext extends ChangeNotifier {
   bool get isSystemSetting => _languageCode == 'fr';
 
   Future setlanguageCode(String value) async {
-    
     var result = await FirebaseLanguage.instance.modelManager().downloadModel(value);
     _languageCode = value;
     Intl.defaultLocale = value;
@@ -98,9 +93,9 @@ class SettingContext extends ChangeNotifier {
 
   Future setlanguageCodeRestaurant(String value) async {
     String lang = value;
-    if (value == 'zh-CN'){
+    if (value == 'zh-CN') {
       lang = 'zh';
-    }else if (value == 'nl'){
+    } else if (value == 'nl') {
       lang = 'de';
     }
     var result = await FirebaseLanguage.instance.modelManager().downloadModel(lang);
@@ -152,12 +147,11 @@ class SettingContext extends ChangeNotifier {
   }
 
   void _listenLocation() async {
-    Geolocator.getPositionStream()
-    .listen((Position position) {
+    Geolocator.getPositionStream().listen((Position position) {
       // print('Current position stream: ${position.latitude},${position.longitude}');
-        this.position = position;
-      });
-    }
+      this.position = position;
+    });
+  }
 
   double distanceBetween(double lat, double long) {
     distanceWithRestaurant = Geolocator.distanceBetween(position.latitude, position.longitude, lat, long);
@@ -167,10 +161,9 @@ class SettingContext extends ChangeNotifier {
   String distanceBetweenString(double lat, double long) {
     distanceWithRestaurant = Geolocator.distanceBetween(position.latitude, position.longitude, lat, long);
     if (distanceWithRestaurant >= 1000) {
-      double km = distanceWithRestaurant/1000;
+      double km = distanceWithRestaurant / 1000;
       return km.toStringAsFixed(2) + " kilomètres";
     }
     return distanceWithRestaurant.toStringAsFixed(2) + " mètres";
   }
-
 }

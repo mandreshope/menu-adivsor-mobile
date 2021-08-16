@@ -54,11 +54,7 @@ class Collapse extends StatelessWidget {
           InkWell(
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-              decoration: BoxDecoration(
-                  border: Border(
-                      bottom: BorderSide(
-                          color:
-                              showBorder ? borderColor : Colors.transparent))),
+              decoration: BoxDecoration(border: Border(bottom: BorderSide(color: showBorder ? borderColor : Colors.transparent))),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[

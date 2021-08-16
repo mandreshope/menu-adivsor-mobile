@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_collapse/flutter_collapse.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
-import 'package:menu_advisor/src/pages/food.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/HistoryContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
-import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
-import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -29,16 +25,16 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
   ItemScrollController itemScrollController = ItemScrollController();
   ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
 
-  List<Command> commands = List();
+  List<Command> commands = [];
 
-  List<Command> commandDelivery = List();
-  List<Command> commandOnSite = List();
-  List<Command> commandOnTakeaway = List();
+  List<Command> commandDelivery = [];
+  List<Command> commandOnSite = [];
+  List<Command> commandOnTakeaway = [];
 
   Map<String, List<Command>> commandByType = Map();
   Map<String, List<Command>> commandByTypeDate = Map();
   Map<String, bool> commandByTypeValue = Map();
-  // List<bool> commandByTypeValue = List();
+  // List<bool> commandByTypeValue = [];
 
   bool loading = true;
 
@@ -54,7 +50,7 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
     // TODO: implement initState
     super.initState();
 
-    _historyContext = Provider.of<HistoryContext>(context,listen: false);
+    _historyContext = Provider.of<HistoryContext>(context, listen: false);
 
     tabController = TabController(
       vsync: this,
@@ -76,19 +72,17 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
           commandType = 'takeaway';
           break;
         default:
-        commandType = 'delivery';
+          commandType = 'delivery';
           break;
       }
 
       setState(() {});
     });
     loadData(null);
-   /* itemPositionsListener.itemPositions.addListener(() {
+    /* itemPositionsListener.itemPositions.addListener(() {
       print('Scroll position: ${itemPositionsListener.itemPositions.value.first.index}');
       tabController.animateTo(itemPositionsListener.itemPositions.value.first.index);
     });*/
-
-
 
     // setState(() {
     //   loading = false;
@@ -108,18 +102,14 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
       context,
       listen: false,
     );
-try {
- 
-    this.commands = await authContext.getCommandOfUser(
-      limit: 500,
-      commandType: commandType
-    ); 
-} catch (e) {
-  print(e);
-  this.commands = List();
-}
+    try {
+      this.commands = await authContext.getCommandOfUser(limit: 500, commandType: commandType);
+    } catch (e) {
+      print(e);
+      this.commands = [];
+    }
 
-   /* commandByType = this.commands.groupBy((c) =>
+    /* commandByType = this.commands.groupBy((c) =>
         c.createdAt.day.toString().padLeft(2,"0") +"/"+ c.createdAt.month.toString().padLeft(2,"0")+"/"+ c.createdAt.year.toString()
       );
 
@@ -135,61 +125,60 @@ try {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: TextTranslator(
-          AppLocalizations.of(context).translate('command_history'),
-        ),
-        // backgroundColor: Colors.white,
-        bottom: TabBar(
-          controller: tabController,
-          isScrollable: true,
-          unselectedLabelColor: Colors.white,
-          labelColor: CRIMSON,
-          indicator: BoxDecoration(borderRadius: BorderRadius.circular(5), color: Colors.white),
-          tabs: [
-            Tab(
-              text: AppLocalizations.of(context).translate('delivery'),
-            ),
-            Tab(
-              text: AppLocalizations.of(context).translate('on_site'),
-            ),
-            Tab(
-              text: AppLocalizations.of(context).translate('takeaway'),
-            ),
-          ],
-        ),
-      ),
-      body: loading
-          ? Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
+        appBar: AppBar(
+          title: TextTranslator(
+            AppLocalizations.of(context).translate('command_history'),
+          ),
+          // backgroundColor: Colors.white,
+          bottom: TabBar(
+            controller: tabController,
+            isScrollable: true,
+            unselectedLabelColor: Colors.white,
+            labelColor: CRIMSON,
+            indicator: BoxDecoration(borderRadius: BorderRadius.circular(5), color: Colors.white),
+            tabs: [
+              Tab(
+                text: AppLocalizations.of(context).translate('delivery'),
               ),
-            )
-          : commands.length == 0
-              ? Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.warning,
-                        size: 40,
-                      ),
-                      TextTranslator(
-                        AppLocalizations.of(context).translate('no_command'),
-                        style: TextStyle(
-                          fontSize: 22,
+              Tab(
+                text: AppLocalizations.of(context).translate('on_site'),
+              ),
+              Tab(
+                text: AppLocalizations.of(context).translate('takeaway'),
+              ),
+            ],
+          ),
+        ),
+        body: loading
+            ? Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
+                ),
+              )
+            : commands.length == 0
+                ? Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.warning,
+                          size: 40,
                         ),
-                      ),
-                    ],
-                  ),
-                )
-              : Column(
-
-                children: [
-                  Expanded(child: _renderViewItem(commandType)),
-                  /*SizedBox(height: 10,),
+                        TextTranslator(
+                          AppLocalizations.of(context).translate('no_command'),
+                          style: TextStyle(
+                            fontSize: 22,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : Column(
+                    children: [
+                      Expanded(child: _renderViewItem(commandType)),
+                      /*SizedBox(height: 10,),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -241,15 +230,16 @@ try {
                     
                     ],
                   ),*/
-                  SizedBox(height: 10,),
-                ],
-              )
-    );
+                      SizedBox(
+                        height: 10,
+                      ),
+                    ],
+                  ));
   }
 
   Widget _renderViewItem(String title) {
     /// test tri par date
- /*   var commandTemp = commands
+    /*   var commandTemp = commands
         .where((element){
           if (dateTri != null) {
             if (element.commandType == title &&
@@ -267,35 +257,29 @@ try {
     })
         
         .toList();*/
-            var commandTemp = commands
-        .where((element) => element.commandType == title).toList();
-        print(commandTemp);
+    var commandTemp = commands.where((element) => element.commandType == title).toList();
+    print(commandTemp);
 
-
-    commandByType = commandTemp.groupBy((c) =>
-      c.createdAt.month.toString().padLeft(2,"0").month +" "+ c.createdAt.year.toString()
-    );
+    commandByType = commandTemp.groupBy((c) => c.createdAt.month.toString().padLeft(2, "0").month + " " + c.createdAt.year.toString());
 
     commandByTypeValue.clear();
     commandByType.forEach((key, value) {
       commandByTypeValue[key] = dateTri == null ? false : true;
       // commandByTypeValue.add(false);
       if (value.first.createdAt.month == DateTime.now().month) commandByTypeValue[key] = true;
-      commandByTypeDate = value.groupBy((c) =>
-        c.createdAt.day.toString().padLeft(2,"0") +"/"+ c.createdAt.month.toString().padLeft(2,"0")
-      );
+      commandByTypeDate = value.groupBy((c) => c.createdAt.day.toString().padLeft(2, "0") + "/" + c.createdAt.month.toString().padLeft(2, "0"));
     });
-   /* commandByTypeDate.forEach((key, value) {
+    /* commandByTypeDate.forEach((key, value) {
       commandByTypeValue[key] = false;
     });*/
     _historyContext.commandByTypeValue = commandByTypeValue;
 
     return commandByType.length == 0
         ? Padding(
-          padding: const EdgeInsets.only(top:25),
-          child: Align(
-            alignment: Alignment.topCenter,
-                    child: Column(
+            padding: const EdgeInsets.only(top: 25),
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -311,39 +295,36 @@ try {
                   ),
                 ],
               ),
-          ),
-        )
+            ),
+          )
         : SingleChildScrollView(
-          child: Consumer<HistoryContext>(
-            builder: (context, snapshot,w) {
+            child: Consumer<HistoryContext>(builder: (context, snapshot, w) {
               return Column(
-                   children: [
-                     ...commandByType.entries.map((e) {
+                children: [
+                  ...commandByType.entries.map((e) {
+                    Map<String, List<Command>> tempSemaine = Map();
 
-                       Map<String, List<Command>> tempSemaine = Map();
+                    // tempSemaine = e.value.groupBy((g) =>
+                    //     g.createdAt.
+                    // );
 
-                       // tempSemaine = e.value.groupBy((g) =>
-                       //     g.createdAt.
-                       // );
-
-                       return Collapse(
-                         value: snapshot.commandByTypeValue[e.key],
-                         onChange: (value) {
-                           print(value);
-                           snapshot.setCollapse(e.key, value);
-                         },
-                         title: TextTranslator(
-                           e.key,
-                           style: TextStyle(fontSize: 18, fontWeight: FontWeight
-                               .bold),
-                         ),
-                         body: ListView.builder(
-                             shrinkWrap: true,
-                             itemCount: commandByType[e.key].length,
-                             // itemCount: commandByTypeDate.keys.toList().length,
-                             physics: NeverScrollableScrollPhysics(),
-                             itemBuilder: (_, position) {
-                              /* String k = commandByTypeDate.keys.toList()[position];
+                    return Collapse(
+                      value: snapshot.commandByTypeValue[e.key],
+                      onChange: (value) {
+                        print(value);
+                        snapshot.setCollapse(e.key, value);
+                      },
+                      title: TextTranslator(
+                        e.key,
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      body: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: commandByType[e.key].length,
+                          // itemCount: commandByTypeDate.keys.toList().length,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemBuilder: (_, position) {
+                            /* String k = commandByTypeDate.keys.toList()[position];
                                return Collapse(
                                  value: snapshot.commandByTypeValue[k],
                                  onChange: (value) {
@@ -369,16 +350,16 @@ try {
                                          command: commandByTypeDate[k][position],);
                                      }),
                                );*/
-                               return CommandHistoryItem(
-                                 command: commandByType[e.key][position],);
-                             }),
-                       );
-                     }).toList()
-                   ],
+                            return CommandHistoryItem(
+                              command: commandByType[e.key][position],
+                            );
+                          }),
+                    );
+                  }).toList()
+                ],
               );
-            }
-          ),
-        );
+            }),
+          );
 
     /*ListView.builder(
           itemCount: commandByType.length,
@@ -394,7 +375,7 @@ try {
             );
             return CommandHistoryItem(command: commandTemp[position],);
           });*/
-        /*SingleChildScrollView(
+    /*SingleChildScrollView(
             child: Column(
               children: [
                 for(var item in commandTemp)

@@ -21,9 +21,9 @@ class DataContext extends ChangeNotifier {
   List<Food> foods = [];
   bool loadingFoods = true;
 
-  List<FoodAttribute> _foodAttributes = List();
+  List<FoodAttribute> _foodAttributes = [];
 
-  List<Blog> blogs = List();
+  List<Blog> blogs = [];
   bool loadingBlog = true;
   bool isAllAttribute = false;
 
@@ -51,11 +51,10 @@ class DataContext extends ChangeNotifier {
     },
   ];*/
 
-  List<FoodAttribute> attributes = List();
+  List<FoodAttribute> attributes = [];
   bool loadingFoodAttributes = false;
 
   final Api _api = Api.instance;
-
 
   String _city = "";
 
@@ -67,7 +66,7 @@ class DataContext extends ChangeNotifier {
 
   String getCity() => _city;
 
-  DataContext(){
+  DataContext() {
     _fetchAttributes();
     _fetchFoodType();
   }
@@ -81,11 +80,11 @@ class DataContext extends ChangeNotifier {
     loadingBlog = true;
     notifyListeners();
 
-    await _fetchNearestRestaurants(location,lang);
+    await _fetchNearestRestaurants(location, lang);
 
     await _fetchFoodCategories(lang);
 
-    await _fetchPopularFoods(location,lang);
+    await _fetchPopularFoods(location, lang);
 
     await _fetchOnSiteFoods(lang);
 
@@ -108,7 +107,7 @@ class DataContext extends ChangeNotifier {
     }
   }
 
-  _fetchNearestRestaurants(Location location,lang) async {
+  _fetchNearestRestaurants(Location location, lang) async {
     loadingNearestRestaurants = true;
     notifyListeners();
 
@@ -122,9 +121,9 @@ class DataContext extends ChangeNotifier {
           // 'NEAREST': 'nearest',
         },
       );
-      
+
       nearestRestaurants = temp.where((element) => element.status).toList();
-      nearestRestaurants.sort((a,b)=> a.priority.compareTo(b.priority));
+      nearestRestaurants.sort((a, b) => a.priority.compareTo(b.priority));
     } catch (error) {
       print(
         "Error while fetching popular restaurants",
@@ -136,7 +135,7 @@ class DataContext extends ChangeNotifier {
     }
   }
 
-  _fetchPopularFoods(Location location,String lang) async {
+  _fetchPopularFoods(Location location, String lang) async {
     loadingPopularFoods = true;
     notifyListeners();
 
@@ -158,7 +157,6 @@ class DataContext extends ChangeNotifier {
         element.isPopular = true;
       });
       popularFoods = _popularFoods.where((f) => f.restaurant['referencement'] && f.restaurant['status']).toList();
-      
     } catch (error) {
       print(error);
     } finally {
@@ -225,22 +223,22 @@ class DataContext extends ChangeNotifier {
         String e = element.replaceFirst("_", "");
         attributes.add(FoodAttribute.fromJson(jsonDecode(e)));
       });
-    }catch (error) {
+    } catch (error) {
       print(
         'Error while  fetchFoodAttribute...',
       );
       print('$error');
     }
-   loadingFoodAttributes = false;
+    loadingFoodAttributes = false;
     notifyListeners();
   }
 
   _fetchAttributes() async {
-    _foodAttributes = await _api.getFoodAttributes(); 
+    _foodAttributes = await _api.getFoodAttributes();
   }
 
   _fetchFoodType() async {
-    foodTypes = await _api.getFoodTypes(); 
+    foodTypes = await _api.getFoodTypes();
   }
 
   List<FoodAttribute> get foodAttributes => _foodAttributes;
@@ -253,8 +251,7 @@ class DataContext extends ChangeNotifier {
 
   resetAttributes() {
     _foodAttributes.forEach((element) {
-        element.isChecked = false;
+      element.isChecked = false;
     });
   }
-
 }

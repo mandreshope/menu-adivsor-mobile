@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
 class RestaurantContext with ChangeNotifier {
-
   int _currentIndex = 0;
-  List<FoodTypeItem> foodTypes = List();
+  List<FoodTypeItem> foodTypes = [];
 
   set currentIndex(int index) {
     _currentIndex = index;
@@ -21,11 +20,11 @@ class RestaurantContext with ChangeNotifier {
     });
     notifyListeners();
   }
- 
-  init(dynamic types){
+
+  init(dynamic types) {
     foodTypes.clear();
-    for (int i=0; i< types.length; i++){
-      if (types[i].tag != 'drink'){
+    for (int i = 0; i < types.length; i++) {
+      if (types[i].tag != 'drink') {
         foodTypes.add(FoodTypeItem(name: types[i].name));
         // _segmentChilder[i] = _segmentWidget(restaurant.foodTypes[i]['name']['fr']);
       }
@@ -33,14 +32,11 @@ class RestaurantContext with ChangeNotifier {
     foodTypes[0].isSelected = true;
     // notifyListeners();
   }
-
 }
-
 
 class FoodTypeItem {
   String name;
   bool isSelected;
 
-  FoodTypeItem({this.name,this.isSelected = false});
-
+  FoodTypeItem({this.name, this.isSelected = false});
 }

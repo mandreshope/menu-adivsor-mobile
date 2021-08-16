@@ -69,8 +69,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         keyboardType: TextInputType.text,
                         obscureText: true,
                         textInputAction: TextInputAction.next,
-                        labelText: AppLocalizations.of(context)
-                            .translate("enter_old_password_placeholder"),
+                        labelText: AppLocalizations.of(context).translate("enter_old_password_placeholder"),
                         onFieldSubmitted: (_) {
                           oldPasswordFocus.unfocus();
                           FocusScope.of(context).requestFocus(newPasswordFocus);
@@ -86,12 +85,10 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         keyboardType: TextInputType.text,
                         obscureText: true,
                         textInputAction: TextInputAction.next,
-                        labelText: AppLocalizations.of(context)
-                            .translate("enter_new_password_placeholder"),
+                        labelText: AppLocalizations.of(context).translate("enter_new_password_placeholder"),
                         onFieldSubmitted: (_) {
                           newPasswordFocus.unfocus();
-                          FocusScope.of(context)
-                              .requestFocus(confirmPasswordFocus);
+                          FocusScope.of(context).requestFocus(confirmPasswordFocus);
                         },
                         validator: Validators.required(context),
                       ),
@@ -104,17 +101,12 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         keyboardType: TextInputType.text,
                         obscureText: true,
                         textInputAction: TextInputAction.done,
-                        labelText: AppLocalizations.of(context)
-                            .translate("confirm_password_placeholder"),
+                        labelText: AppLocalizations.of(context).translate("confirm_password_placeholder"),
                         onFieldSubmitted: (_) => _submitForm(),
                         validator: (String value) {
-                          if (value.isEmpty)
-                            return AppLocalizations.of(context)
-                                .translate('field_must_not_be_blank');
+                          if (value.isEmpty) return AppLocalizations.of(context).translate('field_must_not_be_blank');
 
-                          if (value != newPasswordController.value.text)
-                            return AppLocalizations.of(context)
-                                .translate('password_does_not_match');
+                          if (value != newPasswordController.value.text) return AppLocalizations.of(context).translate('password_does_not_match');
 
                           return null;
                         },
@@ -140,8 +132,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                                 ),
                               )
                             : TextTranslator(
-                                AppLocalizations.of(context)
-                                    .translate("confirm"),
+                                AppLocalizations.of(context).translate("confirm"),
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 20,
@@ -165,8 +156,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
     if (!formState.validate()) return;
 
-    String oldPassword = oldPasswordController.value.text,
-        newPassword = newPasswordController.value.text;
+    String oldPassword = oldPasswordController.value.text, newPassword = newPasswordController.value.text;
 
     AuthContext authContext = Provider.of<AuthContext>(
       context,

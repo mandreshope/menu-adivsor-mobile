@@ -43,7 +43,9 @@ class ChoosePayement extends StatelessWidget {
               routeName: paymentCardListRoute,
             );
           }),
-          SizedBox(height: 25,),
+          SizedBox(
+            height: 25,
+          ),
           _card(context, "à la livraison", Icons.delivery_dining, () async {
             print("à la livraison");
 
@@ -61,50 +63,33 @@ class ChoosePayement extends StatelessWidget {
             AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
 
             var command = await Api.instance.sendCommand(
-              paiementLivraison: true,
-              isDelivery: true,
-              optionLivraison: restaurant.optionLivraison,
-                                            etage: restaurant.etage,
-                                            appartement: restaurant.appartement,
-                                            codeappartement: restaurant.codeappartement,
-                                            comment: cartContext.comment,
-                                            relatedUser: authContext.currentUser?.id ?? null,
-                                            commandType: commandContext.commandType,
-                                            items: cartContext
-                                                      .items
-                                                      .where(
-                                                          (e) => !e.isMenu)
-                                                      .map((e) => {
-                                                            'quantity': e.quantity,
-                                                            'item': e.id,
-                                                            'options': e.optionSelected != null ? 
-                                                            e.optionSelected : [],
-                                                            'comment':
-                                                                e.message
-                                                          })
-                                                      .toList(),
-                                                  restaurant: cartContext.currentOrigin,
-                                              totalPrice: ((cartContext.totalPrice * 100) + (restaurant.priceDelevery != null ? restaurant.priceDelevery : 0).toDouble() ).round(),
-                                            menu:cartContext.items.where(
-                                                  (e) => e.isMenu).map(
-                                                    (e) => 
-                                                    {
-                                                      'quantity': e.quantity,
-                                                      'item': e.id,
-                                                      'foods': 
-                                                  e.foodMenuSelecteds
-                                                }).toList(),shippingAddress: commandContext.deliveryAddress,
-                                            shipAsSoonAsPossible: commandContext.deliveryDate == null && commandContext.deliveryTime == null,
-                                            shippingTime: commandContext.deliveryDate
-                                                    ?.add(
-                                                      Duration(
-                                                        minutes: commandContext.deliveryTime.hour * 60 + commandContext.deliveryTime.minute,
-                                                      ),
-                                                    )
-                                                    ?.millisecondsSinceEpoch ??
-                                                null,
-                                              priceless: !cartContext.withPrice
-                                          );
+                paiementLivraison: true,
+                isDelivery: true,
+                optionLivraison: restaurant.optionLivraison,
+                etage: restaurant.etage,
+                appartement: restaurant.appartement,
+                codeappartement: restaurant.codeappartement,
+                comment: cartContext.comment,
+                relatedUser: authContext.currentUser?.id ?? null,
+                commandType: commandContext.commandType,
+                items: cartContext.items
+                    .where((e) => !e.isMenu)
+                    .map((e) => {'quantity': e.quantity, 'item': e.id, 'options': e.optionSelected != null ? e.optionSelected : [], 'comment': e.message})
+                    .toList(),
+                restaurant: cartContext.currentOrigin,
+                totalPrice: ((cartContext.totalPrice * 100) + (restaurant.priceDelevery != null ? restaurant.priceDelevery : 0).toDouble()).round(),
+                menu: cartContext.items.where((e) => e.isMenu).map((e) => {'quantity': e.quantity, 'item': e.id, 'foods': e.foodMenuSelecteds}).toList(),
+                shippingAddress: commandContext.deliveryAddress,
+                shipAsSoonAsPossible: commandContext.deliveryDate == null && commandContext.deliveryTime == null,
+                shippingTime: commandContext.deliveryDate
+                        ?.add(
+                          Duration(
+                            minutes: commandContext.deliveryTime.hour * 60 + commandContext.deliveryTime.minute,
+                          ),
+                        )
+                        ?.millisecondsSinceEpoch ??
+                    null,
+                priceless: !cartContext.withPrice);
             Command cm = Command.fromJson(command);
 
             commandContext.clear();
@@ -128,7 +113,7 @@ class ChoosePayement extends StatelessWidget {
   }
 
   Widget _card(BuildContext context, String title, IconData iconData, Function onTap) => Center(
-    child: Theme(
+        child: Theme(
           data: ThemeData(
             cardColor: CRIMSON,
             brightness: Brightness.dark,
@@ -154,9 +139,7 @@ class ChoosePayement extends StatelessWidget {
                   children: [
                     TextTranslator(
                       title,
-                      style: TextStyle(
-                        fontSize: 18
-                      ),
+                      style: TextStyle(fontSize: 18),
                     ),
                     SizedBox(
                       height: 10,
@@ -171,5 +154,5 @@ class ChoosePayement extends StatelessWidget {
             ),
           ),
         ),
-  );
+      );
 }

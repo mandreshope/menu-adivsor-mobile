@@ -11,7 +11,6 @@ import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
-import 'package:provider/provider.dart';
 // import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:qrcode/qrcode.dart';
 

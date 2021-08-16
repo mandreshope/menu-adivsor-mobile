@@ -9,7 +9,6 @@ import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
-import '../models.dart';
 import 'dialogs.dart';
 
 class RoundedButton extends StatelessWidget {
@@ -106,7 +105,7 @@ class OrderButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    CartContext provider = Provider.of<CartContext>(context,listen: false);
+    CartContext provider = Provider.of<CartContext>(context, listen: false);
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -166,17 +165,17 @@ class OrderButton extends StatelessWidget {
                                           ),
                                           onTap: () async {
                                             var result = await showDialog(
-                                            context: context,
-                                            builder: (_) => ConfirmationDialog(
-                                              title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
-                                              content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
-                                            ),
-                                                  );
+                                              context: context,
+                                              builder: (_) => ConfirmationDialog(
+                                                title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
+                                                content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
+                                              ),
+                                            );
 
-                                               if (result is bool && result) {
-                                            _cartContext.clear();
-                                            RouteUtil.goBack(context: context);
-                                               }
+                                            if (result is bool && result) {
+                                              _cartContext.clear();
+                                              RouteUtil.goBack(context: context);
+                                            }
                                           },
                                         )
                                       ],
@@ -219,34 +218,28 @@ class OrderButton extends StatelessWidget {
                     children: [
                       Container(
                           padding: EdgeInsets.all(8),
-                          margin: EdgeInsets.only(right: 5,top: 5),
+                          margin: EdgeInsets.only(right: 5, top: 5),
                           decoration: BoxDecoration(shape: BoxShape.circle, color: CRIMSON),
                           child: Icon(
                             Icons.shopping_cart,
                             color: Colors.white,
                           )),
-                          Positioned(
-                                      top: 0,
-                                      right: 0,
-                                      child: Container(
-                                          padding: EdgeInsets.only(bottom: 5),
-                                          decoration: BoxDecoration(
-                                            color: TEAL,
-                                            borderRadius: BorderRadius.circular(12.5)
-                                          ),
-                                          child: Center(
-                                            child: Text("${provider.totalItems}",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold
-                                              ),
-                                            )
-                                            ,
-                                          ),
-                                      width: 25,
-                                        height: 25,
-                                      ),
-                                    )
+                      Positioned(
+                        top: 0,
+                        right: 0,
+                        child: Container(
+                          padding: EdgeInsets.only(bottom: 5),
+                          decoration: BoxDecoration(color: TEAL, borderRadius: BorderRadius.circular(12.5)),
+                          child: Center(
+                            child: Text(
+                              "${provider.totalItems}",
+                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          width: 25,
+                          height: 25,
+                        ),
+                      )
                     ],
                   ),
                 ),

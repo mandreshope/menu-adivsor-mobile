@@ -10,7 +10,6 @@ import 'package:menu_advisor/src/components/inputs.dart';
 import 'package:menu_advisor/src/components/logo.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/constants/constant.dart';
-import 'package:menu_advisor/src/pages/confirm_sms.dart';
 import 'package:menu_advisor/src/pages/forgot_password.dart';
 import 'package:menu_advisor/src/pages/home.dart';
 import 'package:menu_advisor/src/pages/order.dart';
@@ -55,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
           child: SingleChildScrollView(
-                      child: Column(
+            child: Column(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -117,44 +116,46 @@ class _LoginPageState extends State<LoginPage> {
                           height: 20,
                         ),
                         TextTranslator(
-                            "Langage",
-                            style: Theme.of(context).textTheme.headline6,
-                          ),
-                          Consumer<SettingContext>(
-                            builder: (context, settingContext,_) {
-                              return DropdownButton<String>(
-                                elevation: 16,
-                                isExpanded: true,
-                                value: /*isSystemSetting ? 'system' :*/ settingContext.languageCode,
-                                onChanged: (String languageCode) {
-                                  SettingContext settingContext = Provider.of<SettingContext>(
-                                    context,
-                                    listen: false,
-                                  );
-
-                                  
-                                   showDialogProgress(context);
-                                    settingContext.setlanguageCode(languageCode).then((value) {
-                                      dismissDialogProgress(context);
-                                    });
-                                },
-                                style: TextStyle(
-                                  color: Colors.grey[700],
-                                ),
-
-                                items: [
-                                  for (int i = 0; i < settingContext.supportedLanguages.length; i++)
-                                    DropdownMenuItem<String>(
-                                      value: settingContext.supportedLanguages[i],
-                                      child: ListTile(
-                                        leading: Flag(settingContext.supportedLanguages[i].toString().codeCountry,height: 25,width: 25,),
-                                        title: TextTranslator(settingContext.languages[i],),
-                                      ),
-                                  ),
-                                ],
+                          "Langage",
+                          style: Theme.of(context).textTheme.headline6,
+                        ),
+                        Consumer<SettingContext>(builder: (context, settingContext, _) {
+                          return DropdownButton<String>(
+                            elevation: 16,
+                            isExpanded: true,
+                            value: /*isSystemSetting ? 'system' :*/ settingContext.languageCode,
+                            onChanged: (String languageCode) {
+                              SettingContext settingContext = Provider.of<SettingContext>(
+                                context,
+                                listen: false,
                               );
-                            }
-                          ),
+
+                              showDialogProgress(context);
+                              settingContext.setlanguageCode(languageCode).then((value) {
+                                dismissDialogProgress(context);
+                              });
+                            },
+                            style: TextStyle(
+                              color: Colors.grey[700],
+                            ),
+                            items: [
+                              for (int i = 0; i < settingContext.supportedLanguages.length; i++)
+                                DropdownMenuItem<String>(
+                                  value: settingContext.supportedLanguages[i],
+                                  child: ListTile(
+                                    leading: Flag(
+                                      settingContext.supportedLanguages[i].toString().codeCountry,
+                                      height: 25,
+                                      width: 25,
+                                    ),
+                                    title: TextTranslator(
+                                      settingContext.languages[i],
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          );
+                        }),
                         SizedBox(
                           height: 20,
                         ),
@@ -165,7 +166,7 @@ class _LoginPageState extends State<LoginPage> {
                           textInputAction: TextInputAction.next,
                           decoration: InputDecoration(
                             labelText: "Votre numéro de téléphone",
-                             prefixText: phonePrefix,
+                            prefixText: phonePrefix,
                           ),
                           onFieldSubmitted: (_) {
                             _emailFocus.unfocus();
@@ -179,8 +180,7 @@ class _LoginPageState extends State<LoginPage> {
                           keyboardType: TextInputType.text,
                           obscureText: true,
                           textInputAction: TextInputAction.done,
-                          labelText: AppLocalizations.of(context)
-                              .translate("password_placeholder"),
+                          labelText: AppLocalizations.of(context).translate("password_placeholder"),
                           onFieldSubmitted: (_) => _submitForm(),
                         ),
                         // SizedBox(height: 25),
@@ -195,8 +195,7 @@ class _LoginPageState extends State<LoginPage> {
                                   });
                                 }),
                             TextTranslator(
-                              AppLocalizations.of(context)
-                                  .translate("remember_password"),
+                              AppLocalizations.of(context).translate("remember_password"),
                             )
                           ],
                         ),
@@ -222,8 +221,7 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                 )
                               : TextTranslator(
-                                  AppLocalizations.of(context)
-                                      .translate("login_button"),
+                                  AppLocalizations.of(context).translate("login_button"),
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 20,
@@ -233,8 +231,7 @@ class _LoginPageState extends State<LoginPage> {
                         SizedBox(height: 10),
                         TextButton(
                           child: TextTranslator(
-                            AppLocalizations.of(context)
-                                .translate("forgotten_password"),
+                            AppLocalizations.of(context).translate("forgotten_password"),
                             style: TextStyle(
                               color: CRIMSON,
                               decoration: TextDecoration.underline,
@@ -250,8 +247,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         FlatButton(
                           child: TextTranslator(
-                            AppLocalizations.of(context)
-                                .translate("skip_for_now"),
+                            AppLocalizations.of(context).translate("skip_for_now"),
                           ),
                           onPressed: () {
                             RouteUtil.goTo(
@@ -299,8 +295,7 @@ class _LoginPageState extends State<LoginPage> {
                           );
                         },
                         child: TextTranslator(
-                          AppLocalizations.of(context)
-                              .translate("create_account"),
+                          AppLocalizations.of(context).translate("create_account"),
                           style: TextStyle(
                             decoration: TextDecoration.underline,
                             fontWeight: FontWeight.bold,
@@ -322,9 +317,8 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   _submitForm() async {
-    
-    final String email = phonePrefix+_emailController.value.text,
-        password = _passwordController.value.text;
+    print("$logTrace");
+    final String email = phonePrefix + _emailController.value.text, password = _passwordController.value.text;
 
     if (email.isEmpty || password.isEmpty) {
       Fluttertoast.showToast(
@@ -357,8 +351,7 @@ class _LoginPageState extends State<LoginPage> {
       listen: false,
     );
     try {
-      final result = await authContext.login(email.trim(), password,
-          isPasswordRemember: isPasswordRemember);
+      final result = await authContext.login(email.trim(), password, isPasswordRemember: isPasswordRemember);
       if (result) {
         if (cartContext.itemCount > 0)
           RouteUtil.goTo(
@@ -376,10 +369,9 @@ class _LoginPageState extends State<LoginPage> {
           );
       }
     } catch (error) {
-      print(error);
+      print("$logTrace login error $error");
       Fluttertoast.showToast(
-        msg:
-            AppLocalizations.of(context).translate("invalid_email_or_password"),
+        msg: AppLocalizations.of(context).translate("invalid_email_or_password"),
         backgroundColor: CRIMSON,
         textColor: Colors.white,
       );

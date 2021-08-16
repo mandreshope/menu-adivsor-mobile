@@ -5,7 +5,7 @@ class CommandContext extends ChangeNotifier {
   PaymentCard _paymentCard;
   String _commandType;
   String _deliveryAddress;
-    DateTime _deliveryDate;
+  DateTime _deliveryDate;
   TimeOfDay _deliveryTime;
   List<Food> _items;
 

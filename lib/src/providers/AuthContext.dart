@@ -16,7 +16,6 @@ class AuthContext extends ChangeNotifier {
         prefs.remove('access_token');
         prefs.remove('refresh_token');
         prefs.remove('remember_password');
-        
       });
     }
   }
@@ -30,8 +29,7 @@ class AuthContext extends ChangeNotifier {
   Future _loadUser() async {
     final sharedPrefs = await SharedPreferences.getInstance();
 
-    if (sharedPrefs.containsKey('access_token') &&
-        sharedPrefs.containsKey('refresh_token')) {
+    if (sharedPrefs.containsKey('access_token') && sharedPrefs.containsKey('refresh_token')) {
       String accessToken = sharedPrefs.getString('access_token');
       String refreshToken = sharedPrefs.getString('refresh_token');
       _api.init(accessToken, refreshToken);
@@ -40,13 +38,10 @@ class AuthContext extends ChangeNotifier {
       } catch (e) {
         currentUser = null;
       }
-      
     }
   }
 
-  Future<bool> login(String email, String password,
-          {bool isPasswordRemember = false}) =>
-      _api
+  Future<bool> login(String email, String password, {bool isPasswordRemember = false}) => _api
           .login(
         email,
         password,
@@ -79,13 +74,7 @@ class AuthContext extends ChangeNotifier {
     String firstName,
     String lastName,
   }) =>
-      _api.register(
-        email: email,
-        phoneNumber: phoneNumber,
-        password: password,
-        firstName: firstName,
-        lastName: lastName
-      );
+      _api.register(email: email, phoneNumber: phoneNumber, password: password, firstName: firstName, lastName: lastName);
 
   Future addToFavoriteFoods(Food food) async {
     await _api.addToFavoriteFood(food);
@@ -146,8 +135,7 @@ class AuthContext extends ChangeNotifier {
         password: password,
       );
 
-  Future updatePassword(String oldPassword, String newPassword) =>
-      _api.updatePassword(oldPassword, newPassword);
+  Future updatePassword(String oldPassword, String newPassword) => _api.updatePassword(oldPassword, newPassword);
 
   Future removePaymentCard(PaymentCard creditCard) async {
     await _api.removePaymentCard(creditCard);
@@ -168,21 +156,16 @@ class AuthContext extends ChangeNotifier {
     if (!pref.getBool('remember_password') ?? false) {
       return false;
     }
-    return login(pref.getString('email'), pref.getString('password'),
-        isPasswordRemember: true);
+    return login(pref.getString('email'), pref.getString('password'), isPasswordRemember: true);
   }
-  Future<List<Command>> getCommandOfUser({
-    int limit,
-    int offset = 0,
-    String commandType
-  }) async {
-    List<Command> commands;
-    if (commandType != null){
-      commands = await _api.getCommandOfUser(currentUser,limit: limit,offset: offset,commandType: commandType);
-    }else{
-      commands = await _api.getCommandOfUser(currentUser,limit: limit,offset: offset);
-    }
 
+  Future<List<Command>> getCommandOfUser({int limit, int offset = 0, String commandType}) async {
+    List<Command> commands;
+    if (commandType != null) {
+      commands = await _api.getCommandOfUser(currentUser, limit: limit, offset: offset, commandType: commandType);
+    } else {
+      commands = await _api.getCommandOfUser(currentUser, limit: limit, offset: offset);
+    }
 
     return commands;
   }
@@ -192,7 +175,7 @@ class AuthContext extends ChangeNotifier {
   }
 
 //   verifyPhoneNumber(String phoneNumber,{Function verificationCompleted,Function verificationFailed,Function codeSent}) async {
-    
+
 //     await auth.FirebaseAuth.instance.verifyPhoneNumber(
 //       phoneNumber: phoneNumber,
 //       verificationCompleted: (auth.PhoneAuthCredential credential) async {
@@ -221,7 +204,7 @@ class AuthContext extends ChangeNotifier {
 //   }
 
 //  Future verifyFirebaseSms(String verificationId, String code,{@required Function onSucced, @required Function onFailed}) async{
-    
+
 //   await auth.FirebaseAuth.instance
 //               .signInWithCredential(auth.PhoneAuthProvider.credential(verificationId: verificationId, smsCode: code,))
 //               .then((value) async {
@@ -233,6 +216,5 @@ class AuthContext extends ChangeNotifier {
 //             onFailed(onError);
 //           });
 //   }
-
 
 }

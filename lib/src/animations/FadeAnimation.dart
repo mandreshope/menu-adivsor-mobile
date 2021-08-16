@@ -15,9 +15,7 @@ class FadeAnimation extends StatelessWidget {
     this.curve = Curves.linear,
   });
 
-  final _tween = MultiTween<FadeAnimationType>()
-    ..add(FadeAnimationType.opacity, 0.0.tweenTo(1.0), 500.milliseconds)
-    ..add(FadeAnimationType.translateY, 30.0.tweenTo(0.0), 500.milliseconds);
+  final _tween = MultiTween<FadeAnimationType>()..add(FadeAnimationType.opacity, 0.0.tweenTo(1.0), 500.milliseconds)..add(FadeAnimationType.translateY, 30.0.tweenTo(0.0), 500.milliseconds);
 
   @override
   Widget build(BuildContext context) {

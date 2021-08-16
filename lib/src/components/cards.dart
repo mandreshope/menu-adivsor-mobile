@@ -1,19 +1,10 @@
-import 'dart:async';
-
-import 'package:auto_size_text/auto_size_text.dart';
-import 'package:chips_choice/chips_choice.dart';
-import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
-import 'package:menu_advisor/src/components/menu_item_food_option.dart';
 import 'package:menu_advisor/src/components/pointer_paint.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
-import 'package:menu_advisor/src/constants/date_format.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/detail_menu.dart';
 import 'package:menu_advisor/src/pages/food.dart';
@@ -24,7 +15,6 @@ import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/DataContext.dart';
 import 'package:menu_advisor/src/providers/MenuContext.dart';
-import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
@@ -998,14 +988,14 @@ class _DrinkCardState extends State<DrinkCard> {
                       ),
                     ),
                     Consumer<CartContext>(builder: (_, cart, w) {
-                        return cart.contains(widget.food)
-                            ? Container(
-                                padding: EdgeInsets.all(8),
-                                decoration: BoxDecoration(shape: BoxShape.circle, color: CRIMSON),
-                                child: Text("${cart.getFoodCount(widget.food)}x", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
-                              )
-                            : Container();
-                      }),
+                      return cart.contains(widget.food)
+                          ? Container(
+                              padding: EdgeInsets.all(8),
+                              decoration: BoxDecoration(shape: BoxShape.circle, color: CRIMSON),
+                              child: Text("${cart.getFoodCount(widget.food)}x", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                            )
+                          : Container();
+                    }),
                   ],
                 ),
               ),
@@ -1032,7 +1022,7 @@ class MenuCard extends StatelessWidget {
     CartContext _cartContext = Provider.of<CartContext>(context, listen: false);
     if (restaurant != null) menu.restaurant = restaurant;
     // _controller.menu = menu;
-    menu.foodsGrouped = menu.foods ?? List();
+    menu.foodsGrouped = menu.foods ?? [];
     // count = _cartContext.getCount(menu);
 
     return InkWell(
@@ -1098,7 +1088,9 @@ class MenuCard extends StatelessWidget {
                     children: [
                       // SizedBox(height: 5,),
                       TextTranslator(
-                        !Provider.of<CartContext>(context).withPrice || menu.type == MenuType.priceless.value || menu.type == MenuType.per_food.value || menu.price?.amount == null ?  " " : "${menu.price.amount / 100 ?? ""}€",
+                        !Provider.of<CartContext>(context).withPrice || menu.type == MenuType.priceless.value || menu.type == MenuType.per_food.value || menu.price?.amount == null
+                            ? " "
+                            : "${menu.price.amount / 100 ?? ""}€",
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: CRIMSON),
                       ),
                       Consumer<CartContext>(builder: (_, cart, w) {
@@ -1406,24 +1398,24 @@ class _BagItemState extends State<BagItem> {
           width: 10,
         ),
 
-        f.isMenu ? Container() :
-
-        f.imageURL != null
-            ? /*Hero(
+        f.isMenu
+            ? Container()
+            : f.imageURL != null
+                ? /*Hero(
                           tag: widget.imageTag ?? widget.food.id,
         child:*/
-            CircleAvatar(
-                backgroundImage: NetworkImage(
-                  f.imageURL,
-                ),
-                onBackgroundImageError: (_, __) {},
-                backgroundColor: Colors.grey,
-                maxRadius: 20,
-              )
-            // )
-            : Icon(
-                Icons.fastfood,
-              ),
+                CircleAvatar(
+                    backgroundImage: NetworkImage(
+                      f.imageURL,
+                    ),
+                    onBackgroundImageError: (_, __) {},
+                    backgroundColor: Colors.grey,
+                    maxRadius: 20,
+                  )
+                // )
+                : Icon(
+                    Icons.fastfood,
+                  ),
         SizedBox(
           width: 10,
         ),
@@ -1536,7 +1528,7 @@ class _BagItemState extends State<BagItem> {
     /*List<Option> options = _cartContext.options[widget.food.id]
         .expand((element) => element)
         .toList();*/
-    var options = f.optionSelected ?? List();
+    var options = f.optionSelected ?? [];
     return Container(
       // margin: EdgeInsets.only(left: MediaQuery.of(context).size.width/4),
       child: Column(
@@ -1559,7 +1551,6 @@ class _BagItemState extends State<BagItem> {
                   SizedBox(
                     height: 15,
                   ),
-
                   for (ItemsOption itemsOption in option?.itemOptionSelected?.toList()) ...[
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -1610,7 +1601,7 @@ class _BagItemState extends State<BagItem> {
                           Text("")
                         else
                           itemsOption.price?.amount == null ? Text("") : TextTranslator('${itemsOption.price.amount / 100} €', style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
-                        ],
+                      ],
                     ),
                   ],
                 ]
@@ -1735,7 +1726,7 @@ class BlogCard extends StatelessWidget {
                 Container(
                   height: 160,
                   width: double.infinity,
-                  padding: EdgeInsets.only(bottom: 5,top: 5),
+                  padding: EdgeInsets.only(bottom: 5, top: 5),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5),
                   ),
@@ -1759,9 +1750,9 @@ class BlogCard extends StatelessWidget {
                       // height: 35,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        // borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20), bottomRight: Radius.circular(20)),
-                        // color: Colors.black.withAlpha(150),
-                      ),
+                          // borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20), bottomRight: Radius.circular(20)),
+                          // color: Colors.black.withAlpha(150),
+                          ),
                       child: Center(
                         child: TextTranslator(
                           blog.title,
@@ -1773,9 +1764,7 @@ class BlogCard extends StatelessWidget {
                 ),
                 Container(
                   child: Center(
-                    child: TextTranslator(
-                      blog.description
-                    ),
+                    child: TextTranslator(blog.description),
                   ),
                 )
               ],

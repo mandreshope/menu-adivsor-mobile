@@ -95,5 +95,6 @@ class RouteUtil {
     @required BuildContext context,
   }) {
     Navigator.of(context).pop();
+    print("go back");
   }
 }

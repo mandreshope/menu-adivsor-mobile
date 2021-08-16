@@ -1,22 +1,17 @@
-import 'package:dialog_spinner/dialog_spinner.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_cupertino_datetime_picker/flutter_cupertino_datetime_picker.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_map_location_picker/google_map_location_picker.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/constants/constant.dart';
-import 'package:menu_advisor/src/constants/date_format.dart';
 import 'package:menu_advisor/src/constants/validators.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/confirm_sms.dart';
-import 'package:menu_advisor/src/pages/summary.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/CommandContext.dart';
-import 'package:menu_advisor/src/providers/MenuContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
@@ -24,6 +19,7 @@ import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/extensions.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
+
 // import 'package:menu_advisor/src/components/customDropDown.dart' as drop;
 class UserDetailsPage extends StatefulWidget {
   @override
@@ -47,8 +43,8 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
   TimeOfDay deliveryTime;
 
   bool sendingCommand = false;
-   DateTime now = DateTime.now();
-   Restaurant _restaurant;
+  DateTime now = DateTime.now();
+  Restaurant _restaurant;
 
   CommandContext commandContext;
   bool isToday = true;
@@ -66,21 +62,18 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
       listen: false,
     );
 
-      if (authContext.currentUser != null){
+    if (authContext.currentUser != null) {
       _displayNameController.text = authContext.currentUser.toString();
       _phoneNumberController.text = authContext.currentUser.phoneNumber.replaceFirst(phonePrefix, "");
       _emailController.text = authContext.currentUser.email;
       _addressController.text = authContext.currentUser.address ?? "";
     }
 
-    deliveryDate =  now;//.add(Duration(days: 0));
-    deliveryTime = TimeOfDay(hour: now.hour,minute: 00);
+    deliveryDate = now; //.add(Duration(days: 0));
+    deliveryTime = TimeOfDay(hour: now.hour, minute: 00);
 
     commandContext.deliveryDate = deliveryDate;
     commandContext.deliveryTime = deliveryTime;
-
-    
-
   }
 
   @override
@@ -151,8 +144,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                 ),
                 SizedBox(height: 10),
                 TextTranslator(
-                  AppLocalizations.of(context)
-                      .translate("mail_address_placeholder"),
+                  AppLocalizations.of(context).translate("mail_address_placeholder"),
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                   ),
@@ -179,8 +171,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                 if (commandContext.commandType == 'delivery') ...[
                   SizedBox(height: 10),
                   TextTranslator(
-                    AppLocalizations.of(context)
-                        .translate("address_placeholder"),
+                    AppLocalizations.of(context).translate("address_placeholder"),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
@@ -201,23 +192,23 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                     ),
                     onTap: () async {
                       LocationResult result = await showLocationPicker(
-                                context,
-                                "AIzaSyBu8U8tbY6BlxJezbjt8g3Lzi4k1I75iYw",
-                                initialCenter: LatLng(31.1975844, 29.9598339),
-                                //                      automaticallyAnimateToCurrentLocation: true,
-                                //                      mapStylePath: 'assets/mapStyle.json',
-                                myLocationButtonEnabled: true,
-                                // requiredGPS: true,
-                                layersButtonEnabled: true,
-                                // countries: ['AE', 'NG']
+                        context,
+                        "AIzaSyBu8U8tbY6BlxJezbjt8g3Lzi4k1I75iYw",
+                        initialCenter: LatLng(31.1975844, 29.9598339),
+                        //                      automaticallyAnimateToCurrentLocation: true,
+                        //                      mapStylePath: 'assets/mapStyle.json',
+                        myLocationButtonEnabled: true,
+                        // requiredGPS: true,
+                        layersButtonEnabled: true,
+                        // countries: ['AE', 'NG']
 
-                                //                      resultCardAlignment: Alignment.bottomCenter,
-                                desiredAccuracy: LocationAccuracy.best,
-                              );
-                              print("result = $result");
-                              _addressController.text = result.address;
-                              _submitForm();
-                },
+                        //                      resultCardAlignment: Alignment.bottomCenter,
+                        desiredAccuracy: LocationAccuracy.best,
+                      );
+                      print("result = $result");
+                      _addressController.text = result.address;
+                      _submitForm();
+                    },
                   ),
                 ],
                 SizedBox(height: 25),
@@ -227,59 +218,56 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                     child: InkWell(
                       onTap: () async {
                         return;
-                        DatePicker.showDatePicker(context,
-                        locale: DateTimePickerLocale.fr,
-                        dateFormat: "dd-MMMM-yyyy,HH:mm",
-                        initialDateTime: deliveryDate ?? DateTime.now(),
-                        maxDateTime: DateTime.now().add(
-                            Duration(days: 3),
-                          ),
-                        minDateTime: DateTime.now(),
-                        onCancel: (){
+                        // DatePicker.showDatePicker(context,
+                        //     locale: DateTimePickerLocale.fr,
+                        //     dateFormat: "dd-MMMM-yyyy,HH:mm",
+                        //     initialDateTime: deliveryDate ?? DateTime.now(),
+                        //     maxDateTime: DateTime.now().add(
+                        //       Duration(days: 3),
+                        //     ),
+                        //     minDateTime: DateTime.now(),
+                        //     onCancel: () {}, onConfirm: (date, val) {
+                        //   commandContext.deliveryDate = date;
+                        //   commandContext.deliveryTime = TimeOfDay.fromDateTime(date);
 
-                        },
-                        onConfirm: (date,val){
-                          
-                            commandContext.deliveryDate = date;
-                            commandContext.deliveryTime = TimeOfDay.fromDateTime(date);
-                          
-                          setState(() {
-                              deliveryDate = date;
-                              deliveryTime = TimeOfDay.fromDateTime(date);
-                            });
-                          
-                        },pickerMode: DateTimePickerMode.datetime
-                        );
+                        //   setState(() {
+                        //     deliveryDate = date;
+                        //     deliveryTime = TimeOfDay.fromDateTime(date);
+                        //   });
+                        // }, pickerMode: DateTimePickerMode.datetime);
                       },
                       child: ListTile(
-                        contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 25.0),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 25.0),
                         title: TextTranslator(
                           'Planifier une commande',
                         ),
                         leading: Icon(
                           Icons.calendar_today_outlined,
                         ),
-                        trailing: /*deliveryDate != null && deliveryTime != null
+                        trailing:
+                            /*deliveryDate != null && deliveryTime != null
                             ? Icon(
                                 Icons.edit_outlined,
                                 color: Colors.green[300],
                               )
-                            :*/ null,
+                            :*/
+                            null,
                       ),
                     ),
                   ),
                 // if (deliveryDate != null) ...[
-                  // Divider(),
-                  SizedBox(height: 5,),
-                  Row(
+                // Divider(),
+                SizedBox(
+                  height: 5,
+                ),
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     _datePicker(),
                     _timePicker(),
                   ],
-                ),  
-                  /*Container(
+                ),
+                /*Container(
                     color: CRIMSON,
                     child: ListTile(
                       contentPadding:
@@ -314,16 +302,12 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                             height: 23,
                             width: 23,
                             child: CircularProgressIndicator(
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                           ),
                         )
                       : TextTranslator(
-                          commandContext.commandType == 'delivery'
-                              ? AppLocalizations.of(context).translate('next')
-                              : AppLocalizations.of(context)
-                                  .translate('validate'),
+                          commandContext.commandType == 'delivery' ? AppLocalizations.of(context).translate('next') : AppLocalizations.of(context).translate('validate'),
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -340,8 +324,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
   }
 
   _submitForm() async {
-  
-    if (!_emailController.text.isValidateEmail()){
+    if (!_emailController.text.isValidateEmail()) {
       Fluttertoast.showToast(
         msg: AppLocalizations.of(context).translate("invalid_email"),
         backgroundColor: Colors.black,
@@ -362,20 +345,19 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
       listen: false,
     );
 
-    AuthContext authContext = Provider.of<AuthContext>(context,listen: false);
+    AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
 
     if (formState.validate() && deliveryDate != null && deliveryTime != null) {
       setState(() {
         sendingCommand = true;
       });
       try {
-
         String code = await Api.instance.sendCode(
             relatedUser: authContext.currentUser?.id ?? null,
             customer: {
               'name': _displayNameController.value.text,
               'address': _addressController.value.text,
-              'phoneNumber': phonePrefix+_phoneNumberController.value.text,
+              'phoneNumber': phonePrefix + _phoneNumberController.value.text,
               'email': _emailController.value.text
             },
             commandType: commandContext.commandType);
@@ -385,12 +367,12 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
           child: ConfirmSms(
             command: null,
             isFromSignup: false,
-              customer:{
-                'name': _displayNameController.value.text,
-                'address': _addressController.value.text,
-                'phoneNumber': phonePrefix+_phoneNumberController.value.text,
-                'email': _emailController.value.text
-              },
+            customer: {
+              'name': _displayNameController.value.text,
+              'address': _addressController.value.text,
+              'phoneNumber': phonePrefix + _phoneNumberController.value.text,
+              'email': _emailController.value.text
+            },
             code: code,
           ),
           routeName: homeRoute,
@@ -399,13 +381,11 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
         setState(() {
           sendingCommand = false;
         });
-
       } catch (error) {
         setState(() {
           sendingCommand = false;
         });
-        Fluttertoast.showToast(
-            msg: 'Erreur lors de l\'envoi de la commande...');
+        Fluttertoast.showToast(msg: 'Erreur lors de l\'envoi de la commande...');
       }
     } else {
       setState(() {
@@ -416,97 +396,79 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
   }
 
   Widget _datePicker() {
-   
     return Card(
       elevation: 1,
       margin: EdgeInsets.all(0),
-        child: Container(
+      child: Container(
         height: 40,
-        width: MediaQuery.of(context).size.width/2-25,
+        width: MediaQuery.of(context).size.width / 2 - 25,
         padding: EdgeInsets.symmetric(horizontal: 15),
-        
         child: Center(
           child: DropdownButton<DateTime>(
-                                elevation: 16,
-                                isExpanded: true,
-                                isDense: true,
-                                value:  deliveryDate,
-                                onChanged: (DateTime date) {
-                                  String dayName =  DateFormat.EEEE('fr_FR').format(date);
-                                  setState(() {
-                                    print(dayName);
-                                    if(_restaurant.openingTimes.where((v) =>v.day.toLowerCase() == dayName).isNotEmpty) {
-                                      print('ouvert');
-                                      deliveryDate = date;
-                                      commandContext.deliveryDate = deliveryDate;
+            elevation: 16,
+            isExpanded: true,
+            isDense: true,
+            value: deliveryDate,
+            onChanged: (DateTime date) {
+              String dayName = DateFormat.EEEE('fr_FR').format(date);
+              setState(() {
+                print(dayName);
+                if (_restaurant.openingTimes.where((v) => v.day.toLowerCase() == dayName).isNotEmpty) {
+                  print('ouvert');
+                  deliveryDate = date;
+                  commandContext.deliveryDate = deliveryDate;
 
-                                      if (deliveryDate.day == now.day){
-                                        if (deliveryTime.hour <= now.hour){
-                                          deliveryTime = TimeOfDay(hour: now.hour, minute: 00) ;
-                                        }
-                                      }
+                  if (deliveryDate.day == now.day) {
+                    if (deliveryTime.hour <= now.hour) {
+                      deliveryTime = TimeOfDay(hour: now.hour, minute: 00);
+                    }
+                  } else if (deliveryTime.hour <= _restaurant.getFirstOpeningHour(deliveryDate, force: true)) {
+                    deliveryTime = TimeOfDay(hour: _restaurant.getFirstOpeningHour(deliveryDate), minute: 00);
+                  }
 
-                                      else if (deliveryTime.hour <= _restaurant.getFirstOpeningHour(deliveryDate,force: true)){
-                                        deliveryTime = TimeOfDay(hour: _restaurant.getFirstOpeningHour(deliveryDate), minute: 00) ;
-                                      }
+                  commandContext.deliveryTime = deliveryTime;
+                  isToday = deliveryDate.day == now.day;
+                  print("isToday $isToday");
+                } else {
+                  print('fermé');
+                  Fluttertoast.showToast(msg: 'Le restaurant est fermé');
+                }
+              });
+            },
+            style: TextStyle(color: Colors.grey[700], decoration: TextDecoration.none),
+            underline: Container(),
+            selectedItemBuilder: (_) {
+              return List.generate(24, (index) {
+                isToday = index == 0;
 
-                                      commandContext.deliveryTime = deliveryTime;
-                                      isToday = deliveryDate.day == now.day;
-                                      print("isToday $isToday");
-
-                                    }else {
-                                      print('fermé');
-                                      Fluttertoast.showToast(msg: 'Le restaurant est fermé');
-                                    }
-                                     
-                                  });
-                                   
-
-                                },
-                                style: TextStyle(
-                                  color: Colors.grey[700],
-                                  decoration: TextDecoration.none
-                                ),
-                                underline: Container(),
-                                selectedItemBuilder: (_){ 
-                                  return List.generate(24, (index){ 
-                                    
-                                    isToday = index == 0 ;  
-                                    
-                                    return TextTranslator(
-                                        index == 0 ? "Aujourd'hui" :
-                                        index == 1 ? "Demain" :
-                                        "${now.add(Duration(days: index)).dateToString("EE dd MMM")}",
-                                         style: TextStyle(
-                                          fontSize: 18,
-                                          color: CRIMSON,
-                                          fontWeight: FontWeight.w600
-                                        )
-                                        );
-                                        }
-                                        );
-                                },
-
-                                items: [
-                                  for (int i = 0; i < 4; i++)
-                                    DropdownMenuItem<DateTime>(
-                                      value: now.add(Duration(days: i)),
-                                      child: TextTranslator(
-                                        i == 0 ? "Aujourd'hui" :
-                                        i == 1 ? "Demain" :
-                                        "${now.add(Duration(days: i)).dateToString("EE dd MMMM")}",
-                                         style: TextStyle(
-                                          fontSize: 20
-                                        ),)
-                                  ),
-                                ],
-                              ),
+                return TextTranslator(
+                    index == 0
+                        ? "Aujourd'hui"
+                        : index == 1
+                            ? "Demain"
+                            : "${now.add(Duration(days: index)).dateToString("EE dd MMM")}",
+                    style: TextStyle(fontSize: 18, color: CRIMSON, fontWeight: FontWeight.w600));
+              });
+            },
+            items: [
+              for (int i = 0; i < 4; i++)
+                DropdownMenuItem<DateTime>(
+                    value: now.add(Duration(days: i)),
+                    child: TextTranslator(
+                      i == 0
+                          ? "Aujourd'hui"
+                          : i == 1
+                              ? "Demain"
+                              : "${now.add(Duration(days: i)).dateToString("EE dd MMMM")}",
+                      style: TextStyle(fontSize: 20),
+                    )),
+            ],
+          ),
         ),
       ),
     );
   }
 
- 
   Widget _timePicker() {
     return Card(
       elevation: 1,
@@ -522,22 +484,16 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
             isDense: true,
             isExpanded: true,
             value: deliveryTime,
-
             selectedItemBuilder: (_) {
               return [
-                for (int i = 
-              deliveryDate.day == now.day ? now.hour 
-              : _restaurant.getFirstOpeningHour(deliveryDate); i < 24; i++) ...[
-                    DropdownMenuItem<TimeOfDay>(
-                        value: TimeOfDay(hour: i, minute: 00),
-                        child: TextTranslator(
-                          now.hour == i ? "${TimeOfDay(hour: i, minute: (DateTime.now().add(Duration(minutes: 15)).minute)).format(context)}" :
-                          "${TimeOfDay(hour: i, minute: 00).format(context)}",
-                          style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.w600),
-                        )),
-                 
-                  ]
-               
+                for (int i = deliveryDate.day == now.day ? now.hour : _restaurant.getFirstOpeningHour(deliveryDate); i < 24; i++) ...[
+                  DropdownMenuItem<TimeOfDay>(
+                      value: TimeOfDay(hour: i, minute: 00),
+                      child: TextTranslator(
+                        now.hour == i ? "${TimeOfDay(hour: i, minute: (DateTime.now().add(Duration(minutes: 15)).minute)).format(context)}" : "${TimeOfDay(hour: i, minute: 00).format(context)}",
+                        style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.w600),
+                      )),
+                ]
               ];
             },
             onChanged: (TimeOfDay time) {
@@ -553,24 +509,18 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
             ),
             underline: Container(),
             items: [
-              for (int i = 
-              deliveryDate.day == now.day ? now.hour 
-              : _restaurant.getFirstOpeningHour(deliveryDate); i < 24; i++) ...[
-                    DropdownMenuItem<TimeOfDay>(
-                        value: TimeOfDay(hour: i, minute: 00),
-                        child: TextTranslator(
-                          now.hour == i ? "${TimeOfDay(hour: i, minute: (DateTime.now().add(Duration(minutes: 15)).minute)).format(context)}" :
-                          "${TimeOfDay(hour: i, minute: 00).format(context)}",
-                          style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.w600),
-                        )),
-                
-                ]
+              for (int i = deliveryDate.day == now.day ? now.hour : _restaurant.getFirstOpeningHour(deliveryDate); i < 24; i++) ...[
+                DropdownMenuItem<TimeOfDay>(
+                    value: TimeOfDay(hour: i, minute: 00),
+                    child: TextTranslator(
+                      now.hour == i ? "${TimeOfDay(hour: i, minute: (DateTime.now().add(Duration(minutes: 15)).minute)).format(context)}" : "${TimeOfDay(hour: i, minute: 00).format(context)}",
+                      style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.w600),
+                    )),
+              ]
             ],
           ),
         ),
       ),
     );
   }
- 
-
 }

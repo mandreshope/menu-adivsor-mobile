@@ -115,22 +115,22 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                 },
                 onTap: () async {
                   LocationResult result = await showLocationPicker(
-                                context,
-                                "AIzaSyBu8U8tbY6BlxJezbjt8g3Lzi4k1I75iYw",
-                                initialCenter: LatLng(31.1975844, 29.9598339),
-                                //                      automaticallyAnimateToCurrentLocation: true,
-                                //                      mapStylePath: 'assets/mapStyle.json',
-                                myLocationButtonEnabled: true,
-                                // requiredGPS: true,
-                                layersButtonEnabled: true,
-                                // countries: ['AE', 'NG']
+                    context,
+                    "AIzaSyBu8U8tbY6BlxJezbjt8g3Lzi4k1I75iYw",
+                    initialCenter: LatLng(31.1975844, 29.9598339),
+                    //                      automaticallyAnimateToCurrentLocation: true,
+                    //                      mapStylePath: 'assets/mapStyle.json',
+                    myLocationButtonEnabled: true,
+                    // requiredGPS: true,
+                    layersButtonEnabled: true,
+                    // countries: ['AE', 'NG']
 
-                                //                      resultCardAlignment: Alignment.bottomCenter,
-                                desiredAccuracy: LocationAccuracy.best,
-                              );
-                              print("result = $result");
-                              addressController.text = result.address;
-                              _updateChangedState();
+                    //                      resultCardAlignment: Alignment.bottomCenter,
+                    desiredAccuracy: LocationAccuracy.best,
+                  );
+                  print("result = $result");
+                  addressController.text = result.address;
+                  _updateChangedState();
                 },
               ),
               SizedBox(
@@ -198,8 +198,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
         inProgress = true;
       });
 
-      String firstname = firstnameController.value.text, lastname = lastnameController.value.text, address = addressController.value.text,
-      phoneNumber = phoneNumberController.value.text;
+      String firstname = firstnameController.value.text, lastname = lastnameController.value.text, address = addressController.value.text, phoneNumber = phoneNumberController.value.text;
 
       try {
         await authContext.updateUserProfile({
@@ -208,7 +207,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
             'last': lastname,
           },
           'address': address,
-          'phoneNumber':phoneNumber
+          'phoneNumber': phoneNumber
         });
         setState(() {
           inProgress = false;

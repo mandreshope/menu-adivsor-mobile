@@ -3,7 +3,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/choose_payement.dart';
-import 'package:menu_advisor/src/pages/payment_card_list.dart';
 import 'package:menu_advisor/src/pages/summary.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
@@ -20,7 +19,8 @@ import 'home.dart';
 
 // ignore: must_be_immutable
 class ConfirmSms extends StatefulWidget {
-  ConfirmSms({Key key, this.command, this.verificationId, this.isFromSignup = false, this.phoneNumber, this.password,this.restaurant,this.customer,this.code,this.fromDelivery = false}) : super(key: key);
+  ConfirmSms({Key key, this.command, this.verificationId, this.isFromSignup = false, this.phoneNumber, this.password, this.restaurant, this.customer, this.code, this.fromDelivery = false})
+      : super(key: key);
   Command command;
   String verificationId;
   bool isFromSignup;
@@ -162,11 +162,11 @@ class _ConfirmSmsState extends State<ConfirmSms> {
   _submit(String pin) async {
     print(widget.phoneNumber);
     if (_pinPutController.value.text.isEmpty)
-                      Fluttertoast.showToast(
-                        msg: "Entrer votre code",
-                        backgroundColor: CRIMSON,
-                        textColor: Colors.white,
-                      );
+      Fluttertoast.showToast(
+        msg: "Entrer votre code",
+        backgroundColor: CRIMSON,
+        textColor: Colors.white,
+      );
     if (widget.isFromSignup) {
       AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
       try {
@@ -175,12 +175,12 @@ class _ConfirmSmsState extends State<ConfirmSms> {
         // await Provider.of<AuthContext>(context, listen: false).verifyFirebaseSms(widget.verificationId, pin,
         //  onSucced: () {
         //   print("success");
-          RouteUtil.goTo(
-            context: context,
-            child: HomePage(),
-            routeName: homeRoute,
-            method: RoutingMethod.atTop,
-          );
+        RouteUtil.goTo(
+          context: context,
+          child: HomePage(),
+          routeName: homeRoute,
+          method: RoutingMethod.atTop,
+        );
 
         // }, onFailed: (e) {
         //   print("failed");
@@ -197,19 +197,18 @@ class _ConfirmSmsState extends State<ConfirmSms> {
       } catch (e) {
         print(e['message']);
         switch (e['message']) {
-            case "session expired":
-              Fluttertoast.showToast(msg: "Le code SMS a expiré. Veuillez renvoyer le code de vérification pour réessayer.");
-              break;
-            case "Invalid confirmation code":
-              Fluttertoast.showToast(msg: "Invalide sms code");
-              break;
-            default:
-              Fluttertoast.showToast(msg: "Une erreur est se reproduise");
-              break;
-          }
+          case "session expired":
+            Fluttertoast.showToast(msg: "Le code SMS a expiré. Veuillez renvoyer le code de vérification pour réessayer.");
+            break;
+          case "Invalid confirmation code":
+            Fluttertoast.showToast(msg: "Invalide sms code");
+            break;
+          default:
+            Fluttertoast.showToast(msg: "Une erreur est se reproduise");
+            break;
+        }
       }
     } else {
-
       CommandContext commandContext = Provider.of<CommandContext>(
         context,
         listen: false,
@@ -220,23 +219,22 @@ class _ConfirmSmsState extends State<ConfirmSms> {
         listen: false,
       );
 
-      AuthContext authContext = Provider.of<AuthContext>(context,listen: false);
+      AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
 
-     if (widget.code != pin){
+      if (widget.code != pin) {
         Fluttertoast.showToast(msg: "Invalide sms code");
-        return ;
+        return;
       }
 
-     if (this.dateDelai.isBefore(DateTime.now())){
-       Fluttertoast.showToast(msg: "Votre délai de confirmation est épuisé. Veuillez renvoyer votre code de confirmation.");
-       return ;
-     }
+      if (this.dateDelai.isBefore(DateTime.now())) {
+        Fluttertoast.showToast(msg: "Votre délai de confirmation est épuisé. Veuillez renvoyer votre code de confirmation.");
+        return;
+      }
 
+      if (widget.fromDelivery) {
+        /// alefa any am page misafidy paiement CB na à la livraison
 
-     if (widget.fromDelivery){
-      /// alefa any am page misafidy paiement CB na à la livraison 
-
-       /*RouteUtil.goTo(
+        /*RouteUtil.goTo(
          context: context,
          child: PaymentCardListPage(
            isPaymentStep: true,
@@ -244,79 +242,58 @@ class _ConfirmSmsState extends State<ConfirmSms> {
          ),
          routeName: paymentCardListRoute,
        );*/
-       RouteUtil.goTo(
-         context: context,
-         child: ChoosePayement(
-           restaurant: widget.restaurant,
-           customer: widget.customer,
-         ),
-         routeName: choosePayement,
-       );
-       
-     }else{
-      setState(() {
-        loading = true;
-      });
+        RouteUtil.goTo(
+          context: context,
+          child: ChoosePayement(
+            restaurant: widget.restaurant,
+            customer: widget.customer,
+          ),
+          routeName: choosePayement,
+        );
+      } else {
+        setState(() {
+          loading = true;
+        });
 
+        var command = await Api.instance.sendCommand(
+            relatedUser: authContext.currentUser?.id ?? null,
+            comment: cartContext.comment,
+            commandType: commandContext.commandType,
+            items: cartContext.items
+                .where((e) => !e.isMenu)
+                .map((e) => {'quantity': e.quantity, 'item': e.id, 'options': e.optionSelected != null ? e.optionSelected : [], 'comment': e.message})
+                .toList(),
+            restaurant: cartContext.currentOrigin,
+            totalPrice: (cartContext.totalPrice * 100).round(),
+            customer: widget.customer,
+            shippingTime: commandContext.deliveryDate
+                    ?.add(
+                      Duration(
+                        minutes: commandContext.deliveryTime.hour * 60 + commandContext.deliveryTime.minute,
+                      ),
+                    )
+                    ?.millisecondsSinceEpoch ??
+                null,
+            menu: cartContext.items.where((e) => e.isMenu).map((e) => {'quantity': e.quantity, 'item': e.id, 'foods': e.foodMenuSelecteds}).toList(),
+            priceless: !cartContext.withPrice);
+        Command cm = Command.fromJson(command);
 
-      var command = await Api.instance.sendCommand(
-          relatedUser: authContext.currentUser?.id ?? null,
-          comment: cartContext.comment,
-          commandType: commandContext.commandType,
-          items: cartContext.items
-              .where((e) => !e.isMenu)
-              .map((e) => {
-            'quantity': e.quantity,
-            'item': e.id,
-            'options': e.optionSelected != null ?
-            e.optionSelected : [],
-            'comment': e.message
-          })
-              .toList(),
-          restaurant: cartContext.currentOrigin,
-          totalPrice: (cartContext.totalPrice * 100).round(),
-          customer: widget.customer,
-          shippingTime: commandContext.deliveryDate
-              ?.add(
-            Duration(
-              minutes: commandContext.deliveryTime.hour * 60 + commandContext.deliveryTime.minute,
-            ),
-          )
-              ?.millisecondsSinceEpoch ??
-              null,
-          menu: cartContext.items.where(
-                  (e) => e.isMenu).map(
-                  (e) =>
-              {
-                'quantity': e.quantity,
-                'item': e.id,
-                'foods':
-                e.foodMenuSelecteds
-              }).toList(),
-          priceless: !cartContext.withPrice
+        commandContext.clear();
+        cartContext.clear();
+        Provider.of<MenuContext>(context, listen: false).clear();
+        Fluttertoast.showToast(
+          msg: 'Votre commande a été bien reçu.',
+        );
 
-      );
-      Command cm = Command.fromJson(command);
-
-      commandContext.clear();
-      cartContext.clear();
-      Provider.of<MenuContext>(context,listen: false).clear();
-      Fluttertoast.showToast(
-        msg:
-        'Votre commande a été bien reçu.',
-      );
-
-      RouteUtil.goTo(
-        context: context,
-        child: Summary(commande: cm),
-        routeName: confirmEmailRoute,
-      );
-      setState(() {
-        loading = false;
-      });
-     }
-
-      
+        RouteUtil.goTo(
+          context: context,
+          child: Summary(commande: cm),
+          routeName: confirmEmailRoute,
+        );
+        setState(() {
+          loading = false;
+        });
+      }
     }
   }
 }

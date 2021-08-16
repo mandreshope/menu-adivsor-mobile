@@ -5,8 +5,8 @@ import 'package:menu_advisor/src/models.dart';
 
 class CartContext extends ChangeNotifier {
   // Map<dynamic, int> _items = Map();
-  List<dynamic> _items = List();
-  List<dynamic> _itemsTemp = List();
+  List<dynamic> _items = [];
+  List<dynamic> _itemsTemp = [];
 
   Map<String, List<List<Option>>> _options = Map();
 
@@ -25,7 +25,7 @@ class CartContext extends ChangeNotifier {
 
   Map<String, Food> get foodMenuSelected => _foodMenuSelected;
   List<Food> get foodMenuSelecteds {
-    List<Food> foods = List();
+    List<Food> foods = [];
     _foodMenuSelected.forEach((key, value) {
       foods.add(value);
     });
@@ -53,7 +53,8 @@ class CartContext extends ChangeNotifier {
 
   bool hasSameOriginAsInBag(dynamic item) => currentOrigin == null || ((item.restaurant is String) ? item.restaurant : item.restaurant['_id']) == currentOrigin;
 
-  bool hasSamePricingAsInBag(dynamic item) => !withPrice ? true : (pricelessItems && (item.price == null || item.price.amount == null)) || (!pricelessItems && item.price != null && item.price.amount != null);
+  bool hasSamePricingAsInBag(dynamic item) =>
+      !withPrice ? true : (pricelessItems && (item.price == null || item.price.amount == null)) || (!pricelessItems && item.price != null && item.price.amount != null);
 
   bool addItem(dynamic item, number, bool isAdd) {
     if (itemCount == 0 || (hasSamePricingAsInBag(item) && hasSameOriginAsInBag(item))) {
@@ -64,7 +65,11 @@ class CartContext extends ChangeNotifier {
       }
       // _itemsTemp.sort((a, b) => a.name.compareTo(b.name));
 
-      currentOrigin = (item.restaurant is String) ? item.restaurant : item is Menu ? item.restaurant.id : item.restaurant['_id'];
+      currentOrigin = (item.restaurant is String)
+          ? item.restaurant
+          : item is Menu
+              ? item.restaurant.id
+              : item.restaurant['_id'];
       notifyListeners();
       return true;
     }
@@ -90,7 +95,6 @@ class CartContext extends ChangeNotifier {
     });
   }*/
 
-
   // Map<dynamic, int> get items => _items;
   List<dynamic> get items => _items;
   List<dynamic> get itemsTemp => _itemsTemp;
@@ -103,7 +107,7 @@ class CartContext extends ChangeNotifier {
     double totalPrice = 0;
 
     _items.forEach((food) {
-      totalPrice += food.totalPrice.toDouble() /100;
+      totalPrice += food.totalPrice.toDouble() / 100;
       /*if (food.isMenu) {
         food.foods.forEach((f){
          if (f.price != null && f.price.amount != null) totalPrice += f.price.amount / 100 * count;
@@ -203,12 +207,11 @@ class CartContext extends ChangeNotifier {
           ) !=
           null;
 
-    return
-        _itemsTemp.firstWhere(
-              (element) => (element.id == food.id && !food.isFoodForMenu),
-              orElse: () => null,
-            ) !=
-            null;
+    return _itemsTemp.firstWhere(
+          (element) => (element.id == food.id && !food.isFoodForMenu),
+          orElse: () => null,
+        ) !=
+        null;
   }
 
   void removeItem(dynamic food) {
@@ -245,7 +248,7 @@ class CartContext extends ChangeNotifier {
     notifyListeners();
   }
 
-  void removeAllFoodTemp(dynamic food){
+  void removeAllFoodTemp(dynamic food) {
     _items.removeWhere((element) => element.idNewFood == food.idNewFood);
     notifyListeners();
   }
@@ -291,35 +294,32 @@ class CartContext extends ChangeNotifier {
     if (food.isMenu) {
       if (food.type == "per_food") {
         // if (food.price != null && food.price.amount != null) totalPrice += (food.price.amount / 100) * count;
-        
-    List<List<Option>> _values = _options[food.id];
-    if (_values != null) {
-      List<Option> _temp = _values.expand((element) => element).toList();
-      _temp.forEach((option) {
-        option.itemOptionSelected?.forEach((itemOption) {
-          if (itemOption.price != null && itemOption.price.amount != null) totalPrice += itemOption.price.amount.toDouble() / 100;
-        });
-      });
-    }
 
+        List<List<Option>> _values = _options[food.id];
+        if (_values != null) {
+          List<Option> _temp = _values.expand((element) => element).toList();
+          _temp.forEach((option) {
+            option.itemOptionSelected?.forEach((itemOption) {
+              if (itemOption.price != null && itemOption.price.amount != null) totalPrice += itemOption.price.amount.toDouble() / 100;
+            });
+          });
+        }
       } else if (food.type == "priceless") {
       } else if (food.type == "fixed_price") {
         if (food.price != null && food.price.amount != null) totalPrice += (food.price.amount / 100) * count;
       }
     } else {
       if (food.price != null && food.price.amount != null) totalPrice += (food.price.amount / 100) * count;
-      
-    List<List<Option>> _values = _options[food.id];
-    if (_values != null) {
-      List<Option> _temp = _values.expand((element) => element).toList();
-      _temp.forEach((option) {
-        option.itemOptionSelected?.forEach((itemOption) {
-          if (itemOption.price != null && itemOption.price.amount != null) totalPrice += itemOption.price.amount.toDouble() / 100;
+
+      List<List<Option>> _values = _options[food.id];
+      if (_values != null) {
+        List<Option> _temp = _values.expand((element) => element).toList();
+        _temp.forEach((option) {
+          option.itemOptionSelected?.forEach((itemOption) {
+            if (itemOption.price != null && itemOption.price.amount != null) totalPrice += itemOption.price.amount.toDouble() / 100;
+          });
         });
-      });
-    }
-
-
+      }
     }
 
     // totalPrice += (food.price?.amount == null ? 00 : food.price.amount / 100)*count;
@@ -360,7 +360,7 @@ class CartContext extends ChangeNotifier {
 
   void addOption(dynamic item, List<Option> options, {String key}) {
     /*if (_options[item.id] == null) {
-      _options[item.id] = List();
+      _options[item.id] = [];
     }
     if (item.isMenu){
       if (_foodMenuSelected != null && key != null){
@@ -411,5 +411,4 @@ class CartContext extends ChangeNotifier {
     });
     return total;
   }
-
 }

@@ -1,12 +1,8 @@
-import 'dart:convert';
-
 import 'package:chips_choice/chips_choice.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_balloon_slider/flutter_balloon_slider.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
@@ -20,7 +16,6 @@ import 'package:menu_advisor/src/utils/button_item_count_widget.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
-import 'package:wave_slider/wave_slider.dart';
 
 class ConfirmationDialog extends StatelessWidget {
   final String title;
@@ -31,15 +26,17 @@ class ConfirmationDialog extends StatelessWidget {
     Key key,
     @required this.title,
     @required this.content,
-    this.isSimple = false
+    this.isSimple = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: isSimple ? Container() : TextTranslator(
-        title,
-      ),
+      title: isSimple
+          ? Container()
+          : TextTranslator(
+              title,
+            ),
       content: TextTranslator(
         content,
       ),
@@ -417,7 +414,19 @@ class SearchSettingDialog extends StatefulWidget {
   bool fromMap;
   String shedule;
 
-  SearchSettingDialog({Key key, @required this.languageCode,this.fromRestaurantHome = false,this.shedule, @required this.filters, @required this.type, this.inRestaurant = false, this.range = 1, this.isDiscover = false,this.fromMap = false,this.fromCategory = false}) : super(key: key);
+  SearchSettingDialog(
+      {Key key,
+      @required this.languageCode,
+      this.fromRestaurantHome = false,
+      this.shedule,
+      @required this.filters,
+      @required this.type,
+      this.inRestaurant = false,
+      this.range = 1,
+      this.isDiscover = false,
+      this.fromMap = false,
+      this.fromCategory = false})
+      : super(key: key);
 
   @override
   _SearchSettingDialogState createState() => _SearchSettingDialogState();
@@ -444,43 +453,40 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
   @override
   void initState() {
     super.initState();
-    
+
     distanceAround = widget.range;
-    if (!widget.isDiscover){
-    this.shedule = widget.shedule ?? "Tous";
-    searchType = [
-                      'all',
-                      'restaurant',
-                      'food',
-                    ];
+    if (!widget.isDiscover) {
+      this.shedule = widget.shedule ?? "Tous";
+      searchType = [
+        'all',
+        'restaurant',
+        'food',
+      ];
 
-    
+      type = widget.type;
+      filters.addAll(widget.filters);
+      _dataContext = Provider.of<DataContext>(context, listen: false);
+      _foodCategories = _dataContext.foodCategories;
+      _foodAttribut = _dataContext.foodAttributes;
 
-    
-    type = widget.type;
-    filters.addAll(widget.filters);
-    _dataContext = Provider.of<DataContext>(context,listen: false);
-    _foodCategories = _dataContext.foodCategories;
-    _foodAttribut = _dataContext.foodAttributes;
-
-    _foodAttribut.forEach((element) {
-      if (filters.containsKey('attributes')){
-        List<String> f = filters['attributes'];
-        if (f.contains(element.sId)){
-          _foodAttributSelected.add(element);
+      _foodAttribut.forEach((element) {
+        if (filters.containsKey('attributes')) {
+          List<String> f = filters['attributes'];
+          if (f.contains(element.sId)) {
+            _foodAttributSelected.add(element);
+          }
         }
-      }
-    });
+      });
 
-_foodCategories.forEach((element) {
-      if (filters.containsKey('category')){
-        List<String> f = filters['category'];
-        if (f.contains(element.id)){
-          _foodCategoriesSelected.add(element);
+      _foodCategories.forEach((element) {
+        if (filters.containsKey('category')) {
+          List<String> f = filters['category'];
+          if (f.contains(element.id)) {
+            _foodCategoriesSelected.add(element);
+          }
         }
-      }
-    });
-}
+      });
+    }
   }
 
   @override
@@ -548,33 +554,160 @@ _foodCategories.forEach((element) {
               displayTrackball: true,
               // sliderHeight: 50,
             ),*/
-            
-            if (!widget.fromCategory)...[
+
+            if (!widget.fromCategory) ...[
               if (!widget.isDiscover) ...[
-              if (!widget.inRestaurant && !widget.fromRestaurantHome && !widget.fromMap) ...[
-                
+                if (!widget.inRestaurant && !widget.fromRestaurantHome && !widget.fromMap) ...[
+                  TextTranslator(
+                    AppLocalizations.of(context).translate('search_type'),
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    physics: BouncingScrollPhysics(),
+                    child: Row(
+                      children: searchType
+                          .map(
+                            (e) => Theme(
+                              data: ThemeData(
+                                brightness: type == e ? Brightness.dark : Brightness.light,
+                                cardColor: type == e ? CRIMSON : Colors.white,
+                              ),
+                              child: Card(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(50),
+                                  onTap: () {
+                                    setState(() {
+                                      type = e;
+                                      if (type == 'all') {
+                                        _foodAttributSelected.clear();
+                                        filters.remove('attributes');
+
+                                        _foodCategoriesSelected.clear();
+                                        filters.remove('category');
+                                      } else if (type == 'food') {
+                                        _foodCategoriesSelected.clear();
+                                        filters.remove('category');
+                                      } else {
+                                        _foodAttributSelected.clear();
+                                        filters.remove('attributes');
+                                      }
+                                    });
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(10),
+                                    child: TextTranslator(
+                                      AppLocalizations.of(context).translate(e),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                ]
+              ],
+              if (type == 'restaurant' || widget.fromMap || widget.inRestaurant)
                 TextTranslator(
-                  AppLocalizations.of(context).translate('search_type'),
+                  widget.inRestaurant ? 'Types' : AppLocalizations.of(context).translate('categories'),
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+              if (type == 'restaurant' || widget.fromMap || widget.inRestaurant)
                 SizedBox(
                   height: 10,
                 ),
-                
+              if (type == 'restaurant' || widget.fromMap || widget.inRestaurant)
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   physics: BouncingScrollPhysics(),
                   child: Row(
-                    children: 
-                    searchType
-                        .map(
-                          (e) => Theme(
+                    children: [
+                      if (widget.inRestaurant) ...[
+                        Theme(
+                          data: ThemeData(
+                            brightness: !filters.containsKey('type') ? Brightness.dark : Brightness.light,
+                            cardColor: !filters.containsKey('type') ? CRIMSON : Colors.white,
+                          ),
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(50),
+                              onTap: () {
+                                setState(() {
+                                  filters.remove('type');
+                                });
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(10),
+                                child: TextTranslator(
+                                  'Tous',
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        if (type != 'food')
+                          ...Provider.of<DataContext>(context)
+                              .foodTypes
+                              .map(
+                                (e) => Theme(
+                                  data: ThemeData(
+                                    brightness: filters.containsKey('type') && filters['type'] == e.name ? Brightness.dark : Brightness.light,
+                                    cardColor: filters.containsKey('type') && filters['type'] == e.name ? CRIMSON : Colors.white,
+                                  ),
+                                  child: Card(
+                                    color: filters.containsKey('type') && filters['type'] == e.name ? CRIMSON : Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(50),
+                                    ),
+                                    child: InkWell(
+                                      borderRadius: BorderRadius.circular(50),
+                                      onTap: () {
+                                        setState(() {
+                                          filters['type'] = e.name;
+                                        });
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.all(10),
+                                        child: Row(
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            TextTranslator(
+                                              e.name,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                      ] else ...[
+                        if (type != 'food')
+                          Theme(
                             data: ThemeData(
-                              brightness: type == e ? Brightness.dark : Brightness.light,
-                              cardColor: type == e ? CRIMSON : Colors.white,
+                              brightness: !filters.containsKey('category') ? Brightness.dark : Brightness.light,
+                              cardColor: !filters.containsKey('category') ? CRIMSON : Colors.white,
                             ),
                             child: Card(
                               shape: RoundedRectangleBorder(
@@ -584,205 +717,70 @@ _foodCategories.forEach((element) {
                                 borderRadius: BorderRadius.circular(50),
                                 onTap: () {
                                   setState(() {
-                                    type = e;
-                                    if (type == 'all'){
-                                      _foodAttributSelected.clear();
-                                      filters.remove('attributes');
-
-                                      _foodCategoriesSelected.clear();
-                                      filters.remove('category');
-                                    
-                                    }else if (type == 'food'){
-                                      _foodCategoriesSelected.clear();
-                                      filters.remove('category');
-                                    }else{
-                                      _foodAttributSelected.clear();
-                                      filters.remove('attributes');
-                                    }
+                                    _foodCategoriesSelected.clear();
+                                    filters.remove('category');
                                   });
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.all(10),
                                   child: TextTranslator(
-                                    AppLocalizations.of(context).translate(e),
+                                    'Tous',
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                        )
-                        .toList(),
-                  ),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-              
-              ]
-            ],
-            if(type == 'restaurant' || widget.fromMap || widget.inRestaurant)
-                TextTranslator(
-                  widget.inRestaurant ? 'Types' : AppLocalizations.of(context).translate('categories'),
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                if(type == 'restaurant' || widget.fromMap || widget.inRestaurant)
-                SizedBox(
-                  height: 10,
-                ),
-                if(type == 'restaurant' || widget.fromMap || widget.inRestaurant)
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  physics: BouncingScrollPhysics(),
-                  child: Row(
-                    children: [
-                      if (widget.inRestaurant)...[
-                        Theme(
-                        data: ThemeData(
-                          brightness: !filters.containsKey('type') ? Brightness.dark : Brightness.light,
-                          cardColor: !filters.containsKey('type') ? CRIMSON : Colors.white,
-                        ),
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(50),
-                            onTap: () {
-                              setState(() {
-                                filters.remove('type');
-                              });
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(10),
-                              child: TextTranslator(
-                                'Tous',
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      if(type != 'food')
-                        ...Provider.of<DataContext>(context)
-                          .foodTypes
-                          .map(
-                            (e) => Theme(
-                              data: ThemeData(
-                                brightness: filters.containsKey('type') && filters['type'] == e.name ? Brightness.dark : Brightness.light,
-                                cardColor: filters.containsKey('type') && filters['type'] == e.name ? CRIMSON : Colors.white,
-                              ),
-                              child: Card(
-                                color: filters.containsKey('type') && filters['type'] == e.name ? CRIMSON : Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(50),
+                        if (type != 'food')
+                          ChipsChoice.multiple(
+                            value: _foodCategoriesSelected,
+                            choiceBuilder: (_) {
+                              return Theme(
+                                data: ThemeData(
+                                  brightness: _.selected ? Brightness.dark : Brightness.light,
+                                  cardColor: _.selected ? CRIMSON : Colors.white,
                                 ),
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(50),
-                                  onTap: () {
-                                    setState(() {
-                                      filters['type'] = e.name;
-                                    });
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.all(10),
-                                    child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        TextTranslator(
-                                          e.name,
-                                        ),
-                                      ],
+                                child: Card(
+                                  color: _.selected ? CRIMSON : Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(50),
+                                  ),
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(50),
+                                    onTap: () {
+                                      _.select(!_.selected);
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.all(10),
+                                      child: TextTranslator(
+                                        _.value.name,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                      ]else...[
-                    if(type != 'food')
-                      Theme(
-                        data: ThemeData(
-                          brightness: !filters.containsKey('category') ? Brightness.dark : Brightness.light,
-                          cardColor: !filters.containsKey('category') ? CRIMSON : Colors.white,
-                        ),
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(50),
-                            onTap: () {
+                              );
+                            },
+                            onChanged: (value) {
                               setState(() {
-                                _foodCategoriesSelected.clear();
-                                filters.remove('category');
+                                _foodCategoriesSelected = value.cast<FoodCategory>();
+                                print(_foodCategoriesSelected.toString());
+                                filters['category'] = _foodCategoriesSelected.map<String>((e) => e.id).toList();
                               });
                             },
-                            child: Container(
-                              padding: const EdgeInsets.all(10),
-                              child: TextTranslator(
-                                'Tous',
-                              ),
+                            choiceItems: C2Choice.listFrom(
+                              meta: (position, item) {},
+                              source: _foodCategories,
+                              value: (i, v) => v,
+                              label: (i, v) => v.name,
                             ),
                           ),
-                        ),
-                      ),
-                      if(type != 'food')
-                      ChipsChoice.multiple(
-                        value: _foodCategoriesSelected,
-                        choiceBuilder: (_){
-                           return Theme(
-                              data: ThemeData(
-                                brightness: _.selected ? Brightness.dark : Brightness.light,
-                                cardColor: _.selected ? CRIMSON : Colors.white,
-                              ),
-                              child: Card(
-                                color: _.selected ? CRIMSON : Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(50),
-                                ),
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(50),
-                                  onTap: () {
-                                    _.select(!_.selected);
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.all(10),
-                                    child: TextTranslator(
-                                      _.value.name,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );                      
-                        },
-                        
-                        onChanged: (value){
-                          setState(() {
-                            _foodCategoriesSelected = value.cast<FoodCategory>();  
-                            print(_foodCategoriesSelected.toString());
-                            filters['category'] = _foodCategoriesSelected.map<String>((e) => e.id).toList();
-                          });
-                        }, 
-                        choiceItems: C2Choice.listFrom(
-                                                meta: (position, item){
-
-                                                },
-                                                source: _foodCategories,
-                                                value: (i, v) => v,
-                                                label: (i, v) => v.name,
-                                              ),
-                                            ),
                       ]
                     ],
                   ),
                 ),
-                SizedBox(
-                  height: 15,
-                ),
-                if(!widget.fromMap && type != 'all' && type != 'restaurant')
+              SizedBox(
+                height: 15,
+              ),
+              if (!widget.fromMap && type != 'all' && type != 'restaurant')
                 TextTranslator(
                   AppLocalizations.of(context).translate('attributes'),
                   style: TextStyle(
@@ -790,8 +788,8 @@ _foodCategories.forEach((element) {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                if(!widget.fromMap && type != 'all' && type != 'restaurant')
-               SingleChildScrollView(
+              if (!widget.fromMap && type != 'all' && type != 'restaurant')
+                SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   physics: BouncingScrollPhysics(),
                   child: Row(
@@ -824,109 +822,104 @@ _foodCategories.forEach((element) {
                       ),
                       ChipsChoice.multiple(
                         value: _foodAttributSelected,
-                        choiceBuilder: (_){
-                           return Theme(
-                              data: ThemeData(
-                                brightness: _.selected ? Brightness.dark : Brightness.light,
-                                cardColor: _.selected ? CRIMSON : Colors.white,
+                        choiceBuilder: (_) {
+                          return Theme(
+                            data: ThemeData(
+                              brightness: _.selected ? Brightness.dark : Brightness.light,
+                              cardColor: _.selected ? CRIMSON : Colors.white,
+                            ),
+                            child: Card(
+                              color: _.selected ? CRIMSON : Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(50),
                               ),
-                              child: Card(
-                                color: _.selected ? CRIMSON : Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(50),
-                                ),
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(50),
-                                  onTap: () {
-                                    setState(() {
-                                      _.select(!_.selected);
-                                    });
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.all(10),
-                                    child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Image.network(
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(50),
+                                onTap: () {
+                                  setState(() {
+                                    _.select(!_.selected);
+                                  });
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Image.network(
                                         _.value.imageURL,
-                                          height: 18,
-                                          errorBuilder: (_, __, ___) => Center(
-                                            child: Icon(
-                                              Icons.fastfood,size: 18,
-                                            ),
+                                        height: 18,
+                                        errorBuilder: (_, __, ___) => Center(
+                                          child: Icon(
+                                            Icons.fastfood,
+                                            size: 18,
                                           ),
                                         ),
-                                        SizedBox(
-                                          width: 5,
-                                        ),
-                                        TextTranslator(
-                                          _.value.locales,
-                                        ),
-                                      ],
-                                    ),
+                                      ),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      TextTranslator(
+                                        _.value.locales,
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
-                            );
-                                                
+                            ),
+                          );
                         },
-                        
-                        onChanged: (value){
+                        onChanged: (value) {
                           setState(() {
-                            _foodAttributSelected = value.cast<FoodAttribute>();  
+                            _foodAttributSelected = value.cast<FoodAttribute>();
                             print(_foodAttributSelected.toString());
                             filters['attributes'] = _foodAttributSelected.map<String>((e) => e.sId).toList();
                           });
-                        }, 
+                        },
                         choiceItems: C2Choice.listFrom(
-                                                meta: (position, item){
-
-                                                },
-                                                source: _foodAttribut,
-                                                value: (i, v) => v,
-                                                label: (i, v) => v.locales,
-                                              ),
-                                            ),
+                          meta: (position, item) {},
+                          source: _foodAttribut,
+                          value: (i, v) => v,
+                          label: (i, v) => v.locales,
+                        ),
+                      ),
                     ],
                   ),
                 ),
-                
-                SizedBox(
-                  height: 20,
-                ),
-           
+              SizedBox(
+                height: 20,
+              ),
             ],
-            
-           if (widget.fromMap)...[
 
-           
-            SizedBox(
-                  height: 5,
+            if (widget.fromMap) ...[
+              SizedBox(
+                height: 5,
+              ),
+              TextTranslator(
+                "Horaires",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
                 ),
-                TextTranslator(
-                  "Horaires",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+              ),
+              ChipsChoice.single(
+                value: this.shedule,
+                onChanged: (value) {
+                  setState(() {
+                    this.shedule = value;
+                  });
+                },
+                choiceItems: C2Choice.listFrom(
+                  source: ["Tous", "ouvert", "fermé"],
+                  value: (i, v) => v,
+                  label: (i, v) => v,
                 ),
-                ChipsChoice.single(
-                  value: this.shedule,
-                   onChanged: (value){
-                     setState(() {
-                       this.shedule = value;
-                     });
-                   }, choiceItems:  C2Choice.listFrom(
-                        source: ["Tous","ouvert","fermé"],
-                        value: (i, v) => v,
-                        label: (i, v) => v,
-                      ),),
-           ],
-                       Align(
+              ),
+            ],
+            Align(
               alignment: Alignment.centerRight,
               child: RaisedButton(
                 onPressed: () => Navigator.of(context).pop(
-                  {'filters': filters, 'type': type,'categorie':categorieType, 'range': distanceAround, "shedule":shedule},
+                  {'filters': filters, 'type': type, 'categorie': categorieType, 'range': distanceAround, "shedule": shedule},
                 ),
                 child: TextTranslator(
                   AppLocalizations.of(context).translate('confirm'),
@@ -954,7 +947,7 @@ class OptionChoiceDialog extends StatefulWidget {
 
 class _OptionChoiceDialogState extends State<OptionChoiceDialog> {
   int itemCount = 1;
-  List<Option> optionSelected = List();
+  List<Option> optionSelected = [];
   List<Option> options = [];
 
   @override
@@ -988,19 +981,19 @@ class _OptionChoiceDialogState extends State<OptionChoiceDialog> {
                       SizedBox(
                         height: 15,
                       ),
-                      
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      
-                      children: [
-                        TextTranslator("${option.title}",
-                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,fontSize: 16),
-                        textAlign: TextAlign.start,),
-                        TextTranslator("Choisissez-en jusqu'à ${option.maxOptions}", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
-                    
-                      ],
-                    ),Container(
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          TextTranslator(
+                            "${option.title}",
+                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
+                            textAlign: TextAlign.start,
+                          ),
+                          TextTranslator("Choisissez-en jusqu'à ${option.maxOptions}", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                      Container(
                         child: Padding(
                           padding: const EdgeInsets.only(left: 25.0),
                           child: ChipsChoice.multiple(
@@ -1189,7 +1182,7 @@ class SheduleDialog extends StatelessWidget {
                             TextTranslator("${op.day}", style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.normal)),
                             Column(
                               children: [
-                                ...op.openings.map((e){
+                                ...op.openings.map((e) {
                                   return TextTranslator(
                                     "${e.begin.hour.toString()?.padLeft(2, '0')} : ${e.begin.minute.toString()?.padLeft(2, '0')}  -  ${e.end.hour.toString()?.padLeft(2, '0')} : ${e.end.minute.toString()?.padLeft(2, '0')}",
                                     style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.normal),
@@ -1197,7 +1190,6 @@ class SheduleDialog extends StatelessWidget {
                                 }).toList()
                               ],
                             )
-                            
                           ],
                         ),
                         Divider()
@@ -1328,17 +1320,16 @@ class _AtributesDialogState extends State<AtributesDialog> {
                     },
                     title: Row(
                       children: [
-                        
                         FadeInImage.assetNetwork(
                           placeholder: 'assets/images/loading.gif',
                           image: att.imageURL,
                           height: 25,
                           width: 25,
                           imageErrorBuilder: (_, __, ___) => Container(
-                                width: 25,
-                                height: 25,
-                                color: Colors.white,
-                              ),
+                            width: 25,
+                            height: 25,
+                            color: Colors.white,
+                          ),
                         ),
                         SizedBox(
                           width: 10,
@@ -1375,96 +1366,94 @@ class _AtributesDialogState extends State<AtributesDialog> {
                   );
                 }),
           ),
-          if (attributes.where((element) => !element.tag.contains("allergen")).isNotEmpty)...[
-          Padding(
-            padding: EdgeInsets.only(left: 35),
-            child: TextTranslator("Afficher : ", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-          ),
-          Divider(),
-          Expanded(
-            child: ListView.builder(
-                itemCount: attributes.length,
-                shrinkWrap: true,
-                itemBuilder: (_, position) {
-                  FoodAttribute att = attributes[position];
-                  if (att.tag.contains("allergen")) return Container();
-                  return ListTile(
-                    onTap: () {
-                      setState(() {
-                        att.isChecked = !att.isChecked;
-                        if (att.tag.contains("allergen")) {
-                          attributes.forEach((element) {
-                            if (!element.tag.contains("allergen")) {
-                              element.isChecked = false;
-                            }
-                          });
-                        } else {
-                          attributes.forEach((element) {
-                            if (element.tag.contains("allergen")) {
-                              element.isChecked = false;
-                            }
-                          });
-                        }
-                        dataContext.isAllAttribute = false;
-                      });
-                    },
-                    title: Row(
-                      children: [
-                        
-                        FadeInImage.assetNetwork(
-                          placeholder: 'assets/images/loading.gif',
-                          image: att.imageURL,
-                          height: 25,
-                          width: 25,
-                          imageErrorBuilder: (_, __, ___) => Container(
-                                width: 25,
-                                height: 25,
-                                color: Colors.white,
-                              ),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        TextTranslator(att.locales),
-                        Spacer(),
-                        Checkbox(
-                          value: dataContext.isAllAttribute ? false : att.isChecked,
-                          onChanged: (value) {
-                            setState(() {
-                              att.isChecked = value;
-                              if (att.tag.contains("allergen")) {
-                                attributes.forEach((element) {
-                                  if (!element.tag.contains("allergen")) {
-                                    element.isChecked = false;
-                                  }
-                                });
-                              } else {
-                                attributes.forEach((element) {
-                                  if (element.tag.contains("allergen")) {
-                                    element.isChecked = false;
-                                  }
-                                });
+          if (attributes.where((element) => !element.tag.contains("allergen")).isNotEmpty) ...[
+            Padding(
+              padding: EdgeInsets.only(left: 35),
+              child: TextTranslator("Afficher : ", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+            ),
+            Divider(),
+            Expanded(
+              child: ListView.builder(
+                  itemCount: attributes.length,
+                  shrinkWrap: true,
+                  itemBuilder: (_, position) {
+                    FoodAttribute att = attributes[position];
+                    if (att.tag.contains("allergen")) return Container();
+                    return ListTile(
+                      onTap: () {
+                        setState(() {
+                          att.isChecked = !att.isChecked;
+                          if (att.tag.contains("allergen")) {
+                            attributes.forEach((element) {
+                              if (!element.tag.contains("allergen")) {
+                                element.isChecked = false;
                               }
-                              dataContext.isAllAttribute = false;
                             });
-                          },
-                          checkColor: Colors.white,
-                          hoverColor: CRIMSON,
-                          activeColor: CRIMSON,
-                        ),
-                      ],
-                    ),
-                  );
-               
-                }),
-          ),
+                          } else {
+                            attributes.forEach((element) {
+                              if (element.tag.contains("allergen")) {
+                                element.isChecked = false;
+                              }
+                            });
+                          }
+                          dataContext.isAllAttribute = false;
+                        });
+                      },
+                      title: Row(
+                        children: [
+                          FadeInImage.assetNetwork(
+                            placeholder: 'assets/images/loading.gif',
+                            image: att.imageURL,
+                            height: 25,
+                            width: 25,
+                            imageErrorBuilder: (_, __, ___) => Container(
+                              width: 25,
+                              height: 25,
+                              color: Colors.white,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          TextTranslator(att.locales),
+                          Spacer(),
+                          Checkbox(
+                            value: dataContext.isAllAttribute ? false : att.isChecked,
+                            onChanged: (value) {
+                              setState(() {
+                                att.isChecked = value;
+                                if (att.tag.contains("allergen")) {
+                                  attributes.forEach((element) {
+                                    if (!element.tag.contains("allergen")) {
+                                      element.isChecked = false;
+                                    }
+                                  });
+                                } else {
+                                  attributes.forEach((element) {
+                                    if (element.tag.contains("allergen")) {
+                                      element.isChecked = false;
+                                    }
+                                  });
+                                }
+                                dataContext.isAllAttribute = false;
+                              });
+                            },
+                            checkColor: Colors.white,
+                            hoverColor: CRIMSON,
+                            activeColor: CRIMSON,
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+            ),
           ],
           InkWell(
             onTap: () {
-              List<FoodAttribute> selectedAttributes = List();
+              List<FoodAttribute> selectedAttributes = [];
 
               // selectedAttributes = dataContext.isAllAttribute ? attributes : attributes.where((element) => element.isChecked).toList();
-              selectedAttributes = /*dataContext.isAllAttribute ? List() : */ attributes.where((element) => element.isChecked).toList();
+              selectedAttributes = /*dataContext.isAllAttribute ? [] : */ attributes.where((element) => element.isChecked).toList();
 
               Navigator.of(context).pop(selectedAttributes);
             },
@@ -1484,9 +1473,9 @@ class _AtributesDialogState extends State<AtributesDialog> {
   }
 }
 
-showDialogProgress(BuildContext context,{bool barrierDismissible = true}) {
+showDialogProgress(BuildContext context, {bool barrierDismissible = true}) {
   showDialog(
-    barrierDismissible: barrierDismissible,
+      barrierDismissible: barrierDismissible,
       context: context,
       builder: (_) {
         return Container(
@@ -1498,15 +1487,15 @@ showDialogProgress(BuildContext context,{bool barrierDismissible = true}) {
               children: [
                 Container(
                   child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    CRIMSON,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      CRIMSON,
+                    ),
                   ),
                 ),
+                SizedBox(
+                  height: 20,
                 ),
-               
-                SizedBox(height: 20,),
-                TextTranslator("Peut prendre quelque minutes...",
-                style: TextStyle(fontSize: 15,color:Colors.white,decoration: TextDecoration.none,fontWeight: FontWeight.w400)) 
+                TextTranslator("Peut prendre quelque minutes...", style: TextStyle(fontSize: 15, color: Colors.white, decoration: TextDecoration.none, fontWeight: FontWeight.w400))
               ],
             ),
           ),

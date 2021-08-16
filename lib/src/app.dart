@@ -1,4 +1,3 @@
-import 'package:firebase_mlkit_language/firebase_mlkit_language.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:menu_advisor/src/pages/splash.dart';
@@ -85,22 +84,22 @@ class _MyAppState extends State<MyApp> {
           ],
           // home: Splash(),
           routes: route(),
-          builder: (context, widget) => ResponsiveWrapper.builder(
-          BouncingScrollWrapper.builder(context, widget),
-          maxWidth: 1200,
-          minWidth: 480,
-          defaultScale: true,
-          breakpoints: [
-            ResponsiveBreakpoint.resize(480, name: MOBILE),
-            // ResponsiveBreakpoint.autoScale(800, name: TABLET),
-            ResponsiveBreakpoint.resize(1000, name: DESKTOP),
-          ],
-          background: Container(color: Color(0xFFF5F5F5))),
+          builder: (context, widget) => ResponsiveWrapper.builder(BouncingScrollWrapper.builder(context, widget),
+              maxWidth: 1200,
+              minWidth: 480,
+              defaultScale: true,
+              breakpoints: [
+                ResponsiveBreakpoint.resize(480, name: MOBILE),
+                // ResponsiveBreakpoint.autoScale(800, name: TABLET),
+                ResponsiveBreakpoint.resize(1000, name: DESKTOP),
+              ],
+              background: Container(color: Color(0xFFF5F5F5))),
         ),
       ),
     );
   }
 }
+
 Map<String, WidgetBuilder> route() => {
-        "/": (context) => Splash(),
-};
+      "/": (context) => Splash(),
+    };

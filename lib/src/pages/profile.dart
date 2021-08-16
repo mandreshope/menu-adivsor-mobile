@@ -8,7 +8,6 @@ import 'package:menu_advisor/src/components/utilities.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/pages/cgc.dart';
 import 'package:menu_advisor/src/pages/change_password.dart';
-import 'package:menu_advisor/src/pages/command_history.dart';
 import 'package:menu_advisor/src/pages/favorites.dart';
 import 'package:menu_advisor/src/pages/login.dart';
 import 'package:menu_advisor/src/pages/payment_card_list.dart';
@@ -267,23 +266,28 @@ class _ProfilePageState extends State<ProfilePage> {
                               listen: false,
                             );
                             showDialogProgress(context);
-                                    settingContext.setlanguageCode(languageCode).then((value) {
-                                      dismissDialogProgress(context);
-                                    });
+                            settingContext.setlanguageCode(languageCode).then((value) {
+                              dismissDialogProgress(context);
+                            });
                           },
                           style: TextStyle(
                             color: Colors.grey[700],
                           ),
-
                           items: [
                             for (int i = 0; i < _supportedLanguages.length; i++)
                               DropdownMenuItem<String>(
                                 value: _supportedLanguages[i],
                                 child: ListTile(
-                                  leading: Flag(_supportedLanguages[i].codeCountry,height: 25,width: 25,),
-                                  title: TextTranslator(_languages[i],),
+                                  leading: Flag(
+                                    _supportedLanguages[i].codeCountry,
+                                    height: 25,
+                                    width: 25,
+                                  ),
+                                  title: TextTranslator(
+                                    _languages[i],
+                                  ),
                                 ),
-                            ),
+                              ),
                           ],
                         ),
                         /*SizedBox(
@@ -297,7 +301,6 @@ class _ProfilePageState extends State<ProfilePage> {
                           height: 20,
                         ),
                         RaisedButton(
-
                           onPressed: () {
                             RouteUtil.goTo(
                               context: context,
@@ -405,7 +408,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           onPressed: () {
                             RouteUtil.goTo(
                               context: context,
-                              child: CGV(title: "CGV",),
+                              child: CGV(
+                                title: "CGV",
+                              ),
                               routeName: "",
                             );
                           },
@@ -432,7 +437,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           onPressed: () {
                             RouteUtil.goTo(
                               context: context,
-                              child: CGV(title: "Aide",),
+                              child: CGV(
+                                title: "Aide",
+                              ),
                               routeName: "",
                             );
                           },
@@ -459,7 +466,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           onPressed: () {
                             RouteUtil.goTo(
                               context: context,
-                              child: CGV(title: "A propos",),
+                              child: CGV(
+                                title: "A propos",
+                              ),
                               routeName: "",
                             );
                           },
@@ -479,16 +488,16 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                           ),
                         ),
-                         SizedBox(
+                        SizedBox(
                           height: 5,
                         ),
                         RaisedButton(
                           onPressed: () {
                             RouteUtil.goTo(
-                                        context: context,
-                                        child: ProfileEditPage(),
-                                        routeName: profileEditRoute,
-                                      );
+                              context: context,
+                              child: ProfileEditPage(),
+                              routeName: profileEditRoute,
+                            );
                           },
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(40),
@@ -511,45 +520,44 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         RaisedButton(
                           onPressed: () {
-                           showDialog<String>(context: context,
-                                                  builder:(_) => MessageDialog(message: "",)).then((value) async {
-                                                      print(value);
-                                                      //widget.food.message = value;
-                                                  
-                                                    if (value.isNotEmpty){
-                                                        User user =  Provider.of<AuthContext>(
-                                                          context,
-                                                          listen: false,
-                                                        ).currentUser;
-                                                      Message message = Message(email: user.email,message: value,name: "${user.name.first} ${user.name.last}", phoneNumber: user.phoneNumber,read: false,
-                                                      target: null);
-                                                      showDialog(
-                                                        barrierDismissible: false,
-                                                        context: context,builder:(_) => Center(
-                                                        child: CircularProgressIndicator(
-                                                                            valueColor: AlwaysStoppedAnimation<Color>(
-                                                                              CRIMSON,
-                                                                            ),
-                                                                          ),
-                                                      ));
-                                                      bool result = await Api.instance.sendMessage(message);
-                                                      RouteUtil.goBack(context: context);
-                                                        
-                                                        if (result){
-                                                            Fluttertoast.showToast(
-                                                                msg: "Message envoyé",
-                                                              );
-                                                        }else{
-                                                            Fluttertoast.showToast(
-                                                                msg: "Message non envoyé",
-                                                              );
-                                                        }
-                                                        
-                                                      }else{
-                                                        
-                                                      }
-                                                    }   
-                                                  );
+                            showDialog<String>(
+                                context: context,
+                                builder: (_) => MessageDialog(
+                                      message: "",
+                                    )).then((value) async {
+                              print(value);
+                              //widget.food.message = value;
+
+                              if (value.isNotEmpty) {
+                                User user = Provider.of<AuthContext>(
+                                  context,
+                                  listen: false,
+                                ).currentUser;
+                                Message message = Message(email: user.email, message: value, name: "${user.name.first} ${user.name.last}", phoneNumber: user.phoneNumber, read: false, target: null);
+                                showDialog(
+                                    barrierDismissible: false,
+                                    context: context,
+                                    builder: (_) => Center(
+                                          child: CircularProgressIndicator(
+                                            valueColor: AlwaysStoppedAnimation<Color>(
+                                              CRIMSON,
+                                            ),
+                                          ),
+                                        ));
+                                bool result = await Api.instance.sendMessage(message);
+                                RouteUtil.goBack(context: context);
+
+                                if (result) {
+                                  Fluttertoast.showToast(
+                                    msg: "Message envoyé",
+                                  );
+                                } else {
+                                  Fluttertoast.showToast(
+                                    msg: "Message non envoyé",
+                                  );
+                                }
+                              } else {}
+                            });
                           },
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(40),

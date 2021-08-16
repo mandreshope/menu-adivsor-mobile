@@ -4,11 +4,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
-import 'package:menu_advisor/src/pages/confirm_sms.dart';
 import 'package:menu_advisor/src/pages/delivery_details.dart';
 import 'package:menu_advisor/src/pages/login.dart';
 import 'package:menu_advisor/src/pages/map_polyline.dart';
@@ -40,10 +38,10 @@ class _OrderPageState extends State<OrderPage> {
   bool sendingCommand = false;
   CartContext _cartContext;
   Restaurant _restaurant;
- Api _api = Api.instance;
+  Api _api = Api.instance;
 
- bool isRestaurantLoading = true;
- TextEditingController comment = TextEditingController();
+  bool isRestaurantLoading = true;
+  TextEditingController comment = TextEditingController();
 
   TextEditingController _messageController = TextEditingController();
 
@@ -51,7 +49,7 @@ class _OrderPageState extends State<OrderPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-     _cartContext = Provider.of<CartContext>(context,listen: false);
+    _cartContext = Provider.of<CartContext>(context, listen: false);
 
     _api
         .getRestaurant(
@@ -60,13 +58,13 @@ class _OrderPageState extends State<OrderPage> {
         context,
         listen: false,
       ).languageCode,
-    ).then((value) {
+    )
+        .then((value) {
       _restaurant = value;
       setState(() {
         isRestaurantLoading = false;
       });
     });
-
   }
 
   @override
@@ -95,23 +93,22 @@ class _OrderPageState extends State<OrderPage> {
                       final List<Widget> list = [];
                       String id = "-1";
                       int position = 0;
-                      cartContext.items.forEach(
-                        (food) {
-                          //if (food.price != null)
-                         /* if (food.id != id){
+                      cartContext.items.forEach((food) {
+                        //if (food.price != null)
+                        /* if (food.id != id){
                             id = food.id;*/
-                            list.add(
-                              BagItem(
-                                food: food,
-                                position: position,
-                                count: 1,
-                                withPrice: widget.withPrice,
-                              ),
-                            );
-                            position++;
-                          }
-                        // },
-                      );
+                        list.add(
+                          BagItem(
+                            food: food,
+                            position: position,
+                            count: 1,
+                            withPrice: widget.withPrice,
+                          ),
+                        );
+                        position++;
+                      }
+                          // },
+                          );
 
                       if (cartContext.itemCount == 0)
                         return Padding(
@@ -127,119 +124,113 @@ class _OrderPageState extends State<OrderPage> {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          isRestaurantLoading ? Align(
-                            alignment: Alignment.topCenter,
-                            child: CircularProgressIndicator( valueColor: AlwaysStoppedAnimation<Color>(
-                                              CRIMSON,
-                                            ),),
-                          )
-                          :
-                          Padding(
-                            padding: const EdgeInsets.only(top: 20, right: 20, left: 20, bottom: 15),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Image.network(
-                                  _restaurant.imageURL,
-                                  // width: 4 * MediaQuery.of(context).size.width / 7,
-                                  width: MediaQuery.of(context).size.width / 4,
-                                  height: MediaQuery.of(context).size.width / 4,
-                                  fit: BoxFit.contain,
-                                  errorBuilder: (_, __, ___) => Center(
-                          child: Icon(
-                            Icons.fastfood,size:  MediaQuery.of(context).size.width / 4,
-                          ),
-                        ),
-                                ),
-                                SizedBox(
-                                  width: 15,
-                                ),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    TextTranslator(
-                                      _restaurant.name,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 15,
-                                      ),
+                          isRestaurantLoading
+                              ? Align(
+                                  alignment: Alignment.topCenter,
+                                  child: CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      CRIMSON,
                                     ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: [
-                                        Icon(
-                                          FontAwesomeIcons.mapMarkerAlt,
-                                          size: 12,
-                                          color: CRIMSON,
+                                  ),
+                                )
+                              : Padding(
+                                  padding: const EdgeInsets.only(top: 20, right: 20, left: 20, bottom: 15),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Image.network(
+                                        _restaurant.imageURL,
+                                        // width: 4 * MediaQuery.of(context).size.width / 7,
+                                        width: MediaQuery.of(context).size.width / 4,
+                                        height: MediaQuery.of(context).size.width / 4,
+                                        fit: BoxFit.contain,
+                                        errorBuilder: (_, __, ___) => Center(
+                                          child: Icon(
+                                            Icons.fastfood,
+                                            size: MediaQuery.of(context).size.width / 4,
+                                          ),
                                         ),
-                                        SizedBox(
-                                          width: 5,
-                                        ),
-                                        InkWell(
-                                            onTap: () async {
-                                              Position currentPosition = await getCurrentPosition();
-                                              var coordinates = _restaurant.location.coordinates;
-                                              // MapUtils.openMap(currentPosition.latitude, currentPosition.longitude,
-                                              // coordinates.last,coordinates.first);
-                                              RouteUtil.goTo(
-                                                context: context,
-                                                child: MapPolylinePage(
-                                                  restaurant: _restaurant,
-                                                  initialPosition: LatLng(currentPosition.latitude, currentPosition.longitude),
-                                                  destinationPosition: LatLng(coordinates.last, coordinates.first),
-                                                ),
-
-                                                routeName: restaurantRoute,
-                                              );
-                                            },
-                                            child: Container(
-                                            width: (MediaQuery.of(context).size.width -  MediaQuery.of(context).size.width / 3) - 95,
-                                            child: TextTranslator(
-                                              _restaurant.address,
-                                              maxLines: 3,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 15,
-                                                decoration: TextDecoration.underline,
-                                                color: Colors.blue
-                                              ),
+                                      ),
+                                      SizedBox(
+                                        width: 15,
+                                      ),
+                                      Column(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          TextTranslator(
+                                            _restaurant.name,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 15,
                                             ),
                                           ),
-                                        )
-                                      ],
-                                    ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: [
-                                        Icon(
-                                          FontAwesomeIcons.phoneAlt,
-                                          size: 12,
-                                          color: CRIMSON,
-                                        ),
-                                        SizedBox(
-                                          width: 5,
-                                        ),
-                                        InkWell(
-                                          onTap: () async {
-                                            if (_restaurant.phoneNumber != null)
-                                            await launch(
-                                                "tel:${_restaurant.phoneNumber}");
-                                          },
-                                             child: TextTranslator(
-                                            "Tel : ${_restaurant.phoneNumber ?? "0"}",
-                                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.black54),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            children: [
+                                              Icon(
+                                                FontAwesomeIcons.mapMarkerAlt,
+                                                size: 12,
+                                                color: CRIMSON,
+                                              ),
+                                              SizedBox(
+                                                width: 5,
+                                              ),
+                                              InkWell(
+                                                onTap: () async {
+                                                  Position currentPosition = await getCurrentPosition();
+                                                  var coordinates = _restaurant.location.coordinates;
+                                                  // MapUtils.openMap(currentPosition.latitude, currentPosition.longitude,
+                                                  // coordinates.last,coordinates.first);
+                                                  RouteUtil.goTo(
+                                                    context: context,
+                                                    child: MapPolylinePage(
+                                                      restaurant: _restaurant,
+                                                      initialPosition: LatLng(currentPosition.latitude, currentPosition.longitude),
+                                                      destinationPosition: LatLng(coordinates.last, coordinates.first),
+                                                    ),
+                                                    routeName: restaurantRoute,
+                                                  );
+                                                },
+                                                child: Container(
+                                                  width: (MediaQuery.of(context).size.width - MediaQuery.of(context).size.width / 3) - 95,
+                                                  child: TextTranslator(
+                                                    _restaurant.address,
+                                                    maxLines: 3,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15, decoration: TextDecoration.underline, color: Colors.blue),
+                                                  ),
+                                                ),
+                                              )
+                                            ],
                                           ),
-                                        )
-                                      ],
-                                    )
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                          
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            children: [
+                                              Icon(
+                                                FontAwesomeIcons.phoneAlt,
+                                                size: 12,
+                                                color: CRIMSON,
+                                              ),
+                                              SizedBox(
+                                                width: 5,
+                                              ),
+                                              InkWell(
+                                                onTap: () async {
+                                                  if (_restaurant.phoneNumber != null) await launch("tel:${_restaurant.phoneNumber}");
+                                                },
+                                                child: TextTranslator(
+                                                  "Tel : ${_restaurant.phoneNumber ?? "0"}",
+                                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.black54),
+                                                ),
+                                              )
+                                            ],
+                                          )
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
                           Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: Row(
@@ -253,20 +244,23 @@ class _OrderPageState extends State<OrderPage> {
                                   ),
                                 ),
                                 InkWell(
-                                  child: Icon(Icons.delete,color: Colors.grey,),
+                                  child: Icon(
+                                    Icons.delete,
+                                    color: Colors.grey,
+                                  ),
                                   onTap: () async {
                                     var result = await showDialog(
-                                            context: context,
-                                            builder: (_) => ConfirmationDialog(
-                                              title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
-                                              content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
-                                            ),
-                                                  );
+                                      context: context,
+                                      builder: (_) => ConfirmationDialog(
+                                        title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
+                                        content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
+                                      ),
+                                    );
 
-                                               if (result is bool && result) {
-                                            cartContext.clear();
-                                            RouteUtil.goBack(context: context);
-                                               }
+                                    if (result is bool && result) {
+                                      cartContext.clear();
+                                      RouteUtil.goBack(context: context);
+                                    }
                                   },
                                 )
                               ],
@@ -280,7 +274,7 @@ class _OrderPageState extends State<OrderPage> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
-                              child: Container(
+                            child: Container(
                               height: 150,
                               padding: EdgeInsets.symmetric(horizontal: 25),
                               child: TextFormField(
@@ -288,10 +282,7 @@ class _OrderPageState extends State<OrderPage> {
                                 keyboardType: TextInputType.multiline,
                                 maxLines: null,
                                 showCursor: true,
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  hintText: "Votre commentaire..."
-                                ),
+                                decoration: InputDecoration(border: InputBorder.none, hintText: "Votre commentaire..."),
                               ),
                             ),
                           ),
@@ -301,7 +292,7 @@ class _OrderPageState extends State<OrderPage> {
                   ),
                 ),
               ),
-              if (widget.withPrice)...[
+              if (widget.withPrice) ...[
                 /*_cartContext.pricelessItems ? Container() :
                 Padding(
                         padding: const EdgeInsets.symmetric(
@@ -330,81 +321,83 @@ class _OrderPageState extends State<OrderPage> {
                           ],
                         ),
                       ),*/
-              Consumer<CartContext>(
-                builder: (_, cartContext, __) => cartContext.pricelessItems
-                    ? Container()
-                    : Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            TextTranslator(
-                              '${AppLocalizations.of(context).translate('total_to_pay')} : ',
-                              style: TextStyle(
-                                fontWeight: FontWeight.normal,
-                                fontSize: 18,
+                Consumer<CartContext>(
+                  builder: (_, cartContext, __) => cartContext.pricelessItems
+                      ? Container()
+                      : Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              TextTranslator(
+                                '${AppLocalizations.of(context).translate('total_to_pay')} : ',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 18,
+                                ),
                               ),
-                            ),
-                            Text(
-                             !Provider.of<CartContext>(context,listen: false).withPrice ? "_" :'${cartContext.totalPrice.toStringAsFixed(2)}€',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
+                              Text(
+                                !Provider.of<CartContext>(context, listen: false).withPrice ? "_" : '${cartContext.totalPrice.toStringAsFixed(2)}€',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-              ),
-              
+                ),
               ],
               Padding(
                 padding: const EdgeInsets.all(15),
                 child: Consumer3<CommandContext, AuthContext, CartContext>(
-                  builder: (_, commandContext, authContext, cartContext, __) => 
-                  Container(
-                        width: MediaQuery.of(context).size.width - 100,
-                        child: FlatButton(
-                          onPressed: () async {
-                            // if (!_restaurant.isOpen){
-                            //                  Fluttertoast.showToast(
-                            //                     msg: 'Restaurant fermé',
-                            //                   );
-                            //                 return;
-                            //               }
-                            // _command(commandContext, authContext, cartContext);
-                            if (cartContext.pricelessItems || !widget.withPrice) {
-                              commandContext.commandType = 'on_site';
-                              _command(commandContext, authContext, cartContext);
-                            } else {
-                              if (!isRestaurantLoading)
-                              showModalBottomSheet(
-                                  context: context,
-                                  builder: (_) {
-                                    return _commandType();
-                                  });
-                            }
-                          },
-                          padding: const EdgeInsets.all(
-                            20.0,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          color: Colors.teal,
-                          child: isRestaurantLoading ? CupertinoActivityIndicator(animating: true,) : TextTranslator(
-                            AppLocalizations.of(context).translate('validate'),
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
+                  builder: (_, commandContext, authContext, cartContext, __) => Container(
+                    width: MediaQuery.of(context).size.width - 100,
+                    child: FlatButton(
+                      onPressed: () async {
+                        // if (!_restaurant.isOpen){
+                        //                  Fluttertoast.showToast(
+                        //                     msg: 'Restaurant fermé',
+                        //                   );
+                        //                 return;
+                        //               }
+                        // _command(commandContext, authContext, cartContext);
+                        if (cartContext.pricelessItems || !widget.withPrice) {
+                          commandContext.commandType = 'on_site';
+                          _command(commandContext, authContext, cartContext);
+                        } else {
+                          if (!isRestaurantLoading)
+                            showModalBottomSheet(
+                                context: context,
+                                builder: (_) {
+                                  return _commandType();
+                                });
+                        }
+                      },
+                      padding: const EdgeInsets.all(
+                        20.0,
                       ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      color: Colors.teal,
+                      child: isRestaurantLoading
+                          ? CupertinoActivityIndicator(
+                              animating: true,
+                            )
+                          : TextTranslator(
+                              AppLocalizations.of(context).translate('validate'),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                    ),
+                  ),
                   // Spacer(),
                   /*InkWell(
                     
@@ -425,11 +418,8 @@ class _OrderPageState extends State<OrderPage> {
                       // sendComment
                     },
                   ),*/
-
-                    
-                  ),
                 ),
-              
+              ),
             ],
           ),
           if (sendingCommand)
@@ -451,44 +441,28 @@ class _OrderPageState extends State<OrderPage> {
     if (authContext.currentUser == null) {
       if (commandContext.commandType != 'delivery') {
         if (commandContext.commandType == 'on_site') {
-          
           try {
             setState(() {
               sendingCommand = true;
             });
 
             var command = await Api.instance.sendCommand(
-              comment: cartContext.comment,
-              relatedUser: authContext.currentUser?.id ?? null,
-              commandType: commandContext.commandType,
-              items: cartContext.items.where(
-                      (f) => !f.isMenu).map(
-                      (e) => {
-                        'quantity': e.quantity,
-                        'item': e.id,
-                        'options': e.optionSelected != null ?
-                        e.optionSelected : [],
-                        'comment':e.message}
-                        ).toList(),
-              restaurant: cartContext.currentOrigin,
-              totalPrice: (cartContext.totalPrice * 100).round(),
-              menu: 
-              cartContext.items.where(
-                (e) => e.isMenu).map(
-                  (e) => 
-                  {
-                    'quantity': e.quantity,
-                    'item': e.id,
-                    'foods': 
-                e.foodMenuSelecteds
-              }).toList(),
-                priceless: !cartContext.withPrice
-            );
+                comment: cartContext.comment,
+                relatedUser: authContext.currentUser?.id ?? null,
+                commandType: commandContext.commandType,
+                items: cartContext.items
+                    .where((f) => !f.isMenu)
+                    .map((e) => {'quantity': e.quantity, 'item': e.id, 'options': e.optionSelected != null ? e.optionSelected : [], 'comment': e.message})
+                    .toList(),
+                restaurant: cartContext.currentOrigin,
+                totalPrice: (cartContext.totalPrice * 100).round(),
+                menu: cartContext.items.where((e) => e.isMenu).map((e) => {'quantity': e.quantity, 'item': e.id, 'foods': e.foodMenuSelecteds}).toList(),
+                priceless: !cartContext.withPrice);
             Command cm = Command.fromJson(command);
 
             cartContext.clear();
             commandContext.clear();
-            Provider.of<MenuContext>(context,listen: false).clear();
+            Provider.of<MenuContext>(context, listen: false).clear();
             Fluttertoast.showToast(
               msg: AppLocalizations.of(context).translate('success'),
             );
@@ -516,19 +490,9 @@ class _OrderPageState extends State<OrderPage> {
             );
           }
         } else if (commandContext.commandType == 'takeaway') {
-          RouteUtil.goTo(
-            context: context,
-            child: UserDetailsPage(),
-            routeName: userDetailsRoute,
-            arguments: _restaurant
-          );
+          RouteUtil.goTo(context: context, child: UserDetailsPage(), routeName: userDetailsRoute, arguments: _restaurant);
         } else {
-          RouteUtil.goTo(
-            context: context,
-            child: UserDetailsPage(),
-            routeName: userDetailsRoute,
-              arguments: _restaurant
-          );
+          RouteUtil.goTo(context: context, child: UserDetailsPage(), routeName: userDetailsRoute, arguments: _restaurant);
         }
       } else {
         Fluttertoast.showToast(msg: 'Veuillez vous connecter pour pouvoir continuer');
@@ -540,18 +504,14 @@ class _OrderPageState extends State<OrderPage> {
       }
     } else if (commandContext.commandType == 'delivery') {
       RouteUtil.goTo(
-        context: context,
-        child: DeliveryDetailsPage(restaurant: _restaurant,),
-        routeName: loginRoute,
-          arguments: _restaurant
-      );
+          context: context,
+          child: DeliveryDetailsPage(
+            restaurant: _restaurant,
+          ),
+          routeName: loginRoute,
+          arguments: _restaurant);
     } else if (commandContext.commandType == 'takeaway') {
-      RouteUtil.goTo(
-        context: context,
-        child: UserDetailsPage(),
-        routeName: userDetailsRoute,
-          arguments: _restaurant
-      );
+      RouteUtil.goTo(context: context, child: UserDetailsPage(), routeName: userDetailsRoute, arguments: _restaurant);
     } else if (commandContext.commandType == 'on_site' /* || commandContext.commandType == 'takeaway'*/) {
       try {
         setState(() {
@@ -559,31 +519,22 @@ class _OrderPageState extends State<OrderPage> {
         });
 
         var command = await Api.instance.sendCommand(
-          comment: cartContext.comment,
-          relatedUser: authContext.currentUser.id,
-          commandType: commandContext.commandType,
-          items: cartContext.items.where((e) => !e.isMenu).map((e) => {'quantity': e.quantity, 'item': e.id,
-            'options': e.optionSelected != null ?
-            e.optionSelected : [],'comment':e.message}).toList(),
-          restaurant: cartContext.currentOrigin,
-          totalPrice: (cartContext.totalPrice * 100).round(),
-        menu: cartContext.items.where(
-                (e) => 
-                e.isMenu).map(
-                  (e) => 
-                  {
-                    'quantity': e.quantity,
-                    'item': e.id,
-                    'foods': 
-                e.foodMenuSelecteds
-              }).toList(),
-            priceless: !cartContext.withPrice
-        );
+            comment: cartContext.comment,
+            relatedUser: authContext.currentUser.id,
+            commandType: commandContext.commandType,
+            items: cartContext.items
+                .where((e) => !e.isMenu)
+                .map((e) => {'quantity': e.quantity, 'item': e.id, 'options': e.optionSelected != null ? e.optionSelected : [], 'comment': e.message})
+                .toList(),
+            restaurant: cartContext.currentOrigin,
+            totalPrice: (cartContext.totalPrice * 100).round(),
+            menu: cartContext.items.where((e) => e.isMenu).map((e) => {'quantity': e.quantity, 'item': e.id, 'foods': e.foodMenuSelecteds}).toList(),
+            priceless: !cartContext.withPrice);
         Command cm = Command.fromJson(command);
 
         cartContext.clear();
         commandContext.clear();
-        Provider.of<MenuContext>(context,listen: false).clear();
+        Provider.of<MenuContext>(context, listen: false).clear();
         Fluttertoast.showToast(
           msg: AppLocalizations.of(context).translate('success'),
         );
@@ -597,8 +548,8 @@ class _OrderPageState extends State<OrderPage> {
         RouteUtil.goTo(
           context: context,
           child: Summary(
-                commande: cm,
-              ),
+            commande: cm,
+          ),
           routeName: summaryRoute,
           method: RoutingMethod.replaceLast,
         );
@@ -647,10 +598,75 @@ class _OrderPageState extends State<OrderPage> {
                     mainAxisAlignment: !_restaurant.delivery ? MainAxisAlignment.center : MainAxisAlignment.spaceEvenly,
                     children: [
                       if (!cartContext.pricelessItems)
-                        !_restaurant.delivery ? Container() : Theme(
+                        !_restaurant.delivery
+                            ? Container()
+                            : Theme(
+                                data: ThemeData(
+                                  cardColor: commandContext.commandType == 'delivery' ? CRIMSON : Colors.white,
+                                  brightness: commandContext.commandType == 'delivery' ? Brightness.dark : Brightness.light,
+                                ),
+                                child: Card(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(20),
+                                    onTap: () {
+                                      commandContext.commandType = 'delivery';
+                                      _command(commandContext, authContext, cartContext);
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 20,
+                                      ),
+                                      width: MediaQuery.of(context).size.width / 4,
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          TextTranslator(
+                                            AppLocalizations.of(context).translate('delivery'),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          FaIcon(
+                                            FontAwesomeIcons.houseUser,
+                                          ),
+                                          // frais de livraison
+                                          _cartContext.pricelessItems
+                                              ? Container()
+                                              : Padding(
+                                                  padding: const EdgeInsets.only(
+                                                    top: 5,
+                                                  ),
+                                                  child: Row(
+                                                    mainAxisSize: MainAxisSize.max,
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    children: [
+                                                      TextTranslator(
+                                                        'Frais : ',
+                                                        style: TextStyle(fontWeight: FontWeight.normal, fontSize: 10, color: Colors.grey),
+                                                      ),
+                                                      Text(
+                                                        _restaurant?.priceDelevery == null ? "0€" : '${_restaurant?.priceDelevery / 100 ?? '0'}€',
+                                                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: Colors.grey),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                      if (_restaurant.surPlace)
+                        Theme(
                           data: ThemeData(
-                            cardColor: commandContext.commandType == 'delivery' ? CRIMSON : Colors.white,
-                            brightness: commandContext.commandType == 'delivery' ? Brightness.dark : Brightness.light,
+                            cardColor: commandContext.commandType == 'on_site' ? CRIMSON : Colors.white,
+                            brightness: commandContext.commandType == 'on_site' ? Brightness.dark : Brightness.light,
                           ),
                           child: Card(
                             shape: RoundedRectangleBorder(
@@ -659,7 +675,61 @@ class _OrderPageState extends State<OrderPage> {
                             child: InkWell(
                               borderRadius: BorderRadius.circular(20),
                               onTap: () {
-                                commandContext.commandType = 'delivery';
+                                if (!_restaurant.isOpen) {
+                                  Fluttertoast.showToast(
+                                    msg: 'Restaurant fermé',
+                                  );
+                                  return;
+                                }
+                                commandContext.commandType = 'on_site';
+                                _command(commandContext, authContext, cartContext);
+                                Navigator.of(context).pop();
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 20,
+                                ),
+                                width: MediaQuery.of(context).size.width / 4,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    TextTranslator(
+                                      AppLocalizations.of(context).translate('on_site'),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    FaIcon(
+                                      FontAwesomeIcons.streetView,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      if (_restaurant.aEmporter)
+                        Theme(
+                          data: ThemeData(
+                            cardColor: commandContext.commandType == 'takeaway' ? CRIMSON : Colors.white,
+                            brightness: commandContext.commandType == 'takeaway' ? Brightness.dark : Brightness.light,
+                          ),
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(20),
+                              onTap: () {
+                                /*if (!_restaurant.isOpen){
+                               Fluttertoast.showToast(
+                                                msg: 'Restaurant fermé',
+                                              );
+                                            return;
+                                            }*/
+                                commandContext.commandType = 'takeaway';
                                 _command(commandContext, authContext, cartContext);
                               },
                               child: Container(
@@ -672,146 +742,21 @@ class _OrderPageState extends State<OrderPage> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     TextTranslator(
-                                      AppLocalizations.of(context).translate('delivery'),
+                                      AppLocalizations.of(context).translate('takeaway'),
                                       textAlign: TextAlign.center,
                                     ),
                                     SizedBox(
                                       height: 10,
                                     ),
                                     FaIcon(
-                                      FontAwesomeIcons.houseUser,
+                                      FontAwesomeIcons.briefcase,
                                     ),
-                                    // frais de livraison
-                                    _cartContext.pricelessItems ? Container() :
-                                    Padding(
-                        padding: const EdgeInsets.only(
-                          top: 5,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            TextTranslator(
-                              'Frais : ',
-                              style: TextStyle(
-                                fontWeight: FontWeight.normal,
-                                fontSize: 10,
-                                color: Colors.grey
-                              ),
-                            ),
-                            Text(
-                              _restaurant?.priceDelevery == null ? "0€" : '${_restaurant?.priceDelevery/100 ?? '0'}€',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 10,
-                                color: Colors.grey
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
                                   ],
                                 ),
                               ),
                             ),
                           ),
                         ),
-                        
-                        if(_restaurant.surPlace) 
-                        Theme(
-                        data: ThemeData(
-                          cardColor: commandContext.commandType == 'on_site' ? CRIMSON : Colors.white,
-                          brightness: commandContext.commandType == 'on_site' ? Brightness.dark : Brightness.light,
-                        ),
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(20),
-                            onTap: () {
-                              if (!_restaurant.isOpen){
-                               Fluttertoast.showToast(
-                                                msg: 'Restaurant fermé',
-                                              );
-                                            return;
-                                            }
-                              commandContext.commandType = 'on_site';
-                              _command(commandContext, authContext, cartContext);
-                              Navigator.of(context).pop();
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 20,
-                              ),
-                              width: MediaQuery.of(context).size.width / 4,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  TextTranslator(
-                                    AppLocalizations.of(context).translate('on_site'),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  FaIcon(
-                                    FontAwesomeIcons.streetView,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      if (_restaurant.aEmporter)
-                      Theme(
-                        data: ThemeData(
-                          cardColor: commandContext.commandType == 'takeaway' ? CRIMSON : Colors.white,
-                          brightness: commandContext.commandType == 'takeaway' ? Brightness.dark : Brightness.light,
-                        ),
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(20),
-                            onTap: () {
-                              /*if (!_restaurant.isOpen){
-                               Fluttertoast.showToast(
-                                                msg: 'Restaurant fermé',
-                                              );
-                                            return;
-                                            }*/
-                              commandContext.commandType = 'takeaway';
-                              _command(commandContext, authContext, cartContext);
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 20,
-                              ),
-                              width: MediaQuery.of(context).size.width / 4,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  TextTranslator(
-                                    AppLocalizations.of(context).translate('takeaway'),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  FaIcon(
-                                    FontAwesomeIcons.briefcase,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ],

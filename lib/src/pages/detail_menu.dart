@@ -2,15 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/components/menu_item_food_option.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/photo_view.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
-import 'package:menu_advisor/src/providers/MenuContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
@@ -19,7 +16,6 @@ import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 import 'package:menu_advisor/src/utils/extensions.dart';
-import 'package:share/share.dart';
 
 class DetailMenu extends StatefulWidget {
   Menu menu;
@@ -78,44 +74,42 @@ class _DetailMenuState extends State<DetailMenu> {
     widget.menu.idNewFood = DateTime.now().millisecondsSinceEpoch.toString();
     _cartContext = Provider.of<CartContext>(context, listen: false);
     _cartContext.itemsTemp.clear();
-    
+
     // sort menu type by priority
-    widget.menu.foods.sort((a,b) => a.food.type.priority.compareTo(b.food.type.priority));
+    widget.menu.foods.sort((a, b) => a.food.type.priority.compareTo(b.food.type.priority));
     widget.menu.foodsGrouped = widget.menu.foods ?? [];
     widget.menu.count = _cartContext.getFoodCountByIdNew(widget.menu);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-
-      
       _scrollController.addListener(_scrollListener);
-      if (widget.menu.restaurant is String){
-         setState(() {
+      if (widget.menu.restaurant is String) {
+        setState(() {
           // restaurant = res;
           loading = true;
         });
-      Api.instance
-          .getRestaurant(
-        id: widget.menu.restaurant,
-        lang: Provider.of<SettingContext>(
-          context,
-          listen: false,
-        ).languageCode,
-      )
-          .then((res) {
-        if (!mounted) return;
+        Api.instance
+            .getRestaurant(
+          id: widget.menu.restaurant,
+          lang: Provider.of<SettingContext>(
+            context,
+            listen: false,
+          ).languageCode,
+        )
+            .then((res) {
+          if (!mounted) return;
 
-        setState(() {
-          restaurant = res;
-          loading = false;
+          setState(() {
+            restaurant = res;
+            loading = false;
+          });
+        }).catchError((error) {
+          print(error.toString());
+          Fluttertoast.showToast(
+            msg: AppLocalizations.of(context).translate('connection_error'),
+          );
+          setState(() {
+            loading = false;
+          });
         });
-      }).catchError((error) {
-        print(error.toString());
-        Fluttertoast.showToast(
-          msg: AppLocalizations.of(context).translate('connection_error'),
-        );
-        setState(() {
-          loading = false;
-        });
-      });
       }
       // else{
       //   setState(() {
@@ -171,13 +165,11 @@ class _DetailMenuState extends State<DetailMenu> {
                       SizedBox(
                         height: 25,
                       ),
-                      Container(
-                                  margin: EdgeInsets.only(left: 15),
-                                  child: _renderTitlePlat(context)),
-                                Divider(),
+                      Container(margin: EdgeInsets.only(left: 15), child: _renderTitlePlat(context)),
+                      Divider(),
                       Container(
                         width: double.infinity,
-                         child: Stack(
+                        child: Stack(
                           children: [
                             Container(
                               margin: EdgeInsets.only(left: 15),
@@ -203,17 +195,17 @@ class _DetailMenuState extends State<DetailMenu> {
                                 right: 25,
                                 child: !_cartContext.withPrice || widget.menu.type == MenuType.priceless.value
                                     ? Text("")
-                                    : Consumer<CartContext>(
-                                      builder: (context, snapshot,_) {
+                                    : Consumer<CartContext>(builder: (context, snapshot, _) {
                                         return Text(
-                                            widget.menu.type == MenuType.per_food.value || widget.menu.price?.amount == null ? '${widget.menu.totalPrice / 100} €' : '${widget.menu.price.amount / 100} €',
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              color: Colors.black,
-                                            ),
-                                          );
-                                      }
-                                    ),
+                                          widget.menu.type == MenuType.per_food.value || widget.menu.price?.amount == null
+                                              ? '${widget.menu.totalPrice / 100} €'
+                                              : '${widget.menu.price.amount / 100} €',
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.black,
+                                          ),
+                                        );
+                                      }),
                               ),
                           ],
                         ),
@@ -335,7 +327,7 @@ class _DetailMenuState extends State<DetailMenu> {
                                         // Fluttertoast.showToast(
                                         //   msg: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
                                         // );
-                                      }else {
+                                      } else {
                                         if (cartContext.hasOptionSelectioned(_food)) {
                                           _cartContext.addItem(widget.menu, 1, true);
                                           // setState(() {});
@@ -345,7 +337,7 @@ class _DetailMenuState extends State<DetailMenu> {
                                             msg: 'Ajouter une option',
                                           );
                                         //}
-                                      } 
+                                      }
                                     },
                                     child: TextTranslator(
                                       AppLocalizations.of(context).translate("add_to_cart") +
@@ -388,25 +380,24 @@ class _DetailMenuState extends State<DetailMenu> {
             },
             // child: Hero(
             //   tag: widget.menu.id,
-              child: 
-              widget.menu.imageURL != null
-                  ? Image.network(
-                      widget.menu.imageURL,
-                      width: MediaQuery.of(context).size.width,
-                      height: 250,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Center(
-                        child: Icon(
-                          Icons.fastfood,
-                          size: 250,
-                        ),
+            child: widget.menu.imageURL != null
+                ? Image.network(
+                    widget.menu.imageURL,
+                    width: MediaQuery.of(context).size.width,
+                    height: 250,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Center(
+                      child: Icon(
+                        Icons.fastfood,
+                        size: 250,
                       ),
-                    )
-                  : Icon(
-                      Icons.fastfood,
-                      size: 250,
                     ),
-            ),
+                  )
+                : Icon(
+                    Icons.fastfood,
+                    size: 250,
+                  ),
+          ),
           // )
 
           /* Positioned.fill(
@@ -516,10 +507,10 @@ class _DetailMenuState extends State<DetailMenu> {
                                               image: menuFood.food.imageURL,
                                               imageErrorBuilder: (_, o, s) {
                                                 return Container(
-                                width: 75,
-                                height: 75,
-                                color: Colors.white,
-                              );
+                                                  width: 75,
+                                                  height: 75,
+                                                  color: Colors.white,
+                                                );
                                               },
                                               height: 75,
                                               width: 75,
@@ -539,13 +530,15 @@ class _DetailMenuState extends State<DetailMenu> {
                                         ),
                                         if (widget.menu.type == MenuType.fixed_price.value && _cartContext.withPrice) ...[
                                           Spacer(),
-                                          menuFood.food.additionalPrice.amount == 0 ? Text("") : Text("+ ${(menuFood.food.additionalPrice.amount/100)} €", style: TextStyle(fontWeight: FontWeight.bold))
+                                          menuFood.food.additionalPrice.amount == 0
+                                              ? Text("")
+                                              : Text("+ ${(menuFood.food.additionalPrice.amount / 100)} €", style: TextStyle(fontWeight: FontWeight.bold))
                                         ] else if (widget.menu.type == MenuType.priceless.value) ...[
                                           Text(" ")
                                         ] else ...[
                                           Spacer(),
                                           if (_cartContext.withPrice)
-                                          menuFood.food?.price?.amount == null ? Text("") : Text("${menuFood.food.price.amount / 100} €", style: TextStyle(fontWeight: FontWeight.bold)),
+                                            menuFood.food?.price?.amount == null ? Text("") : Text("${menuFood.food.price.amount / 100} €", style: TextStyle(fontWeight: FontWeight.bold)),
                                         ],
                                         Spacer(),
                                         IconButton(

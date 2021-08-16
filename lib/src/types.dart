@@ -26,10 +26,10 @@ class Location {
 }
 
 class Price {
-   int amount;
+  int amount;
   final String currency;
 
-   Price({
+  Price({
     @required this.amount,
     @required this.currency,
   });
@@ -38,16 +38,12 @@ class Price {
         amount: json['amount'],
         currency: json['currency'],
       );
-   Map<String, dynamic> toJson() => {
-     'amount': amount,
-     'currency': currency,
-   };
+  Map<String, dynamic> toJson() => {
+        'amount': amount,
+        'currency': currency,
+      };
 
-   factory Price.Copy(Price p)=> Price(
-     amount: p.amount,
-     currency: p.currency
-   );
-
+  factory Price.Copy(Price p) => Price(amount: p.amount, currency: p.currency);
 }
 
 class UserName {

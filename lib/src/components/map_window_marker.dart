@@ -16,31 +16,32 @@ class MapWindowMarker extends StatelessWidget {
   final Restaurant restaurant;
   final Position position;
   final bool fromMapItineraire;
-  const MapWindowMarker({Key key, this.restaurant,this.position,this.fromMapItineraire = false}) : super(key: key);
+  const MapWindowMarker({
+    Key key,
+    this.restaurant,
+    this.position,
+    this.fromMapItineraire = false,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: (){
+      onTap: () {
         RouteUtil.goTo(
-                            context: context,
-                            child: RestaurantPage(
-                              restaurant: this.restaurant.id,
-                            ),
-                            routeName: "",
-                          );
+          context: context,
+          child: RestaurantPage(
+            restaurant: this.restaurant.id,
+          ),
+          routeName: "",
+        );
       },
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 10),
         padding: EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(15))
-        ),
+        decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(15))),
         child: Card(
           elevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(15))
-        ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15))),
           child: Row(
             children: [
               /*Container(
@@ -48,26 +49,26 @@ class MapWindowMarker extends StatelessWidget {
                 height: 125,
                 color: Colors.white,
                 child: */
-                // Hero(
-                //   tag: 'tag:${restaurant.imageURL}',
-                //   child: 
-                  FadeInImage.assetNetwork(
-                    placeholder: 'assets/images/loading.gif',
-                    image: this.restaurant.imageURL,
-                    height: 125,
-                    width: 75,
-                    fit: BoxFit.contain,
-                    imageErrorBuilder: (_, __, ___) => Container(
-                      height: 125,
-                    width: 75,
-                    ),
-                  ),
-                // ),
+              // Hero(
+              //   tag: 'tag:${restaurant.imageURL}',
+              //   child:
+              FadeInImage.assetNetwork(
+                placeholder: 'assets/images/loading.gif',
+                image: this.restaurant.imageURL,
+                height: 125,
+                width: 75,
+                fit: BoxFit.contain,
+                imageErrorBuilder: (_, __, ___) => Container(
+                  height: 125,
+                  width: 75,
+                ),
+              ),
+              // ),
               // ),
               SizedBox(
                 width: 10,
               ),
-            
+
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -88,17 +89,14 @@ class MapWindowMarker extends StatelessWidget {
                       this.restaurant.address,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      ),
+                    ),
                   ),
                   SizedBox(
                     width: 5,
                   ),
                   TextTranslator(
-                    "Distance : ${Provider.of<SettingContext>(context).distanceBetweenString(restaurant.location.coordinates.last,restaurant.location.coordinates.first)}",
-                    style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold
-                    ),
+                    "Distance : ${Provider.of<SettingContext>(context).distanceBetweenString(restaurant.location.coordinates.last, restaurant.location.coordinates.first)}",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(
                     width: 5,
@@ -162,108 +160,108 @@ class MapWindowMarker extends StatelessWidget {
                       Container(
                         padding: EdgeInsets.all(8),
                         decoration: BoxDecoration(color: restaurant.isOpen ? TEAL : CRIMSON, borderRadius: BorderRadius.circular(25)),
-                        child: Text(restaurant.isOpen ? "Ouvert" : "Fermé",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12
-                            )),
+                        child: Text(restaurant.isOpen ? "Ouvert" : "Fermé", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12)),
                       ),
-                      SizedBox(width: 10,),
+                      SizedBox(
+                        width: 10,
+                      ),
                       InkWell(
-                        onTap: (){
-                          showDialog(context: context,
-                                    builder: (_){
-                                      return SheduleDialog(openingTimes: restaurant.openingTimes,);
-                                    }
-                                  );
+                        onTap: () {
+                          showDialog(
+                              context: context,
+                              builder: (_) {
+                                return SheduleDialog(
+                                  openingTimes: restaurant.openingTimes,
+                                );
+                              });
                         },
                         child: Container(
                           padding: EdgeInsets.all(8),
                           decoration: BoxDecoration(color: Colors.amber, borderRadius: BorderRadius.circular(25)),
-                          child: Text("Horaire",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 12
-                              )),
+                          child: Text("Horaire", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12)),
                         ),
                       ),
-                      SizedBox(width: 10,),
+                      SizedBox(
+                        width: 10,
+                      ),
                       Visibility(
                         visible: !this.fromMapItineraire,
-                                              child: InkWell(
-                                                            onTap: () {
-                                                              showModalBottomSheet(
-                                                                backgroundColor: Colors.transparent,
-                                                                  context: context,
-                                                                  builder: (_) {
-                                                                    return Container(
-                                                                      // height: 80,
-                                                                      decoration: BoxDecoration(
-                                                                        borderRadius: BorderRadius.only(
-                                                                          topRight: Radius.circular(50),
-                                                                          topLeft: Radius.circular(50),
-                                                                          
-                                                                        ),
-                                                                        color: Colors.white
-                                                                      ),
-                                                                      child: Column(
-                                                                        mainAxisSize: MainAxisSize.min,
-                                                                        children: [
-                                                                          SizedBox(height: 15,),
-                                                                          TextTranslator("Voir l'itineraire sur Google Map : ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                                                                          SizedBox(height: 15,),
-                                                                          Row(
-                                                                            mainAxisAlignment: MainAxisAlignment.center,
-                                                                            children: [
-                                                                              InkWell(
-                                                                                onTap: () async {
-                                                                                  var coordinates = restaurant.location.coordinates;
-                                                                                  RouteUtil.goTo(
-                                                                                      context: context,
-                                                                                      child: MapPolylinePage(
-                                                                                        restaurant: restaurant,
-                                                                                        initialPosition: LatLng(position.latitude, position.longitude),
-                                                                                        destinationPosition: LatLng(coordinates.last, coordinates.first),
-                                                                                      ),
-
-                                                                                      routeName: "",
-                                                                                    );
-                                                                                },
-                                                                                child: Container(
-                                                                                  padding: EdgeInsets.all(8),
-                                                                                  decoration: BoxDecoration(color: BRIGHT_RED, borderRadius: BorderRadius.circular(5)),
-                                                                                  child: Text("Map interne", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14)),
-                                                                                ),
-                                                                              ),
-                                                                              SizedBox(width: 15,),
-                                                                              InkWell(
-                                                                                onTap: () async {
-                                                                                  var coordinates = restaurant.location.coordinates;
-                                                                                  MapUtils.openMap(position.latitude, position.longitude,
-                                                                                  coordinates.last,coordinates.first);
-                                                                                },
-                                                                                child: Container(
-                                                                                  padding: EdgeInsets.all(8),
-                                                                                  decoration: BoxDecoration(color: DARK_BLUE, borderRadius: BorderRadius.circular(5)),
-                                                                                  child: Text("Map externe", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14)),
-                                                                                ),
-                                                                              ),
-                                                                            ],
-                                                                          )
-                                                                          ,SizedBox(height: 25,),
-                                                                        ],
-                                                                      ),
-                                                                    );
-                                                                  });
-                                                            },
-                                                            child: Container(
-                                                              padding: EdgeInsets.all(8),
-                                                              decoration: BoxDecoration(color: BRIGHT_RED, borderRadius: BorderRadius.circular(50)),
-                                                              child: Text("Itineraire", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12)),
-                                                            ),
-                                                          ),
+                        child: InkWell(
+                          onTap: () {
+                            showModalBottomSheet(
+                                backgroundColor: Colors.transparent,
+                                context: context,
+                                builder: (_) {
+                                  return Container(
+                                    // height: 80,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.only(
+                                          topRight: Radius.circular(50),
+                                          topLeft: Radius.circular(50),
+                                        ),
+                                        color: Colors.white),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        SizedBox(
+                                          height: 15,
+                                        ),
+                                        TextTranslator("Voir l'itineraire sur Google Map : ", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                                        SizedBox(
+                                          height: 15,
+                                        ),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            InkWell(
+                                              onTap: () async {
+                                                var coordinates = restaurant.location.coordinates;
+                                                RouteUtil.goTo(
+                                                  context: context,
+                                                  child: MapPolylinePage(
+                                                    restaurant: restaurant,
+                                                    initialPosition: LatLng(position.latitude, position.longitude),
+                                                    destinationPosition: LatLng(coordinates.last, coordinates.first),
+                                                  ),
+                                                  routeName: "",
+                                                );
+                                              },
+                                              child: Container(
+                                                padding: EdgeInsets.all(8),
+                                                decoration: BoxDecoration(color: BRIGHT_RED, borderRadius: BorderRadius.circular(5)),
+                                                child: Text("Map interne", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14)),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: 15,
+                                            ),
+                                            InkWell(
+                                              onTap: () async {
+                                                var coordinates = restaurant.location.coordinates;
+                                                MapUtils.openMap(position.latitude, position.longitude, coordinates.last, coordinates.first);
+                                              },
+                                              child: Container(
+                                                padding: EdgeInsets.all(8),
+                                                decoration: BoxDecoration(color: DARK_BLUE, borderRadius: BorderRadius.circular(5)),
+                                                child: Text("Map externe", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14)),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(
+                                          height: 25,
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                });
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(8),
+                            decoration: BoxDecoration(color: BRIGHT_RED, borderRadius: BorderRadius.circular(50)),
+                            child: Text("Itineraire", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12)),
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -272,24 +270,20 @@ class MapWindowMarker extends StatelessWidget {
                   ),
                 ],
               )
-            
             ],
           ),
         ),
       ),
     );
   }
-    Widget _renderCategorie(){
+
+  Widget _renderCategorie() {
     String name = "";
-    for (var category in restaurant.category)
-      name += category['name']['fr'] + ", ";
-      return TextTranslator(
-        name.isEmpty ? name : name.substring(0,name.length-2),
-        isAutoSizeText: true,
-        style: TextStyle(
-            fontWeight: FontWeight.bold,
-          fontSize: 16
-        ),
-      );
+    for (var category in restaurant.category) name += category['name']['fr'] + ", ";
+    return TextTranslator(
+      name.isEmpty ? name : name.substring(0, name.length - 2),
+      isAutoSizeText: true,
+      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+    );
   }
 }

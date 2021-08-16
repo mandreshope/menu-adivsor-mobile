@@ -9,21 +9,15 @@ import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/components/map_window_marker.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
-import 'package:menu_advisor/src/pages/restaurant.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
-import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
-import 'package:menu_advisor/src/utils/map_utils.dart';
-import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textFormFieldTranslator.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import 'map_polyline.dart';
 
 class MapPage extends StatefulWidget {
   @override
@@ -65,7 +59,6 @@ class _MapPageState extends State<MapPage> {
   Future<void> addMyPosMarker() async {
     // BitmapDescriptor bitmapDescriptor = await MapUtils.createCustomMarkerBitmap(context,"2");
     setState(() {
-      
       String myPosMarkerId = 'myPos';
       _markers.add(Marker(
         // This marker id can be anything that uniquely identifies each marker.
@@ -101,7 +94,7 @@ class _MapPageState extends State<MapPage> {
               this.showInfo = true;
             });
           },
-          
+
           infoWindow: InfoWindow(
             title: "${restaurant.content['name']}",
             /*onTap: (){
@@ -114,7 +107,7 @@ class _MapPageState extends State<MapPage> {
               );
             }*/
           ),
-          
+
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
         ));
       }
@@ -127,9 +120,8 @@ class _MapPageState extends State<MapPage> {
   void initState() {
     super.initState();
 
-
     _panelController = PanelController();
-    
+
     range = Provider.of<SettingContext>(context, listen: false).range;
     _checkForLocationPermission();
 
@@ -142,11 +134,10 @@ class _MapPageState extends State<MapPage> {
       _updateLocation,
     );
 
-    
     Timer.periodic(Duration(milliseconds: 80), (timer) {
       _panelController.open();
       timer.cancel();
-     });
+    });
   }
 
   Future<void> _updateLocation(Timer timer) async {
@@ -214,12 +205,12 @@ class _MapPageState extends State<MapPage> {
           Restaurant restaurant = Restaurant.fromJson(element.content);
           if (isopen == "Tous") {
             return restaurant.status && restaurant.accessible;
-          }else if (isopen == "ouvert"){
+          } else if (isopen == "ouvert") {
             return restaurant.isOpen && restaurant.status && restaurant.accessible;
-          }else{
+          } else {
             return !restaurant.isOpen && restaurant.status && restaurant.accessible;
           }
-            // return (restaurant.isOpen == (isopen == "Ouvert" ? true : false)) && restaurant.status;
+          // return (restaurant.isOpen == (isopen == "Ouvert" ? true : false)) && restaurant.status;
         }).toList();
       } catch (error) {} finally {
         if (mounted)
@@ -248,12 +239,12 @@ class _MapPageState extends State<MapPage> {
       setState(() {
         _nearestRestaurants = results.where((element) {
           Restaurant restaurant = Restaurant.fromJson(element.content);
-          if (isopen == "Tous"){
+          if (isopen == "Tous") {
             return true;
-          }else if (isopen == "ouvert"){
+          } else if (isopen == "ouvert") {
             return restaurant.isOpen;
           }
-           return !restaurant.isOpen;
+          return !restaurant.isOpen;
         }).toList();
       });
     } catch (error) {
@@ -400,13 +391,16 @@ class _MapPageState extends State<MapPage> {
             ),
             // showinfo
             if (restaurant != null && showInfo)
-            Positioned(
-              bottom: 120,
-              left: 0,
-              right: 0,
-              child: MapWindowMarker(position: this._currentPosition,restaurant: this.restaurant,)),
-           
-             SlidingUpPanel(
+              Positioned(
+                  bottom: 120,
+                  left: 0,
+                  right: 0,
+                  child: MapWindowMarker(
+                    position: this._currentPosition,
+                    restaurant: this.restaurant,
+                  )),
+
+            SlidingUpPanel(
               controller: _panelController,
               panel: _loading
                   ? Align(
@@ -457,8 +451,8 @@ class _MapPageState extends State<MapPage> {
                                                 ),
                                                 zoom: 25)))
                                             .catchError((onError) {});
-                                            String markerId = e.content['name'] + e.content['location']['coordinates'][1].toString() + e.content['location']['coordinates'][0].toString();
-                                            map.showMarkerInfoWindow(MarkerId(markerId));
+                                        String markerId = e.content['name'] + e.content['location']['coordinates'][1].toString() + e.content['location']['coordinates'][0].toString();
+                                        map.showMarkerInfoWindow(MarkerId(markerId));
                                         _panelController.close();
                                         setState(() {
                                           this.restaurant = restaurant;
@@ -477,10 +471,10 @@ class _MapPageState extends State<MapPage> {
                                               placeholder: 'assets/images/loading.gif',
                                               height: 50,
                                               imageErrorBuilder: (_, __, ___) => Container(
-                                width: 50,
-                                height: 50,
-                                color: Colors.white,
-                              ),
+                                                width: 50,
+                                                height: 50,
+                                                color: Colors.white,
+                                              ),
                                             ),
                                             SizedBox(width: 20),
                                             Column(
@@ -489,16 +483,14 @@ class _MapPageState extends State<MapPage> {
                                               children: [
                                                 TextTranslator(
                                                   e.content['name'],
-                                                  style: TextStyle(
-                                                    fontSize: 16
-                                                  ),
+                                                  style: TextStyle(fontSize: 16),
                                                 ),
                                                 Container(
                                                   width: MediaQuery.of(context).size.width - 150.0,
                                                   child: TextTranslator(
                                                     e.content['address'],
                                                     overflow: TextOverflow.ellipsis,
-                                                    style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline,fontSize: 16),
+                                                    style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline, fontSize: 16),
                                                   ),
                                                 ),
                                                 InkWell(
@@ -507,19 +499,17 @@ class _MapPageState extends State<MapPage> {
                                                   },
                                                   child: TextTranslator(
                                                     e.content['phoneNumber'],
-                                                    style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline,fontSize: 16),
+                                                    style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline, fontSize: 16),
                                                   ),
                                                 ),
                                                 SizedBox(
                                                   height: 15,
                                                 ),
-                                                
                                               ],
                                             ),
                                             Spacer(),
                                             Column(
                                               children: [
-                                               
                                                 Container(
                                                   padding: EdgeInsets.all(8),
                                                   decoration: BoxDecoration(color: restaurant.isOpen ? TEAL : CRIMSON, borderRadius: BorderRadius.circular(25)),

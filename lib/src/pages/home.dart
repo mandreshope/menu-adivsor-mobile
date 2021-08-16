@@ -1,6 +1,4 @@
 import 'dart:async';
-
-import 'package:floatingpanel/floatingpanel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -14,14 +12,12 @@ import 'package:menu_advisor/src/components/logo.dart';
 import 'package:menu_advisor/src/components/utilities.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models.dart';
-import 'package:menu_advisor/src/pages/discover.dart';
 import 'package:menu_advisor/src/pages/order.dart';
 import 'package:menu_advisor/src/pages/search.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/DataContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
-import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/services/stripe.dart';
 import 'package:menu_advisor/src/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
@@ -78,8 +74,7 @@ class _HomePageState extends State<HomePage> {
         );
         this.city = Provider.of<DataContext>(context, listen: false).getCity();
       } else {
-        Position currentPosition = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.medium);
+        Position currentPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.medium);
 
         setState(() {
           currentLocation = Location(
@@ -844,7 +839,6 @@ class _HomePageState extends State<HomePage> {
                 );
 
               return CarouselSliderBlog(context: context, blogs: blogs);
-
             },
           ),
         ],
@@ -868,41 +862,34 @@ class CarouselSliderBlog extends StatefulWidget {
 }
 
 class _CarouselSliderBlogState extends State<CarouselSliderBlog> {
-
   int _current = 0;
-
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      
-      child: Stack(
-        children: [
-          CarouselSlider(
-            options: CarouselOptions(
+      child: Stack(children: [
+        CarouselSlider(
+          options: CarouselOptions(
               height: MediaQuery.of(context).size.height / 3.8,
               autoPlay: true,
               enlargeCenterPage: true,
               aspectRatio: 16 / 9,
               viewportFraction: 0.90,
-              
-              onPageChanged: (position,_){
+              onPageChanged: (position, _) {
                 setState(() {
                   _current = position;
                 });
-              }
-            ),
-            
-            items: widget.blogs.map((blog) {
-              return Builder(
-                builder: (BuildContext context) {
-                  return BlogCard(blog);
-                },
-              );
-            }).toList(),
-          ),
-          // dots
-          /*Positioned.fill(
+              }),
+          items: widget.blogs.map((blog) {
+            return Builder(
+              builder: (BuildContext context) {
+                return BlogCard(blog);
+              },
+            );
+          }).toList(),
+        ),
+        // dots
+        /*Positioned.fill(
           bottom: 0,
           left: 0,
           child: Container(
@@ -937,8 +924,7 @@ class _CarouselSliderBlogState extends State<CarouselSliderBlog> {
               ),
             ),
         )))*/
-        ]
-      ),
+      ]),
     );
   }
 }

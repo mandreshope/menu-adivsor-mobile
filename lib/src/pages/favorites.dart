@@ -14,8 +14,7 @@ class FavoritesPage extends StatefulWidget {
   _FavoritesPageState createState() => _FavoritesPageState();
 }
 
-class _FavoritesPageState extends State<FavoritesPage>
-    with SingleTickerProviderStateMixin {
+class _FavoritesPageState extends State<FavoritesPage> with SingleTickerProviderStateMixin {
   TabController controller;
   List<Restaurant> favoriteRestaurants = [];
   List<Food> favoriteFoods = [];
@@ -34,10 +33,9 @@ class _FavoritesPageState extends State<FavoritesPage>
       initialIndex: 0,
       length: 2,
     );
-  WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       loadDatas();
-  });
-    
+    });
   }
 
   loadDatas() async {
@@ -61,13 +59,11 @@ class _FavoritesPageState extends State<FavoritesPage>
     }
 
     // if (mounted)
-      setState(() {
-        loadingFavoriteFoods = false;
-      });
+    setState(() {
+      loadingFavoriteFoods = false;
+    });
 
-    for (int i = 0;
-        i < authContext.currentUser.favoriteRestaurants.length;
-        i++) {
+    for (int i = 0; i < authContext.currentUser.favoriteRestaurants.length; i++) {
       var id = authContext.currentUser.favoriteRestaurants[i];
       var restaurant = await api.getRestaurant(
         id: id,
@@ -77,9 +73,9 @@ class _FavoritesPageState extends State<FavoritesPage>
     }
 
     // if (mounted)
-      setState(() {
-        loadingFavoriteRestaurants = false;
-      });
+    setState(() {
+      loadingFavoriteRestaurants = false;
+    });
   }
 
   @override
@@ -155,8 +151,7 @@ class _FavoritesPageState extends State<FavoritesPage>
                             size: 40,
                           ),
                           TextTranslator(
-                            AppLocalizations.of(context)
-                                .translate('no_favorite_restaurant'),
+                            AppLocalizations.of(context).translate('no_favorite_restaurant'),
                             style: TextStyle(
                               fontSize: 22,
                             ),
@@ -174,21 +169,17 @@ class _FavoritesPageState extends State<FavoritesPage>
                         physics: BouncingScrollPhysics(),
                         padding: const EdgeInsets.all(30),
                         child: Column(
-                          children: favoriteFoods
-                              .map(
-                                (e) {
-                                  e.isPopular = true;
-                                  return Padding(
-                                  padding: const EdgeInsets.only(
-                                    bottom: 10,
-                                  ),
-                                  child: FoodCard(
-                                    food: e,
-                                    imageTag: e.id,
-                                  )
-                                );
-                              })
-                              .toList(),
+                          children: favoriteFoods.map((e) {
+                            e.isPopular = true;
+                            return Padding(
+                                padding: const EdgeInsets.only(
+                                  bottom: 10,
+                                ),
+                                child: FoodCard(
+                                  food: e,
+                                  imageTag: e.id,
+                                ));
+                          }).toList(),
                         ),
                       )
                     : Column(
@@ -200,8 +191,7 @@ class _FavoritesPageState extends State<FavoritesPage>
                             size: 40,
                           ),
                           TextTranslator(
-                            AppLocalizations.of(context)
-                                .translate('no_favorite_food'),
+                            AppLocalizations.of(context).translate('no_favorite_food'),
                             style: TextStyle(
                               fontSize: 22,
                             ),

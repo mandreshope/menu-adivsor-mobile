@@ -317,13 +317,7 @@ class _SignupPageState extends State<SignupPage> {
       });
       AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
       try {
-        await authContext.signup(
-          email: email,
-          phoneNumber: phoneNumber,
-          password: password,
-          lastName: lastName,
-          firstName: firstName
-        );
+        await authContext.signup(email: email, phoneNumber: phoneNumber, password: password, lastName: lastName, firstName: firstName);
         RouteUtil.goTo(
           context: context,
           child: ConfirmSms(
@@ -353,7 +347,7 @@ class _SignupPageState extends State<SignupPage> {
         //         Fluttertoast.showToast(msg: value);
         //       }
         // );
-        
+
       } catch (error) {
         setState(() {
           loading = false;

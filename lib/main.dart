@@ -14,10 +14,7 @@ Future main() async {
   await Firebase.initializeApp();
   await AppLocalizations.instance.load();
 
-  await [
-    Permission.storage,Permission.location,Permission.locationAlways,Permission.locationWhenInUse
-  ].request();
+  await [Permission.storage, Permission.location, Permission.locationAlways, Permission.locationWhenInUse].request();
 
-  runApp(
-      MyApp());
+  runApp(MyApp());
 }

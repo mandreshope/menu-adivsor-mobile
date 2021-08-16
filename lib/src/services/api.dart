@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
+import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/types.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -143,29 +144,15 @@ class Api {
     return await sharedPrefs.remove('access_token') && await sharedPrefs.remove('refresh_token');
   }
 
-  Future<String> register({
-    String email,
-    String phoneNumber,
-    String password,
-    String firstName,
-    String lastName
-  }) {
-    
-    return http.post(
-      '$_apiURL/users/register',
-      body: jsonEncode({
-        'email': email,
-        'password': password,
-        'phoneNumber': phoneNumber,
-        'name':{
-          'first':firstName,
-          'last':lastName
-        }
-      }),
-      headers:{
-        'content-type': 'application/json'
-      }
-    ).then<String>((response) {
+  Future<String> register({String email, String phoneNumber, String password, String firstName, String lastName}) {
+    return http.post('$_apiURL/users/register',
+        body: jsonEncode({
+          'email': email,
+          'password': password,
+          'phoneNumber': phoneNumber,
+          'name': {'first': firstName, 'last': lastName}
+        }),
+        headers: {'content-type': 'application/json'}).then<String>((response) {
       if (response.statusCode == 200) {
         Map<String, dynamic> data = jsonDecode(response.body);
         String registrationToken = data['token'];
@@ -181,17 +168,13 @@ class Api {
 
   Future confirmPhoneNumber({
     String code,
-  }) {  
-    return http.post(
-      '$_apiURL/users/confirm-account',
-      body: jsonEncode({
-        'token': _accessToken,
-        'code': code,
-      }),
-      headers:{
-        'content-type': 'application/json'
-      }
-    ).then((response) {
+  }) {
+    return http.post('$_apiURL/users/confirm-account',
+        body: jsonEncode({
+          'token': _accessToken,
+          'code': code,
+        }),
+        headers: {'content-type': 'application/json'}).then((response) {
       if (response.statusCode == 200) {
         Map<String, dynamic> data = jsonDecode(response.body);
         return data;
@@ -217,7 +200,7 @@ class Api {
         }
       }
     }
-print('$_apiURL/restaurants$query');
+    print('$_apiURL/restaurants$query');
     return http.get('$_apiURL/restaurants$query').then<List<Restaurant>>((response) {
       if (response.statusCode == 200) {
         List<dynamic> list = jsonDecode(response.body);
@@ -230,11 +213,7 @@ print('$_apiURL/restaurants$query');
     });
   }
 
-  Future<List<Food>> getFoods(
-    String lang, {
-    Map<String, dynamic> filters,
-    bool fromQrcode = false
-  }) {
+  Future<List<Food>> getFoods(String lang, {Map<String, dynamic> filters, bool fromQrcode = false}) {
     String query = '?lang=$lang';
     if (filters != null) {
       List<String> keys = filters.keys.toList();
@@ -257,8 +236,8 @@ print('$_apiURL/restaurants$query');
     ).then<List<Food>>((response) {
       if (response.statusCode == 200) {
         List<dynamic> list = jsonDecode(response.body);
-        if (fromQrcode){
-          return list.map((data) => Food.fromJson(data)).where((element) => element.status).toList();  
+        if (fromQrcode) {
+          return list.map((data) => Food.fromJson(data)).where((element) => element.status).toList();
         }
         return list.map((data) => Food.fromJson(data)).where((element) => element.status && element.statut).toList();
       }
@@ -304,27 +283,26 @@ print('$_apiURL/restaurants$query');
   Future<Restaurant> getRestaurant({
     String id,
     String lang,
-  }) 
-      {
-       print("'$_apiURL/restaurants/$id?lang=$lang'");
-       return  http.get(
-        '$_apiURL/restaurants/$id?lang=$lang',
-        headers: {
-          "authorization": "Bearer $_accessToken",
-          'content-type': 'application/json'
-        },
-      ).then<Restaurant>((response) {
-        if (response.statusCode == 200) return Restaurant.fromJson(jsonDecode(response.body));
+  }) {
+    final String url = "$_apiURL/restaurants/$id?lang=$lang";
+    print("$logTrace $url");
+    return http.get(
+      url,
+      headers: {"authorization": "Bearer $_accessToken", 'content-type': 'application/json'},
+    ).then<Restaurant>((response) {
+      if (response.statusCode == 200) return Restaurant.fromJson(jsonDecode(response.body));
 
-        return Future.error(
-          jsonDecode(response.body),
-        );
-      });}
+      return Future.error(
+        jsonDecode(response.body),
+      );
+    });
+  }
 
   Future<bool> addToFavoriteFood(Food food) async {
     await _refreshTokens();
-
-    return http.post('$_apiURL/users/favoriteFoods', body: {
+    final String url = '$_apiURL/users/favoriteFoods';
+    print("$logTrace $url");
+    return http.post(url, body: {
       "id": food.id,
     }, headers: {
       "authorization": "Bearer $_accessToken",
@@ -337,8 +315,9 @@ print('$_apiURL/restaurants$query');
 
   Future removeFromFavoriteFoods(Food food) async {
     await _refreshTokens();
-
-    return http.delete('$_apiURL/users/favoriteFoods/${food.id}', headers: {
+    final String url = '$_apiURL/users/favoriteFoods/${food.id}';
+    print("$logTrace $url");
+    return http.delete(url, headers: {
       "authorization": "Bearer $_accessToken",
     }).then((response) {
       if (response.statusCode == 200) return true;
@@ -349,8 +328,9 @@ print('$_apiURL/restaurants$query');
 
   Future<bool> addToFavoriteRestaurants(Restaurant restaurant) async {
     await _refreshTokens();
-
-    return http.post('$_apiURL/users/favoriteRestaurants', body: {
+    final String url = '$_apiURL/users/favoriteRestaurants';
+    print("$logTrace $url");
+    return http.post(url, body: {
       "id": restaurant.id,
     }, headers: {
       "authorization": "Bearer $_accessToken",
@@ -363,8 +343,9 @@ print('$_apiURL/restaurants$query');
 
   Future removeFromFavoriteRestaurants(Restaurant restaurant) async {
     await _refreshTokens();
-
-    return http.delete('$_apiURL/users/favoriteRestaurants/${restaurant.id}', headers: {
+    final String url = '$_apiURL/users/favoriteRestaurants/${restaurant.id}';
+    print("$logTrace $url");
+    return http.delete(url, headers: {
       "authorization": "Bearer $_accessToken",
     }).then((response) {
       if (response.statusCode == 200) {
@@ -374,39 +355,31 @@ print('$_apiURL/restaurants$query');
     });
   }
 
-  Future<List<SearchResult>> search(
-    String query,
-    String lang, {
-    String type,
-    Map<String, dynamic> filters,
-    int range = 20,
-    Map location,
-    bool fromQrcode = false
-  }) {
+  Future<List<SearchResult>> search(String query, String lang, {String type, Map<String, dynamic> filters, int range = 20, Map location, bool fromQrcode = false}) {
     String searchQuery;
-    
-    if (location == null){
+
+    if (location == null) {
       searchQuery = '?lang=$lang&q=$query&range=$range';
-    }else{
-     searchQuery = '?lang=$lang&q=$query&range=$range&location=${jsonEncode(location)}';
+    } else {
+      searchQuery = '?lang=$lang&q=$query&range=$range&location=${jsonEncode(location)}';
     }
-     
+
     if (type is String) searchQuery += '&type=$type';
     if (filters != null && filters.length > 0) {
       var filterQuery = 'filter=${jsonEncode(filters)}';
       searchQuery += '&$filterQuery';
     }
-    print(searchQuery);
+    final String url = '$_apiURL/search$searchQuery';
+    print("$logTrace $url");
 
-    return http.get('$_apiURL/search$searchQuery').then<List<SearchResult>>((response) {
+    return http.get(url).then<List<SearchResult>>((response) {
       if (response.statusCode == 200) {
         List<dynamic> results = jsonDecode(response.body);
-        if (fromQrcode){
+        if (fromQrcode) {
           return results.map((e) => SearchResult.fromJson(e)).toList();
-        }else{
+        } else {
           return results.map((e) => SearchResult.fromJson(e)).where((element) => element.content['status'] ?? true).toList();
         }
-        
       }
 
       return Future.error(
@@ -415,48 +388,64 @@ print('$_apiURL/restaurants$query');
     });
   }
 
-  Future<String> getRestaurantName({String id}) => http.get('$_apiURL/restaurants/$id/name').then<String>((response) {
-        if (response.statusCode == 200) {
-          return response.body;
-        }
+  Future<String> getRestaurantName({String id}) {
+    final String url = '$_apiURL/restaurants/$id/name';
+    print("$logTrace $url");
 
-        return Future.error(
-          jsonDecode(response.body),
-        );
-      });
+    return http.get(url).then<String>((response) {
+      if (response.statusCode == 200) {
+        return response.body;
+      }
 
-  Future<String> resetPassword(String phoneNumber) => http.post('$_apiURL/users/reset-password', body: {
-        'phoneNumber': phoneNumber,
-      }).then<String>((response) {
-        if (response.statusCode == 200) {
-          Map<String, dynamic> data = jsonDecode(response.body);
-          return data['token'];
-        }
+      return Future.error(
+        jsonDecode(response.body),
+      );
+    });
+  }
 
-        return Future.error(
-          jsonDecode(response.body),
-        );
-      });
+  Future<String> resetPassword(String phoneNumber) {
+    final String url = '$_apiURL/users/reset-password';
+    print("$logTrace $url");
+
+    return http.post(url, body: {
+      'phoneNumber': phoneNumber,
+    }).then<String>((response) {
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = jsonDecode(response.body);
+        return data['token'];
+      }
+
+      return Future.error(
+        jsonDecode(response.body),
+      );
+    });
+  }
 
   Future<bool> confirmResetPassword({
     String token,
     int code,
     String password,
-  }) =>
-      http.post('$_apiURL/users/confirm-reset-password', body: {
-        'token': token,
-        'code': code.toString(),
-        'password': password,
-      }).then<bool>((response) {
-        if (response.statusCode == 200) return true;
+  }) {
+    final String url = '$_apiURL/users/confirm-reset-password';
+    print("$logTrace $url");
 
-        return false;
-      });
+    return http.post(url, body: {
+      'token': token,
+      'code': code.toString(),
+      'password': password,
+    }).then<bool>((response) {
+      if (response.statusCode == 200) return true;
+
+      return false;
+    });
+  }
 
   Future<User> getMe() async {
     await _refreshTokens();
+    final String url = '$_apiURL/users/me';
+    print("$logTrace $url");
 
-    return http.get('$_apiURL/users/me', headers: {
+    return http.get(url, headers: {
       'authorization': 'Bearer $_accessToken',
     }).then<User>(
       (response) {
@@ -471,8 +460,10 @@ print('$_apiURL/restaurants$query');
 
   Future addPaymentCard(PaymentCard paymentCard) async {
     await _refreshTokens();
+    final String url = '$_apiURL/users/paymentCards';
+    print("$logTrace $url");
 
-    return http.post('$_apiURL/users/paymentCards', body: paymentCard.toJson().map<String, String>((key, value) => MapEntry(key, value.toString())), headers: {
+    return http.post(url, body: paymentCard.toJson().map<String, String>((key, value) => MapEntry(key, value.toString())), headers: {
       'authorization': 'Bearer $_accessToken',
     }).then(
       (response) {
@@ -484,40 +475,52 @@ print('$_apiURL/restaurants$query');
     );
   }
 
-  Future<List<Menu>> getMenus(String lang, String id,{bool fromCommand = true}) => http.get('$_apiURL/restaurants/$id/menus?lang=$lang').then<List<Menu>>(
-  // Future<List<Menu>> getMenus(String lang, String id) => http.get('$_apiURL/restaurants/$id/menus').then<List<Menu>>(
-        (response) {
-          print("$_apiURL/restaurants/$id/menus?lang=$lang");
-          if (response.statusCode == 200) {
-            List datas = jsonDecode(response.body);
-            return datas.map<Menu>((e) => Menu.fromJson(e,fromCommand: fromCommand)).toList();
-          }
+  Future<List<Menu>> getMenus(String lang, String id, {bool fromCommand = true}) {
+    final String url = '$_apiURL/restaurants/$id/menus?lang=$lang';
+    print("$logTrace $url");
 
-          return Future.error(
-            jsonDecode(response.body),
-          );
-        },
-      );
+    return http.get(url).then<List<Menu>>(
+      // Future<List<Menu>> getMenus(String lang, String id) => http.get('$_apiURL/restaurants/$id/menus').then<List<Menu>>(
+      (response) {
+        print("$_apiURL/restaurants/$id/menus?lang=$lang");
+        if (response.statusCode == 200) {
+          List datas = jsonDecode(response.body);
+          return datas.map<Menu>((e) => Menu.fromJson(e, fromCommand: fromCommand)).toList();
+        }
 
-  Future<Menu> getMenu(String id) => http.get('$_apiURL/menus/$id').then<Menu>(
-  // Future<List<Menu>> getMenus(String lang, String id) => http.get('$_apiURL/restaurants/$id/menus').then<List<Menu>>(
-        (response) {
-          print("$_apiURL/menus/$id");
-          if (response.statusCode == 200) {
-            var menu = jsonDecode(response.body);
-            return Menu.fromJson(menu);
-          }
+        return Future.error(
+          jsonDecode(response.body),
+        );
+      },
+    );
+  }
 
-          return Future.error(
-            jsonDecode(response.body),
-          );
-        },
-      );
+  Future<Menu> getMenu(String id) {
+    final String url = '$_apiURL/menus/$id';
+    print("$logTrace $url");
+
+    return http.get(url).then<Menu>(
+      // Future<List<Menu>> getMenus(String lang, String id) => http.get('$_apiURL/restaurants/$id/menus').then<List<Menu>>(
+      (response) {
+        print("$_apiURL/menus/$id");
+        if (response.statusCode == 200) {
+          var menu = jsonDecode(response.body);
+          return Menu.fromJson(menu);
+        }
+
+        return Future.error(
+          jsonDecode(response.body),
+        );
+      },
+    );
+  }
 
   Future updatePassword(String oldPassword, String newPassword) async {
     await _refreshTokens();
+    final String url = '$_apiURL/users/update-password';
+    print("$logTrace $url");
 
-    return http.post('$_apiURL/users/update-password', body: {
+    return http.post(url, body: {
       'oldPassword': oldPassword,
       'newPassword': newPassword,
     }, headers: {
@@ -534,8 +537,10 @@ print('$_apiURL/restaurants$query');
 
   Future removePaymentCard(PaymentCard creditCard) async {
     await _refreshTokens();
+    final String url = '$_apiURL/users/paymentCards/${creditCard.id}';
+    print("$logTrace $url");
 
-    return http.delete('$_apiURL/users/paymentCards/${creditCard.id}', headers: {
+    return http.delete(url, headers: {
       'authorization': 'Bearer $_accessToken',
     }).then(
       (response) {
@@ -549,10 +554,12 @@ print('$_apiURL/restaurants$query');
 
   Future updateUserProfile(String id, Map<String, dynamic> data) async {
     await _refreshTokens();
+    final String url = '$_apiURL/users/$id';
+    print("$logTrace $url");
 
     return http
         .put(
-      '$_apiURL/users/$id',
+      url,
       headers: {
         'authorization': 'Bearer $_accessToken',
         'Content-Type': 'application/json',
@@ -573,18 +580,20 @@ print('$_apiURL/restaurants$query');
     User user, {
     int limit,
     int offset = 0,
-        String commandType,
+    String commandType,
   }) async {
     await _refreshTokens();
-  String filter;
+    String filter;
 
-  if (commandType != null){
-    filter = 'filter={"relatedUser": "${user.id}","commandType":$commandType}';
-  }else{
-    filter = 'filter={"relatedUser": "${user.id}"}';
-  }
-  print('$_apiURL/commands?$filter&offset=$offset${limit != null ? '&limit=$limit' : ''}');
-    return http.get('$_apiURL/commands?$filter&offset=$offset${limit != null ? '&limit=$limit' : ''}', headers: {
+    if (commandType != null) {
+      filter = 'filter={"relatedUser": "${user.id}","commandType":$commandType}';
+    } else {
+      filter = 'filter={"relatedUser": "${user.id}"}';
+    }
+    final String url = '$_apiURL/commands?$filter&offset=$offset${limit != null ? '&limit=$limit' : ''}';
+    print("$logTrace $url");
+
+    return http.get(url, headers: {
       'authorization': 'Bearer $_accessToken',
       'Content-Type': 'application/json',
     }).then<List<Command>>((response) {
@@ -594,34 +603,33 @@ print('$_apiURL/restaurants$query');
       }
 
       // return Future.error(jsonDecode(response.body));
-      return List();
+      return [];
     });
   }
 
-  Future<Map> sendCommand({
-    String relatedUser,
-    String commandType,
-    int totalPrice,
-    String restaurant,
-    var items,
-    int shippingTime,
-    String shippingAddress,
-    bool shipAsSoonAsPossible,
-    Map customer,
-    var menu,
-    String comment,
-    bool priceless,
-    String optionLivraison = 'out',
-    String appartement,
-    String codeappartement,
-    int etage,
-    bool payed = false,
-    bool paiementLivraison = false,
-    bool isDelivery = false
-  }) async {
+  Future<Map> sendCommand(
+      {String relatedUser,
+      String commandType,
+      int totalPrice,
+      String restaurant,
+      var items,
+      int shippingTime,
+      String shippingAddress,
+      bool shipAsSoonAsPossible,
+      Map customer,
+      var menu,
+      String comment,
+      bool priceless,
+      String optionLivraison = 'out',
+      String appartement,
+      String codeappartement,
+      int etage,
+      bool payed = false,
+      bool paiementLivraison = false,
+      bool isDelivery = false}) async {
     await _refreshTokens();
-    try{
-      var post ;
+    try {
+      var post;
       if (isDelivery)
         post = jsonEncode({
           'relatedUser': relatedUser,
@@ -633,18 +641,18 @@ print('$_apiURL/restaurants$query');
           'shippingAddress': shippingAddress,
           'shipAsSoonAsPossible': shipAsSoonAsPossible,
           'customer': customer,
-          'menus':menu,
-          'comment':comment,
-          'priceless':priceless,
-          'optionLivraison':optionLivraison,
-          'appartement':appartement,
-          'codeAppartement':codeappartement,
-          'etage':etage,
-          'payed':payed,
-          'paiementLivraison':paiementLivraison
+          'menus': menu,
+          'comment': comment,
+          'priceless': priceless,
+          'optionLivraison': optionLivraison,
+          'appartement': appartement,
+          'codeAppartement': codeappartement,
+          'etage': etage,
+          'payed': payed,
+          'paiementLivraison': paiementLivraison
         });
-        else
-         post = jsonEncode({
+      else
+        post = jsonEncode({
           'relatedUser': relatedUser,
           'commandType': commandType,
           'totalPrice': totalPrice.toString(),
@@ -654,14 +662,18 @@ print('$_apiURL/restaurants$query');
           'shippingAddress': shippingAddress,
           'shipAsSoonAsPossible': shipAsSoonAsPossible,
           'customer': customer,
-          'menus':menu,
-          'comment':comment,
-          'priceless':priceless,
+          'menus': menu,
+          'comment': comment,
+          'priceless': priceless,
         });
+
+      final String url = '$_apiURL/commands';
+      print("$logTrace $url");
+
       print(post);
       return http
           .post(
-        '$_apiURL/commands',
+        url,
         headers: {
           'authorization': 'Bearer $_accessToken',
           'Content-type': 'application/json',
@@ -675,35 +687,31 @@ print('$_apiURL/restaurants$query');
           );
 
         return jsonDecode(response.body);
-
       });
-    } catch (error){
+    } catch (error) {
       print(error);
     }
-
   }
 
   Future getCommand(String idCommande) {
-
-    return http.get("$_apiURL/commands/$idCommande",
-    headers:{
-        'content-type': 'application/json',
-        "authorization": "Bearer $_accessToken",
-      }).then((response) => 
-      (response.statusCode != 200) ? Future.error(jsonDecode(response.body)) : jsonDecode(response.body) 
-      );
-
+    return http.get("$_apiURL/commands/$idCommande", headers: {
+      'content-type': 'application/json',
+      "authorization": "Bearer $_accessToken",
+    }).then((response) => (response.statusCode != 200) ? Future.error(jsonDecode(response.body)) : jsonDecode(response.body));
   }
 
-  Future setCommandToPayedStatus(bool status,{
+  Future setCommandToPayedStatus(
+    bool status, {
     String id,
     String paymentIntentId,
   }) async {
     await _refreshTokens();
+    final String url = '$_apiURL/commands/$id';
+    print("$logTrace $url");
 
     return http
         .put(
-      '$_apiURL/commands/$id',
+      url,
       headers: {
         'authorization': 'Bearer $_accessToken',
         'Content-type': 'application/json',
@@ -722,13 +730,12 @@ print('$_apiURL/restaurants$query');
     });
   }
 
-
-Future<FoodAttribute> getFoodAttribute({
-    String id
-  }) async {
+  Future<FoodAttribute> getFoodAttribute({String id}) async {
     await _refreshTokens();
+    final String url = '$_apiURL/foodAttributes/$id';
+    print("$logTrace $url");
 
-    return http.get('$_apiURL/foodAttributes/$id', headers: {
+    return http.get(url, headers: {
       'authorization': 'Bearer $_accessToken',
       'Content-Type': 'application/json',
     }).then<FoodAttribute>((response) {
@@ -741,10 +748,12 @@ Future<FoodAttribute> getFoodAttribute({
     });
   }
 
-Future<List<FoodAttribute>> getFoodAttributes() async {
+  Future<List<FoodAttribute>> getFoodAttributes() async {
     await _refreshTokens();
+    final String url = '$_apiURL/foodAttributes';
+    print("$logTrace $url");
 
-    return http.get('$_apiURL/foodAttributes', headers: {
+    return http.get(url, headers: {
       'authorization': 'Bearer $_accessToken',
       'Content-Type': 'application/json',
     }).then<List<FoodAttribute>>((response) {
@@ -758,39 +767,37 @@ Future<List<FoodAttribute>> getFoodAttributes() async {
   }
 
   Future<dynamic> getCityFromCoordinates(double latitude, double longitude) async {
-
     final String geoUrl = "https://nominatim.openstreetmap.org/reverse?format=geojson&lat=$latitude&lon=$longitude";
+    print("$logTrace $geoUrl");
+
     return http.get(geoUrl).then((value) {
       Placemark data = Placemark.fromJson(json.decode(value.body));
       // var js = json.decode(value.body);
-      String city =  data.features.first.properties.address.city;
+      String city = data.features.first.properties.address.city;
       return city;
-    }).catchError((onError){
+    }).catchError((onError) {
       return Future.error(onError.toString());
     });
-
   }
 
- Future<bool> sendMessage(Message message) async {
+  Future<bool> sendMessage(Message message) async {
     await _refreshTokens();
-    return http.post(
-      '$_apiURL/messages',
-      body: json.encode(message.toJson()),
-      headers:{
-        'content-type': 'application/json'
-      }
-    ).then((response) {
-       if (response.statusCode == 200) return true;
+    final String url = '$_apiURL/messages';
+    print("$logTrace $url");
+
+    return http.post(url, body: json.encode(message.toJson()), headers: {'content-type': 'application/json'}).then((response) {
+      if (response.statusCode == 200) return true;
       print(jsonDecode(response.body));
       return false;
     });
   }
 
-
   Future<List<Blog>> getBlog() async {
     // await _refreshTokens();
+    final String url = '$_apiURL/posts';
+    print("$logTrace $url");
 
-    return http.get('$_apiURL/posts', headers: {
+    return http.get(url, headers: {
       'Content-Type': 'application/json',
     }).then<List<Blog>>((response) {
       if (response.statusCode == 200) {
@@ -801,76 +808,80 @@ Future<List<FoodAttribute>> getFoodAttributes() async {
     });
   }
 
-  
-Future<Map<String,dynamic>> ConfirmSms(String idCommande, String code,String commandType) async {
-   await _refreshTokens();
-    return http.post(
-      '$_apiURL/commands/$idCommande/confirm',
-      body: json.encode({
-        'code':code,
-        'commandType':commandType
-      }),
-      headers:{
-        'content-type': 'application/json',
-        "authorization": "Bearer $_accessToken",
-      }
-    ).then((response) {
-       if (response.statusCode == 200) return jsonDecode(response.body);
+  Future<Map<String, dynamic>> ConfirmSms(String idCommande, String code, String commandType) async {
+    await _refreshTokens();
+    final String url = '$_apiURL/commands/$idCommande/confirm';
+    print("$logTrace $url");
+
+    return http.post(url, body: json.encode({'code': code, 'commandType': commandType}), headers: {
+      'content-type': 'application/json',
+      "authorization": "Bearer $_accessToken",
+    }).then((response) {
+      if (response.statusCode == 200) return jsonDecode(response.body);
       print(jsonDecode(response.body));
       return jsonDecode(response.body);
     });
-}
+  }
 
-  Future<String> sendCode(
-      {@required String relatedUser,
-      @required Map customer,
-      @required String commandType}) {
+  Future<String> sendCode({@required String relatedUser, @required Map customer, @required String commandType}) {
     var post = jsonEncode({
       'relatedUser': relatedUser,
       'commandType': commandType,
       'customer': customer,
     });
+    final String url = '$_apiURL/commands/sendCode';
+    print("$logTrace $url");
+
     print(post);
-    return http.post(
-      '$_apiURL/commands/sendCode',
+    return http
+        .post(
+      url,
       headers: {
         'Content-type': 'application/json',
       },
       body: post,
-    ).then((value) {
+    )
+        .then((value) {
       var response = jsonDecode(value.body);
       return "${response["code"]}";
-    }
-     );
-
+    });
   }
-  Future<bool> confirmCode(
-      {@required String relatedUser,
-      @required Map customer,
-      @required String code,
-      @required String commandType,}) {
+
+  Future<bool> confirmCode({
+    @required String relatedUser,
+    @required Map customer,
+    @required String code,
+    @required String commandType,
+  }) {
     var post = jsonEncode({
       'relatedUser': relatedUser,
       'commandType': commandType,
       'customer': customer,
       'code': code,
     });
+    final String url = '$_apiURL/commands/confirmCode';
+    print("$logTrace $url");
+
     print(post);
-    return http.post(
-      '$_apiURL/commands/confirmCode',
+    return http
+        .post(
+      url,
       headers: {
         'Content-type': 'application/json',
       },
       body: post,
-    ).then((value) {
+    )
+        .then((value) {
       print("confirmCode $value");
       return true;
     });
-
   }
-  
-  Future<List<FoodType>> getFoodTypes(){
-    return http.get('$_apiURL/foodTypes').then<List<FoodType>>((response) {
+
+  Future<List<FoodType>> getFoodTypes() {
+    final String url = '$_apiURL/foodTypes';
+    print("$logTrace $url");
+
+    return http.get(url).then<List<FoodType>>((response) {
       if (response.statusCode == 200) {
         var list = jsonDecode(response.body);
         return list.map<FoodType>((data) => FoodType.fromJson(data)).toList();
@@ -879,7 +890,4 @@ Future<Map<String,dynamic>> ConfirmSms(String idCommande, String code,String com
       return [];
     });
   }
-
-
 }
-

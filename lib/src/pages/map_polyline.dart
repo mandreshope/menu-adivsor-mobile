@@ -5,10 +5,7 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:menu_advisor/src/components/map_window_marker.dart';
-import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
-import 'package:menu_advisor/src/utils/routing.dart';
-import 'package:menu_advisor/src/utils/textTranslator.dart';
 
 import '../models.dart';
 
@@ -16,20 +13,19 @@ class MapPolylinePage extends StatefulWidget {
   final LatLng initialPosition;
   final LatLng destinationPosition;
   final Restaurant restaurant;
-  MapPolylinePage({Key key, @required this.initialPosition, @required this.restaurant,@required this.destinationPosition}) : super(key: key);
+  MapPolylinePage({Key key, @required this.initialPosition, @required this.restaurant, @required this.destinationPosition}) : super(key: key);
 
   @override
   _MapPolylinePageState createState() => _MapPolylinePageState();
 }
 
 class _MapPolylinePageState extends State<MapPolylinePage> {
-
   Position _currentPosition;
   LatLng _initialPosition;
   LatLng _destinationPosition;
 
-  //google maps 
-  static final _googleMapsApiKey =  "AIzaSyBu8U8tbY6BlxJezbjt8g3Lzi4k1I75iYw";
+  //google maps
+  static final _googleMapsApiKey = "AIzaSyBu8U8tbY6BlxJezbjt8g3Lzi4k1I75iYw";
   Completer<GoogleMapController> _mapController = Completer();
   final PolylinePoints _polylinePoints = PolylinePoints();
 
@@ -42,7 +38,7 @@ class _MapPolylinePageState extends State<MapPolylinePage> {
   List<LatLng> polylineCoordinates = <LatLng>[];
 
   bool showInfo = true;
-  
+
   // ignore: unused_field
   LatLng _lastMapPosition = _center;
 
@@ -51,7 +47,7 @@ class _MapPolylinePageState extends State<MapPolylinePage> {
       _initialPosition = widget.initialPosition;
       _currentPosition = Position(longitude: _initialPosition.longitude, latitude: _initialPosition.latitude);
       _destinationPosition = widget.destinationPosition;
-    }); 
+    });
     addInitPosAndDestPosMarker();
     getPolyline();
   }
@@ -66,7 +62,10 @@ class _MapPolylinePageState extends State<MapPolylinePage> {
       _markers.add(Marker(
         // This marker id can be anything that uniquely identifies each marker.
         markerId: MarkerId(myPosMarkerId),
-        position: LatLng(_currentPosition.latitude, _currentPosition.longitude,),
+        position: LatLng(
+          _currentPosition.latitude,
+          _currentPosition.longitude,
+        ),
         infoWindow: InfoWindow(
           title: AppLocalizations.of(context).translate('you'),
         ),
@@ -81,11 +80,14 @@ class _MapPolylinePageState extends State<MapPolylinePage> {
       _markers.add(Marker(
         // This marker id can be anything that uniquely identifies each marker.
         markerId: MarkerId(destPosMarkerId),
-        position: LatLng(_destinationPosition.latitude, _destinationPosition.longitude,),
+        position: LatLng(
+          _destinationPosition.latitude,
+          _destinationPosition.longitude,
+        ),
         infoWindow: InfoWindow(
           title: "${widget.restaurant.name}",
         ),
-        onTap: (){
+        onTap: () {
           setState(() {
             showInfo = true;
           });
@@ -102,14 +104,13 @@ class _MapPolylinePageState extends State<MapPolylinePage> {
 
   void _listenLocation() async {
     if (!mounted) return;
-    _positionStream = Geolocator.getPositionStream()
-    .listen((Position position) {
+    _positionStream = Geolocator.getPositionStream().listen((Position position) {
       print('Current position stream: ${position.latitude},${position.longitude}');
       setState(() {
         _currentPosition = position;
       });
       addMyPosMarker();
-    });    
+    });
   }
 
   Future getPolyline() async {
@@ -134,18 +135,10 @@ class _MapPolylinePageState extends State<MapPolylinePage> {
     return;
   }
 
-  addPolyLine(){
+  addPolyLine() {
     PolylineId id = PolylineId("poly");
-    Polyline polyline = Polyline(
-      startCap: Cap.roundCap,
-      endCap: Cap.roundCap,
-      jointType: JointType.round,
-      geodesic: true,
-      polylineId: id,
-      width: 5,
-      color: const Color(0xffda143c),
-      points: polylineCoordinates
-    );
+    Polyline polyline =
+        Polyline(startCap: Cap.roundCap, endCap: Cap.roundCap, jointType: JointType.round, geodesic: true, polylineId: id, width: 5, color: const Color(0xffda143c), points: polylineCoordinates);
     setState(() {
       _polylines[id] = polyline;
     });
@@ -154,7 +147,7 @@ class _MapPolylinePageState extends State<MapPolylinePage> {
   //google maps
 
   @override
-  void initState() { 
+  void initState() {
     _checkForLocationPermission();
     init();
     _listenLocation();
@@ -162,11 +155,11 @@ class _MapPolylinePageState extends State<MapPolylinePage> {
   }
 
   @override
-    void dispose() {
-      _positionStream.cancel();
-      super.dispose();
-    }
-  
+  void dispose() {
+    _positionStream.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -174,42 +167,36 @@ class _MapPolylinePageState extends State<MapPolylinePage> {
       body: Stack(
         children: [
           _currentPosition != null
-          ? GoogleMap(
-            onTap: (latlong){
-              setState(() {
-                showInfo = false;
-              });
-            },
-              mapType: MapType.normal,
-              initialCameraPosition: CameraPosition(
-                target: LatLng(_currentPosition.latitude, _currentPosition.longitude),
-                zoom: 14.4746,
-              ),
-              zoomControlsEnabled: false,
-              onCameraMove: _onCameraMove,
-              polylines: Set<Polyline>.of(_polylines.values),
-              markers:_markers,
-              onMapCreated: (GoogleMapController controller) {
-                _mapController.complete(controller);
-                controller.showMarkerInfoWindow(MarkerId('destPos'));
-              },
-            )
-          : Center(
-            child: CircularProgressIndicator(),
-          ),
+              ? GoogleMap(
+                  onTap: (latlong) {
+                    setState(() {
+                      showInfo = false;
+                    });
+                  },
+                  mapType: MapType.normal,
+                  initialCameraPosition: CameraPosition(
+                    target: LatLng(_currentPosition.latitude, _currentPosition.longitude),
+                    zoom: 14.4746,
+                  ),
+                  zoomControlsEnabled: false,
+                  onCameraMove: _onCameraMove,
+                  polylines: Set<Polyline>.of(_polylines.values),
+                  markers: _markers,
+                  onMapCreated: (GoogleMapController controller) {
+                    _mapController.complete(controller);
+                    controller.showMarkerInfoWindow(MarkerId('destPos'));
+                  },
+                )
+              : Center(
+                  child: CircularProgressIndicator(),
+                ),
           Positioned(
             bottom: 20,
             right: 20,
             child: FloatingActionButton(
               onPressed: () async {
                 var map = await _mapController.future;
-                map.animateCamera(
-                  CameraUpdate.newCameraPosition(
-                    CameraPosition( target: LatLng(_currentPosition.latitude,_currentPosition.longitude),zoom: 15))
-                  )
-                .catchError((onError) {
-
-                });
+                map.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(_currentPosition.latitude, _currentPosition.longitude), zoom: 15))).catchError((onError) {});
                 map.showMarkerInfoWindow(MarkerId('destPos'));
                 // _mapController.move(
                 //   LatLng(
@@ -222,13 +209,16 @@ class _MapPolylinePageState extends State<MapPolylinePage> {
               child: Icon(Icons.my_location),
             ),
           ),
-
           Visibility(
             visible: showInfo,
             child: Align(
               alignment: Alignment.bottomCenter,
-              child:MapWindowMarker(position: this._currentPosition,restaurant: widget.restaurant,fromMapItineraire: true,),          
-  /*            
+              child: MapWindowMarker(
+                position: this._currentPosition,
+                restaurant: widget.restaurant,
+                fromMapItineraire: true,
+              ),
+              /*            
                Container(
                 padding: EdgeInsets.all(15),
                 width: 350,
@@ -297,7 +287,7 @@ class _MapPolylinePageState extends State<MapPolylinePage> {
                   ],
                 ),
               ),
-*/           
+*/
             ),
           )
         ],
