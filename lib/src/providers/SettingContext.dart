@@ -2,6 +2,7 @@ import 'package:firebase_mlkit_language/firebase_mlkit_language.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
+import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingContext extends ChangeNotifier {
@@ -81,13 +82,14 @@ class SettingContext extends ChangeNotifier {
   bool get isSystemSetting => _languageCode == 'fr';
 
   Future setlanguageCode(String value) async {
+    print("$logTrace $value");
     var result = await FirebaseLanguage.instance.modelManager().downloadModel(value);
     _languageCode = value;
     Intl.defaultLocale = value;
-    SharedPreferences.getInstance().then((sharedPrefs) {
-      sharedPrefs.setString('languageCode', value);
-    });
+    final sharedPrefs = await SharedPreferences.getInstance();
+    sharedPrefs.setString('languageCode', value);
     notifyListeners();
+    await Future.delayed(Duration(seconds: 5));
     return result;
   }
 

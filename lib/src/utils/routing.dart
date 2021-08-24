@@ -29,7 +29,7 @@ class RouteUtil {
             type: transitionType,
           ),
         );
-        print("go to : /"+child.toString());
+        print("go to : /" + child.toString());
         return true;
 
       case RoutingMethod.replaceLast:
@@ -44,7 +44,7 @@ class RouteUtil {
             type: transitionType,
           ),
         );
-        print("go to : /"+child.toString());
+        print("go to : /" + child.toString());
         return true;
 
       case RoutingMethod.atTop:
@@ -60,7 +60,7 @@ class RouteUtil {
           ),
           (route) => false,
         );
-        print("go to : /"+child.toString());
+        print("go to : /" + child.toString());
         return true;
 
       default:
@@ -88,7 +88,7 @@ class RouteUtil {
       ),
       predicate,
     );
-    print("go to : /"+child.toString());
+    print("go to : /" + child.toString());
   }
 
   static void goBack({

@@ -1,3 +1,5 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:menu_advisor/src/pages/splash.dart';
@@ -16,6 +18,8 @@ import 'package:responsive_framework/responsive_wrapper.dart';
 import 'package:responsive_framework/utils/scroll_behavior.dart';
 
 class MyApp extends StatefulWidget {
+  static FirebaseAnalytics analytics = FirebaseAnalytics();
+  static FirebaseAnalyticsObserver observer = FirebaseAnalyticsObserver(analytics: analytics);
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -82,6 +86,7 @@ class _MyAppState extends State<MyApp> {
             const Locale('en', 'US'),
             const Locale('th', 'TH'),
           ],
+          navigatorObservers: <NavigatorObserver>[MyApp.observer],
           // home: Splash(),
           routes: route(),
           builder: (context, widget) => ResponsiveWrapper.builder(BouncingScrollWrapper.builder(context, widget),
