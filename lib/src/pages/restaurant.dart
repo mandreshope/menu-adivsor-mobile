@@ -40,7 +40,12 @@ class RestaurantPage extends StatefulWidget {
   final bool withPrice;
   final bool fromQrcode;
 
-  const RestaurantPage({Key key, this.restaurant, this.withPrice = true, this.fromQrcode = false}) : super(key: key);
+  const RestaurantPage({
+    Key key,
+    this.restaurant,
+    this.withPrice = true,
+    this.fromQrcode = false,
+  }) : super(key: key);
 
   @override
   _RestaurantPageState createState() => _RestaurantPageState();

@@ -9,7 +9,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Api {
   // final String _apiURL = 'https://menu-advisor.herokuapp.com';
-  final String _apiURL = 'https://preprod-api.clicar.fr';
+  static final String _apiURL = 'https://preprod-api.clicar.fr';
+  static String get apiURL => _apiURL;
   String _accessToken;
   String _refreshToken;
 
@@ -254,10 +255,14 @@ class Api {
     ).then<List<Food>>((response) {
       if (response.statusCode == 200) {
         List<dynamic> list = jsonDecode(response.body);
+        List<Food> foods = [];
         if (fromQrcode) {
           return list.map((data) => Food.fromJson(data)).where((element) => element.status).toList();
         }
-        return list.map((data) => Food.fromJson(data)).where((element) => element.status && element.statut).toList();
+        print(list);
+        foods = list.map((data) => Food.fromJson(data)).where((element) => element.status && element.statut).toList();
+        print(foods);
+        return foods;
       }
 
       return Future.error(
@@ -314,7 +319,10 @@ class Api {
       url,
       headers: {"authorization": "Bearer $_accessToken", 'content-type': 'application/json'},
     ).then<Restaurant>((response) {
-      if (response.statusCode == 200) return Restaurant.fromJson(jsonDecode(response.body));
+      print(jsonDecode(response.body));
+      Restaurant restaurant = Restaurant.fromJson(jsonDecode(response.body));
+      print(restaurant);
+      if (response.statusCode == 200) return restaurant;
 
       return Future.error(
         jsonDecode(response.body),

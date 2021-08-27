@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/types.dart';
@@ -48,6 +50,7 @@ class Food {
   final bool statut;
   final String title;
   final int maxOptions;
+  final bool imageNotContractual;
 
   String message;
 
@@ -66,50 +69,54 @@ class Food {
 
   Price additionalPrice;
 
-  Food(
-      {@required this.id,
-      @required this.name,
-      @required this.category,
-      @required this.restaurant,
-      @required this.price,
-      this.ratings = 0,
-      this.imageURL,
-      this.description,
-      this.type,
-      this.attributes,
-      this.options,
-      this.optionSelected,
-      this.status,
-      this.title,
-      this.maxOptions,
-      this.message = "",
-      this.foodAttributes,
-      this.isFoodForMenu = false,
-      this.isMenu = false,
-      this.idMenu,
-      this.statut,
-      this.isPopular = false});
+  Food({
+    @required this.id,
+    @required this.name,
+    @required this.category,
+    @required this.restaurant,
+    @required this.price,
+    this.ratings = 0,
+    this.imageURL,
+    this.description,
+    this.type,
+    this.attributes,
+    this.options,
+    this.optionSelected,
+    this.status,
+    this.title,
+    this.maxOptions,
+    this.message = "",
+    this.foodAttributes,
+    this.isFoodForMenu = false,
+    this.isMenu = false,
+    this.idMenu,
+    this.statut,
+    this.isPopular = false,
+    this.imageNotContractual,
+  });
 
   factory Food.fromJson(Map<String, dynamic> json, {bool fromCommande = false, bool isPopular = false}) => Food(
-      id: json['_id'],
-      name: json['name'] is Map<String, dynamic> ? json['name']["fr"] : json['name'],
-      imageURL: (json['imageURL'] as String).contains("localhost:8080") ? "" : json['imageURL'],
-      category: json.containsKey('category') && json['category'] != null && json['category'] is Map<String, dynamic> ? FoodCategory.fromJson(json['category']) : null,
-      restaurant: json['restaurant_object'] != null ? json['restaurant_object'] : json['restaurant'],
-      price: json.containsKey('price') ? Price.fromJson(json['price']) : null,
-      type: json['type'] == null
-          ? null
-          : json['type'] is Map<String, dynamic>
-              ? FoodType.fromJson(json['type'])
-              : json['type'] as String,
-      attributes: fromCommande ? [] : (json['attributes'] as List).map((e) => (e is String) ? FoodAttribute() : FoodAttribute.fromJson(e)).toList(),
-      options: (json['options'] as List).map((e) => Option.fromJson(e)).where((element) => element.maxOptions > 0).toList(),
-      status: json['status'] ?? true,
-      title: json['title'],
-      maxOptions: json['maxOptions'],
-      description: json['description'],
-      statut: json['statut'] ?? true,
-      isPopular: isPopular);
+        id: json['_id'],
+        name: json['name'] is Map<String, dynamic> ? json['name']["fr"] : json['name'],
+        imageURL: (json['imageURL'] as String)?.contains("localhost:8080") == null ? "" : json['imageURL'],
+        category: json.containsKey('category') && json['category'] != null && json['category'] is Map<String, dynamic> ? FoodCategory.fromJson(json['category']) : null,
+        restaurant: json['restaurant_object'] != null ? json['restaurant_object'] : json['restaurant'],
+        price: json.containsKey('price') ? Price.fromJson(json['price']) : null,
+        type: json['type'] == null
+            ? null
+            : json['type'] is Map<String, dynamic>
+                ? FoodType.fromJson(json['type'])
+                : json['type'] as String,
+        attributes: fromCommande ? [] : (json['attributes'] as List).map((e) => (e is String) ? FoodAttribute() : FoodAttribute.fromJson(e)).toList(),
+        options: (json['options'] as List).map((e) => Option.fromJson(e)).where((element) => element.maxOptions > 0).toList(),
+        status: json['status'] ?? true,
+        title: json['title'],
+        maxOptions: json['maxOptions'],
+        description: json['description'],
+        statut: json['statut'] ?? true,
+        isPopular: isPopular,
+        imageNotContractual: json['imageNotContractual'],
+      );
 
   factory Food.copy(Food food) => Food(
         id: food.id,
@@ -133,6 +140,7 @@ class Food {
         status: food.status,
         idMenu: food.idMenu,
         statut: food.statut,
+        imageNotContractual: food.imageNotContractual,
       );
 
   Map<String, dynamic> toJson() {
@@ -394,66 +402,105 @@ class Restaurant {
   final dynamic category;
   final int priority;
   final bool accessible;
-
+  final bool paiementLivraison;
+  final bool paiementCB;
+  final bool cbDirectToAdvisor;
+  final bool isMenuActive;
+  final bool isBoissonActive;
+  final String city;
+  final String postalCode;
+  final String fixedLinePhoneNumber;
+  final String discount;
+  final String qrcodeLink;
+  final String qrcodePricelessLink;
   int priceDelevery;
-
   String optionLivraison = "";
   String appartement = "";
   String codeappartement = "";
   int etage = 0;
 
-  Restaurant(
-      {this.phoneNumber,
-      @required this.id,
-      @required this.name,
-      this.type = 'common_restaurant',
-      this.imageURL,
-      @required this.location,
-      this.address = '',
-      this.description = '',
-      this.menus = const [],
-      this.foods = const [],
-      this.foodTypes = const [],
-      this.status,
-      this.admin,
-      this.priceDelevery,
-      this.delivery,
-      this.openingTimes,
-      this.aEmporter,
-      this.surPlace,
-      this.url,
-      this.category,
-      this.priority,
-      this.accessible,
-      this.etage,
-      this.fixPhoneNumber});
+  Restaurant({
+    this.phoneNumber,
+    @required this.id,
+    @required this.name,
+    this.type = 'common_restaurant',
+    this.imageURL,
+    @required this.location,
+    this.address = '',
+    this.description = '',
+    this.menus = const [],
+    this.foods = const [],
+    this.foodTypes = const [],
+    this.status,
+    this.admin,
+    this.priceDelevery,
+    this.delivery,
+    this.openingTimes,
+    this.aEmporter,
+    this.surPlace,
+    this.url,
+    this.category,
+    this.priority,
+    this.accessible,
+    this.etage,
+    this.fixPhoneNumber,
+    this.paiementLivraison,
+    this.paiementCB,
+    this.appartement,
+    this.cbDirectToAdvisor,
+    this.city,
+    this.codeappartement,
+    this.discount,
+    this.fixedLinePhoneNumber,
+    this.isBoissonActive,
+    this.isMenuActive,
+    this.optionLivraison,
+    this.postalCode,
+    this.qrcodeLink,
+    this.qrcodePricelessLink,
+  });
 
   factory Restaurant.fromJson(Map<String, dynamic> json) {
     Restaurant res = Restaurant(
-        id: json['_id'],
-        name: json['name'],
-        type: json['categorie'],
-        imageURL: json['imageURL'] ?? "",
-        location: Location.fromJson(
-          json['location'],
-        ),
-        address: json['address'] ?? '',
-        description: json['description'] ?? '',
-        menus: (json['menus'] as List).map<String>((e) => e).toList(),
-        foods: (json['foods'] as List).map<String>((e) => e).toList(),
-        foodTypes: (json['foodTypes'] as List).map<FoodType>((e) => FoodType.fromJson(e)).toList() ?? [],
-        phoneNumber: json['phoneNumber'] ?? "",
-        status: json['referencement'],
-        accessible: json['status'],
-        admin: json['admin'] is String ? json['admin'] : json['admin']['_id'],
-        priceDelevery: json['deliveryPrice']['amount'],
-        delivery: json['delivery'] ?? true,
-        aEmporter: json['aEmporter'] ?? true,
-        surPlace: json['surPlace'] ?? true,
-        url: json['url'] != null ? json['url'] as String : "Menu advisor",
-        category: json['category'],
-        priority: json['priority'],
-        openingTimes: (json['openingTimes'] != null) ? (json['openingTimes'] as List).map<OpeningTimes>((e) => OpeningTimes.fromJson(e)).toList() : []);
+      id: json['_id'],
+      name: json['name'],
+      type: json['categorie'],
+      imageURL: json['imageURL'] ?? "",
+      location: Location.fromJson(
+        json['location'],
+      ),
+      address: json['address'] ?? '',
+      description: json['description'] ?? '',
+      menus: (json['menus'] as List).map<String>((e) => e).toList(),
+      foods: (json['foods'] as List).map<String>((e) => e).toList(),
+      foodTypes: (json['foodTypes'] as List).map<FoodType>((e) => FoodType.fromJson(e)).toList() ?? [],
+      phoneNumber: json['phoneNumber'] ?? "",
+      status: json['referencement'],
+      accessible: json['status'],
+      admin: json['admin'] is String ? json['admin'] : json['admin']['_id'],
+      priceDelevery: json['deliveryPrice']['amount'],
+      delivery: json['delivery'] ?? true,
+      aEmporter: json['aEmporter'] ?? true,
+      surPlace: json['surPlace'] ?? true,
+      url: json['url'] != null ? json['url'] as String : "Menu advisor",
+      category: json['category'],
+      priority: json['priority'],
+      openingTimes: (json['openingTimes'] != null) ? (json['openingTimes'] as List).map<OpeningTimes>((e) => OpeningTimes.fromJson(e)).toList() : [],
+      paiementLivraison: json['paiementLivraison'],
+      paiementCB: json['paiementCB'],
+      appartement: json['appartement'],
+      cbDirectToAdvisor: json['cbDirectToAdvisor'],
+      codeappartement: json['codeappartement'],
+      city: json['city'],
+      discount: json['discount'],
+      fixedLinePhoneNumber: json['fixedLinePhoneNumber'],
+      isBoissonActive: json['isBoissonActive'],
+      isMenuActive: json['isMenuActive'],
+      optionLivraison: json['optionLivraison'],
+      postalCode: json['postalCode'],
+      qrcodeLink: json['qrcodeLink'],
+      qrcodePricelessLink: json['qrcodePricelessLink'],
+    );
 
     if (!res.accessible) {
       res.status = false;
@@ -1247,10 +1294,22 @@ class ItemsOption {
   String imageUrl;
   int quantity = 0;
   ItemsOption item;
+  bool isObligatory;
+  int priority;
   bool isSelected = false;
   bool isSingle = false;
 
-  ItemsOption({this.sId, this.name, this.price, this.imageUrl, this.quantity, this.item, this.isSelected});
+  ItemsOption({
+    this.sId,
+    this.name,
+    this.price,
+    this.imageUrl,
+    this.quantity,
+    this.item,
+    this.isSelected,
+    this.isObligatory,
+    this.priority,
+  });
 
   ItemsOption.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
@@ -1258,11 +1317,22 @@ class ItemsOption {
     if (json['price'] != null) price = Price.fromJson(json['price']);
     imageUrl = json['imageURL'];
     quantity = json['quantity'];
+    isObligatory = json['isObligatory'];
+    priority = json['priority'];
     if (json['item'] != null) item = ItemsOption.fromJson(json['item']);
   }
 
-  factory ItemsOption.Copy(ItemsOption item) =>
-      ItemsOption(name: item.name, imageUrl: item.imageUrl, item: item.item, price: Price.Copy(item.price), quantity: item.quantity, sId: item.sId, isSelected: item.isSelected);
+  factory ItemsOption.Copy(ItemsOption item) => ItemsOption(
+        name: item.name,
+        imageUrl: item.imageUrl,
+        item: item.item,
+        price: Price.Copy(item.price),
+        quantity: item.quantity,
+        sId: item.sId,
+        isSelected: item.isSelected,
+        isObligatory: item.isObligatory,
+        priority: item.priority,
+      );
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();

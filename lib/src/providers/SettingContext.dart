@@ -93,7 +93,7 @@ class SettingContext extends ChangeNotifier {
     return result;
   }
 
-  Future setlanguageCodeRestaurant(String value) async {
+  Future<String> setlanguageCodeRestaurant(String value) async {
     String lang = value;
     if (value == 'zh-CN') {
       lang = 'zh';
@@ -102,9 +102,8 @@ class SettingContext extends ChangeNotifier {
     }
     var result = await FirebaseLanguage.instance.modelManager().downloadModel(lang);
     _languageCodeRstaurant = lang;
-    SharedPreferences.getInstance().then((sharedPrefs) {
-      sharedPrefs.setString('languageCodeRestaurant', lang);
-    });
+    final sharedPrefs = await SharedPreferences.getInstance();
+    await sharedPrefs.setString('languageCodeRestaurant', lang);
     notifyListeners();
     return result;
   }

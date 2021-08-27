@@ -1,18 +1,23 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/pages/list_lang.dart';
 import 'package:menu_advisor/src/pages/restaurant.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
+import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
+import 'package:qr_code_scanner/qr_code_scanner.dart';
 // import 'package:qr_code_scanner/qr_code_scanner.dart';
-import 'package:qrcode/qrcode.dart';
 
 class QRCodeScanPage extends StatefulWidget {
   @override
@@ -21,24 +26,134 @@ class QRCodeScanPage extends StatefulWidget {
 
 class _QRCodeScanPageState extends State<QRCodeScanPage> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  QRCaptureController controller = QRCaptureController();
   bool flashOn = false;
   bool loading = false;
   CartContext _cartContext;
   SettingContext _settingContext;
+  Barcode result;
+  QRViewController controller;
+
+  // In order to get hot reload to work we need to pause the camera if the platform
+  // is android, or resume the camera if the platform is iOS.
+  @override
+  void reassemble() {
+    super.reassemble();
+    if (Platform.isAndroid) {
+      controller.pauseCamera();
+    }
+    controller.resumeCamera();
+  }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _cartContext = Provider.of<CartContext>(context, listen: false);
     _settingContext = Provider.of<SettingContext>(context, listen: false);
     _onQRViewCreated(controller);
   }
 
+  void _onQRViewCreated(QRViewController controller) {
+    setState(() {
+      this.controller = controller;
+    });
+    controller?.scannedDataStream?.listen((scanData) {
+      controller.pauseCamera();
+      _handleQRcode(scanData.code);
+    });
+  }
+
+  void _onPermissionSet(BuildContext context, QRViewController ctrl, bool p) {
+    print('${DateTime.now().toIso8601String()}_onPermissionSet $p');
+    if (!p) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('no Permission')),
+      );
+    }
+  }
+
+  Widget _buildQrView(BuildContext context) {
+    // For this example we check how width or tall the device is and change the scanArea and overlay accordingly.
+    var scanArea = (MediaQuery.of(context).size.width < 400 || MediaQuery.of(context).size.height < 400) ? 150.0 : 300.0;
+    // To ensure the Scanner view is properly sizes after rotation
+    // we need to listen for Flutter SizeChanged notification and update controller
+    return QRView(
+      key: qrKey,
+      onQRViewCreated: _onQRViewCreated,
+      overlay: QrScannerOverlayShape(
+        borderColor: Colors.red,
+        borderRadius: 10,
+        borderLength: 30,
+        borderWidth: 10,
+        cutOutSize: scanArea,
+      ),
+      onPermissionSet: (ctrl, p) => _onPermissionSet(context, ctrl, p),
+    );
+  }
+
+  void _handleQRcode(String scanData) async {
+    print(scanData);
+    if (!scanData.startsWith(Api.apiURL)) {
+      Fluttertoast.showToast(
+        msg: AppLocalizations.of(context).translate('invalid_qr_code'),
+      );
+      controller.resumeCamera();
+      return;
+    }
+
+    //parse url
+
+    Uri uri = Uri.dataFromString(scanData);
+    String restaurantId = uri.pathSegments.last;
+    bool withPrice = !uri.queryParameters.containsValue("priceless");
+    _cartContext.withPrice = withPrice;
+    bool haveLangage = uri.queryParameters.containsKey("language");
+    String language = uri.queryParameters['language'];
+    String multipleLanguage = uri.queryParameters.keys.firstWhere((v) => v.startsWith('multiple'));
+    List languages = json.decode(multipleLanguage.split(":").last);
+    bool haveMultipleLanguage;
+    if (multipleLanguage != null && languages[0] != "") {
+      haveMultipleLanguage = true;
+    } else {
+      haveMultipleLanguage = false;
+    }
+
+    //if have multiple language then go to choice language page
+    if (haveMultipleLanguage) {
+      RouteUtil.goTo(
+        context: context,
+        child: ListLang(
+          langFromQRcode: languages,
+          restaurant: restaurantId,
+          withPrice: withPrice,
+        ),
+        routeName: restaurantRoute,
+        method: RoutingMethod.replaceLast,
+      );
+      controller.resumeCamera();
+      return;
+    }
+
+    if (haveLangage) {
+      print("language = $language");
+      showDialogProgress(context);
+      await _settingContext.setlanguageCodeRestaurant(language);
+      dismissDialogProgress(context);
+    }
+
+    RouteUtil.goTo(
+      context: context,
+      child: RestaurantPage(
+        restaurant: restaurantId,
+        withPrice: withPrice,
+        fromQrcode: true,
+      ),
+      routeName: restaurantRoute,
+      method: RoutingMethod.replaceLast,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       appBar: AppBar(
         title: TextTranslator("Scan code QR"),
@@ -48,12 +163,9 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            QRCaptureView(
-              key: qrKey,
-              controller: controller,
-              /*overlay: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),*/
+            Expanded(
+              flex: 4,
+              child: _buildQrView(context),
             ),
             Container(
               color: Colors.black45,
@@ -85,111 +197,49 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
                 child: Icon(
                   flashOn ? Icons.flash_on : Icons.flash_off,
                 ),
-                onPressed: () {
+                onPressed: () async {
                   // controller.toggleFlash();
-                  if (flashOn) {
-                    controller.torchMode = CaptureTorchMode.off;
-                  } else {
-                    controller.torchMode = CaptureTorchMode.on;
-                  }
+                  await controller?.toggleFlash();
                   setState(() {
                     flashOn = !flashOn;
                   });
                 },
               ),
             ),
-            Positioned(
-              bottom: 20,
-              right: 20,
-              child: Container(
-                padding: EdgeInsets.all(15),
-                decoration: BoxDecoration(color: CRIMSON, borderRadius: BorderRadius.circular(158)),
-                child: InkWell(
-                  child: Icon(
-                    Icons.camera,
-                    color: Colors.white,
-                  ),
-                  onTap: () async {
-                    final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
-                  },
-                ),
-              ),
-            ),
-            Center(
-              child: Container(
-                width: MediaQuery.of(context).size.width / 1.2,
-                height: MediaQuery.of(context).size.width / 1.2,
-                decoration: BoxDecoration(color: Colors.blue.withAlpha(50), border: Border.all(color: Colors.blue, width: 1)),
-              ),
-            ),
+            // Positioned(
+            //   bottom: 20,
+            //   right: 20,
+            //   child: Container(
+            //     padding: EdgeInsets.all(15),
+            //     decoration: BoxDecoration(color: CRIMSON, borderRadius: BorderRadius.circular(158)),
+            //     child: InkWell(
+            //       child: Icon(
+            //         Icons.camera,
+            //         color: Colors.white,
+            //       ),
+            //       onTap: () async {
+            //         final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
+            //         if (pickedFile != null) {}
+            //       },
+            //     ),
+            //   ),
+            // ),
+            // Center(
+            //   child: Container(
+            //     width: MediaQuery.of(context).size.width / 1.2,
+            //     height: MediaQuery.of(context).size.width / 1.2,
+            //     decoration: BoxDecoration(color: Colors.blue.withAlpha(50), border: Border.all(color: Colors.blue, width: 1)),
+            //   ),
+            // ),
           ],
         ),
       ),
     );
   }
 
-  void _onQRViewCreated(QRCaptureController controller) {
-    this.controller = controller;
-    /*bool withPrice = !"https://preprod-api.clicar.fr/restaurants/5fde0bc875e5035bf72a8efe/qrcode.png".contains("?option");
-    _cartContext.withPrice = withPrice;
-    RouteUtil.goTo(
-        context: context,
-        child: RestaurantPage(
-          restaurant: "5fde0bc875e5035bf72a8efe",
-          withPrice: withPrice,
-        ),
-        routeName: restaurantRoute,
-        method: RoutingMethod.replaceLast,
-      );*/
-    controller.onCapture((String scanData) async {
-      controller.pause();
-      if (!scanData.startsWith(RegExp(r'^(http|https)://(www\.|)menuadvisor.fr/restaurants/'))) {
-        Fluttertoast.showToast(
-          msg: AppLocalizations.of(context).translate('invalid_qr_code'),
-        );
-        controller.resume();
-        return;
-      }
-
-      setState(() {
-        loading = true;
-      });
-      List<String> datas = scanData.split('/');
-      String restaurantId = datas.last.split("?")[0];
-
-      bool withPrice = !scanData.contains("?option=priceless");
-      _cartContext.withPrice = withPrice;
-
-      bool haveLangage = scanData.contains('language');
-      String language = "";
-
-      //change restaurant language      
-      if (haveLangage){
-        language = scanData.substring(scanData.length-2,scanData.length);
-        print("language = $language");
-        showDialogProgress(context);
-        
-        await _settingContext.setlanguageCodeRestaurant(language);
-        dismissDialogProgress(context);
-      }
-
-      
-        RouteUtil.goTo(
-          context: context,
-          child: RestaurantPage(
-            restaurant: restaurantId,
-            withPrice: withPrice,
-            fromQrcode: true,
-          ),
-          routeName: restaurantRoute,
-          method: RoutingMethod.replaceLast,
-        );
-    });
-  }
-
   @override
   void dispose() {
-    controller?.pause();
+    controller?.dispose();
     super.dispose();
   }
 }
