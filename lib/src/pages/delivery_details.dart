@@ -52,7 +52,6 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _restaurant = widget.restaurant;
     _restaurant.optionLivraison = optionRdv;

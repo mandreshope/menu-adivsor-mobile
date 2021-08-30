@@ -952,7 +952,6 @@ class _OptionChoiceDialogState extends State<OptionChoiceDialog> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     options = widget.food.options;
   }
@@ -1230,7 +1229,6 @@ class _AtributesDialogState extends State<AtributesDialog> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     dataContext = Provider.of<DataContext>(context, listen: false);
     attributes = dataContext.foodAttributes;

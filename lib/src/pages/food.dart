@@ -25,14 +25,22 @@ import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
 class FoodPage extends StatefulWidget {
-  Food food;
+  final Food food;
   final String imageTag;
   final String restaurantName;
   final bool modalMode;
   final bool fromDelevery;
   final bool fromRestaurant;
   final String subMenu;
-  FoodPage({this.food, this.subMenu, this.imageTag, this.restaurantName, this.modalMode = false, this.fromDelevery = false, this.fromRestaurant = false});
+  FoodPage({
+    this.food,
+    this.subMenu,
+    this.imageTag,
+    this.restaurantName,
+    this.modalMode = false,
+    this.fromDelevery = false,
+    this.fromRestaurant = false,
+  });
 
   @override
   _FoodPageState createState() => _FoodPageState();
@@ -84,7 +92,6 @@ class _FoodPageState extends State<FoodPage> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     _scrollController.removeListener(_scrollListener);
     _streamController.close();
@@ -1165,21 +1172,45 @@ class _FoodPageState extends State<FoodPage> {
               // child: Hero(
               //   tag: widget.imageTag ?? 'foodImage${widget.food.id}',
               child: widget.food.imageURL != null
-                  ? Image.network(
-                      widget.food.imageURL,
-                      // width: 4 * MediaQuery.of(context).size.width / 7,
-                      width: MediaQuery.of(context).size.width,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Center(
-                        child: Icon(
-                          Icons.fastfood,
-                          size: MediaQuery.of(context).size.width,
+                  ? Stack(
+                      children: <Widget>[
+                        Image.network(
+                          widget.food.imageURL,
+                          // width: 4 * MediaQuery.of(context).size.width / 7,
+                          width: MediaQuery.of(context).size.width,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => Center(
+                            child: Icon(
+                              Icons.fastfood,
+                              size: MediaQuery.of(context).size.width * .2,
+                            ),
+                          ),
                         ),
-                      ),
+                        if (widget.food.imageNotContractual)
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Container(
+                              height: 20,
+                              width: double.infinity,
+                              color: Colors.black.withOpacity(0.5),
+                              child: Center(
+                                child: TextTranslator(
+                                  AppLocalizations.of(context).translate("non_contractual_photo"),
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                      ],
                     )
-                  : Icon(
-                      Icons.fastfood,
-                      size: 250,
+                  : Center(
+                      child: Icon(
+                        Icons.fastfood,
+                        size: MediaQuery.of(context).size.width * .2,
+                      ),
                     ),
               // ),
               onTap: () {

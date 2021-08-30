@@ -53,7 +53,6 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     AuthContext authContext = Provider.of<AuthContext>(context, listen: false);

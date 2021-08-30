@@ -91,7 +91,6 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
   }
 
   void _handleQRcode(String scanData) async {
-    print(scanData);
     if (!scanData.startsWith(Api.apiURL)) {
       Fluttertoast.showToast(
         msg: AppLocalizations.of(context).translate('invalid_qr_code'),
@@ -101,7 +100,6 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
     }
 
     //parse url
-
     Uri uri = Uri.dataFromString(scanData);
     String restaurantId = uri.pathSegments.last;
     bool withPrice = !uri.queryParameters.containsValue("priceless");

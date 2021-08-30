@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/types.dart';
@@ -29,7 +27,6 @@ class FoodCategory {
 
   @override
   String toString() {
-    // TODO: implement toString
     return this.id;
   }
 }
@@ -684,8 +681,10 @@ class Restaurant {
   }
 
   String get categories {
+    final categories = category;
+    (categories as List).sort((a, b) => a["priority"].compareTo(b["priority"]));
     String cat = "";
-    this.category?.forEach((element) {
+    categories?.forEach((element) {
       cat += " - ${element['name'] is String ? element['name'] : element['name']['fr']}";
     });
     return cat;
@@ -746,7 +745,6 @@ class User {
 
   @override
   String toString() {
-    // TODO: implement toString
     return "${this.name.first} ${this.name.last}";
   }
 }
@@ -1032,7 +1030,6 @@ class FoodAttribute {
 
   @override
   String toString() {
-    // TODO: implement toString
     return this.sId;
   }
 }

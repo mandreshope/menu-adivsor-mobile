@@ -1479,7 +1479,9 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
 
   Widget _renderCategorie() {
     String name = "";
-    for (var category in restaurant.category) name += category['name']['fr'] + ", ";
+    final categories = restaurant.category;
+    (categories as List).sort((a, b) => a["priority"].compareTo(b["priority"]));
+    for (var category in categories) name += category['name']['fr'] + ", ";
     return TextTranslator(
       name.isEmpty ? name : name.substring(0, name.length - 2),
       isAutoSizeText: true,

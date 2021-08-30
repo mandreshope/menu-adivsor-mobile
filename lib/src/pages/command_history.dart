@@ -47,7 +47,6 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     _historyContext = Provider.of<HistoryContext>(context, listen: false);

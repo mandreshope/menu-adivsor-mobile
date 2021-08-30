@@ -32,7 +32,6 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     options = widget.food.options;
     options.forEach((element) {

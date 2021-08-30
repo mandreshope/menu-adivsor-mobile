@@ -54,7 +54,6 @@ class _DetailMenuState extends State<DetailMenu> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     _scrollController.removeListener(_scrollListener);
     _streamController.close();
@@ -63,7 +62,6 @@ class _DetailMenuState extends State<DetailMenu> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _init();
     print("menu type ${widget.menu.type}");

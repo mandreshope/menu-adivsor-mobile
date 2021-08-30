@@ -44,7 +44,6 @@ class _ConfirmSmsState extends State<ConfirmSms> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     dateDelai = DateTime.now().add(Duration(minutes: 5));
   }
