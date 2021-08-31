@@ -988,9 +988,11 @@ packages:
   stripe_payment:
     dependency: "direct main"
     description:
-      name: stripe_payment
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: "8a6002631f8a00f45efdc0581744af7931583886"
+      resolved-ref: "8a6002631f8a00f45efdc0581744af7931583886"
+      url: "git://github.com/mandreshope/flutter_stripe_payment.git"
+    source: git
     version: "1.0.11"
   supercharged:
     dependency: "direct main"
