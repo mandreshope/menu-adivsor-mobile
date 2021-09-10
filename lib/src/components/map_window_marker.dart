@@ -50,11 +50,11 @@ class MapWindowMarker extends StatelessWidget {
                 color: Colors.white,
                 child: */
               // Hero(
-              //   tag: 'tag:${restaurant.imageURL}',
+              //   tag: 'tag:${restaurant.logo}',
               //   child:
               FadeInImage.assetNetwork(
                 placeholder: 'assets/images/loading.gif',
-                image: this.restaurant.imageURL,
+                image: this.restaurant.logo,
                 height: 125,
                 width: 75,
                 fit: BoxFit.contain,

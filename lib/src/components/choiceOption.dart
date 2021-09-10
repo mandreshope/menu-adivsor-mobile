@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:provider/provider.dart';
@@ -88,7 +89,7 @@ class ChoiceOption extends StatelessWidget {
                                       itemsOption.quantity++;
                                       _cartContext.refresh();
                                     } else {
-                                      print("max options");
+                                      print("$logTrace max options");
                                       Fluttertoast.showToast(msg: "maximum selection ${option.title} : ${option.maxOptions}");
                                     }
                                   }),

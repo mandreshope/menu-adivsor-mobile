@@ -138,7 +138,7 @@ class _OrderPageState extends State<OrderPage> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Image.network(
-                                        _restaurant.imageURL,
+                                        _restaurant.logo,
                                         // width: 4 * MediaQuery.of(context).size.width / 7,
                                         width: MediaQuery.of(context).size.width / 4,
                                         height: MediaQuery.of(context).size.width / 4,

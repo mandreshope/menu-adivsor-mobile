@@ -7,6 +7,7 @@ import 'package:flutter_collapse/flutter_collapse.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/photo_view.dart';
 import 'package:menu_advisor/src/pages/restaurant.dart';
@@ -609,7 +610,10 @@ class _FoodPageState extends State<FoodPage> {
                             SizedBox(
                               width: 5,
                             ),
-                            Icon(restaurant.delivery ? Icons.check_circle_outline_outlined : Icons.close, color: restaurant.delivery ? TEAL : CRIMSON)
+                            Icon(
+                              restaurant.delivery ? Icons.check_circle_outline_outlined : Icons.close,
+                              color: restaurant.delivery ? TEAL : CRIMSON,
+                            )
                           ],
                         ),
                         SizedBox(
@@ -711,10 +715,8 @@ class _FoodPageState extends State<FoodPage> {
                               padding: const EdgeInsets.only(
                                 left: 5.0,
                               ),
-                              child: Wrap(
-                                spacing: 5,
-                                runSpacing: 5,
-                                children: dataContext.attributes
+                              child: Wrap(spacing: 5, runSpacing: 5, children: [
+                                ...dataContext.attributes
                                     .map(
                                       (attribute) => FittedBox(
                                         child: Card(
@@ -758,7 +760,53 @@ class _FoodPageState extends State<FoodPage> {
                                       ),
                                     )
                                     .toList(),
-                              ),
+
+                                /// alergen
+                                ...widget.food.allergens
+                                    .map(
+                                      (attribute) => FittedBox(
+                                        child: Card(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(20),
+                                          ),
+                                          margin: EdgeInsets.zero,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8),
+                                            child: Builder(
+                                              builder: (_) {
+                                                return Row(
+                                                  children: [
+                                                    if (widget.food.allergens != null)
+                                                      //for (var attribute in dataContext.attributes)
+                                                      ...[
+                                                      FadeInImage.assetNetwork(
+                                                        placeholder: 'assets/images/loading.gif',
+                                                        image: attribute.imageURL,
+                                                        height: 14,
+                                                        imageErrorBuilder: (_, __, ___) => Container(
+                                                          width: 14,
+                                                          height: 14,
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        width: 5,
+                                                      ),
+                                                      TextTranslator(
+                                                        attribute.locales,
+                                                      ),
+                                                    ] else
+                                                      TextTranslator("")
+                                                  ],
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                              ]),
                             );
                             /*: CircularProgressIndicator(
                                     valueColor: AlwaysStoppedAnimation<Color>(
@@ -1186,7 +1234,7 @@ class _FoodPageState extends State<FoodPage> {
                             ),
                           ),
                         ),
-                        if (widget.food.imageNotContractual)
+                        if (widget.food.imageNotContractual == true && widget.food.isAvailable == true) ...[
                           Align(
                             alignment: Alignment.bottomCenter,
                             child: Container(
@@ -1204,6 +1252,25 @@ class _FoodPageState extends State<FoodPage> {
                               ),
                             ),
                           )
+                        ] else if (widget.food.isAvailable == false) ...[
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Container(
+                              height: 20,
+                              width: double.infinity,
+                              color: Colors.black.withOpacity(0.5),
+                              child: Center(
+                                child: TextTranslator(
+                                  AppLocalizations.of(context).translate("non_disponible"),
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        ]
                       ],
                     )
                   : Center(
@@ -1259,8 +1326,14 @@ class _FoodPageState extends State<FoodPage> {
     if (isSingle) {
       return ChipsChoice.single(
         value: singleItemOptionSelected,
-        choiceStyle:
-            C2ChoiceStyle(borderColor: Colors.white, disabledColor: Colors.white, borderRadius: BorderRadius.zero, showCheckmark: false, padding: EdgeInsets.zero, labelPadding: EdgeInsets.zero),
+        choiceStyle: C2ChoiceStyle(
+          borderColor: Colors.white,
+          disabledColor: Colors.white,
+          borderRadius: BorderRadius.zero,
+          showCheckmark: false,
+          padding: EdgeInsets.zero,
+          labelPadding: EdgeInsets.zero,
+        ),
         padding: EdgeInsets.zero,
         // wrapped: true,
         // textDirection: TextDirection.ltr,
@@ -1308,6 +1381,7 @@ class _FoodPageState extends State<FoodPage> {
         choiceBuilder: (_) {
           return InkWell(
             onTap: () {
+              print("$logTrace ");
               _.select(!_.selected);
             },
             child: Container(
@@ -1419,7 +1493,7 @@ class _FoodPageState extends State<FoodPage> {
               option.itemOptionSelected = value.cast<ItemsOption>().where((element) => seen.add(element.name)).toList();
               foodAdded.optionSelected = options.map((o) => Option.copy(o)).toList();
             } else {
-              print("max options");
+              print("$logTrace max options");
               Fluttertoast.showToast(msg: "maximum selection ${option.title} : ${option.maxOptions}");
             }
           } else {
@@ -1526,7 +1600,7 @@ class _FoodPageState extends State<FoodPage> {
                               _.value.quantity = 1;
                               _.select(!_.selected);
                             } else {
-                              print("max options");
+                              print("$logTrace max options");
                               Fluttertoast.showToast(msg: "maximum selection ${option.title} : ${option.maxOptions}");
                             }
                           },
@@ -1550,6 +1624,7 @@ class _FoodPageState extends State<FoodPage> {
                                     size: 35,
                                   ),
                                   onPressed: () {
+                                    print("$logTrace decrement option");
                                     if (this.isAdded) return;
                                     if (_.value.quantity == 1) {
                                       _.value.quantity = 0;
@@ -1577,12 +1652,13 @@ class _FoodPageState extends State<FoodPage> {
                                     // if (_optionContext.quantityOptions == option.maxOptions){
                                     if (this.isAdded) return;
                                     if (option.isMaxOptions) {
+                                      print("$logTrace increment option");
                                       _.value.quantity++;
                                       _.select(true);
                                       snapshot.refresh();
                                       _cartContext.refresh();
                                     } else {
-                                      print("max options");
+                                      print("$logTrace max options");
                                       Fluttertoast.showToast(msg: "maximum selection ${option.title} : ${option.maxOptions}");
                                     }
                                   }),

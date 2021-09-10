@@ -48,6 +48,7 @@ class Food {
   final String title;
   final int maxOptions;
   final bool imageNotContractual;
+  final bool isAvailable;
 
   String message;
 
@@ -55,7 +56,8 @@ class Food {
 
   List<Option> optionSelected = [];
 
-  List<FoodAttribute> foodAttributes = [];
+  //allergen
+  List<FoodAttribute> allergens = [];
 
   bool isMenu = false;
   bool isFoodForMenu = false;
@@ -83,13 +85,14 @@ class Food {
     this.title,
     this.maxOptions,
     this.message = "",
-    this.foodAttributes,
+    this.allergens,
     this.isFoodForMenu = false,
     this.isMenu = false,
     this.idMenu,
     this.statut,
     this.isPopular = false,
     this.imageNotContractual,
+    this.isAvailable,
   });
 
   factory Food.fromJson(Map<String, dynamic> json, {bool fromCommande = false, bool isPopular = false}) => Food(
@@ -105,7 +108,8 @@ class Food {
                 ? FoodType.fromJson(json['type'])
                 : json['type'] as String,
         attributes: fromCommande ? [] : (json['attributes'] as List).map((e) => (e is String) ? FoodAttribute() : FoodAttribute.fromJson(e)).toList(),
-        options: (json['options'] as List).map((e) => Option.fromJson(e)).where((element) => element.maxOptions > 0).toList(),
+        allergens: fromCommande ? [] : (json['allergene'] as List).map((e) => (e is String) ? FoodAttribute() : FoodAttribute.fromJson(e)).toList(),
+        options: (json['options'] as List).map((e) => Option.fromJson(e)).where((element) => element.maxOptions >= 0).toList(),
         status: json['status'] ?? true,
         title: json['title'],
         maxOptions: json['maxOptions'],
@@ -113,6 +117,7 @@ class Food {
         statut: json['statut'] ?? true,
         isPopular: isPopular,
         imageNotContractual: json['imageNotContractual'],
+        isAvailable: json['isAvailable'],
       );
 
   factory Food.copy(Food food) => Food(
@@ -129,7 +134,7 @@ class Food {
         title: food.title,
         type: food.type,
         description: food.description,
-        foodAttributes: food.foodAttributes,
+        allergens: food.allergens,
         maxOptions: food.maxOptions,
         message: food.message,
         // optionSelected: food.optionSelected,
@@ -138,6 +143,7 @@ class Food {
         idMenu: food.idMenu,
         statut: food.statut,
         imageNotContractual: food.imageNotContractual,
+        isAvailable: food.isAvailable,
       );
 
   Map<String, dynamic> toJson() {
@@ -355,11 +361,14 @@ class Menu {
 
 class MenuFood {
   dynamic food;
-  Price addtionalPrice;
+  Price additionalPrice;
 
-  MenuFood({this.food, this.addtionalPrice});
+  MenuFood({this.food, this.additionalPrice});
   factory MenuFood.fromJSON(var json) {
-    MenuFood mFood = MenuFood(food: (json['food'] is String) ? json['food'] : Food.fromJson(json['food']), addtionalPrice: Price.fromJson(json['additionalPrice']));
+    MenuFood mFood = MenuFood(
+      food: (json['food'] is String) ? json['food'] : Food.fromJson(json['food']),
+      additionalPrice: Price.fromJson(json['additionalPrice']),
+    );
     if (mFood.food is String) {
     } else {
       mFood.food.isFoodForMenu = true;
@@ -369,8 +378,8 @@ class MenuFood {
   }
 
   factory MenuFood.copy(MenuFood menuFood) {
-    MenuFood mFood = MenuFood(food: Food.copy(menuFood.food), addtionalPrice: Price.Copy(menuFood.addtionalPrice));
-    mFood.food.additionalPrice = mFood.addtionalPrice;
+    MenuFood mFood = MenuFood(food: Food.copy(menuFood.food), additionalPrice: Price.copy(menuFood.additionalPrice));
+    mFood.food.additionalPrice = mFood.additionalPrice;
     mFood.food.isFoodForMenu = true;
     return mFood;
   }
@@ -379,7 +388,7 @@ class MenuFood {
 class Restaurant {
   final String id;
   final String name;
-  final String imageURL;
+  final String logo;
   final String type;
   final Location location;
   final String address;
@@ -421,7 +430,7 @@ class Restaurant {
     @required this.id,
     @required this.name,
     this.type = 'common_restaurant',
-    this.imageURL,
+    this.logo,
     @required this.location,
     this.address = '',
     this.description = '',
@@ -462,7 +471,7 @@ class Restaurant {
       id: json['_id'],
       name: json['name'],
       type: json['categorie'],
-      imageURL: json['imageURL'] ?? "",
+      logo: json['logo'] ?? "",
       location: Location.fromJson(
         json['location'],
       ),
@@ -685,7 +694,7 @@ class Restaurant {
     (categories as List).sort((a, b) => a["priority"].compareTo(b["priority"]));
     String cat = "";
     categories?.forEach((element) {
-      cat += " - ${element['name'] is String ? element['name'] : element['name']['fr']}";
+      cat += "${(categories as List).indexOf(element) == 0 ? "" : " - "}${element['name'] is String ? element['name'] : element['name']['fr']}";
     });
     return cat;
   }
@@ -1241,7 +1250,7 @@ class Option {
 
   Option({this.sId, this.items, this.title, this.maxOptions, this.itemOptionSelected});
 
-  factory Option.copy(Option o) => Option(itemOptionSelected: o.itemOptionSelected?.map((e) => ItemsOption.Copy(e))?.toList(), items: o.items, maxOptions: o.maxOptions, sId: o.sId, title: o.title);
+  factory Option.copy(Option o) => Option(itemOptionSelected: o.itemOptionSelected?.map((e) => ItemsOption.copy(e))?.toList(), items: o.items, maxOptions: o.maxOptions, sId: o.sId, title: o.title);
 
   Option.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
@@ -1319,11 +1328,11 @@ class ItemsOption {
     if (json['item'] != null) item = ItemsOption.fromJson(json['item']);
   }
 
-  factory ItemsOption.Copy(ItemsOption item) => ItemsOption(
+  factory ItemsOption.copy(ItemsOption item) => ItemsOption(
         name: item.name,
         imageUrl: item.imageUrl,
         item: item.item,
-        price: Price.Copy(item.price),
+        price: Price.copy(item.price),
         quantity: item.quantity,
         sId: item.sId,
         isSelected: item.isSelected,

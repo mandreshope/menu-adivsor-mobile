@@ -11,6 +11,7 @@ import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/list_lang.dart';
 import 'package:menu_advisor/src/pages/map_polyline.dart';
@@ -77,7 +78,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
 
   String foodType;
 
-  Map<String, List<Food>> foods = Map();
+  Map<String, List<Food>> foods = {};
 
   Restaurant restaurant;
 
@@ -193,7 +194,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
 
       for (int i = 0; i < restaurant.foodTypes.length; i++) {
         var element = restaurant.foodTypes[i].name;
-        foods[element] = await api.getFoods(
+        final foodsByType = await api.getFoods(
           Provider.of<SettingContext>(
             context,
             listen: false,
@@ -204,6 +205,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
             'type': element,
           },
         );
+        foods[element] = foodsByType;
         // searchResult.addAll(foods[element].where((element) => element.type.tag != "drink").toList());
         searchResult.addAll(foods[element]);
       }
@@ -212,7 +214,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
           /*element.attributes?.forEach((att) async {
             element.foodAttributes.add(att);
           });*/
-          element.foodAttributes = element.attributes;
+          element.allergens = element.allergens;
         });
       });
 
@@ -650,9 +652,9 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                               children: [
                                 InkWell(
                                   // child: Hero(
-                                  //   tag: 'tag:${restaurant.imageURL}',
+                                  //   tag: 'tag:${restaurant.logo}',
                                   child: Image.network(
-                                    restaurant.imageURL,
+                                    restaurant.logo,
                                     // width: 4 * MediaQuery.of(context).size.width / 7,
                                     width: MediaQuery.of(context).size.width / 3,
                                     height: MediaQuery.of(context).size.width / 3,
@@ -670,8 +672,8 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                     RouteUtil.goTo(
                                         context: context,
                                         child: PhotoViewPage(
-                                          tag: 'tag:${restaurant.imageURL}',
-                                          img: restaurant.imageURL,
+                                          tag: 'tag:${restaurant.logo}',
+                                          img: restaurant.logo,
                                         ),
                                         routeName: null);
                                   },
@@ -1015,6 +1017,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                   margin: EdgeInsets.only(right: 15),
                                 ),
                                 onTap: () async {
+                                  print("$logTrace foods filter");
                                   var result = await showDialog<List<FoodAttribute>>(
                                       context: context,
                                       builder: (_) {
@@ -1250,7 +1253,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                       color: Colors.white,
                     ),
                     onPressed: () {
-                      Share.share("https://menuadvisor.fr/restaurants/${restaurant.id}");
+                      Share.share("https://advisor.voirlemenu.fr/restaurants/${restaurant.id}");
                     }),
               ],
             ),
@@ -1358,12 +1361,13 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
             child: Column(
               children: foods[foodType]
                   .where((element) {
-                    return !attributeFilter.any((filter) {
-                      if (filter.tag.contains("allergen"))
-                        return filter.sId == element.attributes.firstWhere((att) => att.sId == filter.sId, orElse: () => FoodAttribute(sId: "-1")).sId;
-                      else
-                        return !(filter.sId == element.attributes.firstWhere((att) => att.sId == filter.sId, orElse: () => FoodAttribute(sId: "-1")).sId);
-                    });
+                    return element == element;
+                    // return !attributeFilter.any((filter) {
+                    //   if (filter.tag.contains("allergen"))
+                    //     return filter.sId == element.attributes.firstWhere((att) => att.sId == filter.sId, orElse: () => FoodAttribute(sId: "-1")).sId;
+                    //   else
+                    //     return !(filter.sId == element.attributes.firstWhere((att) => att.sId == filter.sId, orElse: () => FoodAttribute(sId: "-1")).sId);
+                    // });
                   })
                   .map(
                     (food) => RestaurantFoodCard(
@@ -1398,9 +1402,9 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
     return Consumer<RestaurantContext>(
       builder: (_, restaurantContext, w) {
         return Padding(
-            padding: EdgeInsets.symmetric(horizontal: 25, vertical: 5),
-            child:
-                /*_segmentChilder.length < 2 ?
+          padding: EdgeInsets.symmetric(horizontal: 25, vertical: 5),
+          child:
+              /*_segmentChilder.length < 2 ?
           Container(
             // width: 350,
             height: 45,
@@ -1435,23 +1439,34 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
             activeTitleStyle: TextStyle(fontSize: 16, color: Colors.white,fontWeight: FontWeight.bold),
             height: 45,
           )*/
-                Consumer<RestaurantContext>(builder: (context, snapshot, w) {
+              Consumer<RestaurantContext>(
+            builder: (context, snapshot, w) {
               return Align(
                 alignment: Alignment.topCenter,
                 child: Container(
                   height: 50,
                   // width: 500,
                   child: ListView.builder(
-                      itemCount: _foodTypes.length,
-                      scrollDirection: Axis.horizontal,
-                      controller: _autoScrollController,
-                      shrinkWrap: true,
-                      itemBuilder: (_, position) {
-                        return AutoScrollTag(controller: _autoScrollController, key: ValueKey(position), index: position, child: Center(child: _segmentWidget(position)));
-                      }),
+                    itemCount: _foodTypes.length,
+                    scrollDirection: Axis.horizontal,
+                    controller: _autoScrollController,
+                    shrinkWrap: true,
+                    itemBuilder: (_, position) {
+                      return AutoScrollTag(
+                        controller: _autoScrollController,
+                        key: ValueKey(position),
+                        index: position,
+                        child: Center(
+                          child: _segmentWidget(position),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               );
-            }));
+            },
+          ),
+        );
       },
     );
   }
@@ -1459,22 +1474,33 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
   Widget _segmentWidget(int position) {
     FoodTypeItem foodTypeItem = _restaurantContext.foodTypes[position];
     return InkWell(
-        onTap: () {
-          itemScrollController.jumpTo(index: position);
-          _restaurantContext.setFoodTypeSelected(position);
-        },
-        child: Container(
-            width: 150,
-            height: 45,
-            // padding: EdgeInsets.symmetric(horizontal: 15),
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: foodTypeItem.isSelected ? CRIMSON : Colors.white),
-            // padding: EdgeInsets.only(left: 12, right: 12),
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25),
-                child: TextTranslator(foodTypeItem.name, style: TextStyle(color: !foodTypeItem.isSelected ? CRIMSON : Colors.white, fontWeight: FontWeight.bold)),
+      onTap: () {
+        itemScrollController.jumpTo(index: position);
+        _restaurantContext.setFoodTypeSelected(position);
+      },
+      child: Container(
+        width: 150,
+        height: 45,
+        // padding: EdgeInsets.symmetric(horizontal: 15),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5),
+          color: foodTypeItem.isSelected ? CRIMSON : Colors.white,
+        ),
+        // padding: EdgeInsets.only(left: 12, right: 12),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25),
+            child: TextTranslator(
+              foodTypeItem.name,
+              style: TextStyle(
+                color: !foodTypeItem.isSelected ? CRIMSON : Colors.white,
+                fontWeight: FontWeight.bold,
               ),
-            )));
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _renderCategorie() {

@@ -467,7 +467,7 @@ class _MapPageState extends State<MapPage> {
                                           mainAxisAlignment: MainAxisAlignment.start,
                                           children: [
                                             FadeInImage.assetNetwork(
-                                              image: restaurant.imageURL,
+                                              image: restaurant.logo,
                                               placeholder: 'assets/images/loading.gif',
                                               height: 50,
                                               imageErrorBuilder: (_, __, ___) => Container(

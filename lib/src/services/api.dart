@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Api {
   // final String _apiURL = 'https://menu-advisor.herokuapp.com';
-  static final String _apiURL = 'https://preprod-api.clicar.fr';
+  static final String _apiURL = 'https://api-advisor.voirlemenu.fr';
   static String get apiURL => _apiURL;
   String _accessToken;
   String _refreshToken;

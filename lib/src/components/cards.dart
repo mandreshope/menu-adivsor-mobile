@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/components/pointer_paint.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/detail_menu.dart';
 import 'package:menu_advisor/src/pages/food.dart';
@@ -247,31 +248,122 @@ class _FoodCardState extends State<FoodCard> {
                                         ),
                                       ),
                                       SizedBox(height: 5),
-                                      loadingRestaurantName
-                                          ? SizedBox(
-                                              height: 10,
-                                              child: FittedBox(
-                                                child: CircularProgressIndicator(
-                                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                                    CRIMSON,
+                                      TextTranslator(
+                                        widget.food.description ?? "",
+                                        maxLines: 1,
+                                        isAutoSizeText: true,
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                      // loadingRestaurantName
+                                      //     ? SizedBox(
+                                      //         height: 10,
+                                      //         child: FittedBox(
+                                      //           child: CircularProgressIndicator(
+                                      //             valueColor: AlwaysStoppedAnimation<Color>(
+                                      //               CRIMSON,
+                                      //             ),
+                                      //           ),
+                                      //         ),
+                                      //       )
+                                      //     : TextTranslator(
+                                      //         restaurantName ?? AppLocalizations.of(context).translate('no_associated_restaurant'),
+                                      //         style: TextStyle(
+                                      //           fontSize: 16,
+                                      //         ),
+                                      //       ),
+                                      // if (widget.food.price != null && widget.food.price?.amount != null) ...[
+                                      //   SizedBox(height: 5),
+                                      //   Text(
+                                      //     Provider.of<CartContext>(context).withPrice ? "${widget.food.price.amount / 100}€" : "",
+                                      //     style: TextStyle(fontSize: 21, color: Colors.yellow[700], fontWeight: FontWeight.bold),
+                                      //   ),
+                                      // ] else
+                                      //   ...[]
+                                      Wrap(
+                                        children: [
+                                          ...widget.food.attributes
+                                              .map(
+                                                (attribute) => FittedBox(
+                                                  child: Card(
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.circular(20),
+                                                    ),
+                                                    margin: EdgeInsets.zero,
+                                                    child: Padding(
+                                                      padding: const EdgeInsets.all(8),
+                                                      child: Builder(
+                                                        builder: (_) {
+                                                          return Row(
+                                                            children: [
+                                                              if (widget.food.attributes != null)
+                                                                //for (var attribute in dataContext.attributes)
+                                                                ...[
+                                                                FadeInImage.assetNetwork(
+                                                                  placeholder: 'assets/images/loading.gif',
+                                                                  image: attribute.imageURL,
+                                                                  height: 14,
+                                                                  imageErrorBuilder: (_, __, ___) => Container(
+                                                                    width: 14,
+                                                                    height: 14,
+                                                                    color: Colors.white,
+                                                                  ),
+                                                                ),
+                                                              ] else
+                                                                TextTranslator("")
+                                                            ],
+                                                          );
+                                                        },
+                                                      ),
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                            )
-                                          : TextTranslator(
-                                              restaurantName ?? AppLocalizations.of(context).translate('no_associated_restaurant'),
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                              ),
-                                            ),
-                                      if (widget.food.price != null && widget.food.price?.amount != null) ...[
-                                        SizedBox(height: 5),
-                                        Text(
-                                          Provider.of<CartContext>(context).withPrice ? "${widget.food.price.amount / 100}€" : "",
-                                          style: TextStyle(fontSize: 21, color: Colors.yellow[700], fontWeight: FontWeight.bold),
-                                        ),
-                                      ] else
-                                        ...[]
+                                              )
+                                              .toList(),
+
+                                          /// alergen
+                                          ...widget.food.allergens
+                                              .map(
+                                                (attribute) => FittedBox(
+                                                  child: Card(
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.circular(20),
+                                                    ),
+                                                    margin: EdgeInsets.zero,
+                                                    child: Padding(
+                                                      padding: const EdgeInsets.all(8),
+                                                      child: Builder(
+                                                        builder: (_) {
+                                                          return Row(
+                                                            children: [
+                                                              if (widget.food.allergens != null)
+                                                                //for (var attribute in dataContext.attributes)
+                                                                ...[
+                                                                FadeInImage.assetNetwork(
+                                                                  placeholder: 'assets/images/loading.gif',
+                                                                  image: attribute.imageURL,
+                                                                  height: 14,
+                                                                  imageErrorBuilder: (_, __, ___) => Container(
+                                                                    width: 14,
+                                                                    height: 14,
+                                                                    color: Colors.white,
+                                                                  ),
+                                                                ),
+                                                              ] else
+                                                                TextTranslator("")
+                                                            ],
+                                                          );
+                                                        },
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              )
+                                              .toList(),
+                                        ],
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -395,19 +487,70 @@ class _FoodCardState extends State<FoodCard> {
                           child: widget.food.imageURL != null
                               ? ClipRRect(
                                   borderRadius: BorderRadius.only(bottomRight: Radius.circular(widget.showButton ? 10 : 30), topRight: Radius.circular(widget.showButton ? 10 : 30)),
-                                  child: FadeInImage.assetNetwork(
-                                    image: widget.food.imageURL,
-                                    placeholder: 'assets/images/loading.gif',
-                                    imageErrorBuilder: (_, o, s) {
-                                      return Container(
+                                  child: Stack(
+                                    children: [
+                                      FadeInImage.assetNetwork(
+                                        image: widget.food.imageURL,
+                                        placeholder: 'assets/images/loading.gif',
+                                        imageErrorBuilder: (_, o, s) {
+                                          return Container(
+                                            width: 100,
+                                            height: double.infinity,
+                                            color: Colors.white,
+                                          );
+                                        },
                                         width: 100,
                                         height: double.infinity,
-                                        color: Colors.white,
-                                      );
-                                    },
-                                    width: 100,
-                                    height: double.infinity,
-                                    fit: BoxFit.cover,
+                                        fit: BoxFit.cover,
+                                      ),
+                                      if (widget.food.imageNotContractual == true && widget.food.isAvailable == true) ...[
+                                        Positioned(
+                                          bottom: 0,
+                                          right: 0,
+                                          left: 0,
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.only(bottomRight: Radius.circular(widget.showButton ? 10 : 30)),
+                                            child: Container(
+                                              width: double.infinity,
+                                              color: Colors.black.withOpacity(0.5),
+                                              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+                                              child: Center(
+                                                child: TextTranslator(
+                                                  AppLocalizations.of(context).translate("non_contractual_photo"),
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ] else if (widget.food.isAvailable == false) ...[
+                                        Positioned(
+                                          bottom: 0,
+                                          right: 0,
+                                          left: 0,
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.only(bottomRight: Radius.circular(widget.showButton ? 10 : 30)),
+                                            child: Container(
+                                              width: double.infinity,
+                                              color: Colors.black.withOpacity(0.5),
+                                              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+                                              child: Center(
+                                                child: TextTranslator(
+                                                  AppLocalizations.of(context).translate("non_disponible"),
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      ]
+                                    ],
                                   ),
                                 )
                               : Container(
@@ -504,7 +647,6 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
 
   @override
   void initState() {
-    
     super.initState();
 
     _cartContext = Provider.of<CartContext>(context, listen: false);
@@ -554,340 +696,240 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
         //}
       },
       child: Card(
-        child: Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 15.0),
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  /*Hero(
+        child: Padding(
+          padding: const EdgeInsets.only(
+            right: 15.0,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              /*Hero(
                     tag: widget.food.id,
                     child: */
-                  ClipRRect(
-                    borderRadius: BorderRadius.only(bottomLeft: Radius.circular(5), topLeft: Radius.circular(5)),
-                    child: FadeInImage.assetNetwork(
-                      placeholder: 'assets/images/loading.gif',
-                      image: widget.food.imageURL,
-                      width: 95,
-                      height: 100,
-                      fit: BoxFit.cover,
-                      imageErrorBuilder: (_, __, ___) => Container(
-                        width: 95,
-                        height: 100,
-                        color: Colors.white,
+              ClipRRect(
+                borderRadius: BorderRadius.only(bottomLeft: Radius.circular(5), topLeft: Radius.circular(5)),
+                child: FadeInImage.assetNetwork(
+                  placeholder: 'assets/images/loading.gif',
+                  image: widget.food.imageURL,
+                  width: 95,
+                  height: 100,
+                  fit: BoxFit.cover,
+                  imageErrorBuilder: (_, __, ___) => Container(
+                    width: 95,
+                    height: 100,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+
+              // ),
+              SizedBox(
+                width: 15.0,
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 10,
+                    ),
+                    TextTranslator(
+                      widget.food.name,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ),
-                  // ),
-                  SizedBox(
-                    width: 15.0,
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          height: 10,
-                        ),
-                        TextTranslator(
-                          widget.food.name,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        TextTranslator(
-                          widget.food.description ?? "",
-                        ),
-                        if (widget.food.attributes.length > 0) ...[
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Consumer<DataContext>(
-                              builder: (_, dataContext, __) => InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        expanded = true;
-                                      });
-                                    },
-                                    child: Container(
-                                      padding: EdgeInsets.only(bottom: expanded ? 20 : 0),
-                                      height: expanded ? 46 : 20,
-                                      child: ListView(
-                                        // spacing: expanded ? 5 : 5,
-                                        // runSpacing: 5,
-                                        scrollDirection: Axis.horizontal,
-                                        children: widget.food.attributes
-                                            .map(
-                                              (attribute) => Padding(
-                                                padding: expanded ? const EdgeInsets.symmetric(horizontal: 5, vertical: 0.8) : const EdgeInsets.symmetric(horizontal: 5, vertical: 0),
-                                                child: FittedBox(
-                                                  child: Card(
-                                                    shape: RoundedRectangleBorder(
-                                                      borderRadius: BorderRadius.circular(
-                                                        20,
-                                                      ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    TextTranslator(
+                      widget.food.description ?? "",
+                    ),
+                    if (widget.food.attributes.length > 0) ...[
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Consumer<DataContext>(
+                          builder: (_, dataContext, __) => InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    expanded = true;
+                                  });
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.only(bottom: expanded ? 20 : 0),
+                                  height: expanded ? 46 : 20,
+                                  child: SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: Row(children: [
+                                      ...widget.food.attributes
+                                          .map(
+                                            (attribute) => Padding(
+                                              padding: expanded ? const EdgeInsets.symmetric(horizontal: 5, vertical: 0.8) : const EdgeInsets.symmetric(horizontal: 5, vertical: 0),
+                                              child: FittedBox(
+                                                child: Card(
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.circular(
+                                                      20,
                                                     ),
-                                                    elevation: expanded ? 0.5 : 0,
-                                                    margin: EdgeInsets.zero,
-                                                    child: Padding(
-                                                      padding: expanded
-                                                          ? const EdgeInsets.all(
-                                                              8,
-                                                            )
-                                                          : const EdgeInsets.symmetric(
-                                                              vertical: 1,
-                                                              horizontal: 1,
-                                                            ),
-                                                      child: Builder(
-                                                        builder: (_) {
-                                                          // var attribute = dataContext.attributes.firstWhere(
-                                                          //   (element) => element['tag'] == e,
-                                                          //   orElse: null,
-                                                          // );
+                                                  ),
+                                                  elevation: expanded ? 0.5 : 0,
+                                                  margin: EdgeInsets.zero,
+                                                  child: Padding(
+                                                    padding: expanded
+                                                        ? const EdgeInsets.all(
+                                                            8,
+                                                          )
+                                                        : const EdgeInsets.symmetric(
+                                                            vertical: 1,
+                                                            horizontal: 1,
+                                                          ),
+                                                    child: Builder(
+                                                      builder: (_) {
+                                                        // var attribute = dataContext.attributes.firstWhere(
+                                                        //   (element) => element['tag'] == e,
+                                                        //   orElse: null,
+                                                        // );
 
-                                                          return Row(
-                                                            children: [
-                                                              // for (var attribute in dataContext.attributes)
-                                                              ...[
-                                                                FadeInImage.assetNetwork(
-                                                                  placeholder: 'assets/images/loading.gif',
-                                                                  image: attribute.imageURL,
+                                                        return Row(
+                                                          children: [
+                                                            // for (var attribute in dataContext.attributes)
+                                                            ...[
+                                                              FadeInImage.assetNetwork(
+                                                                placeholder: 'assets/images/loading.gif',
+                                                                image: attribute.imageURL,
+                                                                height: 14,
+                                                                imageErrorBuilder: (_, __, ___) => Container(
+                                                                  width: 14,
                                                                   height: 14,
-                                                                  imageErrorBuilder: (_, __, ___) => Container(
-                                                                    width: 14,
-                                                                    height: 14,
-                                                                    color: Colors.white,
-                                                                  ),
+                                                                  color: Colors.white,
                                                                 ),
-                                                                if (expanded)
-                                                                  SizedBox(
-                                                                    width: 5,
-                                                                  ),
-                                                                if (expanded)
-                                                                  TextTranslator(
-                                                                    attribute.locales,
-                                                                  ),
-                                                              ]
-                                                            ],
-                                                          );
-                                                        },
-                                                      ),
+                                                              ),
+                                                              if (expanded)
+                                                                SizedBox(
+                                                                  width: 5,
+                                                                ),
+                                                              if (expanded)
+                                                                TextTranslator(
+                                                                  attribute.locales,
+                                                                ),
+                                                            ]
+                                                          ],
+                                                        );
+                                                      },
                                                     ),
                                                   ),
                                                 ),
                                               ),
-                                            )
-                                            .toList(),
-                                      ),
-                                    ),
-                                  )
-                              // Container()
-                              ),
-                          // ),
-                        ],
+                                            ),
+                                          )
+                                          .toList(),
 
-                        // options
-                        // options
-                        /*  if (showOptions)...[
-                          // SizedBox(height: 25,),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 25),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                ListView.builder(
-                                  shrinkWrap: true,
-                                  itemCount: options.length,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  itemBuilder: (_,position){
-                                    Option option = options[position];
-                                    return  Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        SizedBox(height: 15,),
-                                        TextTranslator(
-                                            "Vous avez ${option.maxOptions} choix de ${option.title}",
-                                            style:TextStyle(color: Colors.black,fontWeight: FontWeight.bold)),
-                                        Container(
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(left: 25.0),
-                                            child: ChipsChoice.multiple(
-                                              value: option.itemOptionSelected,
-                                              padding: EdgeInsets.zero,
-                                              wrapped: true,
-                                              textDirection: TextDirection.ltr,
-                                              onChanged: (value) {
-                                                // int diff =
-                                                setState(() {
-                                                  if (option.itemOptionSelected?.length == option.maxOptions){
-                                                    if (option.itemOptionSelected.length >= value.length ){
-                                                      option.itemOptionSelected = value.cast<ItemsOption>();
-                                                      widget.food.optionSelected = options;
-                                                    }else{
-                                                      print("max options");
-                                                      Fluttertoast.showToast(
-                                                          msg: "maximum selection ${option.title} : ${option.maxOptions}"
-                                                      );
-                                                    }
-
-                                                  }else{
-                                                    option.itemOptionSelected = value.cast<ItemsOption>();
-                                                    widget.food.optionSelected = options;
-                                                  }
-
-                                                });
-                                              },
-                                              choiceLabelBuilder: (_){
-                                                return Row(
-                                                  mainAxisSize: MainAxisSize.min,
-                                                  children: [
-                                                    FadeInImage.assetNetwork(
-                                                      placeholder: 'assets/images/loading.gif',
-                                                      image: _.value.imageUrl,
-                                                      height: 14,
+                                      ///alergens
+                                      ...widget.food.allergens
+                                          .map(
+                                            (attribute) => Padding(
+                                              padding: expanded ? const EdgeInsets.symmetric(horizontal: 5, vertical: 0.8) : const EdgeInsets.symmetric(horizontal: 5, vertical: 0),
+                                              child: FittedBox(
+                                                child: Card(
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.circular(
+                                                      20,
                                                     ),
-                                                    SizedBox(
-                                                      width: 5,
-                                                    ),
-                                                    Text("${_.value.name}"),
-                                                    SizedBox(width: 5,),
-                                                    Container(
-                                                      // padding: EdgeInsets.all(5),
-                                                      decoration: BoxDecoration(
-                                                        shape: BoxShape.circle,
-                                                        // color: _.value.price == 0 ? null : Colors.grey[400]
-                                                      ),
-                                                      child: !_cartContext.withPrice || _.value.price.amount == null ? Text("") : Text("${_.value.price.amount == 0 ? '': _.value.price.amount/100}${_.value.price.amount == 0 ? '': "€"}",
-                                                        style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),),
-                                                    )
-                                                  ],
-                                                );
-                                              },
-                                              choiceItems: C2Choice.listFrom(
-                                                meta: (position, item){
+                                                  ),
+                                                  elevation: expanded ? 0.5 : 0,
+                                                  margin: EdgeInsets.zero,
+                                                  child: Padding(
+                                                    padding: expanded
+                                                        ? const EdgeInsets.all(
+                                                            8,
+                                                          )
+                                                        : const EdgeInsets.symmetric(
+                                                            vertical: 1,
+                                                            horizontal: 1,
+                                                          ),
+                                                    child: Builder(
+                                                      builder: (_) {
+                                                        // var attribute = dataContext.attributes.firstWhere(
+                                                        //   (element) => element['tag'] == e,
+                                                        //   orElse: null,
+                                                        // );
 
-                                                },
-                                                source: option.items,
-                                                value: (i, v) => v,
-                                                label: (i, v) => v.name,
+                                                        return Row(
+                                                          children: [
+                                                            // for (var attribute in dataContext.attributes)
+                                                            ...[
+                                                              FadeInImage.assetNetwork(
+                                                                placeholder: 'assets/images/loading.gif',
+                                                                image: attribute.imageURL,
+                                                                height: 14,
+                                                                imageErrorBuilder: (_, __, ___) => Container(
+                                                                  width: 14,
+                                                                  height: 14,
+                                                                  color: Colors.white,
+                                                                ),
+                                                              ),
+                                                              if (expanded)
+                                                                SizedBox(
+                                                                  width: 5,
+                                                                ),
+                                                              if (expanded)
+                                                                TextTranslator(
+                                                                  attribute.locales,
+                                                                ),
+                                                            ]
+                                                          ],
+                                                        );
+                                                      },
+                                                    ),
+                                                  ),
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ),
-
-                                      ],
-                                    );
-                                  },
-                                ),
-
-                                /*RaisedButton(
-                          padding: EdgeInsets.all(8),
-                          color: CRIMSON,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          onPressed: ()=> Navigator.of(context).pop(optionSelected),
-                          child: TextTranslator(
-                            AppLocalizations.of(context)
-                                .translate("validate"),
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ),*/
-                              ],
-                            ),
-                          ),
-
-                        ]
-
-*/
-                      ],
-                    ),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      !_cartContext.withPrice
-                          ? Text("")
-                          : widget.food.price?.amount == null
-                              ? Text("")
-                              : Padding(
-                                  padding: const EdgeInsets.only(top: 10),
-                                  child: Text(
-                                    '${widget.food.price.amount / 100}€',
-                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                          )
+                                          .toList(),
+                                    ]),
                                   ),
                                 ),
-                      Consumer<CartContext>(builder: (_, cart, w) {
-                        return cart.contains(widget.food)
-                            ? Container(
-                                padding: EdgeInsets.all(8),
-                                decoration: BoxDecoration(shape: BoxShape.circle, color: CRIMSON),
-                                child: Text("${cart.getFoodCount(widget.food)}x", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
                               )
-                            : Container();
-                      }),
-                      // Spacer()
+                          // Container()
+                          ),
+                      // ),
                     ],
-                  )
-                ],
-              ),
-            ),
-            /*
-            Positioned(
-              bottom: 0,
-              right: 15,
-                          child: Padding(
-                padding: const EdgeInsets.only(right: 15, bottom: 5),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Consumer<CartContext>(
-                        builder: (_, cartContext, __) =>
-                        ButtonItemCountWidget(widget.food,
-                        fromRestaurant: true,
-                        withPrice: widget.withPrice,
-
-                        onAdded: (value) async {
-                            if (widget.food.isMenu){
-
-                            }else{
-                               /* if (widget.food.options.isNotEmpty && widget.food.optionSelected == null ){
-                                  var optionSelected = await showDialog(
-                                                  context: context,
-                                                  barrierDismissible: false,
-                                                  builder: (_) => OptionChoiceDialog(
-                                                    food: widget.food,
-                                                    withPrice: widget.withPrice,
-                                                  ),
-                                                );
-                                  if (optionSelected != null)
-                                    cartContext.addItem(widget.food, value,true);
-                                }else{*/
-                                  cartContext.addItem(widget.food, value,true);
-                                // }
-                            }
-
-                        }, onRemoved: (value) {
-                              value == 0 ? cartContext.removeItem(widget.food) : cartContext.addItem(widget.food, value,true);
-                              }, itemCount: cartContext.getCount(widget.food), isContains: cartContext.contains(widget.food))
-                        ),
                   ],
                 ),
               ),
-            ),
-          */
-          ],
+
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  !_cartContext.withPrice
+                      ? Text("")
+                      : widget.food.price?.amount == null
+                          ? Text("")
+                          : Padding(
+                              padding: const EdgeInsets.only(top: 10),
+                              child: Text(
+                                '${widget.food.price.amount / 100}€',
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                  Consumer<CartContext>(builder: (_, cart, w) {
+                    return cart.contains(widget.food)
+                        ? Container(
+                            padding: EdgeInsets.all(8),
+                            decoration: BoxDecoration(shape: BoxShape.circle, color: CRIMSON),
+                            child: Text("${cart.getFoodCount(widget.food)}x", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                          )
+                        : Container();
+                  }),
+                  // Spacer()
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -1250,10 +1292,10 @@ class _RestaurantCardState extends State<RestaurantCard> {
                       ),
                     ),
                     // Hero(
-                    //     tag: "tag:${widget.restaurant.imageURL}",
+                    //     tag: "tag:${widget.restaurant.logo}",
                     // child:
                     FadeInImage.assetNetwork(
-                      image: widget.restaurant.imageURL,
+                      image: widget.restaurant.logo,
                       placeholder: 'assets/images/loading.gif',
                       width: 120,
                       fit: BoxFit.cover,
@@ -1702,7 +1744,7 @@ class CommandHistoryItem extends StatelessWidget {
 
 class BlogCard extends StatelessWidget {
   BlogCard(this.blog);
-  Blog blog;
+  final Blog blog;
 
   @override
   Widget build(BuildContext context) {
@@ -1769,8 +1811,8 @@ class BlogCard extends StatelessWidget {
                 )
               ],
             ),
-
-            Positioned(
+            if (blog.url != null)
+              Positioned(
                 top: 0,
                 right: 0,
                 child: Card(
@@ -1779,17 +1821,18 @@ class BlogCard extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(150),
                   ),
-                  child: IconButton(
-                      icon: Icon(
-                        Icons.shopping_cart_outlined,
-                        size: 25,
-                        color: Colors.white,
-                      ),
-                      onPressed: () async {
-                        print("add to shop...");
-                        if (await canLaunch(blog.url)) launch(blog.url);
-                      }),
-                ))
+                  child: TextButton(
+                    child: TextTranslator(
+                      "En savoir plus",
+                      style: TextStyle(color: Colors.white, fontSize: 18),
+                    ),
+                    onPressed: () async {
+                      print("$logTrace tap blog");
+                      if (await canLaunch(blog.url)) launch(blog.url);
+                    },
+                  ),
+                ),
+              )
           ],
         ),
       ),

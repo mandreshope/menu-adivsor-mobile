@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/components/menu_item_food_option.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/photo_view.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
@@ -528,9 +529,11 @@ class _DetailMenuState extends State<DetailMenu> {
                                         ),
                                         if (widget.menu.type == MenuType.fixed_price.value && _cartContext.withPrice) ...[
                                           Spacer(),
-                                          menuFood.food.additionalPrice.amount == 0
-                                              ? Text("")
-                                              : Text("+ ${(menuFood.food.additionalPrice.amount / 100)} €", style: TextStyle(fontWeight: FontWeight.bold))
+                                          if (menuFood.food.additionalPrice.amount != null) ...[
+                                            menuFood.food.additionalPrice.amount == 0
+                                                ? Text("")
+                                                : Text("+ ${(menuFood.food.additionalPrice.amount / 100)} €", style: TextStyle(fontWeight: FontWeight.bold))
+                                          ],
                                         ] else if (widget.menu.type == MenuType.priceless.value) ...[
                                           Text(" ")
                                         ] else ...[
@@ -545,12 +548,11 @@ class _DetailMenuState extends State<DetailMenu> {
                                               color: widget.menu.selectedMenu[entry.key]?.first?.id != menuFood.food.id ? Colors.grey : CRIMSON,
                                             ),
                                             onPressed: () {
-                                              print("food selected");
+                                              print("$logTrace food selected");
                                               /*                                          if (_cartContext.contains(widget.menu)){
                                                _cartContext.foodMenuSelected[entry.key] = food;
                                                _food = food;
-                                              }
-*/
+                                              }*/
                                               if (widget.menu.count == 0 || widget.menu.count == 1) {
                                                 widget.menu.setFoodMenuSelected(entry.key, menuFood.food);
                                                 _food = menuFood.food;
@@ -567,7 +569,12 @@ class _DetailMenuState extends State<DetailMenu> {
                                       ],
                                     ),
                                     if (widget.menu.selectedMenu[entry.key]?.first?.id == menuFood.food.id) ...[
-                                      MenuItemFoodOption(food: menuFood.food, menu: widget.menu, withPrice: _cartContext.withPrice, subMenu: entry.key)
+                                      MenuItemFoodOption(
+                                        food: menuFood.food,
+                                        menu: widget.menu,
+                                        withPrice: _cartContext.withPrice,
+                                        subMenu: entry.key,
+                                      )
                                       // Container()
                                     ] else
                                       Container()

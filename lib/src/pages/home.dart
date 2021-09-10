@@ -870,10 +870,9 @@ class _CarouselSliderBlogState extends State<CarouselSliderBlog> {
       child: Stack(children: [
         CarouselSlider(
           options: CarouselOptions(
-              height: MediaQuery.of(context).size.height / 3.8,
+              height: MediaQuery.of(context).size.height / 3.6,
               autoPlay: true,
               enlargeCenterPage: true,
-              aspectRatio: 16 / 9,
               viewportFraction: 0.90,
               onPageChanged: (position, _) {
                 setState(() {

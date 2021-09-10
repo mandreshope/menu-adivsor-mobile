@@ -35,7 +35,7 @@ class Price {
   });
 
   factory Price.fromJson(Map<String, dynamic> json) => Price(
-        amount: json['amount'],
+        amount: json['amount'] ?? 0,
         currency: json['currency'],
       );
   Map<String, dynamic> toJson() => {
@@ -43,7 +43,7 @@ class Price {
         'currency': currency,
       };
 
-  factory Price.Copy(Price p) => Price(amount: p.amount, currency: p.currency);
+  factory Price.copy(Price p) => Price(amount: p?.amount, currency: p?.currency);
 }
 
 class UserName {

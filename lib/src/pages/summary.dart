@@ -303,13 +303,13 @@ class _SummaryState extends State<Summary> {
               RouteUtil.goTo(
                   context: context,
                   child: PhotoViewPage(
-                    tag: 'tag:${widget.commande.restaurant.imageURL}',
-                    img: widget.commande.restaurant.imageURL,
+                    tag: 'tag:${widget.commande.restaurant.logo}',
+                    img: widget.commande.restaurant.logo,
                   ),
                   routeName: null);
             },
             child: Image.network(
-              widget.commande.restaurant.imageURL ?? "",
+              widget.commande.restaurant.logo ?? "",
               // width: 4 * MediaQuery.of(context).size.width / 7,
               width: MediaQuery.of(context).size.width / 4,
               height: MediaQuery.of(context).size.width / 4,

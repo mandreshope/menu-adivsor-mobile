@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/pages/order.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
@@ -1006,7 +1007,7 @@ class _OptionChoiceDialogState extends State<OptionChoiceDialog> {
                                     option.itemOptionSelected = value.cast<ItemsOption>();
                                     widget.food.optionSelected = options;
                                   } else {
-                                    print("max options");
+                                    print("$logTrace max options");
                                     Fluttertoast.showToast(msg: "maximum selection ${option.title} : ${option.maxOptions}");
                                   }
                                 } else {
@@ -1249,7 +1250,15 @@ class _AtributesDialogState extends State<AtributesDialog> {
             height: 50,
             width: double.infinity,
             child: Center(
-              child: TextTranslator("Filtre allergènes", textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
+              child: TextTranslator(
+                "Filtre allergènes",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
             ),
           ),
           /*
@@ -1286,7 +1295,13 @@ class _AtributesDialogState extends State<AtributesDialog> {
           ),
           Padding(
             padding: EdgeInsets.only(left: 35),
-            child: TextTranslator("Retirer les allergènes : ", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+            child: TextTranslator(
+              "Retirer les allergènes : ",
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
           Divider(),
           Expanded(

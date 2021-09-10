@@ -2,6 +2,7 @@ import 'package:chips_choice/chips_choice.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/pages/photo_view.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/OptionContext.dart';
@@ -12,12 +13,18 @@ import 'package:provider/provider.dart';
 import '../models.dart';
 
 class MenuItemFoodOption extends StatefulWidget {
-  MenuItemFoodOption({@required this.food, this.idOption, this.menu, this.withPrice = true, this.subMenu});
-  Food food;
-  String idOption;
-  Menu menu;
-  bool withPrice;
-  String subMenu;
+  MenuItemFoodOption({
+    @required this.food,
+    this.idOption,
+    this.menu,
+    this.withPrice = true,
+    this.subMenu,
+  });
+  final Food food;
+  final String idOption;
+  final Menu menu;
+  final bool withPrice;
+  final String subMenu;
 
   @override
   _MenuItemFoodOptionState createState() => _MenuItemFoodOptionState();
@@ -71,11 +78,23 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
                           textAlign: TextAlign.start,
                         ),
-                        TextTranslator("Choisissez-en jusqu'à ${option.maxOptions}", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                        TextTranslator(
+                          "Choisissez-en jusqu'à ${option.maxOptions}",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ],
                     ),
                     Container(
-                      child: Padding(padding: const EdgeInsets.only(left: 25.0), child: _choice(option, option.maxOptions == 1 ? true : false)),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 25.0),
+                        child: _choice(
+                          option,
+                          option.maxOptions == 1 ? true : false,
+                        ),
+                      ),
                     ),
                   ],
                 );
@@ -92,13 +111,14 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
       return ChipsChoice.single(
         value: singleItemOptionSelected,
         choiceStyle: C2ChoiceStyle(
-            borderColor: Colors.white,
-            disabledColor: Colors.white,
-            borderRadius: BorderRadius.zero,
-            showCheckmark: false,
-            padding: EdgeInsets.zero,
-            labelPadding: EdgeInsets.zero,
-            avatarBorderColor: Colors.white),
+          borderColor: Colors.white,
+          disabledColor: Colors.white,
+          borderRadius: BorderRadius.zero,
+          showCheckmark: false,
+          padding: EdgeInsets.zero,
+          labelPadding: EdgeInsets.zero,
+          avatarBorderColor: Colors.white,
+        ),
         padding: EdgeInsets.zero,
         // wrapped: true,
         // textDirection: TextDirection.ltr,
@@ -185,9 +205,12 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                   Spacer(),
                   InkWell(
                     onTap: () {
+                      print("$logTrace food checked");
+
                       if (widget.menu.count > 1) return;
                       _.select(!_.selected);
                       _cartContext.refresh();
+                      setState(() {});
                     },
                     child: _.selected
                         ? Icon(
@@ -236,7 +259,7 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
               // _cartContext.addItem(widget.menu, 1,true);
               _cartContext.refresh();
             } else {
-              print("max options");
+              print("$logTrace max options");
               Fluttertoast.showToast(msg: "maximum selection ${option.title} : ${option.maxOptions}");
             }
           } else {
@@ -330,7 +353,7 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                             _.value.quantity = 1;
                             _.select(!_.selected);
                           } else {
-                            print("max options");
+                            print("$logTrace max options");
                             Fluttertoast.showToast(msg: "maximum selection ${option.title} : ${option.maxOptions}");
                           }
                         },
@@ -381,7 +404,7 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                                     _.select(true);
                                     snapshot.refresh();
                                   } else {
-                                    print("max options");
+                                    print("$logTrace max options");
                                     Fluttertoast.showToast(msg: "maximum selection ${option.title} : ${option.maxOptions}");
                                   }
                                 }),
