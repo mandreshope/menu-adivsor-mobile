@@ -1,8 +1,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:firebase_mlkit_language/firebase_mlkit_language.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
+import 'package:mlkit_translate/mlkit_translate.dart';
 import 'package:provider/provider.dart';
 
 class TextTranslator extends StatelessWidget {
@@ -88,8 +88,12 @@ class TextTranslator extends StatelessWidget {
 
   Future<dynamic> _translate(lang) async {
     try {
-      // var translate = await data.translate(to: "ko");
-      var translate = await FirebaseLanguage.instance.languageTranslator(SupportedLanguages.French, lang).processText(data ?? " ");
+      // var translate = await FirebaseLanguage.instance.languageTranslator(SupportedLanguages.French, lang).processText(data ?? " ");
+      var translate = await MlkitTranslate.translateText(
+        source: "fr",
+        text: data ?? "",
+        target: lang,
+      );
       return translate.isEmpty ? data : translate;
     } catch (e) {
       print("error transalator $e");

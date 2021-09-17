@@ -543,18 +543,6 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
             SizedBox(
               height: 15,
             ),
-            /*WaveSlider(
-              onChanged: (value){
-                setState(() {
-                  distanceAround = value*100;
-                  print("$distanceAround km");
-                });
-                
-              },
-              color: Colors.black,
-              displayTrackball: true,
-              // sliderHeight: 50,
-            ),*/
 
             if (!widget.fromCategory) ...[
               if (!widget.isDiscover) ...[

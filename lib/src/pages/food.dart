@@ -1282,42 +1282,15 @@ class _FoodPageState extends State<FoodPage> {
               // ),
               onTap: () {
                 return;
-                RouteUtil.goTo(
-                    context: context,
-                    child: PhotoViewPage(
-                      tag: widget.imageTag ?? 'foodImage${widget.food.id}',
-                      img: widget.food.imageURL,
-                    ),
-                    routeName: null);
+                // RouteUtil.goTo(
+                //     context: context,
+                //     child: PhotoViewPage(
+                //       tag: widget.imageTag ?? 'foodImage${widget.food.id}',
+                //       img: widget.food.imageURL,
+                //     ),
+                //     routeName: null);
               },
             ),
-            /* Positioned.fill(
-                bottom: 0,
-                left: 0,
-                child: Container(
-                  height: 50,
-                  width: double.infinity,
-                  // color: Colors.black.withAlpha(150),
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Container(
-                      height: 50,
-                      width: double.infinity,
-                      color: Colors.black.withAlpha(70),
-                      child: Center(
-                        child: TextTranslator(
-                          widget.food.name,
-                          style: TextStyle(
-                              color:Colors.white,
-                              fontSize: 25,
-                              fontWeight: FontWeight.bold
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                ))*/
           ],
         ),
       );

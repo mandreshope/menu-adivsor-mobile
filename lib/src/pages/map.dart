@@ -8,6 +8,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/components/map_window_marker.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/services/api.dart';
@@ -144,7 +145,7 @@ class _MapPageState extends State<MapPage> {
     if (!mounted) return;
 
     Position position = await Geolocator.getCurrentPosition();
-    print('Current position: ${position.latitude},${position.longitude}');
+    print('$logTrace Current position: ${position.latitude},${position.longitude}');
 
     // if (!mounted) return;
 

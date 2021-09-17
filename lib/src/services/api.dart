@@ -38,7 +38,7 @@ class Api {
   Future resendConfirmationCode({String registrationToken}) {
     if (registrationToken == null) return Future.error(Exception('No registration token provided'));
 
-    final String url = '$_apiURL/users/resend-confirmation-code';
+    final Uri url = Uri.parse('$_apiURL/users/resend-confirmation-code');
     print("$logTrace $url");
 
     return http.post(
@@ -55,7 +55,7 @@ class Api {
         Exception('Registration token or confirmation code not provided'),
       );
 
-    final String url = '$_apiURL/users/confirm-account';
+    final Uri url = Uri.parse('$_apiURL/users/confirm-account');
     print("$logTrace $url");
 
     return http.post(
@@ -104,7 +104,7 @@ class Api {
 // asina time out
   Future<List<String>> _checkToken() {
     if (_accessToken == null || _refreshToken == null) return null;
-    return http.get('$_apiURL/check-token?access_token=$_accessToken&refresh_token=$_refreshToken').then<List<String>>((response) {
+    return http.get(Uri.parse('$_apiURL/check-token?access_token=$_accessToken&refresh_token=$_refreshToken')).then<List<String>>((response) {
       if (response.statusCode == 200) {
         var result = jsonDecode(response.body);
 
@@ -124,7 +124,7 @@ class Api {
   static Api get instance => _instance ?? Api._privateConstructor();
 
   Future<User> login(String email, String password) {
-    final String url = '$_apiURL/login';
+    final Uri url = Uri.parse('$_apiURL/login');
     print("$logTrace $url");
 
     return http.post(
@@ -155,7 +155,7 @@ class Api {
   }
 
   Future<String> register({String email, String phoneNumber, String password, String firstName, String lastName}) {
-    final String url = '$_apiURL/users/register';
+    final Uri url = Uri.parse('$_apiURL/users/register');
     print("$logTrace $url");
 
     return http.post(url,
@@ -182,7 +182,7 @@ class Api {
   Future confirmPhoneNumber({
     String code,
   }) {
-    final String url = '$_apiURL/users/confirm-account';
+    final Uri url = Uri.parse('$_apiURL/users/confirm-account');
     print("$logTrace $url");
 
     return http.post(url,
@@ -195,6 +195,37 @@ class Api {
         Map<String, dynamic> data = jsonDecode(response.body);
         return data;
       }
+      return Future.error(
+        jsonDecode(response.body),
+      );
+    });
+  }
+
+  Future<List<Restaurant>> getRecommendedRestaurants({
+    Map<String, dynamic> filters,
+  }) {
+    String query = '';
+    if (filters != null) {
+      List<String> keys = filters.keys.toList();
+      if (keys.length > 0) {
+        query = '?';
+        for (int i = 0; i < keys.length; i++) {
+          final key = keys[i];
+          query += '$key=${filters[key]}';
+          if (i < keys.length - 1) query += '&';
+        }
+      }
+    }
+    final url = Uri.parse('$_apiURL/RestoRecommander$query');
+    print("$logTrace $url");
+
+    return http.get(url).then<List<Restaurant>>((response) {
+      if (response.statusCode == 200) {
+        List<dynamic> list = jsonDecode(response.body);
+        List<Restaurant> restaurants = list.map((data) => Restaurant.fromJson(data["restaurant"])).toList();
+        return restaurants;
+      }
+
       return Future.error(
         jsonDecode(response.body),
       );
@@ -216,7 +247,7 @@ class Api {
         }
       }
     }
-    final String url = '$_apiURL/restaurants$query';
+    final url = Uri.parse('$_apiURL/restaurants$query');
     print("$logTrace $url");
 
     return http.get(url).then<List<Restaurant>>((response) {
@@ -244,7 +275,7 @@ class Api {
       }
     }
 
-    final String url = '$_apiURL/foods$query';
+    final url = Uri.parse('$_apiURL/foods$query');
     print("$logTrace $url");
 
     return http.get(
@@ -274,7 +305,7 @@ class Api {
   Future<List<FoodCategory>> getFoodCategories(
     String lang,
   ) {
-    final String url = '$_apiURL/foodCategories?lang=$lang';
+    final Uri url = Uri.parse('$_apiURL/foodCategories?lang=$lang');
     print("$logTrace $url");
     return http.get(url).then<List<FoodCategory>>((response) {
       if (response.statusCode == 200) {
@@ -292,7 +323,7 @@ class Api {
     String id,
     String lang,
   }) {
-    final String url = '$_apiURL/foods/$id?lang=$lang';
+    final url = Uri.parse('$_apiURL/foods/$id?lang=$lang');
     print("$logTrace $url");
     return http.get(
       url,
@@ -313,7 +344,7 @@ class Api {
     String id,
     String lang,
   }) {
-    final String url = "$_apiURL/restaurants/$id?lang=$lang";
+    final url = Uri.parse("$_apiURL/restaurants/$id?lang=$lang");
     print("$logTrace $url");
     return http.get(
       url,
@@ -332,7 +363,7 @@ class Api {
 
   Future<bool> addToFavoriteFood(Food food) async {
     await _refreshTokens();
-    final String url = '$_apiURL/users/favoriteFoods';
+    final url = Uri.parse('$_apiURL/users/favoriteFoods');
     print("$logTrace $url");
     return http.post(url, body: {
       "id": food.id,
@@ -347,7 +378,7 @@ class Api {
 
   Future removeFromFavoriteFoods(Food food) async {
     await _refreshTokens();
-    final String url = '$_apiURL/users/favoriteFoods/${food.id}';
+    final url = Uri.parse('$_apiURL/users/favoriteFoods/${food.id}');
     print("$logTrace $url");
     return http.delete(url, headers: {
       "authorization": "Bearer $_accessToken",
@@ -360,7 +391,7 @@ class Api {
 
   Future<bool> addToFavoriteRestaurants(Restaurant restaurant) async {
     await _refreshTokens();
-    final String url = '$_apiURL/users/favoriteRestaurants';
+    final url = Uri.parse('$_apiURL/users/favoriteRestaurants');
     print("$logTrace $url");
     return http.post(url, body: {
       "id": restaurant.id,
@@ -375,7 +406,7 @@ class Api {
 
   Future removeFromFavoriteRestaurants(Restaurant restaurant) async {
     await _refreshTokens();
-    final String url = '$_apiURL/users/favoriteRestaurants/${restaurant.id}';
+    final url = Uri.parse('$_apiURL/users/favoriteRestaurants/${restaurant.id}');
     print("$logTrace $url");
     return http.delete(url, headers: {
       "authorization": "Bearer $_accessToken",
@@ -401,7 +432,7 @@ class Api {
       var filterQuery = 'filter=${jsonEncode(filters)}';
       searchQuery += '&$filterQuery';
     }
-    final String url = '$_apiURL/search$searchQuery';
+    final url = Uri.parse('$_apiURL/search$searchQuery');
     print("$logTrace $url");
 
     return http.get(url).then<List<SearchResult>>((response) {
@@ -421,7 +452,7 @@ class Api {
   }
 
   Future<String> getRestaurantName({String id}) {
-    final String url = '$_apiURL/restaurants/$id/name';
+    final url = Uri.parse('$_apiURL/restaurants/$id/name');
     print("$logTrace $url");
 
     return http.get(url).then<String>((response) {
@@ -436,7 +467,7 @@ class Api {
   }
 
   Future<String> resetPassword(String phoneNumber) {
-    final String url = '$_apiURL/users/reset-password';
+    final url = Uri.parse('$_apiURL/users/reset-password');
     print("$logTrace $url");
 
     return http.post(url, body: {
@@ -458,7 +489,7 @@ class Api {
     int code,
     String password,
   }) {
-    final String url = '$_apiURL/users/confirm-reset-password';
+    final url = Uri.parse('$_apiURL/users/confirm-reset-password');
     print("$logTrace $url");
 
     return http.post(url, body: {
@@ -474,7 +505,7 @@ class Api {
 
   Future<User> getMe() async {
     await _refreshTokens();
-    final String url = '$_apiURL/users/me';
+    final url = Uri.parse('$_apiURL/users/me');
     print("$logTrace $url");
 
     return http.get(url, headers: {
@@ -492,7 +523,7 @@ class Api {
 
   Future addPaymentCard(PaymentCard paymentCard) async {
     await _refreshTokens();
-    final String url = '$_apiURL/users/paymentCards';
+    final url = Uri.parse('$_apiURL/users/paymentCards');
     print("$logTrace $url");
 
     return http.post(url, body: paymentCard.toJson().map<String, String>((key, value) => MapEntry(key, value.toString())), headers: {
@@ -508,7 +539,7 @@ class Api {
   }
 
   Future<List<Menu>> getMenus(String lang, String id, {bool fromCommand = true}) {
-    final String url = '$_apiURL/restaurants/$id/menus?lang=$lang';
+    final url = Uri.parse('$_apiURL/restaurants/$id/menus?lang=$lang');
     print("$logTrace $url");
 
     return http.get(url).then<List<Menu>>(
@@ -528,7 +559,7 @@ class Api {
   }
 
   Future<Menu> getMenu(String id) {
-    final String url = '$_apiURL/menus/$id';
+    final url = Uri.parse('$_apiURL/menus/$id');
     print("$logTrace $url");
 
     return http.get(url).then<Menu>(
@@ -549,7 +580,7 @@ class Api {
 
   Future updatePassword(String oldPassword, String newPassword) async {
     await _refreshTokens();
-    final String url = '$_apiURL/users/update-password';
+    final url = Uri.parse('$_apiURL/users/update-password');
     print("$logTrace $url");
 
     return http.post(url, body: {
@@ -569,7 +600,7 @@ class Api {
 
   Future removePaymentCard(PaymentCard creditCard) async {
     await _refreshTokens();
-    final String url = '$_apiURL/users/paymentCards/${creditCard.id}';
+    final url = Uri.parse('$_apiURL/users/paymentCards/${creditCard.id}');
     print("$logTrace $url");
 
     return http.delete(url, headers: {
@@ -586,7 +617,7 @@ class Api {
 
   Future updateUserProfile(String id, Map<String, dynamic> data) async {
     await _refreshTokens();
-    final String url = '$_apiURL/users/$id';
+    final url = Uri.parse('$_apiURL/users/$id');
     print("$logTrace $url");
 
     return http
@@ -622,7 +653,7 @@ class Api {
     } else {
       filter = 'filter={"relatedUser": "${user.id}"}';
     }
-    final String url = '$_apiURL/commands?$filter&offset=$offset${limit != null ? '&limit=$limit' : ''}';
+    final url = Uri.parse('$_apiURL/commands?$filter&offset=$offset${limit != null ? '&limit=$limit' : ''}');
     print("$logTrace $url");
 
     return http.get(url, headers: {
@@ -699,7 +730,7 @@ class Api {
           'priceless': priceless,
         });
 
-      final String url = '$_apiURL/commands';
+      final url = Uri.parse('$_apiURL/commands');
       print("$logTrace $url");
 
       print(post);
@@ -721,12 +752,13 @@ class Api {
         return jsonDecode(response.body);
       });
     } catch (error) {
-      print(error);
+      throw error;
     }
   }
 
   Future getCommand(String idCommande) {
-    return http.get("$_apiURL/commands/$idCommande", headers: {
+    final url = Uri.parse("$_apiURL/commands/$idCommande");
+    return http.get(url, headers: {
       'content-type': 'application/json',
       "authorization": "Bearer $_accessToken",
     }).then((response) => (response.statusCode != 200) ? Future.error(jsonDecode(response.body)) : jsonDecode(response.body));
@@ -738,7 +770,7 @@ class Api {
     String paymentIntentId,
   }) async {
     await _refreshTokens();
-    final String url = '$_apiURL/commands/$id';
+    final url = Uri.parse('$_apiURL/commands/$id');
     print("$logTrace $url");
 
     return http
@@ -764,7 +796,7 @@ class Api {
 
   Future<FoodAttribute> getFoodAttribute({String id}) async {
     await _refreshTokens();
-    final String url = '$_apiURL/foodAttributes/$id';
+    final url = Uri.parse('$_apiURL/foodAttributes/$id');
     print("$logTrace $url");
 
     return http.get(url, headers: {
@@ -782,7 +814,7 @@ class Api {
 
   Future<List<FoodAttribute>> getFoodAttributes() async {
     await _refreshTokens();
-    final String url = '$_apiURL/foodAttributes';
+    final url = Uri.parse('$_apiURL/foodAttributes');
     print("$logTrace $url");
 
     return http.get(url, headers: {
@@ -799,7 +831,7 @@ class Api {
   }
 
   Future<dynamic> getCityFromCoordinates(double latitude, double longitude) async {
-    final String geoUrl = "https://nominatim.openstreetmap.org/reverse?format=geojson&lat=$latitude&lon=$longitude";
+    final geoUrl = Uri.parse("https://nominatim.openstreetmap.org/reverse?format=geojson&lat=$latitude&lon=$longitude");
     print("$logTrace $geoUrl");
 
     return http.get(geoUrl).then((value) {
@@ -814,7 +846,7 @@ class Api {
 
   Future<bool> sendMessage(Message message) async {
     await _refreshTokens();
-    final String url = '$_apiURL/messages';
+    final url = Uri.parse('$_apiURL/messages');
     print("$logTrace $url");
 
     return http.post(url, body: json.encode(message.toJson()), headers: {'content-type': 'application/json'}).then((response) {
@@ -826,7 +858,7 @@ class Api {
 
   Future<List<Blog>> getBlog() async {
     // await _refreshTokens();
-    final String url = '$_apiURL/posts';
+    final url = Uri.parse('$_apiURL/posts');
     print("$logTrace $url");
 
     return http.get(url, headers: {
@@ -842,7 +874,7 @@ class Api {
 
   Future<Map<String, dynamic>> ConfirmSms(String idCommande, String code, String commandType) async {
     await _refreshTokens();
-    final String url = '$_apiURL/commands/$idCommande/confirm';
+    final url = Uri.parse('$_apiURL/commands/$idCommande/confirm');
     print("$logTrace $url");
 
     return http.post(url, body: json.encode({'code': code, 'commandType': commandType}), headers: {
@@ -861,7 +893,7 @@ class Api {
       'commandType': commandType,
       'customer': customer,
     });
-    final String url = '$_apiURL/commands/sendCode';
+    final url = Uri.parse('$_apiURL/commands/sendCode');
     print("$logTrace $url");
 
     print(post);
@@ -891,7 +923,7 @@ class Api {
       'customer': customer,
       'code': code,
     });
-    final String url = '$_apiURL/commands/confirmCode';
+    final url = Uri.parse('$_apiURL/commands/confirmCode');
     print("$logTrace $url");
 
     print(post);
@@ -910,7 +942,7 @@ class Api {
   }
 
   Future<List<FoodType>> getFoodTypes() {
-    final String url = '$_apiURL/foodTypes';
+    final url = Uri.parse('$_apiURL/foodTypes');
     print("$logTrace $url");
 
     return http.get(url).then<List<FoodType>>((response) {

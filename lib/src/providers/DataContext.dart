@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/types.dart';
@@ -11,6 +12,12 @@ class DataContext extends ChangeNotifier {
 
   List<Restaurant> nearestRestaurants = [];
   bool loadingNearestRestaurants = true;
+
+  List<Restaurant> recommendedRestaurants = [];
+  bool loadingRecommendedRestaurants = true;
+
+  List<Restaurant> nearbyRestaurants = [];
+  bool loadingNearbyRestaurants = true;
 
   List<FoodCategory> foodCategories = [];
   bool loadingFoodCategories = true;
@@ -82,6 +89,10 @@ class DataContext extends ChangeNotifier {
 
     await _fetchNearestRestaurants(location, lang);
 
+    await _fetchRecommendedRestaurants(location, lang);
+
+    await _nearbyRestaurants(location, lang);
+
     await _fetchFoodCategories(lang);
 
     await _fetchPopularFoods(location, lang);
@@ -123,7 +134,7 @@ class DataContext extends ChangeNotifier {
       );
 
       nearestRestaurants = temp.where((element) => element.status).toList();
-      nearestRestaurants.sort((a, b) => a.priority.compareTo(b.priority));
+      nearestRestaurants.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     } catch (error) {
       print(
         "Error while fetching popular restaurants",
@@ -131,6 +142,76 @@ class DataContext extends ChangeNotifier {
       print(error);
     } finally {
       loadingNearestRestaurants = false;
+      notifyListeners();
+    }
+  }
+
+  _fetchRecommendedRestaurants(Location location, lang) async {
+    loadingRecommendedRestaurants = true;
+    notifyListeners();
+
+    try {
+      recommendedRestaurants.clear();
+      List<Restaurant> temp = await _api.getRecommendedRestaurants(
+          // filters: {
+          //   "searchCategory": "priority",
+          //   "location": "${jsonEncode(location)}",
+          //   // "city":_city
+          //   // 'NEAREST': 'nearest',
+          // },
+          );
+
+      recommendedRestaurants = temp.where((element) => element.status).toList();
+      recommendedRestaurants.sort((a, b) => a.priority.compareTo(a.priority));
+    } catch (error) {
+      print(
+        "$logTrace while fetching recommended restaurants",
+      );
+      print(error);
+    } finally {
+      loadingRecommendedRestaurants = false;
+      notifyListeners();
+    }
+  }
+
+  _nearbyRestaurants(Location location, lang) async {
+    loadingNearbyRestaurants = true;
+    notifyListeners();
+    try {
+      nearbyRestaurants.clear();
+      List<SearchResult> temp = await _api.search(
+        "",
+        lang,
+        type: "restaurant",
+        filters: {},
+        range: 10,
+        location: {
+          "coordinates": location?.coordinates ?? [0, 0]
+        },
+      );
+
+      final List<SearchResult> restaurantsResult = temp.where((search) {
+        if (search.type.toString() == 'SearchResultType.restaurant') {
+          Restaurant f = Restaurant.fromJson(search.content);
+          return f.status && f.accessible;
+        }
+        return false;
+      }).toList();
+
+      nearbyRestaurants = restaurantsResult.map((search) {
+        if (search.type.toString() == 'SearchResultType.restaurant') {
+          Restaurant f = Restaurant.fromJson(search.content);
+          return f;
+        }
+      }).toList();
+      nearbyRestaurants.sort((a, b) => a.priority.compareTo(a.priority));
+    } catch (error) {
+      print(
+        "$logTrace while fetching nearby restaurants",
+      );
+      print(error);
+    } finally {
+      loadingNearbyRestaurants = false;
       notifyListeners();
     }
   }
@@ -157,6 +238,7 @@ class DataContext extends ChangeNotifier {
         element.isPopular = true;
       });
       popularFoods = _popularFoods.where((f) => f.restaurant['referencement'] && f.restaurant['status']).toList();
+      popularFoods.sort((a, b) => a.priority.compareTo(b.priority));
     } catch (error) {
       print(error);
     } finally {

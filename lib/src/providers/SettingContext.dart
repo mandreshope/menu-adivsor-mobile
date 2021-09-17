@@ -1,9 +1,26 @@
-import 'package:firebase_mlkit_language/firebase_mlkit_language.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:menu_advisor/src/constants/constant.dart';
+import 'package:mlkit_translate/mlkit_translate.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+///BCP-47 language code
+abstract class SupportedLanguages {
+  static const French = "fr";
+  static const English = "en";
+  static const Japanese = "ja";
+  static const Chinese = "zh";
+  static const Italian = "it";
+  static const Spanish = "es";
+  static const Russian = "ru";
+  static const Korean = "ko";
+  static const Dutch = "nl";
+  static const German = "de";
+  static const Portuguese = "pt";
+  static const Indonesian = "id";
+  static const Arabic = "ar";
+}
 
 class SettingContext extends ChangeNotifier {
   String _languageCode = 'fr';
@@ -83,14 +100,15 @@ class SettingContext extends ChangeNotifier {
 
   Future setlanguageCode(String value) async {
     print("$logTrace $value");
-    var result = await FirebaseLanguage.instance.modelManager().downloadModel(value);
+    // var result = await FirebaseLanguage.instance.modelManager().downloadModel(value);
+    await MlkitTranslate.downloadModel(value);
     _languageCode = value;
     Intl.defaultLocale = value;
     final sharedPrefs = await SharedPreferences.getInstance();
     sharedPrefs.setString('languageCode', value);
     notifyListeners();
     await Future.delayed(Duration(seconds: 5));
-    return result;
+    return value;
   }
 
   Future<String> setlanguageCodeRestaurant(String value) async {
@@ -100,12 +118,13 @@ class SettingContext extends ChangeNotifier {
     } else if (value == 'nl') {
       lang = 'de';
     }
-    var result = await FirebaseLanguage.instance.modelManager().downloadModel(lang);
+    // var result = await FirebaseLanguage.instance.modelManager().downloadModel(lang);
+    await MlkitTranslate.downloadModel(lang);
     _languageCodeRstaurant = lang;
     final sharedPrefs = await SharedPreferences.getInstance();
     await sharedPrefs.setString('languageCodeRestaurant', lang);
     notifyListeners();
-    return result;
+    return value;
   }
 
   SettingContext() {
@@ -134,17 +153,19 @@ class SettingContext extends ChangeNotifier {
   }
 
   Future<void> downloadLanguage() async {
-    print("download loading...");
+    print("$logTrace download loading...");
     isDownloadingLang = true;
     notifyListeners();
+
     await Future.forEach(_defaultSupportedLanguages, (item) {
-      return FirebaseLanguage.instance.modelManager().downloadModel(item);
+      // return FirebaseLanguage.instance.modelManager().downloadModel(item);
+      return MlkitTranslate.downloadModel(item);
     });
 
     isDownloadingLang = false;
     notifyListeners();
 
-    print("download finish...");
+    print("$logTrace download finish...");
   }
 
   void _listenLocation() async {

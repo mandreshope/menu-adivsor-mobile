@@ -43,7 +43,7 @@ class ListLang extends StatelessWidget {
             }
 
             return ListTile(
-              leading: Flag(
+              leading: Flag.fromString(
                 code.codeCountry,
                 height: 50,
                 width: 50,

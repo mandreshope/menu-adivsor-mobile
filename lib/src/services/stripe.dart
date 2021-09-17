@@ -21,6 +21,7 @@ class StripeService {
   static String _apiBase = 'https://api.stripe.com/v1';
   static String _paymentApiUrl = '$_apiBase/payment_intents';
   static String _secret = 'sk_test_51HVB0bBBj0M16v6HbP4C8zdA8nHnbYL6A2Tfp1rv0XQlB7WEShTgjNanGRhJmIZSjj9GI2hpQDDEWsNa8VyNzx6900Oboe33bG';
+  static String get privateKey => _secret;
   static Map<String, String> _headers = {
     'Authorization': 'Bearer $_secret',
     'Content-type': 'application/x-www-form-urlencoded',
@@ -110,7 +111,7 @@ class StripeService {
         'payment_method_types[]': 'card',
       };
       var response = await http.post(
-        _paymentApiUrl,
+        Uri.parse(_paymentApiUrl),
         body: body,
         headers: _headers,
       );

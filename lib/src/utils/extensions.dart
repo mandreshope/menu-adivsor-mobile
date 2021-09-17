@@ -1,8 +1,8 @@
-import 'package:firebase_mlkit_language/firebase_mlkit_language.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:menu_advisor/src/models.dart';
+import 'package:mlkit_translate/mlkit_translate.dart';
 
 extension FormatDate on DateTime {
   String dateToString(String format) {
@@ -47,8 +47,13 @@ extension ExtensionString on String {
   Future<String> translator(lang) async {
     try {
       // var translate = await data.translate(to: "ko");
-      var translate = await FirebaseLanguage.instance.languageTranslator(SupportedLanguages.French, lang).processText(this ?? " ");
-      return translate ?? " ";
+      // var translate = await FirebaseLanguage.instance.languageTranslator(SupportedLanguages.French, lang).processText(this ?? " ");
+      var translate = await MlkitTranslate.translateText(
+        source: "fr",
+        text: this ?? "",
+        target: lang,
+      );
+      return translate.isNotEmpty ? translate : "";
     } catch (e) {
       print("error transalator $e");
       return this ?? " ";

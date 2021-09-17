@@ -143,7 +143,7 @@ class _LoginPageState extends State<LoginPage> {
                                 DropdownMenuItem<String>(
                                   value: settingContext.supportedLanguages[i],
                                   child: ListTile(
-                                    leading: Flag(
+                                    leading: Flag.fromString(
                                       settingContext.supportedLanguages[i].toString().codeCountry,
                                       height: 25,
                                       width: 25,

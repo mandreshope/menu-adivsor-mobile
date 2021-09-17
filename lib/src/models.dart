@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/types.dart';
 import 'package:menu_advisor/src/utils/extensions.dart';
@@ -49,6 +50,7 @@ class Food {
   final int maxOptions;
   final bool imageNotContractual;
   final bool isAvailable;
+  final int priority;
 
   String message;
 
@@ -93,6 +95,7 @@ class Food {
     this.isPopular = false,
     this.imageNotContractual,
     this.isAvailable,
+    this.priority,
   });
 
   factory Food.fromJson(Map<String, dynamic> json, {bool fromCommande = false, bool isPopular = false}) => Food(
@@ -118,6 +121,7 @@ class Food {
         isPopular: isPopular,
         imageNotContractual: json['imageNotContractual'],
         isAvailable: json['isAvailable'],
+        priority: json['priority'],
       );
 
   factory Food.copy(Food food) => Food(
@@ -144,6 +148,7 @@ class Food {
         statut: food.statut,
         imageNotContractual: food.imageNotContractual,
         isAvailable: food.isAvailable,
+        priority: food.priority,
       );
 
   Map<String, dynamic> toJson() {
@@ -419,6 +424,12 @@ class Restaurant {
   final String discount;
   final String qrcodeLink;
   final String qrcodePricelessLink;
+  final String customerStripeKey;
+  final String customerSectretStripeKey;
+  final String createdAt;
+  DateTime get creatAtDateTime => DateTime.tryParse(createdAt);
+  final String updatedAt;
+  DateTime get updatedAtDateTime => DateTime.tryParse(updatedAt);
   int priceDelevery;
   String optionLivraison = "";
   String appartement = "";
@@ -464,6 +475,10 @@ class Restaurant {
     this.postalCode,
     this.qrcodeLink,
     this.qrcodePricelessLink,
+    this.customerSectretStripeKey,
+    this.customerStripeKey,
+    this.createdAt,
+    this.updatedAt,
   });
 
   factory Restaurant.fromJson(Map<String, dynamic> json) {
@@ -506,6 +521,10 @@ class Restaurant {
       postalCode: json['postalCode'],
       qrcodeLink: json['qrcodeLink'],
       qrcodePricelessLink: json['qrcodePricelessLink'],
+      customerSectretStripeKey: json['customerSectretStripeKey'],
+      customerStripeKey: json['customerStripeKey'],
+      createdAt: json['createdAt'],
+      updatedAt: json['updatedAt'],
     );
 
     if (!res.accessible) {
@@ -644,6 +663,10 @@ class Restaurant {
     TimeOfDay timeBegin;
     TimeOfDay timeEnd;
 
+    if (timeNow == null) {
+      throw "$logTrace timeNow is null";
+    }
+
     this.openingTimes.forEach((element) {
       if (element.day.toLowerCase() == dateNow.weekDayToString.toLowerCase()) {
         //AM
@@ -683,7 +706,7 @@ class Restaurant {
 
         }
       } else {
-        print("other day...");
+        print("$logTrace other day...");
       }
     });
     return open;

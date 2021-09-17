@@ -24,7 +24,15 @@ class SearchPage extends StatefulWidget {
 
   final String barTitle;
 
-  SearchPage({this.type = 'all', this.fromRestaurantHome = false, this.location, this.filters = const {}, this.showButton = false, this.barTitle = 'Rechercher', this.fromCategory = false});
+  SearchPage({
+    this.type = 'all',
+    this.fromRestaurantHome = false,
+    this.location,
+    this.filters = const {},
+    this.showButton = false,
+    this.barTitle = 'Rechercher',
+    this.fromCategory = false,
+  });
 
   @override
   _SearchPageState createState() => _SearchPageState();
@@ -77,15 +85,16 @@ class _SearchPageState extends State<SearchPage> {
     });
     try {
       var results = await _api.search(
-          _searchValue,
-          Provider.of<SettingContext>(
-            context,
-            listen: false,
-          ).languageCode,
-          type: filters.containsKey("category") && !filters.containsKey("attributes") ? type = 'restaurant' : type,
-          filters: filters,
-          range: range,
-          location: widget.location);
+        _searchValue,
+        Provider.of<SettingContext>(
+          context,
+          listen: false,
+        ).languageCode,
+        type: filters.containsKey("category") && !filters.containsKey("attributes") ? type = 'restaurant' : type,
+        filters: filters,
+        range: range,
+        location: widget.location,
+      );
       setState(() {
         _searchResults = results.where((search) {
           if (search.type.toString() == "SearchResultType.food") {
@@ -144,10 +153,11 @@ class _SearchPageState extends State<SearchPage> {
       appBar: AppBar(
         actions: [
           IconButton(
-              icon: Icon(
-                Icons.refresh_sharp,
-              ),
-              onPressed: _initSearch),
+            icon: Icon(
+              Icons.refresh_sharp,
+            ),
+            onPressed: _initSearch,
+          ),
         ],
         title: TextTranslator(widget.barTitle),
       ),

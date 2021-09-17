@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:google_map_location_picker/google_map_location_picker.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/models.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textFormFieldTranslator.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
+import 'package:place_picker/place_picker.dart';
 import 'package:provider/provider.dart';
 
 class ProfileEditPage extends StatefulWidget {
@@ -114,22 +115,30 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                   _submitForm();
                 },
                 onTap: () async {
-                  LocationResult result = await showLocationPicker(
-                    context,
-                    "AIzaSyBu8U8tbY6BlxJezbjt8g3Lzi4k1I75iYw",
-                    initialCenter: LatLng(31.1975844, 29.9598339),
-                    //                      automaticallyAnimateToCurrentLocation: true,
-                    //                      mapStylePath: 'assets/mapStyle.json',
-                    myLocationButtonEnabled: true,
-                    // requiredGPS: true,
-                    layersButtonEnabled: true,
-                    // countries: ['AE', 'NG']
+                  // LocationResult result = await showLocationPicker(
+                  //   context,
+                  //   "AIzaSyBu8U8tbY6BlxJezbjt8g3Lzi4k1I75iYw",
+                  //   initialCenter: LatLng(31.1975844, 29.9598339),
+                  //   //                      automaticallyAnimateToCurrentLocation: true,
+                  //   //                      mapStylePath: 'assets/mapStyle.json',
+                  //   myLocationButtonEnabled: true,
+                  //   // requiredGPS: true,
+                  //   layersButtonEnabled: true,
+                  //   // countries: ['AE', 'NG']
 
-                    //                      resultCardAlignment: Alignment.bottomCenter,
-                    desiredAccuracy: LocationAccuracy.best,
+                  //   //                      resultCardAlignment: Alignment.bottomCenter,
+                  //   desiredAccuracy: LocationAccuracy.best,
+                  // );
+                  LocationResult result = await Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => PlacePicker(
+                        "AIzaSyCL8_ZHnuPxDiElzyy4CCZEbJBv4ankXVc",
+                        displayLocation: LatLng(31.1975844, 29.9598339),
+                      ),
+                    ),
                   );
-                  print("result = $result");
-                  addressController.text = result.address;
+                  print("$logTrace result = ${result.name}");
+                  addressController.text = result.name;
                   _updateChangedState();
                 },
               ),

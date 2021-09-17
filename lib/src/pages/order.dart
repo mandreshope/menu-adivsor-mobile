@@ -177,7 +177,7 @@ class _OrderPageState extends State<OrderPage> {
                                               ),
                                               InkWell(
                                                 onTap: () async {
-                                                  Position currentPosition = await getCurrentPosition();
+                                                  Position currentPosition = await Geolocator.getCurrentPosition();
                                                   var coordinates = _restaurant.location.coordinates;
                                                   // MapUtils.openMap(currentPosition.latitude, currentPosition.longitude,
                                                   // coordinates.last,coordinates.first);

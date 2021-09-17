@@ -287,114 +287,115 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
       // textDirection: TextDirection.ltr,
       direction: Axis.vertical,
       choiceBuilder: (_) {
-        return Consumer<OptionContext>(builder: (context, snapshot, w) {
-          return Container(
-            // color: _.selected ? CRIMSON : Colors.grey.withAlpha(1),
-            padding: EdgeInsets.symmetric(horizontal: 0, vertical: 10),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: 25,
-                ),
-                InkWell(
-                  onTap: () {
-                    RouteUtil.goTo(
-                        context: context,
-                        child: PhotoViewPage(
-                          tag: 'tag:${_.value.imageUrl}',
-                          img: _.value.imageUrl,
-                        ),
-                        routeName: null);
-                  },
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(50),
-                    child: FadeInImage.assetNetwork(
-                      placeholder: 'assets/images/loading.gif',
-                      image: _.value.imageUrl,
-                      height: 65,
-                      imageErrorBuilder: (_, o, s) {
-                        return Container(
-                          width: 65,
-                          height: 65,
-                          color: Colors.white,
-                        );
-                      },
-                      width: 65,
-                      fit: BoxFit.cover,
+        return Consumer<OptionContext>(
+          builder: (context, snapshot, w) {
+            return Container(
+              // color: _.selected ? CRIMSON : Colors.grey.withAlpha(1),
+              padding: EdgeInsets.symmetric(horizontal: 0, vertical: 10),
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: 25,
+                  ),
+                  InkWell(
+                    onTap: () {
+                      RouteUtil.goTo(
+                          context: context,
+                          child: PhotoViewPage(
+                            tag: 'tag:${_.value.imageUrl}',
+                            img: _.value.imageUrl,
+                          ),
+                          routeName: null);
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(50),
+                      child: FadeInImage.assetNetwork(
+                        placeholder: 'assets/images/loading.gif',
+                        image: _.value.imageUrl,
+                        height: 65,
+                        imageErrorBuilder: (_, o, s) {
+                          return Container(
+                            width: 65,
+                            height: 65,
+                            color: Colors.white,
+                          );
+                        },
+                        width: 65,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(
-                  width: 5,
-                ),
-                Text("${_.value.name}"),
-                Container(
-                  padding: EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                      // shape: BoxShape.circle,
-                      // color: _.value.price == 0 ? null : Colors.grey[400]
-                      ),
-                  child: !_cartContext.withPrice || _.value.price.amount == null || widget.menu.type == 'priceless'
-                      ? Text("")
-                      : Text(
-                          "${_.value.price.amount == 0 ? '' : _.value.price.amount / 100}${_.value.price.amount == 0 ? '' : "€"}",
-                          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Text("${_.value.name}"),
+                  Container(
+                    padding: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                        // shape: BoxShape.circle,
+                        // color: _.value.price == 0 ? null : Colors.grey[400]
                         ),
-                ),
-                Spacer(),
-                !_.selected
-                    ? IconButton(
-                        icon: Icon(Icons.add_circle_outlined, color: Colors.grey, size: 25),
-                        onPressed: () {
-                          if (widget.menu.count > 1) return;
-                          if (option.isMaxOptions) {
-                            _.value.quantity = 1;
-                            _.select(!_.selected);
-                          } else {
-                            print("$logTrace max options");
-                            Fluttertoast.showToast(msg: "maximum selection ${option.title} : ${option.maxOptions}");
-                          }
-                        },
-                      )
-                    :
-                    //button incrementation
-                    Container(
-                        padding: EdgeInsets.only(left: 0),
-                        // width: 50,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                                icon: Icon(
-                                  Icons.remove_circle,
-                                  color: CRIMSON,
-                                  size: 25,
-                                ),
-                                onPressed: () {
-                                  if (widget.menu.count > 1) return;
-                                  if (_.value.quantity == 1) {
-                                    _.value.quantity = 0;
-                                    _.select(false);
-                                  } else {
-                                    _.value.quantity--;
-                                    _.select(true);
-                                    // snapshot.refresh();
-                                  }
-                                  snapshot.refresh();
-                                }),
-                            SizedBox(
-                              width: 2,
-                            ),
-                            Text(
-                              "${_.value.quantity ?? ""}",
-                              style: TextStyle(fontSize: 20),
-                            ),
-                            SizedBox(
-                              width: 2,
-                            ),
-                            IconButton(
+                    child: !_cartContext.withPrice || _.value.price.amount == null || widget.menu.type == 'priceless'
+                        ? Text("")
+                        : Text(
+                            "${_.value.price.amount == 0 ? '' : _.value.price.amount / 100}${_.value.price.amount == 0 ? '' : "€"}",
+                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                          ),
+                  ),
+                  Spacer(),
+                  !_.selected
+                      ? IconButton(
+                          icon: Icon(Icons.add_circle_outlined, color: Colors.grey, size: 25),
+                          onPressed: () {
+                            if (widget.menu.count > 1) return;
+                            if (option.isMaxOptions) {
+                              _.value.quantity = 1;
+                              _.select(!_.selected);
+                            } else {
+                              print("$logTrace max options");
+                              Fluttertoast.showToast(msg: "maximum selection ${option.title} : ${option.maxOptions}");
+                            }
+                          },
+                        )
+                      :
+                      //button incrementation
+                      Container(
+                          padding: EdgeInsets.only(left: 0),
+                          // width: 50,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                  icon: Icon(
+                                    Icons.remove_circle,
+                                    color: CRIMSON,
+                                    size: 25,
+                                  ),
+                                  onPressed: () {
+                                    if (widget.menu.count > 1) return;
+                                    if (_.value.quantity == 1) {
+                                      _.value.quantity = 0;
+                                      _.select(false);
+                                    } else {
+                                      _.value.quantity--;
+                                      _.select(true);
+                                      // snapshot.refresh();
+                                    }
+                                    snapshot.refresh();
+                                  }),
+                              SizedBox(
+                                width: 2,
+                              ),
+                              Text(
+                                "${_.value.quantity ?? ""}",
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              SizedBox(
+                                width: 2,
+                              ),
+                              IconButton(
                                 icon: Icon(Icons.add_circle_outlined, color: CRIMSON, size: 25),
                                 onPressed: () {
                                   // if (_optionContext.quantityOptions == option.maxOptions){
@@ -407,14 +408,16 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                                     print("$logTrace max options");
                                     Fluttertoast.showToast(msg: "maximum selection ${option.title} : ${option.maxOptions}");
                                   }
-                                }),
-                          ],
+                                },
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-              ],
-            ),
-          );
-        });
+                ],
+              ),
+            );
+          },
+        );
       },
     );
   }

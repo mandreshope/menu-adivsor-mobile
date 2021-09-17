@@ -57,7 +57,14 @@ class TextFormFieldTranslator extends StatelessWidget {
               keyboardType: keyboardType,
               textInputAction: textInputAction,
               obscureText: obscureText ?? false,
-              decoration: decoration.labelText != null ? InputDecoration(labelText: snapshot.data, suffixIcon: suffixIcon, border: border, prefixText: decoration.prefixText ?? "") : decoration,
+              decoration: decoration.labelText != null
+                  ? InputDecoration(
+                      labelText: snapshot.data,
+                      suffixIcon: suffixIcon,
+                      border: border,
+                      prefixText: decoration.prefixText ?? "",
+                    )
+                  : decoration,
               onTap: onTap,
               onChanged: onChanged,
               onFieldSubmitted: onFieldSubmitted,

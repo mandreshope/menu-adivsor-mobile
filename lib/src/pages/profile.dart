@@ -278,7 +278,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               DropdownMenuItem<String>(
                                 value: _supportedLanguages[i],
                                 child: ListTile(
-                                  leading: Flag(
+                                  leading: Flag.fromString(
                                     _supportedLanguages[i].codeCountry,
                                     height: 25,
                                     width: 25,

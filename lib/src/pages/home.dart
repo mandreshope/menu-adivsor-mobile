@@ -158,7 +158,7 @@ class _HomePageState extends State<HomePage> {
                                   listen: false,
                                 );
 
-                                Position position = await getCurrentPosition();
+                                Position position = await Geolocator.getCurrentPosition();
 
                                 Location location = Location(
                                   type: 'Point',
@@ -199,6 +199,8 @@ class _HomePageState extends State<HomePage> {
 
                                         _renderPopularFoods(),
                                         _renderOnSiteFoods(),
+                                        _renderRecommendedRestaurants(),
+                                        _renderNearbyRestaurants(),
                                         // _renderBlog()
                                       ],
                                     ),
@@ -326,60 +328,6 @@ class _HomePageState extends State<HomePage> {
                 SizedBox(
                   height: 10,
                 ),
-                /*InkWell(
-                  onTap: (){
-
-                  },
-                  child: Stack(
-                    children: [
-                      Icon(Icons.shopping_cart_outlined)
-                    ],
-                  ),
-                ),*/
-                /*
-                RoundedButton(
-                    backgroundColor: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 12,
-                        spreadRadius: 0,
-                      ),
-                    ],
-                    child: TextTranslator(
-                        AppLocalizations.of(context).translate("discover"),
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.black,
-                          fontFamily: 'Soft Elegance',
-                          fontWeight: FontWeight.w800,
-                        ),
-                      
-                    ),
-                    onPressed: () =>
-                        /*RouteUtil.goTo(
-                    context: context,
-                    child: DiscoverPage(),
-                    routeName: discoverRoute,
-                  ),*/
-                        RouteUtil.goTo(
-                          context: context,
-                          child: SearchPage(
-                            barTitle: 'Découvrir',
-                            type: 'food',
-                            location: {
-                              "coordinates":currentLocation?.coordinates ?? [0,0]
-                            },
-                            filters: {
-                              // 'category': category.id,
-                              "searchCategory": "with_price",
-                              // "city": this.city ?? ""
-                            },
-                            showButton: true,
-                          ),
-                          routeName: searchRoute,
-                        )),
-             */
               ],
             ),
           ),
@@ -680,6 +628,217 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                 ],
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _renderRecommendedRestaurants() {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(
+        bottom: 40,
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SectionTitle(
+                "Restaurants Recommander",
+              ),
+              Container(
+                margin: const EdgeInsets.only(
+                  right: 30,
+                ),
+                child: GestureDetector(
+                  onTap: () {
+                    RouteUtil.goTo(
+                      context: context,
+                      child: SearchPage(
+                        type: 'restaurant',
+                        fromRestaurantHome: true,
+                        location: {
+                          "coordinates": currentLocation?.coordinates ?? [0, 0]
+                        },
+                        filters: {
+                          // 'city':this.city ?? ""
+                          // 'nearest': 'nearest'
+                        },
+                      ),
+                      routeName: searchRoute,
+                    );
+                  },
+                  child: TextTranslator(
+                    AppLocalizations.of(context).translate('see_all'),
+                    style: Theme.of(context).textTheme.caption,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Consumer<DataContext>(builder: (_, dataContext, __) {
+            var restaurants = dataContext.recommendedRestaurants;
+            var loading = dataContext.loadingRecommendedRestaurants;
+
+            if (loading)
+              return Container(
+                height: 200,
+                child: Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      CRIMSON,
+                    ),
+                  ),
+                ),
+              );
+
+            if (restaurants.length == 0)
+              return Container(
+                height: 200,
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextTranslator(
+                      AppLocalizations.of(context).translate('no_restaurant_near') ?? "Aucun restaurant trouvé",
+                      style: TextStyle(
+                        fontSize: 22,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+
+            return SingleChildScrollView(
+              physics: BouncingScrollPhysics(),
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.only(
+                left: 20,
+                right: 20,
+                bottom: 10,
+              ),
+              child: Row(
+                children: [
+                  for (var restaurant in restaurants)
+                    FadeAnimation(
+                      1.0,
+                      RestaurantCard(
+                        restaurant: restaurant,
+                        fromHome: true,
+                      ),
+                    ),
+                ],
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _renderNearbyRestaurants() {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(
+        bottom: 40,
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SectionTitle(
+                "Restaurants d'à côté",
+              ),
+              Container(
+                margin: const EdgeInsets.only(
+                  right: 30,
+                ),
+                child: GestureDetector(
+                  onTap: () {
+                    RouteUtil.goTo(
+                      context: context,
+                      child: SearchPage(
+                        type: 'restaurant',
+                        fromRestaurantHome: true,
+                        location: {
+                          "coordinates": currentLocation?.coordinates ?? [0, 0]
+                        },
+                        filters: {
+                          // 'city':this.city ?? ""
+                          // 'nearest': 'nearest'
+                        },
+                      ),
+                      routeName: searchRoute,
+                    );
+                  },
+                  child: TextTranslator(
+                    AppLocalizations.of(context).translate('see_all'),
+                    style: Theme.of(context).textTheme.caption,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Consumer<DataContext>(builder: (_, dataContext, __) {
+            var restaurants = dataContext.nearbyRestaurants;
+            var loading = dataContext.loadingNearbyRestaurants;
+            if (loading)
+              return Container(
+                height: 200,
+                child: Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      CRIMSON,
+                    ),
+                  ),
+                ),
+              );
+            return Visibility(
+              visible: restaurants.length != 0,
+              replacement: Container(
+                height: 200,
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextTranslator(
+                      AppLocalizations.of(context).translate('no_restaurant_near') ?? "Aucun restaurant trouvé",
+                      style: TextStyle(
+                        fontSize: 22,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              child: SingleChildScrollView(
+                physics: BouncingScrollPhysics(),
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.only(
+                  left: 20,
+                  right: 20,
+                  bottom: 10,
+                ),
+                child: Row(
+                  children: [
+                    for (var restaurant in restaurants)
+                      FadeAnimation(
+                        1.0,
+                        RestaurantCard(
+                          restaurant: restaurant,
+                          fromHome: true,
+                        ),
+                      ),
+                  ],
+                ),
               ),
             );
           }),

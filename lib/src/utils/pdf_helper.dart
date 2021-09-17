@@ -32,11 +32,24 @@ class PdfHelper {
             return null;
           }
           return Container(
-              alignment: Alignment.centerRight,
-              margin: const EdgeInsets.only(bottom: 3.0 * PdfPageFormat.mm),
-              padding: const EdgeInsets.only(bottom: 3.0 * PdfPageFormat.mm),
-              decoration: const BoxDecoration(border: BoxBorder(bottom: true, width: 0.5, color: PdfColors.grey)),
-              child: Text('Portable Document Format', style: Theme.of(context).defaultTextStyle.copyWith(color: PdfColors.grey)));
+            alignment: Alignment.centerRight,
+            margin: const EdgeInsets.only(bottom: 3.0 * PdfPageFormat.mm),
+            padding: const EdgeInsets.only(bottom: 3.0 * PdfPageFormat.mm),
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: PdfColors.grey,
+                  width: 0.5,
+                ),
+              ),
+            ),
+            child: Text(
+              'Portable Document Format',
+              style: Theme.of(context).defaultTextStyle.copyWith(
+                    color: PdfColors.grey,
+                  ),
+            ),
+          );
         },
         footer: (Context context) {
           return Container(
@@ -62,7 +75,7 @@ class PdfHelper {
 
     String fileName = "${DateTime.now().dateToString(DATE_FORMATED_ddMMyyyyHHmmWithSpacer)}.pdf";
     File file = File("$pathToSaveFile$fileName");
-    file.writeAsBytesSync(pdf.save());
+    file.writeAsBytesSync(await pdf.save());
     print("file saved... to $pathToSaveFile$fileName");
 
     Fluttertoast.showToast(

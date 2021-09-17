@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 // import 'package:flutter_collapse/flutter_collapse.dart';
-import 'package:flutter_cupertino_datetime_picker/flutter_cupertino_datetime_picker.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:menu_advisor/src/components/flutter_collapse.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/pages/confirm_sms.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/CommandContext.dart';
@@ -15,8 +15,8 @@ import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/extensions.dart';
 import 'package:menu_advisor/src/utils/textFormFieldTranslator.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
+import 'package:place_picker/place_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:google_map_location_picker/google_map_location_picker.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../models.dart';
@@ -113,21 +113,32 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                               commandContext.deliveryAddress = value;
                             },
                             onTap: () async {
-                              LocationResult result = await showLocationPicker(
-                                context,
-                                "AIzaSyBu8U8tbY6BlxJezbjt8g3Lzi4k1I75iYw",
-                                initialCenter: LatLng(31.1975844, 29.9598339),
-                                //                      automaticallyAnimateToCurrentLocation: true,
-                                //                      mapStylePath: 'assets/mapStyle.json',
-                                myLocationButtonEnabled: true,
-                                // requiredGPS: true,
-                                layersButtonEnabled: true,
-                                // countries: ['AE', 'NG']
-
-                                //                      resultCardAlignment: Alignment.bottomCenter,
-                                desiredAccuracy: LocationAccuracy.best,
+                              LocationResult result = await Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => PlacePicker(
+                                    "AIzaSyCL8_ZHnuPxDiElzyy4CCZEbJBv4ankXVc",
+                                    displayLocation: LatLng(31.1975844, 29.9598339),
+                                  ),
+                                ),
                               );
-                              print("result = $result");
+
+                              // Handle the result in your way
+                              // print(result);
+                              // LocationResult result = await showLocationPicker(
+                              //   context,
+                              //   "AIzaSyBu8U8tbY6BlxJezbjt8g3Lzi4k1I75iYw",
+                              //   initialCenter: LatLng(31.1975844, 29.9598339),
+                              //   //                      automaticallyAnimateToCurrentLocation: true,
+                              //   //                      mapStylePath: 'assets/mapStyle.json',
+                              //   myLocationButtonEnabled: true,
+                              //   // requiredGPS: true,
+                              //   layersButtonEnabled: true,
+                              //   // countries: ['AE', 'NG']
+
+                              //   //                      resultCardAlignment: Alignment.bottomCenter,
+                              //   desiredAccuracy: LocationAccuracy.best,
+                              // );
+                              print("$logTrace result = $result");
                               /* List<geo.Placemark> placemarks = await geo.placemarkFromCoordinates(result.latLng.latitude, result.latLng.longitude);
                               
                                 // this is all you need
@@ -142,8 +153,8 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
   
                               print("adress $address");*/
 
-                              addrContr.text = result.address;
-                              commandContext.deliveryAddress = result.address;
+                              addrContr.text = result.name;
+                              commandContext.deliveryAddress = result.name;
                             },
                           ),
                         ),
@@ -379,7 +390,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                       });
 
                                       return;
-                                      DatePicker.showDatePicker(context,
+                                      /*DatePicker.showDatePicker(context,
                                           locale: DateTimePickerLocale.fr,
                                           dateFormat: "dd-MMMM-yyyy,HH:mm",
                                           initialDateTime: deliveryDate ?? DateTime.now(),
@@ -396,6 +407,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                           deliveryTime = TimeOfDay.fromDateTime(date);
                                         });
                                       }, pickerMode: DateTimePickerMode.datetime);
+                                      */
                                       /*var date = await showRoundedDatePicker(
                                         context: context,
                                         initialDate: deliveryDate ?? DateTime.now(),
@@ -524,7 +536,11 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                       setState(() {
                         sendingCommand = true;
                       });
-                      String code = await Api.instance.sendCode(relatedUser: authContext.currentUser?.id ?? null, customer: customer, commandType: commandContext.commandType);
+                      String code = await Api.instance.sendCode(
+                        relatedUser: authContext.currentUser?.id ?? null,
+                        customer: customer,
+                        commandType: commandContext.commandType,
+                      );
                       // String code = "1234";
                       RouteUtil.goTo(
                         context: context,

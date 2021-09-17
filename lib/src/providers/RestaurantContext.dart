@@ -29,6 +29,9 @@ class RestaurantContext with ChangeNotifier {
         // _segmentChilder[i] = _segmentWidget(restaurant.foodTypes[i]['name']['fr']);
       }
     }
+    if (foodTypes.length == 0) {
+      return;
+    }
     foodTypes[0].isSelected = true;
     // notifyListeners();
   }

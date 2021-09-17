@@ -174,6 +174,9 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
       });
 
       itemPositionsListener.itemPositions.addListener(() async {
+        if (itemPositionsListener.itemPositions.value.length == 0) {
+          return;
+        }
         print('Scroll position: ${itemPositionsListener.itemPositions.value.first.index}');
         if (tabController.index == 0) {
           _restaurantContext.currentIndex = itemPositionsListener.itemPositions.value.first.index;
@@ -289,33 +292,6 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
     setState(() {
       searchLoading = false;
     });
-/*
-    setState(() {
-      searchLoading = true;
-    });
-    try {
-      var results = await api.search(
-        searchValue,
-        _lang,
-        type: "food",
-        range: 10000,
-        filters: filters,
-        fromQrcode: widget.fromQrcode
-      );
-
-      setState(() {
-        searchResults = results;
-      });
-    } catch (error) {
-      print(error.toString());
-      Fluttertoast.showToast(
-        msg: AppLocalizations.of(context).translate('connection_issue'),
-      );
-    } finally {
-      setState(() { 
-        searchLoading = false;
-      });
-    }*/
   }
 
   _toggleFavorite() async {
@@ -386,6 +362,9 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                         print("up");
                       },
                       onVerticalDragDown: (drag) {
+                        if (itemPositionsListener.itemPositions.value.length == 0) {
+                          return;
+                        }
                         if ((_scrollController.offset <= 0 && itemPositionsListener.itemPositions.value.first.index == 0)) {
                           setState(() {
                             _canScrollListRestaurant = false;
@@ -396,7 +375,8 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                           });
                         }
                       },
-                      child: _renderMain()),
+                      child: _renderMain(),
+                    ),
           // : _renderMainScreen(),
         ),
       ),
@@ -724,7 +704,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                         ),
                                         InkWell(
                                           onTap: () async {
-                                            Position currentPosition = await getCurrentPosition();
+                                            Position currentPosition = await Geolocator.getCurrentPosition();
                                             // Position currentPosition = Provider.of<SettingContext>(context).position;
                                             var coordinates = restaurant.location.coordinates;
                                             // MapUtils.openMap(currentPosition.latitude, currentPosition.longitude,
@@ -793,7 +773,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                             margin: EdgeInsets.only(left: 25),
                                             child: InkWell(
                                                 onTap: () async {
-                                                  Position currentPosition = await getCurrentPosition();
+                                                  Position currentPosition = await Geolocator.getCurrentPosition();
                                                   ;
                                                   var coordinates = restaurant.location.coordinates;
                                                   MapUtils.openMap(currentPosition.latitude, currentPosition.longitude, coordinates.last, coordinates.first);
@@ -972,16 +952,6 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                             text: data.data ?? "",
                                           );
                                         }),
-
-                                    /*for (var foodType in restaurant.foodTypes)
-                                      FutureBuilder<String>(
-                                      future:
-                                        "${foodType["name"]['fr'] ?? ""}".translator(_langTranslate),
-                                      builder: (_,data){
-                                        return Tab(
-                                        text: data.data ?? "",
-                                      );
-                                      }),*/
                                     FutureBuilder<String>(
                                         future: AppLocalizations.of(context).translate('menus').translator(_langTranslate),
                                         builder: (_, data) {
@@ -1183,7 +1153,11 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                           padding: const EdgeInsets.symmetric(
                             vertical: 10,
                           ),
-                          child: restaurant.foodTypes[index].name != "Boisson" ? Container() : Divider(),
+                          child: restaurant.foodTypes.length == 0
+                              ? SizedBox.shrink()
+                              : restaurant.foodTypes[index].name != "Boisson"
+                                  ? SizedBox.shrink()
+                                  : Divider(),
                         ),
                       ),
                     ),
@@ -1212,15 +1186,18 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                 restaurant.name,
               ),
               actions: [
-                InkWell(onTap: () {
-                  RouteUtil.goTo(context: context, child: ListLang(), routeName: "null");
-                }, child: Consumer<SettingContext>(builder: (context, snapshot, w) {
-                  return Flag(
-                    snapshot?.languageCodeFlag ?? 'fr',
-                    height: 30,
-                    width: 30,
-                  );
-                })),
+                InkWell(
+                  onTap: () {
+                    RouteUtil.goTo(context: context, child: ListLang(), routeName: "null");
+                  },
+                  child: Consumer<SettingContext>(builder: (context, snapshot, w) {
+                    return Flag.fromString(
+                      snapshot?.languageCodeFlag ?? 'fr',
+                      height: 30,
+                      width: 30,
+                    );
+                  }),
+                ),
                 !showFavoriteButton
                     ? Container(
                         width: 0,
@@ -1248,13 +1225,14 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                             ),
                           ),
                 IconButton(
-                    icon: Icon(
-                      FontAwesomeIcons.share,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      Share.share("https://advisor.voirlemenu.fr/restaurants/${restaurant.id}");
-                    }),
+                  icon: Icon(
+                    FontAwesomeIcons.share,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    Share.share("https://advisor.voirlemenu.fr/restaurants/${restaurant.id}");
+                  },
+                ),
               ],
             ),
           )),
@@ -1403,43 +1381,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
       builder: (_, restaurantContext, w) {
         return Padding(
           padding: EdgeInsets.symmetric(horizontal: 25, vertical: 5),
-          child:
-              /*_segmentChilder.length < 2 ?
-          Container(
-            // width: 350,
-            height: 45,
-            // padding: EdgeInsets.symmetric(horizontal: 15),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-              color: CRIMSON
-            ),
-            // padding: EdgeInsets.only(left: 12, right: 12),
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25),
-                child: TextTranslator(restaurant.foodTypes.first['name']['fr'],style:TextStyle(
-                    color: Colors.white,
-                  fontWeight: FontWeight.bold
-                )),
-              ),
-            ),
-          )
-              : SegmentControl(
-            tabs: _foodTypes,
-            // width: 300,
-            selected: (_i, _s) {
-              restaurantContext.currentIndex = _i;
-              itemScrollController.jumpTo(index: _i);
-            },
-            radius: 5,
-            normalBackgroundColor: Color(0xffEDEDED),
-            activeBackgroundColor: CRIMSON,
-            borderColor: CRIMSON,
-            normalTitleStyle: TextStyle(fontSize: 14, color: CRIMSON,fontWeight: FontWeight.bold),
-            activeTitleStyle: TextStyle(fontSize: 16, color: Colors.white,fontWeight: FontWeight.bold),
-            height: 45,
-          )*/
-              Consumer<RestaurantContext>(
+          child: Consumer<RestaurantContext>(
             builder: (context, snapshot, w) {
               return Align(
                 alignment: Alignment.topCenter,

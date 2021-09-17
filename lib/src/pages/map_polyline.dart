@@ -5,6 +5,7 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:menu_advisor/src/components/map_window_marker.dart';
+import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 
 import '../models.dart';
@@ -13,7 +14,12 @@ class MapPolylinePage extends StatefulWidget {
   final LatLng initialPosition;
   final LatLng destinationPosition;
   final Restaurant restaurant;
-  MapPolylinePage({Key key, @required this.initialPosition, @required this.restaurant, @required this.destinationPosition}) : super(key: key);
+  MapPolylinePage({
+    Key key,
+    @required this.initialPosition,
+    @required this.restaurant,
+    @required this.destinationPosition,
+  }) : super(key: key);
 
   @override
   _MapPolylinePageState createState() => _MapPolylinePageState();
@@ -25,7 +31,7 @@ class _MapPolylinePageState extends State<MapPolylinePage> {
   LatLng _destinationPosition;
 
   //google maps
-  static final _googleMapsApiKey = "AIzaSyBu8U8tbY6BlxJezbjt8g3Lzi4k1I75iYw";
+  static final _googleMapsApiKey = "AIzaSyCL8_ZHnuPxDiElzyy4CCZEbJBv4ankXVc";
   Completer<GoogleMapController> _mapController = Completer();
   final PolylinePoints _polylinePoints = PolylinePoints();
 
@@ -45,7 +51,16 @@ class _MapPolylinePageState extends State<MapPolylinePage> {
   void init() {
     setState(() {
       _initialPosition = widget.initialPosition;
-      _currentPosition = Position(longitude: _initialPosition.longitude, latitude: _initialPosition.latitude);
+      _currentPosition = Position(
+        longitude: _initialPosition.longitude,
+        latitude: _initialPosition.latitude,
+        accuracy: null,
+        altitude: null,
+        heading: null,
+        speed: null,
+        speedAccuracy: null,
+        timestamp: null,
+      );
       _destinationPosition = widget.destinationPosition;
     });
     addInitPosAndDestPosMarker();
@@ -105,7 +120,7 @@ class _MapPolylinePageState extends State<MapPolylinePage> {
   void _listenLocation() async {
     if (!mounted) return;
     _positionStream = Geolocator.getPositionStream().listen((Position position) {
-      print('Current position stream: ${position.latitude},${position.longitude}');
+      print('$logTrace Current position stream: ${position.latitude},${position.longitude}');
       setState(() {
         _currentPosition = position;
       });
@@ -137,8 +152,16 @@ class _MapPolylinePageState extends State<MapPolylinePage> {
 
   addPolyLine() {
     PolylineId id = PolylineId("poly");
-    Polyline polyline =
-        Polyline(startCap: Cap.roundCap, endCap: Cap.roundCap, jointType: JointType.round, geodesic: true, polylineId: id, width: 5, color: const Color(0xffda143c), points: polylineCoordinates);
+    Polyline polyline = Polyline(
+      startCap: Cap.roundCap,
+      endCap: Cap.roundCap,
+      jointType: JointType.round,
+      geodesic: true,
+      polylineId: id,
+      width: 5,
+      color: const Color(0xffda143c),
+      points: polylineCoordinates,
+    );
     setState(() {
       _polylines[id] = polyline;
     });

@@ -92,7 +92,7 @@ class _SummaryState extends State<Summary> {
                         if (widget.commande.commandType != 'on_site') ...[
                           InkWell(
                             onTap: () async {
-                              Position currentPosition = await getCurrentPosition();
+                              Position currentPosition = await Geolocator.getCurrentPosition();
                               var coordinates = widget.commande.restaurant.location.coordinates;
                               // MapUtils.openMap(currentPosition.latitude, currentPosition.longitude,
                               // coordinates.last,coordinates.first);
@@ -350,7 +350,7 @@ class _SummaryState extends State<Summary> {
                   ),
                   InkWell(
                     onTap: () async {
-                      Position currentPosition = await getCurrentPosition();
+                      Position currentPosition = await Geolocator.getCurrentPosition();
                       var coordinates = widget.commande.restaurant.location.coordinates;
                       // MapUtils.openMap(currentPosition.latitude, currentPosition.longitude,
                       // coordinates.last,coordinates.first);

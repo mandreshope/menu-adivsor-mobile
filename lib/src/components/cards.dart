@@ -195,17 +195,19 @@ class _FoodCardState extends State<FoodCard> {
             color: Colors.transparent,
             child: InkWell(
               borderRadius: BorderRadius.circular(30),
-              onTap: () {
-                RouteUtil.goTo(
-                  context: context,
-                  child: FoodPage(
-                    food: widget.food,
-                    imageTag: widget.imageTag,
-                    restaurantName: restaurantName,
-                  ),
-                  routeName: foodRoute,
-                );
-              },
+              onTap: widget.food.isAvailable == true
+                  ? () {
+                      RouteUtil.goTo(
+                        context: context,
+                        child: FoodPage(
+                          food: widget.food,
+                          imageTag: widget.imageTag,
+                          restaurantName: restaurantName,
+                        ),
+                        routeName: foodRoute,
+                      );
+                    }
+                  : null,
               child: Stack(
                 children: [
                   Positioned(
@@ -661,40 +663,22 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () async {
-        //if (!expanded){}
-        // setState(() {
-        //   expanded = true;
-        // });
-
-        //else {
-        /*var result = await showDialog(
-            context: context,
-            builder: (_) => Container(
-              child: Dialog(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+      onTap: widget.food.isAvailable == true
+          ? () async {
+              RouteUtil.goTo(
+                context: context,
+                child: Material(
+                  child: FoodPage(
+                    food: widget.food,
+                    imageTag: widget.food.id,
+                    fromRestaurant: true,
+                  ),
                 ),
-                child: FoodPage(
-                  food: widget.food,
-                  modalMode: true,
-                ),
-              ),
-            ),
-          );*/
-        RouteUtil.goTo(
-          context: context,
-          child: Material(
-            child: FoodPage(
-              food: widget.food,
-              imageTag: widget.food.id,
-              fromRestaurant: true,
-            ),
-          ),
-          routeName: foodRoute,
-        );
-        //}
-      },
+                routeName: foodRoute,
+              );
+              //}
+            }
+          : null,
       child: Card(
         child: Padding(
           padding: const EdgeInsets.only(
@@ -709,17 +693,60 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                     child: */
               ClipRRect(
                 borderRadius: BorderRadius.only(bottomLeft: Radius.circular(5), topLeft: Radius.circular(5)),
-                child: FadeInImage.assetNetwork(
-                  placeholder: 'assets/images/loading.gif',
-                  image: widget.food.imageURL,
-                  width: 95,
-                  height: 100,
-                  fit: BoxFit.cover,
-                  imageErrorBuilder: (_, __, ___) => Container(
-                    width: 95,
-                    height: 100,
-                    color: Colors.white,
-                  ),
+                child: Stack(
+                  children: [
+                    FadeInImage.assetNetwork(
+                      placeholder: 'assets/images/loading.gif',
+                      image: widget.food.imageURL,
+                      width: 95,
+                      height: 100,
+                      fit: BoxFit.cover,
+                      imageErrorBuilder: (_, __, ___) => Container(
+                        width: 95,
+                        height: 100,
+                        color: Colors.white,
+                      ),
+                    ),
+                    if (widget.food.imageNotContractual == true && widget.food.isAvailable == true) ...[
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        left: 0,
+                        child: Container(
+                          height: 20,
+                          color: Colors.black.withOpacity(0.5),
+                          child: Center(
+                            child: TextTranslator(
+                              AppLocalizations.of(context).translate("non_contractual_photo"),
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    ] else if (widget.food.isAvailable == false) ...[
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        left: 0,
+                        child: Container(
+                          height: 20,
+                          color: Colors.black.withOpacity(0.5),
+                          child: Center(
+                            child: TextTranslator(
+                              AppLocalizations.of(context).translate("non_disponible"),
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    ]
+                  ],
                 ),
               ),
 
@@ -1184,7 +1211,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
     return Container(
       width: widget.fromHome ? 300 : MediaQuery.of(context).size.width - 50,
       child: AspectRatio(
-        aspectRatio: widget.fromHome ? 2.5 : 3.5,
+        aspectRatio: widget.fromHome ? 1.5 : 2.5,
         child: Card(
           elevation: 4.0,
           color: Colors.white,
@@ -1205,107 +1232,112 @@ class _RestaurantCardState extends State<RestaurantCard> {
               },
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(30),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                child: Column(
                   children: [
-                    Expanded(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 30.0,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  TextTranslator(
-                                    widget.restaurant.name ?? "",
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  SizedBox(height: 5),
-                                  TextTranslator(
-                                    // widget.restaurant.category['name'] is String ? widget.restaurant.category['name'] : widget.restaurant.category['name']["fr"] ?? "",
-                                    widget.restaurant.categories,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ],
+                    Stack(
+                      children: [
+                        FadeInImage.assetNetwork(
+                          image: widget.restaurant.logo,
+                          placeholder: 'assets/images/loading.gif',
+                          width: double.infinity,
+                          height: 70,
+                          fit: BoxFit.cover,
+                          imageErrorBuilder: (_, __, ___) => Container(
+                            width: double.infinity,
+                            height: 70,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: Visibility(
+                            visible: Provider.of<AuthContext>(context).currentUser != null,
+                            child: Consumer<AuthContext>(
+                              builder: (_, authContext, __) => Container(
+                                margin: EdgeInsets.all(10),
+                                height: 50,
+                                width: 50,
+                                child: switchingFavorite
+                                    ? Padding(
+                                        padding: const EdgeInsets.all(30),
+                                        child: CircularProgressIndicator(
+                                          valueColor: AlwaysStoppedAnimation<Color>(
+                                            CRIMSON,
+                                          ),
+                                        ),
+                                      )
+                                    : ElevatedButton(
+                                        style: ButtonStyle(
+                                          backgroundColor: MaterialStateProperty.all(CRIMSON),
+                                          shape: MaterialStateProperty.all(
+                                            RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(60)),
+                                          ),
+                                        ),
+                                        onPressed: () async {
+                                          setState(() {
+                                            switchingFavorite = true;
+                                          });
+                                          if (authContext.currentUser?.favoriteRestaurants?.contains(widget.restaurant.id) ?? false)
+                                            await authContext.removeFromFavoriteRestaurants(
+                                              widget.restaurant,
+                                            );
+                                          else
+                                            await authContext.addToFavoriteRestaurants(
+                                              widget.restaurant,
+                                            );
+                                          setState(() {
+                                            switchingFavorite = false;
+                                          });
+                                        },
+                                        child: Center(
+                                          child: Icon(
+                                            authContext.currentUser?.favoriteRestaurants?.contains(widget.restaurant.id) ?? false ? Icons.favorite : Icons.favorite_border,
+                                            color: Colors.white,
+                                            size: 20,
+                                          ),
+                                        ),
+                                      ),
                               ),
                             ),
                           ),
-                          if (Provider.of<AuthContext>(context).currentUser != null)
-                            Align(
-                              alignment: Alignment.bottomRight,
-                              child: Visibility(
-                                visible: false,
-                                child: Consumer<AuthContext>(
-                                  builder: (_, authContext, __) => SizedBox(
-                                    height: 50,
-                                    child: FittedBox(
-                                      child: switchingFavorite
-                                          ? Padding(
-                                              padding: const EdgeInsets.all(30),
-                                              child: CircularProgressIndicator(
-                                                valueColor: AlwaysStoppedAnimation<Color>(
-                                                  CRIMSON,
-                                                ),
-                                              ),
-                                            )
-                                          : IconButton(
-                                              icon: Icon(
-                                                authContext.currentUser?.favoriteRestaurants?.contains(widget.restaurant.id) ?? false ? Icons.favorite : Icons.favorite_border,
-                                                color: CRIMSON,
-                                              ),
-                                              onPressed: () async {
-                                                setState(() {
-                                                  switchingFavorite = true;
-                                                });
-                                                if (authContext.currentUser?.favoriteRestaurants?.contains(widget.restaurant.id) ?? false)
-                                                  await authContext.removeFromFavoriteRestaurants(
-                                                    widget.restaurant,
-                                                  );
-                                                else
-                                                  await authContext.addToFavoriteRestaurants(
-                                                    widget.restaurant,
-                                                  );
-                                                setState(() {
-                                                  switchingFavorite = false;
-                                                });
-                                              },
-                                            ),
-                                    ),
-                                  ),
-                                ),
-                              ),
+                        ),
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 30.0,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          TextTranslator(
+                            widget.restaurant.name ?? "",
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
                             ),
+                          ),
+                          SizedBox(height: 5),
+                          TextTranslator(
+                            widget.restaurant.city,
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                          SizedBox(height: 5),
+                          TextTranslator(
+                            widget.restaurant.address,
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                    // Hero(
-                    //     tag: "tag:${widget.restaurant.logo}",
-                    // child:
-                    FadeInImage.assetNetwork(
-                      image: widget.restaurant.logo,
-                      placeholder: 'assets/images/loading.gif',
-                      width: 120,
-                      fit: BoxFit.cover,
-                      imageErrorBuilder: (_, __, ___) => Container(
-                        width: 125,
-                        height: 70,
-                        color: Colors.white,
-                      ),
-                    ),
-                    // ),
                   ],
                 ),
               ),

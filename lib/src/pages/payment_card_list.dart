@@ -23,7 +23,12 @@ class PaymentCardListPage extends StatefulWidget {
   final Restaurant restaurant;
   final String typedePayment;
 
-  const PaymentCardListPage({Key key, this.isPaymentStep = false, this.restaurant, this.typedePayment}) : super(key: key);
+  const PaymentCardListPage({
+    Key key,
+    this.isPaymentStep = false,
+    this.restaurant,
+    this.typedePayment,
+  }) : super(key: key);
 
   @override
   _PaymentCardListPageState createState() => _PaymentCardListPageState();
