@@ -48,6 +48,7 @@ class _SearchPageState extends State<SearchPage> {
   String type;
   int range;
   Map<String, List<SearchResult>> _searchResultsGrouped = Map();
+  List<FoodAttribute> _foodAttributSelected = [];
 
   @override
   void initState() {
@@ -123,6 +124,18 @@ class _SearchPageState extends State<SearchPage> {
             return (a.content["name"]).compareTo(b.content["name"]);
           }
         });
+
+        final allergenSelectedList = _foodAttributSelected.where((e) => e.tag.contains("allergen")).toList();
+        if (allergenSelectedList.length != null) {
+          for (final allergenSelected in allergenSelectedList) {
+            _searchResults.retainWhere((search) {
+              final getAllergenIds = (search.content["allergene"] as List).map((allergen) => allergen['_id']).toList();
+              // retain where allergen not find
+              return !getAllergenIds.contains(allergenSelected.sId);
+            });
+          }
+        }
+
         _searchResultsGrouped = _searchResults.groupBy((s) {
           if (s.type.toString() == "SearchResultType.menu") {
             return s.content["restaurant"]["name"];
@@ -137,9 +150,6 @@ class _SearchPageState extends State<SearchPage> {
       });
     } catch (error) {
       print(error.toString());
-      /*Fluttertoast.showToast(
-        msg: AppLocalizations.of(context).translate('connection_issue'),
-      );*/
     } finally {
       setState(() {
         _loading = false;
@@ -344,6 +354,7 @@ class _SearchPageState extends State<SearchPage> {
                               filters = result['filters'];
                               type = result['type'];
                               range = result['range'];
+                              _foodAttributSelected = result['foodAttributSelected'];
                             });
                             _initSearch();
                           }

@@ -415,11 +415,11 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                   ),
                 ),
                 onPressed: () async {
-                  // if (!_restaurant.isOpenByDate(deliveryDate, deliveryTime)) {
-                  //   print('fermé');
-                  //   Fluttertoast.showToast(msg: 'Le restaurant est fermé');
-                  //   return;
-                  // }
+                  if (!_restaurant.isOpenByDate(deliveryDate, deliveryTime)) {
+                    print('fermé');
+                    Fluttertoast.showToast(msg: 'Le restaurant est fermé');
+                    return;
+                  }
                   FormState formState = formKey.currentState;
 
                   if (addrContr.text.isEmpty) {
@@ -436,6 +436,22 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                     );
 
                     if (widget.restaurant.deliveryFixed == true) {
+                      _next(authContext);
+                      return;
+                    }
+
+                    if (widget.restaurant.isFreeCP(commandContext.deliveryAddress)) {
+                      await Fluttertoast.showToast(
+                        msg: "Livraison est gratuite à ce CP",
+                      );
+                      _next(authContext);
+                      return;
+                    }
+
+                    if (widget.restaurant.isFreeCity(commandContext.deliveryAddress)) {
+                      await Fluttertoast.showToast(
+                        msg: "Livraison est gratuite à cette ville",
+                      );
                       _next(authContext);
                       return;
                     }

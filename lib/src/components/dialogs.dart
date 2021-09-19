@@ -231,32 +231,6 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
                   ),
                 ),
               ),
-              SizedBox(height: 10),
-              if (options.isEmpty)
-                Container()
-              else ...[
-                /* Padding(
-                  padding: const EdgeInsets.only(left: 25.0),
-                  child: TextTranslator("Options"),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 25.0),
-                  child: ChipsChoice.single(value: optionSelected,
-                    padding: EdgeInsets.zero,
-                    onChanged: (value) {
-                      setState(() {
-                        optionSelected = value;
-                        widget.food.itemOptionSelected = options[value];
-                      });
-                    },
-                    choiceItems: C2Choice.listFrom(
-                      source: options,
-                      value: (i, v) => i,
-                      label: (i, v) => v['name'][Provider.of<SettingContext>(context).languageCode],
-                    ),
-                  ),
-                ),*/
-              ],
               SizedBox(height: 5),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -437,6 +411,7 @@ class SearchSettingDialog extends StatefulWidget {
 
 class _SearchSettingDialogState extends State<SearchSettingDialog> {
   Map<String, dynamic> filters = Map();
+
   String type;
   int distanceAround; // 20 km
   ValueNotifier<double> _slider1Value = ValueNotifier<double>(0.0);
@@ -910,7 +885,14 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
               alignment: Alignment.centerRight,
               child: ElevatedButton(
                 onPressed: () => Navigator.of(context).pop(
-                  {'filters': filters, 'type': type, 'categorie': categorieType, 'range': distanceAround, "shedule": shedule},
+                  {
+                    'filters': filters,
+                    'type': type,
+                    'categorie': categorieType,
+                    'range': distanceAround,
+                    "shedule": shedule,
+                    "foodAttributSelected": _foodAttributSelected,
+                  },
                 ),
                 child: TextTranslator(
                   AppLocalizations.of(context).translate('confirm'),

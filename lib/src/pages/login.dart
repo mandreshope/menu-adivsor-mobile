@@ -201,11 +201,19 @@ class _LoginPageState extends State<LoginPage> {
                         ),
 
                         SizedBox(height: 20),
-                        RaisedButton(
-                          padding: EdgeInsets.all(15),
-                          color: CRIMSON,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            padding: MaterialStateProperty.all(
+                              EdgeInsets.all(15),
+                            ),
+                            backgroundColor: MaterialStateProperty.all(
+                              CRIMSON,
+                            ),
+                            shape: MaterialStateProperty.all(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
                           ),
                           onPressed: _submitForm,
                           child: loading
@@ -328,15 +336,6 @@ class _LoginPageState extends State<LoginPage> {
       );
       return;
     }
-
-    /*if (!email.isValidateEmail()){
-      Fluttertoast.showToast(
-        msg: AppLocalizations.of(context).translate("invalid_email"),
-        backgroundColor: CRIMSON,
-        textColor: Colors.white,
-      );
-      return;
-    }*/
 
     setState(() {
       loading = true;

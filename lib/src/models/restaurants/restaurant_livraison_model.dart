@@ -6,7 +6,7 @@ import 'package:menu_advisor/src/models/restaurants/restaurant_livraison_matrix_
 class RestaurantLivraison {
   final List<String> freeCity;
   final List<String> freeCP;
-  final RestaurantLivraisonMatrix matrix;
+  final List<String> matrix;
   RestaurantLivraison({
     this.freeCity,
     this.freeCP,
@@ -16,8 +16,7 @@ class RestaurantLivraison {
   RestaurantLivraison copyWith({
     List<String> freeCity,
     List<String> freeCP,
-    List<String> blackListCP,
-    List<String> blackListCity,
+    List<String> matrix,
   }) {
     return RestaurantLivraison(
       freeCity: freeCity ?? this.freeCity,
@@ -30,7 +29,7 @@ class RestaurantLivraison {
     return {
       'freeCity': freeCity,
       'freeCP': freeCP,
-      'MATRIX': matrix.toMap(),
+      'MATRIX': matrix?.map((e) => e)?.toList(),
     };
   }
 
@@ -38,7 +37,7 @@ class RestaurantLivraison {
     return RestaurantLivraison(
       freeCity: map['freeCity'] != null ? List<String>.from(map['freeCity']) : [],
       freeCP: map['freeCP'] != null ? List<String>.from(map['freeCP']) : [],
-      matrix: map['MATRIX'] != null ? RestaurantLivraisonMatrix.fromMap(map['MATRIX']) : null,
+      matrix: map['MATRIX'] != null ? List<String>.from(map['MATRIX']) : [],
     );
   }
 

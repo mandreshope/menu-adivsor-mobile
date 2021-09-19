@@ -443,16 +443,25 @@ class Restaurant {
   int etage = 0;
 
   bool isFreeCP(String cp) {
-    return livraison?.freeCP?.contains(cp);
+    final v = livraison?.freeCP?.contains(cp);
+    if (v) {
+      print("$logTrace free CP");
+    }
+    return v;
   }
 
   bool isFreeCity(String city) {
-    return livraison?.freeCity?.contains(city);
+    final v = livraison?.freeCity?.contains(city);
+    if (v) {
+      print("$logTrace free City");
+    }
+    return v;
   }
 
   /// unit: km
   double get deleveryDistanceMax {
-    final res = (double.tryParse(livraison?.matrix?.distance ?? '0') ?? 0.0) / 1000;
+    final String distanceMax = livraison?.matrix?.length != 0 ? livraison?.matrix?.first : 0;
+    final res = (double.tryParse(distanceMax) ?? 0.0) / 1000;
     return res;
   }
 
