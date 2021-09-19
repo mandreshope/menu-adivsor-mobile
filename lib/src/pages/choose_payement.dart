@@ -69,11 +69,13 @@ class ChoosePayement extends StatelessWidget {
               priceLivraison = (restaurant.priceDelevery != null ? restaurant.priceDelevery : 0).toInt();
               totalPrice = ((cartContext.totalPrice * 100) + priceLivraison).round();
             } else {
-              if (restaurant.isFreeCP(commandContext.deliveryAddress) || restaurant.isFreeCity(commandContext.deliveryAddress)) {
-                /// livraison gratuite
-                priceLivraison = 0;
-              } else {
-                priceLivraison = commandContext.getDeliveryPriceByMiles(restaurant).toInt();
+              if (commandContext.commandType == "delivery") {
+                if (restaurant.isFreeCP(commandContext.deliveryAddress) || restaurant.isFreeCity(commandContext.deliveryAddress)) {
+                  /// livraison gratuite
+                  priceLivraison = 0;
+                } else {
+                  priceLivraison = commandContext.getDeliveryPriceByMiles(restaurant).toInt();
+                }
               }
               totalPrice = ((cartContext.totalPrice * 100) + priceLivraison).round();
             }

@@ -174,11 +174,13 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                     priceLivraison = (widget.restaurant.priceDelevery != null ? widget.restaurant.priceDelevery : 0).toInt();
                     totalPrice = ((cartContext.totalPrice * 100) + priceLivraison).round();
                   } else {
-                    if (widget.restaurant.isFreeCP(commandContext.deliveryAddress) || widget.restaurant.isFreeCity(commandContext.deliveryAddress)) {
-                      /// livraison gratuite
-                      priceLivraison = 0;
-                    } else {
-                      priceLivraison = commandContext.getDeliveryPriceByMiles(widget.restaurant).toInt();
+                    if (commandContext.commandType == "delivery") {
+                      if (widget.restaurant.isFreeCP(commandContext.deliveryAddress) || widget.restaurant.isFreeCity(commandContext.deliveryAddress)) {
+                        /// livraison gratuite
+                        priceLivraison = 0;
+                      } else {
+                        priceLivraison = commandContext.getDeliveryPriceByMiles(widget.restaurant).toInt();
+                      }
                     }
                     totalPrice = ((cartContext.totalPrice * 100) + priceLivraison).round();
                   }

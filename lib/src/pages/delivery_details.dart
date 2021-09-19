@@ -415,11 +415,11 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                   ),
                 ),
                 onPressed: () async {
-                  if (!_restaurant.isOpenByDate(deliveryDate, deliveryTime)) {
-                    print('fermé');
-                    Fluttertoast.showToast(msg: 'Le restaurant est fermé');
-                    return;
-                  }
+                  // if (!_restaurant.isOpenByDate(deliveryDate, deliveryTime)) {
+                  //   print('fermé');
+                  //   Fluttertoast.showToast(msg: 'Le restaurant est fermé');
+                  //   return;
+                  // }
                   FormState formState = formKey.currentState;
 
                   if (addrContr.text.isEmpty) {

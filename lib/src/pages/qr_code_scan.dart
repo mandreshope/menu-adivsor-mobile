@@ -158,12 +158,8 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
       backgroundColor: BACKGROUND_COLOR,
       body: SafeArea(
         child: Stack(
-          fit: StackFit.expand,
           children: [
-            Expanded(
-              flex: 4,
-              child: _buildQrView(context),
-            ),
+            _buildQrView(context),
             Container(
               color: Colors.black45,
               child: loading
@@ -203,31 +199,6 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
                 },
               ),
             ),
-            // Positioned(
-            //   bottom: 20,
-            //   right: 20,
-            //   child: Container(
-            //     padding: EdgeInsets.all(15),
-            //     decoration: BoxDecoration(color: CRIMSON, borderRadius: BorderRadius.circular(158)),
-            //     child: InkWell(
-            //       child: Icon(
-            //         Icons.camera,
-            //         color: Colors.white,
-            //       ),
-            //       onTap: () async {
-            //         final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
-            //         if (pickedFile != null) {}
-            //       },
-            //     ),
-            //   ),
-            // ),
-            // Center(
-            //   child: Container(
-            //     width: MediaQuery.of(context).size.width / 1.2,
-            //     height: MediaQuery.of(context).size.width / 1.2,
-            //     decoration: BoxDecoration(color: Colors.blue.withAlpha(50), border: Border.all(color: Colors.blue, width: 1)),
-            //   ),
-            // ),
           ],
         ),
       ),
