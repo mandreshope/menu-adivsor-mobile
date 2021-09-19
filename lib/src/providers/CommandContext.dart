@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:menu_advisor/src/models.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:menu_advisor/src/models/models.dart';
 
 class CommandContext extends ChangeNotifier {
   PaymentCard _paymentCard;
   String _commandType;
   String _deliveryAddress;
+  LatLng _deliveryLatLng;
   DateTime _deliveryDate;
   TimeOfDay _deliveryTime;
   List<Food> _items;
@@ -20,6 +23,13 @@ class CommandContext extends ChangeNotifier {
     _commandType = commandType;
     notifyListeners();
   }
+
+  set deliveryLatLng(LatLng deliveryLatLng) {
+    _deliveryLatLng = deliveryLatLng;
+    notifyListeners();
+  }
+
+  LatLng get deliveryLatLng => _deliveryLatLng;
 
   String get commandType => _commandType;
 
@@ -44,6 +54,40 @@ class CommandContext extends ChangeNotifier {
 
   TimeOfDay get deliveryTime => _deliveryTime;
 
+  double getDeliveryDistanceByMiles(Restaurant restaurant) {
+    if (restaurant == null || deliveryLatLng == null) {
+      return 0.0;
+    }
+    final distance = Geolocator.distanceBetween(
+      restaurant.location.coordinates.last,
+      restaurant.location.coordinates.first,
+      deliveryLatLng.latitude,
+      deliveryLatLng.longitude,
+    );
+
+    final inKm = distance / 1000;
+    return double.parse(inKm.toStringAsFixed(2));
+  }
+
+  /// return (distance per km * Restaurant.priceByMiles) (€);
+  ///
+  double getDeliveryPriceByMiles(Restaurant restaurant) {
+    if (restaurant == null || deliveryLatLng == null) {
+      return 0.0;
+    }
+    final double priceByMiles = restaurant.priceByMiles; //5; // 5€ par km
+    final distance = Geolocator.distanceBetween(
+      restaurant.location.coordinates.last,
+      restaurant.location.coordinates.first,
+      deliveryLatLng.latitude,
+      deliveryLatLng.longitude,
+    );
+
+    final inKm = distance / 1000;
+    final result = inKm * priceByMiles;
+    return double.parse(result.toStringAsFixed(2));
+  }
+
   set items(List<Food> items) {
     _items = items;
     notifyListeners();
@@ -58,6 +102,7 @@ class CommandContext extends ChangeNotifier {
     _deliveryDate = null;
     _deliveryTime = null;
     _items = null;
+    _deliveryLatLng = null;
     notifyListeners();
   }
 }

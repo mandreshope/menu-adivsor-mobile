@@ -10,7 +10,7 @@ import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
-import '../models.dart';
+import '../models/models.dart';
 
 class MenuItemFoodOption extends StatefulWidget {
   MenuItemFoodOption({

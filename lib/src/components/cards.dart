@@ -6,7 +6,7 @@ import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/components/pointer_paint.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/constants/constant.dart';
-import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/models/models.dart';
 import 'package:menu_advisor/src/pages/detail_menu.dart';
 import 'package:menu_advisor/src/pages/food.dart';
 import 'package:menu_advisor/src/pages/photo_view.dart';
@@ -1471,7 +1471,6 @@ class _BagItemState extends State<BagItem> {
         SizedBox(
           width: 10,
         ),
-
         f.isMenu
             ? Container()
             : f.imageURL != null
@@ -1531,68 +1530,50 @@ class _BagItemState extends State<BagItem> {
             ],
           ),
         ),
-
         SizedBox(
           width: 15,
         ),
         f.isFoodForMenu
             ? Container()
-            : ButtonItemCountWidget(widget.food, onAdded: () {
-                setState(() {
-                  _cartContext.refresh();
-                });
-              }, onRemoved: () async {
-                if (widget.food.quantity <= 0) {
-                  var result = await showDialog(
-                    context: context,
-                    builder: (_) => ConfirmationDialog(
-                      title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
-                      content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
-                    ),
-                  );
+            : ButtonItemCountWidget(
+                widget.food,
+                onAdded: () {
+                  setState(() {
+                    _cartContext.refresh();
+                  });
+                },
+                onRemoved: () async {
+                  if (widget.food.quantity <= 0) {
+                    var result = await showDialog(
+                      context: context,
+                      builder: (_) => ConfirmationDialog(
+                        title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
+                        content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
+                      ),
+                    );
 
-                  if (result is bool && result) {
-                    // _cartContext.removeAllFood(widget.food);
-                    _cartContext.removeItemAtPosition(widget.position);
-                    // if (!widget.fromRestaurant)
-                    // RouteUtil.goBack(context: context);
-                  } else {
-                    widget.food.quantity = 1;
+                    if (result is bool && result) {
+                      // _cartContext.removeAllFood(widget.food);
+                      _cartContext.removeItemAtPosition(widget.position);
+                      // if (!widget.fromRestaurant)
+                      // RouteUtil.goBack(context: context);
+                    } else {
+                      widget.food.quantity = 1;
+                    }
+                    // _cartContext.addItem(widget.food, 0, false);
+                    // if(_cartContext.items.length == 0){
+                    //   // RouteUtil.goBack(context: context);
+                    // }
                   }
-                  // _cartContext.addItem(widget.food, 0, false);
-                  // if(_cartContext.items.length == 0){
-                  //   // RouteUtil.goBack(context: context);
-                  // }
-                }
-                setState(() {
-                  _cartContext.refresh();
-                });
-              }, itemCount: widget.food.quantity, isContains: _cartContext.contains(widget.food)),
-        /*CircleButton(
-          backgroundColor: Colors.white,padding: EdgeInsets.zero,
-          child: Icon(
-            Icons.remove_circle,
-            color: CRIMSON,
-            size: 30,
-          ),
-          onPressed: () async {
-            var result = await showDialog(
-              context: context,
-              child: ConfirmationDialog(
-                title: AppLocalizations.of(context).translate('remove_item_confirmation_title'),
-                content: AppLocalizations.of(context).translate('remove_item_confirmation_content'),
+                  setState(() {
+                    _cartContext.refresh();
+                  });
+                },
+                itemCount: widget.food.quantity,
+                isContains: _cartContext.contains(
+                  widget.food,
+                ),
               ),
-            );
-
-            if (result is bool && result) {
-              CartContext cartContext = Provider.of<CartContext>(context, listen: false);
-
-              cartContext.removeItemAtPosition(widget.position);
-              if (cartContext.items.length == 0) RouteUtil.goBack(context: context);
-            }
-          },
-        ),*/
-        // ]
       ],
     );
   }

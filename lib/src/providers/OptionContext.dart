@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/models/models.dart';
 
 class OptionContext with ChangeNotifier {
   List<ItemsOption> itemOptions = [];

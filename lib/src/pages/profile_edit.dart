@@ -3,7 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/constants/constant.dart';
-import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/models/models.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
@@ -137,8 +137,8 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                       ),
                     ),
                   );
-                  print("$logTrace result = ${result.name}");
-                  addressController.text = result.name;
+                  print("$logTrace result = ${result.formattedAddress}");
+                  addressController.text = result.formattedAddress;
                   _updateChangedState();
                 },
               ),

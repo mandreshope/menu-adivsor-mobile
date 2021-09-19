@@ -5,12 +5,17 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:menu_advisor/src/animations/FadeAnimation.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
+import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
+import 'package:menu_advisor/src/components/utilities.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/pages/map_polyline.dart';
 import 'package:menu_advisor/src/pages/photo_view.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
+import 'package:menu_advisor/src/providers/CommandContext.dart';
+import 'package:menu_advisor/src/providers/DataContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
@@ -20,12 +25,16 @@ import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../models.dart';
+import '../models/models.dart';
 
 class Summary extends StatefulWidget {
-  Summary({@required this.commande, this.fromHistory = false});
-  Command commande;
-  bool fromHistory;
+  Summary({
+    Key key,
+    @required this.commande,
+    this.fromHistory = false,
+  }) : super(key: key);
+  final Command commande;
+  final bool fromHistory;
 
   @override
   _SummaryState createState() => _SummaryState();
@@ -42,6 +51,10 @@ class _SummaryState extends State<Summary> {
   @override
   Widget build(BuildContext context) {
     this.context = context;
+    final CommandContext commandContext = Provider.of<CommandContext>(
+      context,
+      listen: false,
+    );
 
     if (widget.commande.restaurant is String) {
       Api.instance.getRestaurant(id: widget.commande.restaurant).then((value) {
@@ -67,228 +80,256 @@ class _SummaryState extends State<Summary> {
         return true;
       },
       child: Scaffold(
-          backgroundColor: Colors.white,
-          appBar: AppBar(
-            title: TextTranslator(
-              AppLocalizations.of(context).translate('summary'),
-            ),
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          title: TextTranslator(
+            AppLocalizations.of(context).translate('summary'),
           ),
-          body: isLoading
-              ? Center(child: CircularProgressIndicator())
-              : SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          height: 25,
-                        ),
-                        Divider(),
-                        _header(),
-                        Divider(),
-                        // about user
-                        if (widget.commande.commandType != 'on_site') ...[
-                          InkWell(
-                            onTap: () async {
-                              Position currentPosition = await Geolocator.getCurrentPosition();
-                              var coordinates = widget.commande.restaurant.location.coordinates;
-                              // MapUtils.openMap(currentPosition.latitude, currentPosition.longitude,
-                              // coordinates.last,coordinates.first);
-                              String q = widget.commande.shippingAddress ?? widget.commande.relatedUser["address"];
-                              List<Location> locations = [];
-                              try {
-                                locations = await locationFromAddress(q);
-                              } catch (error) {
-                                Fluttertoast.showToast(
-                                  msg: 'Adresse introvable',
-                                );
-                                return;
-                              }
+        ),
+        body: isLoading
+            ? Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 25,
+                    ),
+                    Divider(),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: _header(),
+                    ),
 
-                              RouteUtil.goTo(
-                                context: context,
-                                child: MapPolylinePage(
-                                  restaurant: widget.commande.restaurant,
-                                  initialPosition: LatLng(currentPosition.latitude, currentPosition.longitude),
-                                  destinationPosition: LatLng(locations.first.latitude, locations.first.longitude),
-                                ),
-                                routeName: restaurantRoute,
+                    Divider(),
+                    // about user
+                    if (widget.commande.commandType != 'on_site') ...[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: InkWell(
+                          onTap: () async {
+                            Position currentPosition = await Geolocator.getCurrentPosition();
+                            String q = widget.commande.shippingAddress ?? widget.commande.relatedUser["address"];
+                            List<Location> locations = [];
+                            try {
+                              locations = await locationFromAddress(q);
+                            } catch (error) {
+                              Fluttertoast.showToast(
+                                msg: 'Adresse introvable',
                               );
-                            },
-                            child: TextTranslator(
-                              widget.commande.shippingAddress ?? "",
-                              style: TextStyle(decoration: TextDecoration.underline, fontSize: 16, color: Colors.blue
-                                  // color: Colors.blue
-                                  ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          InkWell(
-                            onTap: () async {
-                              await launch("tel:${widget.commande.restaurant.phoneNumber}");
-                            },
-                            child: TextTranslator(widget.commande.relatedUser != null ? widget.commande.relatedUser["phoneNumber"] : widget.commande.customer['phoneNumber'],
-                                style: TextStyle(decoration: TextDecoration.underline, fontSize: 16, color: Colors.blue)),
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          if (widget.commande.commandType == 'delivery') ...[
-                            InkWell(
-                              onTap: () async {
-                                // await launch("tel:${widget.commande.restaurant.phoneNumber}");
-                              },
-                              child: TextTranslator("Appartement : " + widget.commande.appartement,
-                                  style: TextStyle(
-                                    // decoration: TextDecoration.underline,
-                                    fontSize: 16,
-                                    // color: Colors.blue
-                                  )),
-                            ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            InkWell(
-                              onTap: () async {
-                                // await launch("tel:${widget.commande.restaurant.phoneNumber}");
-                              },
-                              child: TextTranslator("Etage : " + widget.commande.etage.toString(),
-                                  style: TextStyle(
-                                    // decoration: TextDecoration.underline,
-                                    fontSize: 16,
-                                    // color: Colors.blue
-                                  )),
-                            ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            InkWell(
-                              onTap: () async {
-                                // await launch("tel:${widget.commande.restaurant.phoneNumber}");
-                              },
-                              child: TextTranslator("Code appartemment : " + widget.commande.codeappartement,
-                                  style: TextStyle(
-                                    // decoration: TextDecoration.underline,
-                                    fontSize: 16,
-                                    // color: Colors.blue
-                                  )),
-                            ),
-                          ],
-                          Divider(),
-                        ],
-                        //commande id
-                        Row(
-                          children: [
-                            TextTranslator("Commande ID : "),
-                            TextTranslator(widget.commande.code?.toString()?.padLeft(6, '0') ?? "", style: TextStyle(color: CRIMSON, fontWeight: FontWeight.bold, fontSize: 18)),
-                            Spacer(),
-                            _validated()
-                          ],
-                        ),
-                        //end commande id
-                        Divider(),
-                        // food
-                        for (var command in widget.commande.items) _items(command),
-                        // Divider(),
-                        // menu
-                        if (widget.commande.menus != null)
-                          for (var command in widget.commande.menus) _items(command),
-                        if (widget.commande.commandType == 'delivery') ...[
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            child: Row(
-                              children: [
-                                TextTranslator('Frais de livraison : ', style: TextStyle(fontSize: 16)),
-                                Spacer(),
-                                Opacity(
-                                  opacity: 0.6,
-                                  child: Text(widget.commande.restaurant?.priceDelevery == null ? "" : '${widget.commande.restaurant.priceDelevery / 100 ?? ''}€',
-                                      style: TextStyle(fontSize: 16, color: CRIMSON, fontWeight: FontWeight.bold)),
-                                )
-                              ],
-                            ),
-                          ),
-                          Divider(),
-                        ],
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: Row(
-                            children: [
-                              TextTranslator('Total', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                              Spacer(),
-                              widget.commande.priceless ? Text(" ") : Text('${widget.commande.totalPrice / 100} €', style: TextStyle(fontSize: 16, color: CRIMSON, fontWeight: FontWeight.bold)),
-                            ],
-                          ),
-                        ),
-                        Divider(),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              TextTranslator(
-                                AppLocalizations.of(context).translate(widget.commande.commandType ?? 'on_site').toUpperCase(),
-                                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                              return;
+                            }
+
+                            RouteUtil.goTo(
+                              context: context,
+                              child: MapPolylinePage(
+                                restaurant: widget.commande.restaurant,
+                                initialPosition: LatLng(currentPosition.latitude, currentPosition.longitude),
+                                destinationPosition: LatLng(locations.first.latitude, locations.first.longitude),
                               ),
-                              TextTranslator('${widget.commande.shippingTime == null ? "" : widget.commande.shippingTime.dateToString("dd/MM/yyyy HH:mm")}')
-                            ],
+                              routeName: restaurantRoute,
+                            );
+                          },
+                          child: TextTranslator(
+                            widget.commande.shippingAddress ?? "",
+                            style: TextStyle(decoration: TextDecoration.underline, fontSize: 16, color: Colors.blue
+                                // color: Colors.blue
+                                ),
                           ),
                         ),
-                        if (widget.commande.commandType == 'delivery') ...[
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                TextTranslator(
-                                  "Option de livraison",
-                                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-                                ),
-                                TextTranslator(widget.commande.optionLivraison == 'behind_the_door'
-                                    ? 'Devant la porte'
-                                    : widget.commande.optionLivraison == 'on_the_door'
-                                        ? 'Rdv à la porte'
-                                        : "A l'exterieur")
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                TextTranslator(
-                                  "Mode de paiement",
-                                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-                                ),
-                                TextTranslator('${widget.commande.paiementLivraison ? "A la livraison" : "CB"}')
-                              ],
-                            ),
-                          ),
-                        ],
-                        Divider(),
-                        SizedBox(
-                          height: 30,
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: InkWell(
+                          onTap: () async {
+                            await launch("tel:${widget.commande.restaurant.phoneNumber}");
+                          },
+                          child: TextTranslator(widget.commande.relatedUser != null ? widget.commande.relatedUser["phoneNumber"] : widget.commande.customer['phoneNumber'],
+                              style: TextStyle(decoration: TextDecoration.underline, fontSize: 16, color: Colors.blue)),
                         ),
-                        TextTranslator(
-                          "Commentaire",
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black, decoration: TextDecoration.underline),
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      if (widget.commande.commandType == 'delivery') ...[
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: InkWell(
+                            onTap: () async {
+                              // await launch("tel:${widget.commande.restaurant.phoneNumber}");
+                            },
+                            child: TextTranslator("Appartement : " + widget.commande.appartement,
+                                style: TextStyle(
+                                  // decoration: TextDecoration.underline,
+                                  fontSize: 16,
+                                  // color: Colors.blue
+                                )),
+                          ),
                         ),
                         SizedBox(
                           height: 5,
                         ),
-                        _renderComment(widget.commande.comment),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: InkWell(
+                            onTap: () async {
+                              // await launch("tel:${widget.commande.restaurant.phoneNumber}");
+                            },
+                            child: TextTranslator("Etage : " + widget.commande.etage.toString(),
+                                style: TextStyle(
+                                  // decoration: TextDecoration.underline,
+                                  fontSize: 16,
+                                  // color: Colors.blue
+                                )),
+                          ),
+                        ),
                         SizedBox(
-                          height: 50,
-                        )
+                          height: 5,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: InkWell(
+                            onTap: () async {
+                              // await launch("tel:${widget.commande.restaurant.phoneNumber}");
+                            },
+                            child: TextTranslator("Code appartemment : " + widget.commande.codeappartement,
+                                style: TextStyle(
+                                  // decoration: TextDecoration.underline,
+                                  fontSize: 16,
+                                  // color: Colors.blue
+                                )),
+                          ),
+                        ),
                       ],
+                      Divider(),
+                    ],
+                    //commande id
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Row(
+                        children: [
+                          TextTranslator("Commande ID : "),
+                          TextTranslator(widget.commande.code?.toString()?.padLeft(6, '0') ?? "", style: TextStyle(color: CRIMSON, fontWeight: FontWeight.bold, fontSize: 18)),
+                          Spacer(),
+                          _validated()
+                        ],
+                      ),
                     ),
-                  ),
-                )),
+                    //end commande id
+                    Divider(),
+                    // food
+                    for (var command in widget.commande.items) ...[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: _items(command),
+                      ),
+                    ],
+                    // Divider(),
+                    // menu
+                    if (widget.commande.menus != null)
+                      for (var command in widget.commande.menus) _items(command),
+                    if (widget.commande.commandType == 'delivery') ...[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                        child: Row(
+                          children: [
+                            TextTranslator('Frais de livraison : ', style: TextStyle(fontSize: 16)),
+                            Spacer(),
+                            Opacity(
+                              opacity: 0.6,
+                              child: Text('${widget.commande.priceLivraison ?? 0} €', style: TextStyle(fontSize: 16, color: CRIMSON, fontWeight: FontWeight.bold)),
+                            )
+                          ],
+                        ),
+                      ),
+                      Divider(),
+                    ],
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                      child: Row(
+                        children: [
+                          TextTranslator('Total', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                          Spacer(),
+                          widget.commande.priceless ? Text(" ") : Text('${widget.commande.totalPrice / 100} €', style: TextStyle(fontSize: 16, color: CRIMSON, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ),
+                    Divider(),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          TextTranslator(
+                            AppLocalizations.of(context).translate(widget.commande.commandType ?? 'on_site').toUpperCase(),
+                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                          ),
+                          TextTranslator('${widget.commande.shippingTime == null ? "" : widget.commande.shippingTime.dateToString("dd/MM/yyyy HH:mm")}')
+                        ],
+                      ),
+                    ),
+                    if (widget.commande.commandType == 'delivery') ...[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            TextTranslator(
+                              "Option de livraison",
+                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                            ),
+                            TextTranslator(widget.commande.optionLivraison == 'behind_the_door'
+                                ? 'Devant la porte'
+                                : widget.commande.optionLivraison == 'on_the_door'
+                                    ? 'Rdv à la porte'
+                                    : "A l'exterieur")
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            TextTranslator(
+                              "Mode de paiement",
+                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                            ),
+                            TextTranslator('${widget.commande.paiementLivraison ? "A la livraison" : "CB"}')
+                          ],
+                        ),
+                      ),
+                    ],
+                    Divider(),
+                    SizedBox(
+                      height: 30,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: TextTranslator(
+                        "Commentaire",
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black, decoration: TextDecoration.underline),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: _renderComment(widget.commande.comment),
+                    ),
+                    SizedBox(
+                      height: 50,
+                    ),
+                    _renderPopularFoods()
+                  ],
+                ),
+              ),
+      ),
     );
   }
 
@@ -487,7 +528,6 @@ class _SummaryState extends State<Summary> {
   Widget _items(CommandItem commandItem) {
     dynamic item = commandItem.food != null ? commandItem.food : commandItem.menu;
     List<Option> options = commandItem.options;
-    int quantity = commandItem.quantity;
     return Column(
       children: [
         Container(
@@ -527,12 +567,18 @@ class _SummaryState extends State<Summary> {
                       ? Text(" ")
                       : item.price?.amount == null
                           ? Text("_")
-                          : Text("${item.price.amount / 100} €", style: TextStyle(fontSize: 16))
+                          : Text(
+                              "${item.price.amount / 100} €",
+                              style: TextStyle(fontSize: 16),
+                            )
                   : widget.commande.priceless
                       ? Text(" ")
                       : item.price?.amount == null
                           ? Text("_")
-                          : Text("${item.price.amount / 100} €", style: TextStyle(fontSize: 16)),
+                          : Text(
+                              "${item.price.amount / 100} €",
+                              style: TextStyle(fontSize: 16),
+                            ),
             ],
           ),
         ),
@@ -551,15 +597,6 @@ class _SummaryState extends State<Summary> {
                         // SizedBox(width: 150),
                         TextTranslator('${options[i].title}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                         SizedBox(width: 5),
-                        // TextTranslator('(x${option.items.length})', style: TextStyle(fontSize: 16)),
-                        /*Image.network(
-                          item.imageURL,
-                          width: 25,
-                        ),*/
-                        // SizedBox(width: 8),
-
-                        // Spacer(),
-                        // item.price?.amount == null ? Text("_") : Text("${item.price.amount / 100} €", style: TextStyle(fontSize: 16)),
                       ],
                     ),
                   ),
@@ -778,4 +815,111 @@ class _SummaryState extends State<Summary> {
           textAlign: TextAlign.justify,
         ),
       );
+
+  Widget _renderPopularFoods() {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(
+        bottom: 40,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SectionTitle(
+                "Plat populaires",
+              ),
+              /*Container(
+                margin: const EdgeInsets.only(
+                  right: 30,
+                ),
+                child: GestureDetector(
+                  onTap: () {
+                    RouteUtil.goTo(
+                      context: context,
+                      child: SearchPage(
+                        type: 'food',
+                        location: {
+                           "coordinates":currentLocation?.coordinates ?? [0,0]
+                        },
+                        filters: {'searchCategory': 'with_price',
+                        // "city":this.city ?? ""
+                        // 'nearest': 'nearest'
+                        },
+                      ),
+                      routeName: searchRoute,
+                    );
+                  },
+                  child: TextTranslator(
+                    AppLocalizations.of(context).translate("see_all"),
+                    style: Theme.of(context).textTheme.caption,
+                  ),
+                ),
+              ),*/
+            ],
+          ),
+          Consumer<DataContext>(
+            builder: (_, dataContext, __) {
+              var foods = dataContext.popularFoods;
+              var loading = dataContext.loadingPopularFoods;
+
+              if (loading)
+                return Container(
+                  height: 200,
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        CRIMSON,
+                      ),
+                    ),
+                  ),
+                );
+
+              if (foods.length == 0)
+                return Container(
+                  height: 200,
+                  child: Center(
+                    child: TextTranslator(
+                      AppLocalizations.of(context).translate('no_food'),
+                      style: TextStyle(
+                        fontSize: 22,
+                      ),
+                    ),
+                  ),
+                );
+
+              return SingleChildScrollView(
+                physics: BouncingScrollPhysics(),
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.only(
+                  left: 20,
+                  right: 20,
+                  bottom: 10,
+                ),
+                child: Row(
+                  children: [
+                    for (Food food in foods)
+                      if (food.price?.amount == null)
+                        SizedBox()
+                      else
+                        FadeAnimation(
+                          1,
+                          FoodCard(
+                            food: food,
+                            minified: true,
+                          ),
+                        )
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
 }

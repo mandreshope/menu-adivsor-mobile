@@ -8,7 +8,7 @@ import 'package:menu_advisor/src/components/map_window_marker.dart';
 import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 
-import '../models.dart';
+import '../models/models.dart';
 
 class MapPolylinePage extends StatefulWidget {
   final LatLng initialPosition;

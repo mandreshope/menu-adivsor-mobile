@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/constants/validators.dart';
-import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/models/models.dart';
 import 'package:menu_advisor/src/pages/confirm_sms.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
@@ -212,8 +212,8 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                           ),
                         ),
                       );
-                      print("$logTrace result = ${result.name}");
-                      _addressController.text = result.name;
+                      print("$logTrace result = ${result.formattedAddress}");
+                      _addressController.text = result.formattedAddress;
                       _submitForm();
                     },
                   ),

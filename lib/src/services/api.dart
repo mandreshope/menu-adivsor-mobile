@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:menu_advisor/src/constants/constant.dart';
-import 'package:menu_advisor/src/models.dart';
-import 'package:menu_advisor/src/types.dart';
+import 'package:menu_advisor/src/models/models.dart';
+import 'package:menu_advisor/src/types/types.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Api {
@@ -167,10 +167,11 @@ class Api {
         }),
         headers: {'content-type': 'application/json'}).then<String>((response) {
       if (response.statusCode == 200) {
-        Map<String, dynamic> data = jsonDecode(response.body);
-        String registrationToken = data['token'];
-        accessToken = registrationToken;
-        return registrationToken;
+        return "Success";
+        // Map<String, dynamic> data = jsonDecode(response.body);
+        // String registrationToken = data['token'];
+        // accessToken = registrationToken;
+        // return registrationToken;
       }
 
       return Future.error(
@@ -670,30 +671,32 @@ class Api {
     });
   }
 
-  Future<Map> sendCommand(
-      {String relatedUser,
-      String commandType,
-      int totalPrice,
-      String restaurant,
-      var items,
-      int shippingTime,
-      String shippingAddress,
-      bool shipAsSoonAsPossible,
-      Map customer,
-      var menu,
-      String comment,
-      bool priceless,
-      String optionLivraison = 'out',
-      String appartement,
-      String codeappartement,
-      int etage,
-      bool payed = false,
-      bool paiementLivraison = false,
-      bool isDelivery = false}) async {
+  Future<Map> sendCommand({
+    String relatedUser,
+    String commandType,
+    int totalPrice,
+    String restaurant,
+    var items,
+    int shippingTime,
+    String shippingAddress,
+    bool shipAsSoonAsPossible,
+    Map customer,
+    var menu,
+    String comment,
+    bool priceless,
+    String optionLivraison = 'out',
+    String appartement,
+    String codeappartement,
+    int etage,
+    bool payed = false,
+    bool paiementLivraison = false,
+    bool isDelivery = false,
+    String priceLivraison,
+  }) async {
     await _refreshTokens();
     try {
       var post;
-      if (isDelivery)
+      if (isDelivery) {
         post = jsonEncode({
           'relatedUser': relatedUser,
           'commandType': commandType,
@@ -712,9 +715,10 @@ class Api {
           'codeAppartement': codeappartement,
           'etage': etage,
           'payed': payed,
-          'paiementLivraison': paiementLivraison
+          'paiementLivraison': paiementLivraison,
+          'priceLivraison': priceLivraison,
         });
-      else
+      } else {
         post = jsonEncode({
           'relatedUser': relatedUser,
           'commandType': commandType,
@@ -729,6 +733,7 @@ class Api {
           'comment': comment,
           'priceless': priceless,
         });
+      }
 
       final url = Uri.parse('$_apiURL/commands');
       print("$logTrace $url");
@@ -777,7 +782,7 @@ class Api {
         .put(
       url,
       headers: {
-        'authorization': 'Bearer $_accessToken',
+        'Authorization': 'Bearer $_accessToken',
         'Content-type': 'application/json',
       },
       body: jsonEncode(
@@ -790,7 +795,10 @@ class Api {
       ),
     )
         .then((response) {
-      if (response.statusCode != 200) return Future.error(jsonDecode(response.body));
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+      return Future.error(jsonDecode(response.body));
     });
   }
 

@@ -24,7 +24,7 @@ import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 import 'package:menu_advisor/src/utils/extensions.dart';
 
-import '../models.dart';
+import '../models/models.dart';
 
 class ProfilePage extends StatefulWidget {
   @override

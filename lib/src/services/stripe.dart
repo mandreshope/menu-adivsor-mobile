@@ -1,7 +1,8 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/models/models.dart';
 import 'package:stripe_payment/stripe_payment.dart';
 import 'package:http/http.dart' as http;
 
@@ -44,6 +45,7 @@ class StripeService {
   }
 
   static Future<StripeTransactionResponse> payViaExistingCard({
+    @required Restaurant restaurant,
     String amount,
     String currency,
     PaymentCard card,
@@ -62,6 +64,7 @@ class StripeService {
       var paymentIntent = await _createPaymentIntent(
         amount: amount,
         currency: currency,
+        customerStripeKey: restaurant.customerStripeKey,
       );
       var response = await StripePayment.confirmPaymentIntent(
         PaymentIntent(
@@ -103,7 +106,15 @@ class StripeService {
     );
   }
 
-  static Future<Map<String, dynamic>> _createPaymentIntent({String amount, String currency}) async {
+  static Future<Map<String, dynamic>> _createPaymentIntent({
+    String amount,
+    String currency,
+    String customerStripeKey,
+  }) async {
+    ///if customerStripeKey is not null, the payment is directly at the restaurant (compte restaurateur)
+    if (customerStripeKey != null) {
+      _headers['Authorization'] = 'Bearer $customerStripeKey';
+    }
     try {
       Map<String, dynamic> body = {
         'amount': amount,

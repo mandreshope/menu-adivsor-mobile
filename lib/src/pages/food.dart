@@ -8,7 +8,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/constants/constant.dart';
-import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/models/models.dart';
 import 'package:menu_advisor/src/pages/photo_view.dart';
 import 'package:menu_advisor/src/pages/restaurant.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
@@ -1164,55 +1164,6 @@ class _FoodPageState extends State<FoodPage> {
   Widget _image() => GestureDetector(
         onTap: () {
           return;
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              fullscreenDialog: true,
-              builder: (BuildContext context) {
-                return new Scaffold(
-                  appBar: AppBar(
-                    iconTheme: IconThemeData(
-                      color: Colors.black,
-                    ),
-                    title: TextTranslator(
-                      widget.food.name,
-                      style: TextStyle(
-                        color: Colors.black,
-                      ),
-                    ),
-                    elevation: 0.0,
-                    backgroundColor: Colors.transparent,
-                  ),
-                  body: GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Container(
-                      child: Center(
-                        // child: Hero(
-                        //   tag: widget.imageTag ?? 'foodImage${widget.food.id}',
-                        child: widget.food.imageURL != null
-                            ? Image.network(
-                                widget.food.imageURL,
-                                width: MediaQuery.of(context).size.width - 100,
-                                errorBuilder: (_, __, ___) => Center(
-                                  child: Icon(
-                                    Icons.fastfood,
-                                    size: MediaQuery.of(context).size.width - 100,
-                                  ),
-                                ),
-                              )
-                            : Icon(
-                                Icons.fastfood,
-                                size: MediaQuery.of(context).size.width - 100,
-                              ),
-                        // ),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          );
         },
         child: Stack(
           children: [

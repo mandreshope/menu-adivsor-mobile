@@ -1,7 +1,7 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
-import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/models/models.dart';
 
 class CartContext extends ChangeNotifier {
   // Map<dynamic, int> _items = Map();
@@ -108,71 +108,7 @@ class CartContext extends ChangeNotifier {
 
     _items.forEach((food) {
       totalPrice += food.totalPrice.toDouble() / 100;
-      /*if (food.isMenu) {
-        food.foods.forEach((f){
-         if (f.price != null && f.price.amount != null) totalPrice += f.price.amount / 100 * count;
-        });
-      }else*/
-      /*if (food.isMenu) {
-        // if (food.type == "per_food"){
-        /* if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100;
-          food.foodSelected.forEach((element) {
-            element.optionSelected.forEach((options) {
-              options.itemOptionSelected?.forEach((itemOption) {
-                if(itemOption.price != null && itemOption.price.amount != null) totalPrice += itemOption.price.amount/100 * itemOption.quantity;
-              });
-            });
-          });*/
-        /* }else if(food.type == "priceless"){
-
-        }else if (food.type == "fixed_price"){
-          if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100;
-        }*/
-        if (food.price != null && food.price.amount != null) totalPrice += (food.price.amount / 100)  * food.quantity;
-        foodMenuSelecteds.forEach((element) {
-          element.optionSelected?.forEach((options) {
-            options.itemOptionSelected?.forEach((itemOption) {
-              if (itemOption.price != null && itemOption.price.amount != null) totalPrice += (itemOption.price.amount / 100) * itemOption.quantity;
-            });
-          });
-        });
-      } else {
-        if (food.price != null && food.price.amount != null) totalPrice += food.price.amount / 100   * food.quantity;
-        food.optionSelected?.forEach((option) {
-          option.itemOptionSelected?.forEach((itemOption) {
-            if (itemOption.price != null && itemOption.price.amount != null) totalPrice += (itemOption.price.amount / 100) * itemOption.quantity;
-          });
-        });
-      }*/
-
-      /*if (food.isMenu){
-        // if (per_food)
-        // priceless
-        // fixed_price
-      }else{*/
-      /* food.options?.forEach((option){
-        option.itemOptionSelected?.forEach((itemOption) {
-        if(itemOption.price != null) totalPrice += itemOption.price/100;
-      });
-      });*/
-
-      //}
     });
-    // if (food.isMenu){
-    //   if (per_food)
-    //   priceless
-    //   fixed_price
-    // }else{
-    //   food.options?.forEach((option){
-    //   option.itemOptionSelected?.forEach((itemOption) {
-    //   if(itemOption.price != null) totalPrice += itemOption.price/100;
-    // });
-    // });
-
-    // }
-
-    //});
-
     List<Option> _temp = _options.values.expand((element) => element).toList().expand((element) => element).toList();
     _temp.forEach((option) {
       option.itemOptionSelected?.forEach((itemOption) {
@@ -253,78 +189,12 @@ class CartContext extends ChangeNotifier {
     notifyListeners();
   }
 
-  /*void setCount(dynamic food, int itemCount) {
-    _items.updateAll((key, value) {
-      if (key.id == food.id) return itemCount;
-      return value;
-    });
-    notifyListeners();
-  }*/
-
   int getCount(dynamic food) {
     int count = 0;
     _items.forEach((key) {
       if (key.id == food.id) count++;
     });
     return count;
-  }
-
-  double getTotalPriceFood(dynamic food) {
-    if (!withPrice) return 0;
-    double totalPrice = 0;
-    //int count = _items[food] ?? 1;
-    int count = _items.where((element) => element.id == food.id).toList().length;
-// return 15.2;
-    /*_items.forEach((key, value) {
-      
-      if (key.id == food.id) {
-        key.optionSelected?.forEach((itemOption) {
-          itemOption.itemOptionSelected?.forEach((item){
-            if(item.price != null) totalPrice += (item.price.toDouble()/100);
-          });
-        
-      if (per_food)
-              priceless
-              fixed_price
-
-            });
-            }
-      });*/
-
-    if (food.isMenu) {
-      if (food.type == "per_food") {
-        // if (food.price != null && food.price.amount != null) totalPrice += (food.price.amount / 100) * count;
-
-        List<List<Option>> _values = _options[food.id];
-        if (_values != null) {
-          List<Option> _temp = _values.expand((element) => element).toList();
-          _temp.forEach((option) {
-            option.itemOptionSelected?.forEach((itemOption) {
-              if (itemOption.price != null && itemOption.price.amount != null) totalPrice += itemOption.price.amount.toDouble() / 100;
-            });
-          });
-        }
-      } else if (food.type == "priceless") {
-      } else if (food.type == "fixed_price") {
-        if (food.price != null && food.price.amount != null) totalPrice += (food.price.amount / 100) * count;
-      }
-    } else {
-      if (food.price != null && food.price.amount != null) totalPrice += (food.price.amount / 100) * count;
-
-      List<List<Option>> _values = _options[food.id];
-      if (_values != null) {
-        List<Option> _temp = _values.expand((element) => element).toList();
-        _temp.forEach((option) {
-          option.itemOptionSelected?.forEach((itemOption) {
-            if (itemOption.price != null && itemOption.price.amount != null) totalPrice += itemOption.price.amount.toDouble() / 100;
-          });
-        });
-      }
-    }
-
-    // totalPrice += (food.price?.amount == null ? 00 : food.price.amount / 100)*count;
-
-    return (totalPrice);
   }
 
   dynamic getFood(dynamic food) {
@@ -359,17 +229,6 @@ class CartContext extends ChangeNotifier {
   }
 
   void addOption(dynamic item, List<Option> options, {String key}) {
-    /*if (_options[item.id] == null) {
-      _options[item.id] = [];
-    }
-    if (item.isMenu){
-      if (_foodMenuSelected != null && key != null){
-      _foodMenuSelected[key].optionSelected = options.map((e) => Option.copy(e)).toList();
-      _options[item.id] = [options.map((e) => Option.copy(e)).toList()];
-      }
-    }else
-      if (options != null && options.isNotEmpty)
-      _options[item.id].add(options.map((e) => Option.copy(e)).toList());*/
     item.optionSelected = options;
   }
 
@@ -394,10 +253,6 @@ class CartContext extends ChangeNotifier {
     }
     return hasOption;
   }
-
-  // Food getFoodForMenu(Menu menu) {
-  //   Food food = menu.foods.first;
-  // }
 
   int getFoodCountByIdNew(dynamic food) {
     int count = _itemsTemp.where((element) => element.idNewFood == food.idNewFood).toList().length;

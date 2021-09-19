@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/constants/constant.dart';
+import 'package:menu_advisor/src/models/restaurants/restaurant_livraison_model.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
-import 'package:menu_advisor/src/types.dart';
+import 'package:menu_advisor/src/types/types.dart';
 import 'package:menu_advisor/src/utils/extensions.dart';
 
 class FoodCategory {
@@ -162,7 +163,7 @@ class Food {
   }
 
   int get totalPrice {
-    int price = (this.price.amount ?? 0) * quantity;
+    int price = (this.price.amount ?? 0);
     if (price == 0) return 0;
     if (this.optionSelected == null) return price;
     this.optionSelected.forEach((element) {
@@ -171,7 +172,7 @@ class Food {
       });
     });
 
-    return price;
+    return price * quantity;
   }
 }
 
@@ -430,11 +431,30 @@ class Restaurant {
   DateTime get creatAtDateTime => DateTime.tryParse(createdAt);
   final String updatedAt;
   DateTime get updatedAtDateTime => DateTime.tryParse(updatedAt);
+  final RestaurantLivraison livraison;
+  final String minPriceIsDelivery;
+  double get minPriceIsDeliveryDouble => double.tryParse(minPriceIsDelivery) ?? 0;
   int priceDelevery;
+  final bool deliveryFixed;
+  final double priceByMiles;
   String optionLivraison = "";
   String appartement = "";
   String codeappartement = "";
   int etage = 0;
+
+  bool isFreeCP(String cp) {
+    return livraison?.freeCP?.contains(cp);
+  }
+
+  bool isFreeCity(String city) {
+    return livraison?.freeCity?.contains(city);
+  }
+
+  /// unit: km
+  double get deleveryDistanceMax {
+    final res = (double.tryParse(livraison?.matrix?.distance ?? '0') ?? 0.0) / 1000;
+    return res;
+  }
 
   Restaurant({
     this.phoneNumber,
@@ -479,6 +499,10 @@ class Restaurant {
     this.customerStripeKey,
     this.createdAt,
     this.updatedAt,
+    this.livraison,
+    this.minPriceIsDelivery,
+    this.deliveryFixed,
+    this.priceByMiles,
   });
 
   factory Restaurant.fromJson(Map<String, dynamic> json) {
@@ -525,6 +549,10 @@ class Restaurant {
       customerStripeKey: json['customerStripeKey'],
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
+      livraison: json['livraison'] != null ? RestaurantLivraison.fromMap(json['livraison']) : null,
+      minPriceIsDelivery: json['minPriceIsDelivery'],
+      deliveryFixed: json['deliveryFixed'],
+      priceByMiles: json['priceByMiles']?.toDouble(),
     );
 
     if (!res.accessible) {
@@ -802,67 +830,72 @@ class Command {
   final String codeappartement;
   final String appartement;
   final bool payed;
+  final String priceLivraison;
   int etage;
   dynamic paiementLivraison;
   dynamic customer;
 
-  Command(
-      {this.id,
-      this.relatedUser,
-      this.commandType,
-      this.totalPrice,
-      this.validated,
-      this.revoked,
-      this.items,
-      this.menus,
-      this.createdAt,
-      this.shippingAddress,
-      this.shippingTime,
-      this.shipAsSoonAsPossible,
-      this.code,
-      this.restaurant,
-      this.comment,
-      this.priceless,
-      this.payed,
-      this.optionLivraison,
-      this.codeappartement,
-      this.etage,
-      this.appartement,
-      this.paiementLivraison,
-      this.customer});
+  Command({
+    this.id,
+    this.relatedUser,
+    this.commandType,
+    this.totalPrice,
+    this.validated,
+    this.revoked,
+    this.items,
+    this.menus,
+    this.createdAt,
+    this.shippingAddress,
+    this.shippingTime,
+    this.shipAsSoonAsPossible,
+    this.code,
+    this.restaurant,
+    this.comment,
+    this.priceless,
+    this.payed,
+    this.optionLivraison,
+    this.codeappartement,
+    this.etage,
+    this.appartement,
+    this.paiementLivraison,
+    this.customer,
+    this.priceLivraison,
+  });
 
   factory Command.fromJson(Map<String, dynamic> json) => Command(
-      id: json['_id'] ?? "",
-      relatedUser: json['relatedUser'],
-      commandType: json['commandType'],
-      totalPrice: json['totalPrice'],
-      validated: json['validated'],
-      revoked: json['revoked'],
-      items: json['items'] != null ? (json['items'] as List).map((e) => CommandItem.fromJson(e)).toList() : [],
-      menus: json['menus'] != null ? (json['menus'] as List).map((e) => CommandItem.fromJson(e, isMenu: true)).toList() : [],
-      createdAt: json['createdAt'] != null
-          ? (json['createdAt'] is String)
-              ? DateTime.parse(json['createdAt'])
-              : DateTime.fromMillisecondsSinceEpoch(json['createdAt'])
-          : null,
-      shippingAddress: json['shippingAddress'],
-      shippingTime: json['shippingTime'] != null
-          ? (json['shippingTime'] is String)
-              ? DateTime.parse(json['shippingTime'])
-              : DateTime.fromMillisecondsSinceEpoch(json['shippingTime'])
-          : null,
-      shipAsSoonAsPossible: json['shipAsSoonAsPossible'] ?? false,
-      code: json['code'],
-      comment: json['comment'] ?? " ",
-      restaurant: json['restaurant'] is String ? json['restaurant'] : Restaurant.fromJson(json['restaurant']),
-      priceless: json['priceless'] ?? false,
-      optionLivraison: json['optionLivraison'],
-      codeappartement: json['codeAppartement'] ?? "",
-      appartement: json['appartement'] ?? "",
-      payed: json["payed"]["status"],
-      etage: json['etage'] ?? 0,
-      paiementLivraison: json['paiementLivraison'] ?? false,
-      customer: json['customer']);
+        id: json['_id'] ?? "",
+        relatedUser: json['relatedUser'],
+        commandType: json['commandType'],
+        totalPrice: json['totalPrice'],
+        validated: json['validated'],
+        revoked: json['revoked'],
+        items: json['items'] != null ? (json['items'] as List).map((e) => CommandItem.fromJson(e)).toList() : [],
+        menus: json['menus'] != null ? (json['menus'] as List).map((e) => CommandItem.fromJson(e, isMenu: true)).toList() : [],
+        createdAt: json['createdAt'] != null
+            ? (json['createdAt'] is String)
+                ? DateTime.parse(json['createdAt'])
+                : DateTime.fromMillisecondsSinceEpoch(json['createdAt'])
+            : null,
+        shippingAddress: json['shippingAddress'],
+        shippingTime: json['shippingTime'] != null
+            ? (json['shippingTime'] is String)
+                ? DateTime.parse(json['shippingTime'])
+                : DateTime.fromMillisecondsSinceEpoch(json['shippingTime'])
+            : null,
+        shipAsSoonAsPossible: json['shipAsSoonAsPossible'] ?? false,
+        code: json['code'],
+        comment: json['comment'] ?? " ",
+        restaurant: json['restaurant'] is String ? json['restaurant'] : Restaurant.fromJson(json['restaurant']),
+        priceless: json['priceless'] ?? false,
+        optionLivraison: json['optionLivraison'],
+        codeappartement: json['codeAppartement'] ?? "",
+        appartement: json['appartement'] ?? "",
+        payed: json["payed"]["status"],
+        etage: json['etage'] ?? 0,
+        paiementLivraison: json['paiementLivraison'] ?? false,
+        customer: json['customer'],
+        priceLivraison: json['priceLivraison'],
+      );
 }
 
 class PaymentCard {

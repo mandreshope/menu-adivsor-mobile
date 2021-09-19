@@ -25,7 +25,7 @@ import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../models.dart';
+import '../models/models.dart';
 
 class OrderPage extends StatefulWidget {
   final bool withPrice;
@@ -357,23 +357,17 @@ class _OrderPageState extends State<OrderPage> {
                     width: MediaQuery.of(context).size.width - 100,
                     child: FlatButton(
                       onPressed: () async {
-                        // if (!_restaurant.isOpen){
-                        //                  Fluttertoast.showToast(
-                        //                     msg: 'Restaurant fermé',
-                        //                   );
-                        //                 return;
-                        //               }
-                        // _command(commandContext, authContext, cartContext);
                         if (cartContext.pricelessItems || !widget.withPrice) {
                           commandContext.commandType = 'on_site';
                           _command(commandContext, authContext, cartContext);
                         } else {
                           if (!isRestaurantLoading)
                             showModalBottomSheet(
-                                context: context,
-                                builder: (_) {
-                                  return _commandType();
-                                });
+                              context: context,
+                              builder: (_) {
+                                return _commandType();
+                              },
+                            );
                         }
                       },
                       padding: const EdgeInsets.all(
@@ -397,26 +391,6 @@ class _OrderPageState extends State<OrderPage> {
                             ),
                     ),
                   ),
-                  // Spacer(),
-                  /*InkWell(
-                    
-                    child: Container(
-                      width: 60,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: CRIMSON
-                      ),
-                      child: Icon(
-                        Icons.comment,
-                        color: Colors.white,
-                        size: 25,
-                      ),
-                    ),
-                    onTap: () async {
-                      // sendComment
-                    },
-                  ),*/
                 ),
               ),
             ],
@@ -612,6 +586,12 @@ class _OrderPageState extends State<OrderPage> {
                                     borderRadius: BorderRadius.circular(20),
                                     onTap: () {
                                       commandContext.commandType = 'delivery';
+                                      if (_restaurant.minPriceIsDeliveryDouble > cartContext.totalPrice) {
+                                        Fluttertoast.showToast(
+                                          msg: '${_restaurant.minPriceIsDeliveryDouble.toStringAsFixed(2)}€ minimun pour effectuer une livraison',
+                                        );
+                                        return;
+                                      }
                                       _command(commandContext, authContext, cartContext);
                                     },
                                     child: Container(
@@ -634,8 +614,26 @@ class _OrderPageState extends State<OrderPage> {
                                             FontAwesomeIcons.houseUser,
                                           ),
                                           // frais de livraison
-                                          _cartContext.pricelessItems
-                                              ? Container()
+                                          _restaurant.deliveryFixed == true
+                                              ? Padding(
+                                                  padding: const EdgeInsets.only(
+                                                    top: 5,
+                                                  ),
+                                                  child: Row(
+                                                    mainAxisSize: MainAxisSize.max,
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    children: [
+                                                      TextTranslator(
+                                                        'Frais fixe : ',
+                                                        style: TextStyle(fontWeight: FontWeight.normal, fontSize: 10, color: Colors.grey),
+                                                      ),
+                                                      Text(
+                                                        _restaurant?.priceDelevery == null ? "0€" : '${(_restaurant?.priceDelevery ?? 0) / 100 ?? '0'}€',
+                                                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: Colors.grey),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                )
                                               : Padding(
                                                   padding: const EdgeInsets.only(
                                                     top: 5,
@@ -645,16 +643,16 @@ class _OrderPageState extends State<OrderPage> {
                                                     mainAxisAlignment: MainAxisAlignment.center,
                                                     children: [
                                                       TextTranslator(
-                                                        'Frais : ',
+                                                        'Frais par kilomètre: ',
                                                         style: TextStyle(fontWeight: FontWeight.normal, fontSize: 10, color: Colors.grey),
                                                       ),
                                                       Text(
-                                                        _restaurant?.priceDelevery == null ? "0€" : '${_restaurant?.priceDelevery / 100 ?? '0'}€',
+                                                        '${_restaurant?.priceByMiles ?? '0'}€',
                                                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: Colors.grey),
                                                       ),
                                                     ],
                                                   ),
-                                                ),
+                                                )
                                         ],
                                       ),
                                     ),

@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 
-import '../models.dart';
+import '../models/models.dart';
 
 class MenuContext extends ChangeNotifier {
   List<Food> _selectedFood = [];

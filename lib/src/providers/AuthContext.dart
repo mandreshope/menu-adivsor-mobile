@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/models/models.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -74,7 +74,13 @@ class AuthContext extends ChangeNotifier {
     String firstName,
     String lastName,
   }) =>
-      _api.register(email: email, phoneNumber: phoneNumber, password: password, firstName: firstName, lastName: lastName);
+      _api.register(
+        email: email,
+        phoneNumber: phoneNumber,
+        password: password,
+        firstName: firstName,
+        lastName: lastName,
+      );
 
   Future addToFavoriteFoods(Food food) async {
     await _api.addToFavoriteFood(food);
@@ -173,48 +179,4 @@ class AuthContext extends ChangeNotifier {
   confirmPhoneNumber({String code}) {
     return _api.confirmPhoneNumber(code: code);
   }
-
-//   verifyPhoneNumber(String phoneNumber,{Function verificationCompleted,Function verificationFailed,Function codeSent}) async {
-
-//     await auth.FirebaseAuth.instance.verifyPhoneNumber(
-//       phoneNumber: phoneNumber,
-//       verificationCompleted: (auth.PhoneAuthCredential credential) async {
-//         /*await auth.FirebaseAuth.instance
-//               .signInWithCredential(credential)
-//               .then((value) async {
-//             if (value.user != null) {
-//               verificationCompleted();
-//             }
-//           });*/
-//       },
-//       verificationFailed: (auth.FirebaseAuthException e) {
-//         print(e.code);
-//         verificationFailed(e.message);
-//       },
-//       codeSent: (String verificationId, int resendToken) async {
-//         print("verificationId $verificationId");
-//         codeSent(verificationId);
-//       },
-//       codeAutoRetrievalTimeout: (String verificationId) {
-
-//       },timeout: Duration(seconds: 60)
-//     ).catchError((onError){
-//       print(onError);
-//     });
-//   }
-
-//  Future verifyFirebaseSms(String verificationId, String code,{@required Function onSucced, @required Function onFailed}) async{
-
-//   await auth.FirebaseAuth.instance
-//               .signInWithCredential(auth.PhoneAuthProvider.credential(verificationId: verificationId, smsCode: code,))
-//               .then((value) async {
-//             if (value.user != null) {
-//               print("validate");
-//               onSucced();
-//             }
-//           }).catchError((onError){
-//             onFailed(onError);
-//           });
-//   }
-
 }

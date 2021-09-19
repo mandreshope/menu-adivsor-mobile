@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/constants/constant.dart';
-import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/models/models.dart';
 import 'package:menu_advisor/src/services/api.dart';
-import 'package:menu_advisor/src/types.dart';
+import 'package:menu_advisor/src/types/types.dart';
 
 class DataContext extends ChangeNotifier {
   List<Food> popularFoods = [];

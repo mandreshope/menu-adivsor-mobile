@@ -3,7 +3,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
-import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/constants/constant.dart';
+import 'package:menu_advisor/src/models/models.dart';
 import 'package:menu_advisor/src/pages/payment_card_list.dart';
 import 'package:menu_advisor/src/pages/summary.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
@@ -32,7 +33,7 @@ class ChoosePayement extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           _card(context, "Carte bancaire", Icons.payment, () {
-            print("Carte bancaire");
+            print("$logTrace Carte bancaire");
             RouteUtil.goTo(
               context: context,
               child: PaymentCardListPage(
@@ -47,7 +48,7 @@ class ChoosePayement extends StatelessWidget {
             height: 25,
           ),
           _card(context, "à la livraison", Icons.delivery_dining, () async {
-            print("à la livraison");
+            print("$logTrace à la livraison");
 
             showDialogProgress(context, barrierDismissible: false);
             CommandContext commandContext = Provider.of<CommandContext>(
@@ -62,34 +63,51 @@ class ChoosePayement extends StatelessWidget {
 
             AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
 
+            int totalPrice = 0;
+            int priceLivraison = 0;
+            if (restaurant.deliveryFixed) {
+              priceLivraison = (restaurant.priceDelevery != null ? restaurant.priceDelevery : 0).toInt();
+              totalPrice = ((cartContext.totalPrice * 100) + priceLivraison).round();
+            } else {
+              if (restaurant.isFreeCP(commandContext.deliveryAddress) || restaurant.isFreeCity(commandContext.deliveryAddress)) {
+                /// livraison gratuite
+                priceLivraison = 0;
+              } else {
+                priceLivraison = commandContext.getDeliveryPriceByMiles(restaurant).toInt();
+              }
+              totalPrice = ((cartContext.totalPrice * 100) + priceLivraison).round();
+            }
+
             var command = await Api.instance.sendCommand(
-                paiementLivraison: true,
-                isDelivery: true,
-                optionLivraison: restaurant.optionLivraison,
-                etage: restaurant.etage,
-                appartement: restaurant.appartement,
-                codeappartement: restaurant.codeappartement,
-                comment: cartContext.comment,
-                relatedUser: authContext.currentUser?.id ?? null,
-                commandType: commandContext.commandType,
-                items: cartContext.items
-                    .where((e) => !e.isMenu)
-                    .map((e) => {'quantity': e.quantity, 'item': e.id, 'options': e.optionSelected != null ? e.optionSelected : [], 'comment': e.message})
-                    .toList(),
-                restaurant: cartContext.currentOrigin,
-                totalPrice: ((cartContext.totalPrice * 100) + (restaurant.priceDelevery != null ? restaurant.priceDelevery : 0).toDouble()).round(),
-                menu: cartContext.items.where((e) => e.isMenu).map((e) => {'quantity': e.quantity, 'item': e.id, 'foods': e.foodMenuSelecteds}).toList(),
-                shippingAddress: commandContext.deliveryAddress,
-                shipAsSoonAsPossible: commandContext.deliveryDate == null && commandContext.deliveryTime == null,
-                shippingTime: commandContext.deliveryDate
-                        ?.add(
-                          Duration(
-                            minutes: commandContext.deliveryTime.hour * 60 + commandContext.deliveryTime.minute,
-                          ),
-                        )
-                        ?.millisecondsSinceEpoch ??
-                    null,
-                priceless: !cartContext.withPrice);
+              priceLivraison: priceLivraison.toString(),
+              paiementLivraison: true,
+              isDelivery: true,
+              optionLivraison: restaurant.optionLivraison,
+              etage: restaurant.etage,
+              appartement: restaurant.appartement,
+              codeappartement: restaurant.codeappartement,
+              comment: cartContext.comment,
+              relatedUser: authContext.currentUser?.id ?? null,
+              commandType: commandContext.commandType,
+              items: cartContext.items
+                  .where((e) => !e.isMenu)
+                  .map((e) => {'quantity': e.quantity, 'item': e.id, 'options': e.optionSelected != null ? e.optionSelected : [], 'comment': e.message})
+                  .toList(),
+              restaurant: cartContext.currentOrigin,
+              totalPrice: totalPrice,
+              menu: cartContext.items.where((e) => e.isMenu).map((e) => {'quantity': e.quantity, 'item': e.id, 'foods': e.foodMenuSelecteds}).toList(),
+              shippingAddress: commandContext.deliveryAddress,
+              shipAsSoonAsPossible: commandContext.deliveryDate == null && commandContext.deliveryTime == null,
+              shippingTime: commandContext.deliveryDate
+                      ?.add(
+                        Duration(
+                          minutes: commandContext.deliveryTime.hour * 60 + commandContext.deliveryTime.minute,
+                        ),
+                      )
+                      ?.millisecondsSinceEpoch ??
+                  null,
+              priceless: !cartContext.withPrice,
+            );
             Command cm = Command.fromJson(command);
 
             commandContext.clear();

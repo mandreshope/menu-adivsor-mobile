@@ -3,7 +3,7 @@ import 'package:flutter_credit_card/credit_card_widget.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
-import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/models/models.dart';
 import 'package:menu_advisor/src/pages/add_payment_card.dart';
 import 'package:menu_advisor/src/pages/summary.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
@@ -59,7 +59,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                       padding: const EdgeInsets.all(20),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [for (var c in user.paymentCards.toList()) _renderPayement(c, cartContext, authContext, commandContext)],
+                        children: [for (final c in user.paymentCards.toList()) _renderPayement(c, cartContext, authContext, commandContext)],
                       ),
                     )
                   : Container(
@@ -110,6 +110,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
           RouteUtil.goTo(
             context: context,
             child: PaymentCardDetailsPage(
+              restaurant: widget.restaurant,
               isPaymentStep: Provider.of<AuthContext>(
                     context,
                     listen: false,
@@ -124,9 +125,14 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
     );
   }
 
-  Widget _renderPayement(c, cartContext, authContext, commandContext) {
+  Widget _renderPayement(
+    c,
+    CartContext cartContext,
+    AuthContext authContext,
+    CommandContext commandContext,
+  ) {
     //  for (var c in user.paymentCards){
-    PaymentCard creditCard = PaymentCard.fromJson(c);
+    PaymentCard creditCard = c is PaymentCard ? c : PaymentCard.fromJson(c);
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -162,14 +168,31 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                   isPaying = true;
                 });
                 try {
+                  int totalPrice = 0;
+                  int priceLivraison = 0;
+                  if (widget.restaurant.deliveryFixed) {
+                    priceLivraison = (widget.restaurant.priceDelevery != null ? widget.restaurant.priceDelevery : 0).toInt();
+                    totalPrice = ((cartContext.totalPrice * 100) + priceLivraison).round();
+                  } else {
+                    if (widget.restaurant.isFreeCP(commandContext.deliveryAddress) || widget.restaurant.isFreeCity(commandContext.deliveryAddress)) {
+                      /// livraison gratuite
+                      priceLivraison = 0;
+                    } else {
+                      priceLivraison = commandContext.getDeliveryPriceByMiles(widget.restaurant).toInt();
+                    }
+                    totalPrice = ((cartContext.totalPrice * 100) + priceLivraison).round();
+                  }
+
                   StripeTransactionResponse payment = await StripeService.payViaExistingCard(
-                    amount: (cartContext.totalPrice * 100).floor().toString(),
+                    restaurant: widget.restaurant,
+                    amount: totalPrice.toString(),
                     card: creditCard,
                     currency: 'eur',
                   );
 
                   if (payment.success) {
                     var command = await Api.instance.sendCommand(
+                        priceLivraison: priceLivraison.toString(),
                         optionLivraison: widget.restaurant.optionLivraison,
                         etage: widget.restaurant.etage,
                         isDelivery: true,
@@ -181,11 +204,25 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                         commandType: commandContext.commandType,
                         items: cartContext.items
                             .where((e) => !e.isMenu)
-                            .map((e) => {'quantity': e.quantity, 'item': e.id, 'options': e.optionSelected != null ? e.optionSelected : [], 'comment': e.message})
+                            .toList()
+                            .map((e) => {
+                                  'quantity': e.quantity,
+                                  'item': e.id,
+                                  'options': e.optionSelected != null ? e.optionSelected : [],
+                                  'comment': e.message,
+                                })
                             .toList(),
                         restaurant: cartContext.currentOrigin,
-                        totalPrice: ((cartContext.totalPrice * 100) + (widget.restaurant.priceDelevery != null ? widget.restaurant.priceDelevery : 0).toDouble()).round(),
-                        menu: cartContext.items.where((e) => e.isMenu).map((e) => {'quantity': e.quantity, 'item': e.id, 'foods': e.foodMenuSelecteds}).toList(),
+                        totalPrice: totalPrice,
+                        menu: cartContext.items
+                            .where((e) => e.isMenu)
+                            .toList()
+                            .map((e) => {
+                                  'quantity': e.quantity,
+                                  'item': e.id,
+                                  'foods': e.foodMenuSelecteds,
+                                })
+                            .toList(),
                         shippingAddress: commandContext.deliveryAddress,
                         shipAsSoonAsPossible: commandContext.deliveryDate == null && commandContext.deliveryTime == null,
                         shippingTime: commandContext.deliveryDate
@@ -197,7 +234,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                 ?.millisecondsSinceEpoch ??
                             null,
                         priceless: !cartContext.withPrice);
-                    var commandStr = command.toString();
+
                     Command cm = Command.fromJson(command);
 
                     Api.instance.setCommandToPayedStatus(
@@ -215,20 +252,12 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                       context,
                       listen: false,
                     ).clear();
+
                     Provider.of<CommandContext>(
                       context,
                       listen: false,
                     ).clear();
                     Provider.of<MenuContext>(context, listen: false).clear();
-
-                    /*RouteUtil.goToAndRemoveUntil(
-                                              context: context,
-                                              child: ConfirmSms(
-                                                command: cm,
-                                              ),
-                                              routeName: summaryRoute,
-                                              predicate: (route) => route.settings.name == homeRoute,
-                                            );*/
 
                     commandContext.clear();
                     cartContext.clear();

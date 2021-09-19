@@ -6,7 +6,7 @@ import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/components/menu_item_food_option.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/constants/constant.dart';
-import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/models/models.dart';
 import 'package:menu_advisor/src/pages/photo_view.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
@@ -19,7 +19,7 @@ import 'package:provider/provider.dart';
 import 'package:menu_advisor/src/utils/extensions.dart';
 
 class DetailMenu extends StatefulWidget {
-  Menu menu;
+  final Menu menu;
 
   DetailMenu({@required this.menu});
 

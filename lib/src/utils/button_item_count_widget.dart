@@ -3,7 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
-import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/models/models.dart';
 import 'package:menu_advisor/src/pages/food.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
@@ -23,7 +23,7 @@ class ButtonItemCountWidget extends StatefulWidget {
     @required this.onRemoved,
     @required this.itemCount,
     this.isFromDelevery = false,
-    @required this.isContains = false,
+    this.isContains = false,
     this.isMenu = false,
     this.fromRestaurant = false,
   }) : super();
@@ -139,55 +139,6 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                 widget.food.quantity--;
                 // }
                 widget.onRemoved();
-                return;
-                if (widget.food.isMenu) {
-                  widget.onRemoved();
-                  return;
-                }
-                if (widget.fromRestaurant && (widget.food is Food) /*&& widget.food.options.length > 0*/) {
-                  RouteUtil.goTo(
-                    context: context,
-                    child: Material(
-                      child: FoodPage(
-                        food: widget.food,
-                        imageTag: widget.food.id,
-                      ),
-                    ),
-                    routeName: foodRoute,
-                  );
-                  return;
-                }
-                int value = --widget.itemCount;
-                if (value <= 0) {
-                  /*var result = await showDialog(
-                    context: context,
-                    builder: (_) => ConfirmationDialog(
-                      title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
-                      content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
-                    ),
-                  );
-
-                  if (result is bool && result) {
-                    // _cartContext.removeAllFood(widget.food);
-                    _cartContext.addItem(widget.food, value, false);
-                    if (!widget.fromRestaurant)
-                      RouteUtil.goBack(context: context);
-                  }
-                  if (widget.food is Menu){
-                    Provider.of<MenuContext>(context,listen: false).clear();
-                  }*/
-                  widget.onRemoved(_cartContext.getLastFood(widget.food.id));
-                  _cartContext.addItem(widget.food, value, false);
-                } else {
-                  //_cartContext.addItem(widget.food, value, false);
-                  // widget.onRemoved(_cartContext.getLastFood(widget.food.id));
-                  //widget.onRemoved(_cartContext.getLastFood(widget.food.id));
-                  widget.food.quantity--;
-                }
-                // if (value <= 0) {
-                //   showOptions = false;
-                //   widget.onPressed(false);
-                // }
               },
             ),
             SizedBox(
@@ -224,35 +175,6 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
               onPressed: () async {
                 widget.food.quantity++;
                 widget.onAdded();
-                return;
-                if (widget.food.isMenu) {
-                  widget.onAdded();
-                  return;
-                }
-                if (widget.fromRestaurant /*&& widget.food.options.length > 0*/) {
-                  RouteUtil.goTo(
-                    context: context,
-                    child: Material(
-                      child: FoodPage(
-                        food: widget.food,
-                        imageTag: widget.food.id,
-                      ),
-                    ),
-                    routeName: foodRoute,
-                  );
-                  return;
-                }
-                if (widget.itemCount == 0 && !_cartContext.hasOptionSelectioned(widget.food)) {
-                  Fluttertoast.showToast(
-                    msg: 'Ajouter une option',
-                  );
-                } else {
-                  // if (widget.food.isMenu) return;
-                  // widget.itemCount ++ ;
-
-                  _cartContext.addItem(widget.food, 1, true);
-                  widget.onAdded();
-                }
               },
             ),
           ],

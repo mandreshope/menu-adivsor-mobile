@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 // import 'package:flutter_collapse/flutter_collapse.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/components/flutter_collapse.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/constants/constant.dart';
@@ -19,10 +20,10 @@ import 'package:place_picker/place_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import '../models.dart';
+import '../models/models.dart';
 
 class DeliveryDetailsPage extends StatefulWidget {
-  Restaurant restaurant;
+  final Restaurant restaurant;
   DeliveryDetailsPage({this.restaurant});
   @override
   _DeliveryDetailsPageState createState() => _DeliveryDetailsPageState();
@@ -121,40 +122,10 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                   ),
                                 ),
                               );
-
-                              // Handle the result in your way
-                              // print(result);
-                              // LocationResult result = await showLocationPicker(
-                              //   context,
-                              //   "AIzaSyBu8U8tbY6BlxJezbjt8g3Lzi4k1I75iYw",
-                              //   initialCenter: LatLng(31.1975844, 29.9598339),
-                              //   //                      automaticallyAnimateToCurrentLocation: true,
-                              //   //                      mapStylePath: 'assets/mapStyle.json',
-                              //   myLocationButtonEnabled: true,
-                              //   // requiredGPS: true,
-                              //   layersButtonEnabled: true,
-                              //   // countries: ['AE', 'NG']
-
-                              //   //                      resultCardAlignment: Alignment.bottomCenter,
-                              //   desiredAccuracy: LocationAccuracy.best,
-                              // );
                               print("$logTrace result = $result");
-                              /* List<geo.Placemark> placemarks = await geo.placemarkFromCoordinates(result.latLng.latitude, result.latLng.longitude);
-                              
-                                // this is all you need
-                              geo.Placemark placeMark  = placemarks[0]; 
-                              String name = placeMark.name;
-                              String subLocality = placeMark.subLocality;
-                              String locality = placeMark.locality;
-                              String administrativeArea = placeMark.administrativeArea;
-                              String postalCode = placeMark.postalCode;
-                              String country = placeMark.country;
-                              String address = "${name}, ${subLocality}, ${locality}, ${administrativeArea} ${postalCode}, ${country}";
-  
-                              print("adress $address");*/
-
-                              addrContr.text = result.name;
-                              commandContext.deliveryAddress = result.name;
+                              addrContr.text = result.formattedAddress;
+                              commandContext.deliveryAddress = result.formattedAddress;
+                              commandContext.deliveryLatLng = result.latLng;
                             },
                           ),
                         ),
@@ -388,55 +359,6 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                         commandContext.deliveryDate = deliveryDate;
                                         commandContext.deliveryTime = deliveryTime;
                                       });
-
-                                      return;
-                                      /*DatePicker.showDatePicker(context,
-                                          locale: DateTimePickerLocale.fr,
-                                          dateFormat: "dd-MMMM-yyyy,HH:mm",
-                                          initialDateTime: deliveryDate ?? DateTime.now(),
-                                          maxDateTime: DateTime.now().add(
-                                            Duration(days: 3),
-                                          ),
-                                          minDateTime: DateTime.now(),
-                                          onCancel: () {}, onConfirm: (date, val) {
-                                        commandContext.deliveryDate = date;
-                                        commandContext.deliveryTime = TimeOfDay.fromDateTime(date);
-
-                                        setState(() {
-                                          deliveryDate = date;
-                                          deliveryTime = TimeOfDay.fromDateTime(date);
-                                        });
-                                      }, pickerMode: DateTimePickerMode.datetime);
-                                      */
-                                      /*var date = await showRoundedDatePicker(
-                                        context: context,
-                                        initialDate: deliveryDate ?? DateTime.now(),
-                                        firstDate: DateTime.now().add(Duration(hours: -8)),
-                                        lastDate: DateTime.now().add(
-                                          Duration(days: 3),
-                                        ),
-                                      );
-                                      if (date != null) {
-                                        var time = await showRoundedTimePicker(
-                                          context: context,
-                                          initialTime: deliveryTime ??
-                                              TimeOfDay(
-                                                hour: DateTime.now().hour,
-                                                minute: DateTime.now()
-                                                    .minute,
-                                              ),
-                                        );
-
-                                        if (time != null) {
-                                          commandContext.deliveryDate = date;
-                                          commandContext.deliveryTime = time;
-
-                                          setState(() {
-                                            deliveryDate = date;
-                                            deliveryTime = time;
-                                          });
-                                        }
-                                    }*/
                                     },
                                     child: ListTile(
                                       contentPadding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -463,27 +385,6 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                       _timePicker(),
                                     ],
                                   ),
-                                  // Divider(),
-                                  // Divider(),
-
-                                  /*Container(
-                    color: CRIMSON,
-                    child: ListTile(
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 25.0),
-                      title: TextTranslator(
-                        '${deliveryDate?.dateToString(DATE_FORMATED_ddMMyyyy) ?? ""}    ${deliveryTime?.hour ?? ""} : ${deliveryTime?.minute ?? ""}',
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                          color: Colors.white,//CRIMSON.withOpacity(0.9),
-                          fontSize: 20,
-                          fontWeight: FontWeight.w400
-                        ),
-                      ),
-                      leading: Container(width: 1,height: 1,),
-                      trailing: null,
-                    ),
-                  ),*/
                                 ],
                               ],
                             ),
@@ -499,11 +400,19 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
               padding: const EdgeInsets.all(
                 20,
               ),
-              child: RaisedButton(
-                padding: EdgeInsets.all(20),
-                color: CRIMSON,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+              child: ElevatedButton(
+                style: ButtonStyle(
+                  padding: MaterialStateProperty.all(
+                    EdgeInsets.all(20),
+                  ),
+                  backgroundColor: MaterialStateProperty.all(
+                    CRIMSON,
+                  ),
+                  shape: MaterialStateProperty.all(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
                 ),
                 onPressed: () async {
                   if (!_restaurant.isOpenByDate(deliveryDate, deliveryTime)) {
@@ -526,49 +435,26 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                       listen: false,
                     );
 
-                    if (authContext.currentUser != null) {
-                      var customer = {
-                        'name': authContext.currentUser?.name,
-                        'address': authContext.currentUser?.address,
-                        'phoneNumber': authContext.currentUser?.phoneNumber,
-                        'email': authContext.currentUser?.email
-                      };
-                      setState(() {
-                        sendingCommand = true;
-                      });
-                      String code = await Api.instance.sendCode(
-                        relatedUser: authContext.currentUser?.id ?? null,
-                        customer: customer,
-                        commandType: commandContext.commandType,
-                      );
-                      // String code = "1234";
-                      RouteUtil.goTo(
-                        context: context,
-                        child: ConfirmSms(
-                          command: null,
-                          isFromSignup: false,
-                          customer: customer,
-                          code: code,
-                          fromDelivery: true,
-                          restaurant: _restaurant,
-                        ),
-                        routeName: homeRoute,
-                        // method: RoutingMethod.atTop,
-                      );
-                      setState(() {
-                        sendingCommand = false;
-                      });
-
-                      /*
-                      RouteUtil.goTo(
-                        context: context,
-                        child: PaymentCardListPage(
-                          isPaymentStep: true,
-                          restaurant: _restaurant,
-                        ),
-                        routeName: paymentCardListRoute,
-                      );*/
+                    if (widget.restaurant.deliveryFixed == true) {
+                      _next(authContext);
+                      return;
                     }
+
+                    final confirm = await showDialog(
+                      context: context,
+                      builder: (_) => ConfirmationDialog(
+                        title: "",
+                        isSimple: true,
+                        content: """Frais de livraison par km : ${widget.restaurant.priceByMiles} km
+                            \nDistance entre vous et le restaurant : ${commandContext.getDeliveryDistanceByMiles(widget.restaurant).toInt()} km
+                            \nFrais de livraison par kilomètre : ${commandContext.getDeliveryPriceByMiles(widget.restaurant).toInt()} €
+                            \nVoulez-vous continuer ?""",
+                      ),
+                    );
+                    if (confirm != true) {
+                      return;
+                    }
+                    _next(authContext);
                   }
                 },
                 child: this.sendingCommand
@@ -594,6 +480,37 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
         ),
       ),
     );
+  }
+
+  Future _next(AuthContext authContext) async {
+    if (authContext.currentUser != null) {
+      var customer = {'name': authContext.currentUser?.name, 'address': authContext.currentUser?.address, 'phoneNumber': authContext.currentUser?.phoneNumber, 'email': authContext.currentUser?.email};
+      setState(() {
+        sendingCommand = true;
+      });
+      String code = await Api.instance.sendCode(
+        relatedUser: authContext.currentUser?.id ?? null,
+        customer: customer,
+        commandType: commandContext.commandType,
+      );
+      // String code = "1234";
+      RouteUtil.goTo(
+        context: context,
+        child: ConfirmSms(
+          command: null,
+          isFromSignup: false,
+          customer: customer,
+          code: code,
+          fromDelivery: true,
+          restaurant: _restaurant,
+        ),
+        routeName: homeRoute,
+        // method: RoutingMethod.atTop,
+      );
+      setState(() {
+        sendingCommand = false;
+      });
+    }
   }
 
   Widget _datePicker() {

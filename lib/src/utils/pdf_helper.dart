@@ -2,13 +2,13 @@ import 'dart:io';
 
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/constants/date_format.dart';
-import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/models/models.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
 import 'package:menu_advisor/src/utils/extensions.dart';
 
-import '../types.dart';
+import '../types/types.dart';
 
 class PdfHelper {
   List<Food> foods = [
@@ -70,7 +70,7 @@ class PdfHelper {
     String pathToSaveFile = "/storage/emulated/0/MenuAdvisor/";
     final Directory appDirectory = Directory(pathToSaveFile);
     if (!await appDirectory.exists()) {
-      var dirTemp = await appDirectory.create(recursive: true);
+      //var dirTemp = await appDirectory.create(recursive: true);
     }
 
     String fileName = "${DateTime.now().dateToString(DATE_FORMATED_ddMMyyyyHHmmWithSpacer)}.pdf";

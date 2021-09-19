@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/validators.dart';
-import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/models/models.dart';
 import 'package:menu_advisor/src/pages/home.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
@@ -18,8 +18,10 @@ import 'package:provider/provider.dart';
 
 class PaymentCardDetailsPage extends StatefulWidget {
   final bool isPaymentStep;
+  final Restaurant restaurant;
 
   PaymentCardDetailsPage({
+    @required this.restaurant,
     Key key,
     this.isPaymentStep,
   }) : super(key: key);
@@ -249,6 +251,7 @@ class _PaymentCardDetailsPageState extends State<PaymentCardDetailsPage> {
           _onProgress = true;
         });
         var response = await StripeService.payViaExistingCard(
+          restaurant: widget.restaurant,
           amount: (cartContext.totalPrice * 100).round().toString(),
           currency: 'eur',
           card: PaymentCard(

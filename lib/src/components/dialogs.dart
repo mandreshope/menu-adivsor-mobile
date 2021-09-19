@@ -6,7 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/constants/constant.dart';
-import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/models/models.dart';
 import 'package:menu_advisor/src/pages/order.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/DataContext.dart';
@@ -42,7 +42,7 @@ class ConfirmationDialog extends StatelessWidget {
         content,
       ),
       actions: [
-        FlatButton(
+        TextButton(
           onPressed: () {
             Navigator.of(context).pop(false);
           },
@@ -50,7 +50,7 @@ class ConfirmationDialog extends StatelessWidget {
             AppLocalizations.of(context).translate('cancel'),
           ),
         ),
-        FlatButton(
+        TextButton(
           onPressed: () {
             Navigator.of(context).pop(true);
           },
@@ -140,7 +140,7 @@ class BagModal extends StatelessWidget {
             ),
           ),
           Consumer<CartContext>(
-            builder: (_, cartContext, __) => FlatButton(
+            builder: (_, cartContext, __) => TextButton(
               onPressed: () {
                 if (cartContext.itemCount == 0)
                   Fluttertoast.showToast(
@@ -153,10 +153,12 @@ class BagModal extends StatelessWidget {
                     routeName: orderRoute,
                   );
               },
-              padding: const EdgeInsets.all(
-                20.0,
+              style: ButtonStyle(
+                padding: MaterialStateProperty.all(EdgeInsets.all(
+                  20.0,
+                )),
+                backgroundColor: MaterialStateProperty.all(Colors.teal),
               ),
-              color: Colors.teal,
               child: TextTranslator(
                 AppLocalizations.of(context).translate("order"),
                 style: TextStyle(
@@ -412,8 +414,8 @@ class SearchSettingDialog extends StatefulWidget {
   final bool fromCategory;
   final bool fromRestaurantHome;
 
-  bool fromMap;
-  String shedule;
+  final bool fromMap;
+  final String shedule;
 
   SearchSettingDialog(
       {Key key,
@@ -835,7 +837,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
                                       Image.network(
-                                        _.value.imageURL,
+                                        _.value?.imageURL ?? "",
                                         height: 18,
                                         errorBuilder: (_, __, ___) => Center(
                                           child: Icon(
@@ -906,7 +908,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
             ],
             Align(
               alignment: Alignment.centerRight,
-              child: RaisedButton(
+              child: ElevatedButton(
                 onPressed: () => Navigator.of(context).pop(
                   {'filters': filters, 'type': type, 'categorie': categorieType, 'range': distanceAround, "shedule": shedule},
                 ),
@@ -927,8 +929,8 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
 
 class OptionChoiceDialog extends StatefulWidget {
   OptionChoiceDialog({this.food, this.withPrice = true});
-  Food food;
-  bool withPrice;
+  final Food food;
+  final bool withPrice;
 
   @override
   _OptionChoiceDialogState createState() => _OptionChoiceDialogState();
@@ -1066,9 +1068,9 @@ class _OptionChoiceDialogState extends State<OptionChoiceDialog> {
 
 class MessageDialog extends StatelessWidget {
   MessageDialog({Key key, this.message}) : super(key: key);
-  String message;
+  final String message;
 
-  TextEditingController _messageController = TextEditingController();
+  final TextEditingController _messageController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -1129,7 +1131,7 @@ class MessageDialog extends StatelessWidget {
 
 class SheduleDialog extends StatelessWidget {
   SheduleDialog({Key key, this.openingTimes}) : super(key: key);
-  List<OpeningTimes> openingTimes;
+  final List<OpeningTimes> openingTimes;
 
   @override
   Widget build(BuildContext context) {

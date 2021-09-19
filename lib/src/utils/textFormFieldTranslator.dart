@@ -75,17 +75,4 @@ class TextFormFieldTranslator extends StatelessWidget {
               textAlign: textAlign ?? TextAlign.start);
         });
   }
-
-  Future<void> _translateTextDecoration(String lang) async {
-    String label = await decoration.labelText.translator(lang);
-    decoration.labelText?.replaceAll(decoration.labelText, label);
-
-    String hintText = await decoration.hintText?.translator(lang);
-    decoration.hintText?.replaceAll(decoration.hintText, hintText);
-
-    String errorText = await decoration.errorText?.translator(lang);
-    decoration.errorText?.replaceAll(decoration.errorText, errorText);
-
-    return;
-  }
 }

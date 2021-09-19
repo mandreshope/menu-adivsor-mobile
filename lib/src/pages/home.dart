@@ -11,7 +11,7 @@ import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/components/logo.dart';
 import 'package:menu_advisor/src/components/utilities.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
-import 'package:menu_advisor/src/models.dart';
+import 'package:menu_advisor/src/models/models.dart';
 import 'package:menu_advisor/src/pages/order.dart';
 import 'package:menu_advisor/src/pages/search.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
@@ -19,7 +19,7 @@ import 'package:menu_advisor/src/providers/DataContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/stripe.dart';
-import 'package:menu_advisor/src/types.dart';
+import 'package:menu_advisor/src/types/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
@@ -440,7 +440,7 @@ class _HomePageState extends State<HomePage> {
               SectionTitle(
                 "Plat populaires",
               ),
-              /*Container(
+              Container(
                 margin: const EdgeInsets.only(
                   right: 30,
                 ),
@@ -451,11 +451,12 @@ class _HomePageState extends State<HomePage> {
                       child: SearchPage(
                         type: 'food',
                         location: {
-                           "coordinates":currentLocation?.coordinates ?? [0,0]
+                          "coordinates": currentLocation?.coordinates ?? [0, 0]
                         },
-                        filters: {'searchCategory': 'with_price',
-                        // "city":this.city ?? ""
-                        // 'nearest': 'nearest'
+                        filters: {
+                          'searchCategory': 'with_price',
+                          // "city":this.city ?? ""
+                          // 'nearest': 'nearest'
                         },
                       ),
                       routeName: searchRoute,
@@ -466,7 +467,7 @@ class _HomePageState extends State<HomePage> {
                     style: Theme.of(context).textTheme.caption,
                   ),
                 ),
-              ),*/
+              ),
             ],
           ),
           Consumer<DataContext>(

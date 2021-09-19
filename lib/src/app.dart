@@ -12,7 +12,7 @@ import 'package:menu_advisor/src/providers/MenuContext.dart';
 import 'package:menu_advisor/src/providers/OptionContext.dart';
 import 'package:menu_advisor/src/providers/RestaurantContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
-import 'package:menu_advisor/src/theme.dart';
+import 'package:menu_advisor/src/themes/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
 import 'package:responsive_framework/utils/scroll_behavior.dart';

@@ -245,11 +245,19 @@ class _SignupPageState extends State<SignupPage> {
                               labelText: "",
                             ),
                             SizedBox(height: 30),
-                            RaisedButton(
-                              padding: EdgeInsets.all(15),
-                              color: CRIMSON,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
+                            ElevatedButton(
+                              style: ButtonStyle(
+                                padding: MaterialStateProperty.all(
+                                  EdgeInsets.all(15),
+                                ),
+                                backgroundColor: MaterialStateProperty.all(
+                                  CRIMSON,
+                                ),
+                                shape: MaterialStateProperty.all(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
                               ),
                               onPressed: _submitForm,
                               child: loading
@@ -317,7 +325,13 @@ class _SignupPageState extends State<SignupPage> {
       });
       AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
       try {
-        await authContext.signup(email: email, phoneNumber: phoneNumber, password: password, lastName: lastName, firstName: firstName);
+        await authContext.signup(
+          email: email,
+          phoneNumber: phoneNumber,
+          password: password,
+          lastName: lastName,
+          firstName: firstName,
+        );
         RouteUtil.goTo(
           context: context,
           child: ConfirmSms(
