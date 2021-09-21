@@ -152,17 +152,9 @@ class DataContext extends ChangeNotifier {
 
     try {
       recommendedRestaurants.clear();
-      List<Restaurant> temp = await _api.getRecommendedRestaurants(
-          // filters: {
-          //   "searchCategory": "priority",
-          //   "location": "${jsonEncode(location)}",
-          //   // "city":_city
-          //   // 'NEAREST': 'nearest',
-          // },
-          );
+      List<Restaurant> temp = await _api.getRecommendedRestaurants();
 
       recommendedRestaurants = temp.where((element) => element.status).toList();
-      recommendedRestaurants.sort((a, b) => a.priority.compareTo(b.priority));
     } catch (error) {
       print(
         "$logTrace while fetching recommended restaurants",
@@ -222,23 +214,13 @@ class DataContext extends ChangeNotifier {
 
     try {
       popularFoods.clear();
-      List<Food> _popularFoods = await _api.getFoods(
-        // "",
+      List<Food> _popularFoods = await _api.getRecommendedFoods(
         lang,
-        filters: {
-          "searchCategory": "priority",
-          "location": "${jsonEncode(location)}",
-          // "searchCategory": "with_price",
-          // "limit": 5,
-          // "city":""
-        },
-        // type: 'food'
       );
       _popularFoods.forEach((element) {
         element.isPopular = true;
       });
       popularFoods = _popularFoods.where((f) => f.restaurant['referencement'] && f.restaurant['status']).toList();
-      popularFoods.sort((a, b) => a.priority.compareTo(b.priority));
     } catch (error) {
       print(error);
     } finally {

@@ -223,6 +223,7 @@ class Api {
     return http.get(url).then<List<Restaurant>>((response) {
       if (response.statusCode == 200) {
         List<dynamic> list = jsonDecode(response.body);
+        list.sort((a, b) => a["priority"].compareTo(b["priority"]));
         List<Restaurant> restaurants = list.map((data) => Restaurant.fromJson(data["restaurant"])).toList();
         return restaurants;
       }
@@ -255,6 +256,46 @@ class Api {
       if (response.statusCode == 200) {
         List<dynamic> list = jsonDecode(response.body);
         return list.map((data) => Restaurant.fromJson(data)).toList();
+      }
+
+      return Future.error(
+        jsonDecode(response.body),
+      );
+    });
+  }
+
+  getRecommendedFoods(String lang, {Map<String, dynamic> filters, bool fromQrcode = false}) {
+    String query = '?lang=$lang';
+    if (filters != null) {
+      List<String> keys = filters.keys.toList();
+      if (keys.length > 0) {
+        for (int i = 0; i < keys.length; i++) {
+          query += '&';
+          final key = keys[i];
+          query += '$key=${filters[key]}';
+        }
+      }
+    }
+
+    final url = Uri.parse('$_apiURL/platRecommander$query');
+    print("$logTrace $url");
+
+    return http.get(
+      url,
+      headers: {
+        "authorization": "Bearer $_accessToken",
+      },
+    ).then<List<Food>>((response) {
+      if (response.statusCode == 200) {
+        List<dynamic> list = jsonDecode(response.body);
+        list.sort((a, b) => (a["priority"] as int).compareTo(b["priority"]));
+        List<dynamic> listFoodMap = list.map((e) => e["food"]).toList();
+        List<Food> foods = [];
+        if (fromQrcode) {
+          return listFoodMap.map((data) => Food.fromJson(data)).where((element) => element.status).toList();
+        }
+        foods = listFoodMap.map((data) => Food.fromJson(data)).where((element) => element.status && element.statut).toList();
+        return foods;
       }
 
       return Future.error(
@@ -847,7 +888,7 @@ class Api {
       String city = data.features.first.properties.address.city;
       return city;
     }).catchError((onError) {
-      return Future.error(onError.toString());
+      throw onError.toString();
     });
   }
 
