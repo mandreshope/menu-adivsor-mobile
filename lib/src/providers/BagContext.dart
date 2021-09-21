@@ -249,6 +249,12 @@ class CartContext extends ChangeNotifier {
     for (Option option in food.optionSelected) {
       if (option.itemOptionSelected.isEmpty) {
         hasOption = false;
+      } else {
+        /// rehefa obligatoir ny option dia tonga dia afaka mi-ajouter à mon panier
+        /// rehefa avy ni-séléctionner option.itemOption
+        if (option?.isObligatory == true) {
+          hasOption = true;
+        }
       }
     }
     return hasOption;

@@ -65,7 +65,7 @@ class _DetailMenuState extends State<DetailMenu> {
   void initState() {
     super.initState();
     _init();
-    print("menu type ${widget.menu.type}");
+    print("$logTrace type ${widget.menu.type}");
   }
 
   _init() {
@@ -75,7 +75,7 @@ class _DetailMenuState extends State<DetailMenu> {
     _cartContext.itemsTemp.clear();
 
     // sort menu type by priority
-    widget.menu.foods.sort((a, b) => a.food.type.priority.compareTo(b.food.type.priority));
+    // widget.menu.foods.sort((a, b) => a.food.type.priority.compareTo(b.food.type.priority));
     widget.menu.foodsGrouped = widget.menu.foods ?? [];
     widget.menu.count = _cartContext.getFoodCountByIdNew(widget.menu);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -123,14 +123,6 @@ class _DetailMenuState extends State<DetailMenu> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        // backgroundColor: Colors.,
-        /*leading: IconButton(
-          icon: Icon(
-            Icons.keyboard_arrow_left,
-            color: Colors.black,
-          ),
-          onPressed: () => RouteUtil.goBack(context: context),
-        ),*/
         centerTitle: true,
         title: TextTranslator(widget.menu.name),
       ),
@@ -151,16 +143,6 @@ class _DetailMenuState extends State<DetailMenu> {
                     mainAxisSize: MainAxisSize.max,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // _renderHeaderPicture(),
-                      // Divider(),
-                      /* TextTranslator(
-                  widget.menu.name,
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.black,
-                  ),
-                ),
-                Divider(),*/
                       SizedBox(
                         height: 25,
                       ),

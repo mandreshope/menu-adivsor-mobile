@@ -1080,19 +1080,22 @@ class MenuCard extends StatelessWidget {
   final Menu menu;
   final String lang;
   final String restaurant;
-  int count = 0;
+  final int count = 0;
   final bool withPrice;
 
-  MenuCard({Key key, @required this.menu, @required this.lang, this.restaurant, this.withPrice}) : super(key: key);
+  MenuCard({
+    Key key,
+    @required this.menu,
+    @required this.lang,
+    this.restaurant,
+    this.withPrice,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     MenuContext _controller = Provider.of<MenuContext>(context, listen: false);
-    CartContext _cartContext = Provider.of<CartContext>(context, listen: false);
     if (restaurant != null) menu.restaurant = restaurant;
-    // _controller.menu = menu;
     menu.foodsGrouped = menu.foods ?? [];
-    // count = _cartContext.getCount(menu);
 
     return InkWell(
       onTap: () {
@@ -1113,31 +1116,15 @@ class MenuCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  /* menu.imageURL != null
-                      ? FadeInImage.assetNetwork(placeholder: 'assets/images/loading.gif', image: menu.imageURL, width: 100, height: 100, fit: BoxFit.contain)
-                      : SizedBox(
-                          width: 40,
-                          height: 40,
-                          child: Center(
-                            child: Icon(
-                              Icons.food_bank,
-                            ),
-                          ),
-                        ),*/
                   SizedBox(width: 5.0),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      // SizedBox(height: 10,),
                       TextTranslator(
                         menu.name ?? "",
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                       ),
-                      /*  TextTranslator(
-                          menu.description ?? "",
-                          style: TextStyle(),
-                        ),*/
                       _renderListPlat(context, _controller),
                     ],
                   ),
@@ -1211,7 +1198,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
     return Container(
       width: widget.fromHome ? 300 : MediaQuery.of(context).size.width - 50,
       child: AspectRatio(
-        aspectRatio: widget.fromHome ? 1.5 : 2.5,
+        aspectRatio: widget.fromHome ? 2.5 : 3.5,
         child: Card(
           elevation: 4.0,
           color: Colors.white,
@@ -1232,31 +1219,61 @@ class _RestaurantCardState extends State<RestaurantCard> {
               },
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(30),
-                child: Column(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 30.0,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            TextTranslator(
+                              widget.restaurant.name ?? "",
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(height: 5),
+                            TextTranslator(
+                              widget.restaurant.description,
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                     Stack(
                       children: [
                         FadeInImage.assetNetwork(
                           image: widget.restaurant.logo,
                           placeholder: 'assets/images/loading.gif',
-                          width: double.infinity,
-                          height: 70,
+                          width: 120,
                           fit: BoxFit.cover,
                           imageErrorBuilder: (_, __, ___) => Container(
-                            width: double.infinity,
+                            width: 125,
                             height: 70,
                             color: Colors.white,
                           ),
                         ),
-                        Align(
-                          alignment: Alignment.topRight,
+                        Positioned(
+                          right: 0,
                           child: Visibility(
                             visible: Provider.of<AuthContext>(context).currentUser != null,
                             child: Consumer<AuthContext>(
                               builder: (_, authContext, __) => Container(
                                 margin: EdgeInsets.all(10),
-                                height: 50,
-                                width: 50,
+                                height: 40,
+                                width: 40,
                                 child: switchingFavorite
                                     ? Padding(
                                         padding: const EdgeInsets.all(30),
@@ -1268,6 +1285,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                                       )
                                     : ElevatedButton(
                                         style: ButtonStyle(
+                                          padding: MaterialStateProperty.all(EdgeInsets.all(0)),
                                           backgroundColor: MaterialStateProperty.all(CRIMSON),
                                           shape: MaterialStateProperty.all(
                                             RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(60)),
@@ -1293,7 +1311,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                                           child: Icon(
                                             authContext.currentUser?.favoriteRestaurants?.contains(widget.restaurant.id) ?? false ? Icons.favorite : Icons.favorite_border,
                                             color: Colors.white,
-                                            size: 20,
+                                            size: 18,
                                           ),
                                         ),
                                       ),
@@ -1303,41 +1321,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                         ),
                       ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 30.0,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          TextTranslator(
-                            widget.restaurant.name ?? "",
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                          TextTranslator(
-                            widget.restaurant.city,
-                            style: TextStyle(
-                              fontSize: 16,
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                          TextTranslator(
-                            widget.restaurant.address,
-                            style: TextStyle(
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    // ),
                   ],
                 ),
               ),

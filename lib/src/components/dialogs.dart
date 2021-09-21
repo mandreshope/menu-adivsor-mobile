@@ -387,23 +387,24 @@ class SearchSettingDialog extends StatefulWidget {
   final bool isDiscover;
   final bool fromCategory;
   final bool fromRestaurantHome;
-
   final bool fromMap;
   final String shedule;
+  final List<FoodType> restaurantFoodTypes;
 
-  SearchSettingDialog(
-      {Key key,
-      @required this.languageCode,
-      this.fromRestaurantHome = false,
-      this.shedule,
-      @required this.filters,
-      @required this.type,
-      this.inRestaurant = false,
-      this.range = 1,
-      this.isDiscover = false,
-      this.fromMap = false,
-      this.fromCategory = false})
-      : super(key: key);
+  SearchSettingDialog({
+    Key key,
+    @required this.languageCode,
+    this.fromRestaurantHome = false,
+    this.shedule,
+    @required this.filters,
+    @required this.type,
+    this.inRestaurant = false,
+    this.range = 1,
+    this.isDiscover = false,
+    this.fromMap = false,
+    this.fromCategory = false,
+    this.restaurantFoodTypes,
+  }) : super(key: key);
 
   @override
   _SearchSettingDialogState createState() => _SearchSettingDialogState();
@@ -632,42 +633,80 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                           ),
                         ),
                         if (type != 'food')
-                          ...Provider.of<DataContext>(context)
-                              .foodTypes
-                              .map(
-                                (e) => Theme(
-                                  data: ThemeData(
-                                    brightness: filters.containsKey('type') && filters['type'] == e.name ? Brightness.dark : Brightness.light,
-                                    cardColor: filters.containsKey('type') && filters['type'] == e.name ? CRIMSON : Colors.white,
-                                  ),
-                                  child: Card(
-                                    color: filters.containsKey('type') && filters['type'] == e.name ? CRIMSON : Colors.white,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(50),
+                          if (widget.inRestaurant) ...[
+                            ...widget.restaurantFoodTypes
+                                .map(
+                                  (e) => Theme(
+                                    data: ThemeData(
+                                      brightness: filters.containsKey('type') && filters['type'] == e.name ? Brightness.dark : Brightness.light,
+                                      cardColor: filters.containsKey('type') && filters['type'] == e.name ? CRIMSON : Colors.white,
                                     ),
-                                    child: InkWell(
-                                      borderRadius: BorderRadius.circular(50),
-                                      onTap: () {
-                                        setState(() {
-                                          filters['type'] = e.name;
-                                        });
-                                      },
-                                      child: Container(
-                                        padding: const EdgeInsets.all(10),
-                                        child: Row(
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          children: [
-                                            TextTranslator(
-                                              e.name,
-                                            ),
-                                          ],
+                                    child: Card(
+                                      color: filters.containsKey('type') && filters['type'] == e.name ? CRIMSON : Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(50),
+                                      ),
+                                      child: InkWell(
+                                        borderRadius: BorderRadius.circular(50),
+                                        onTap: () {
+                                          setState(() {
+                                            filters['type'] = e.name;
+                                          });
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.all(10),
+                                          child: Row(
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              TextTranslator(
+                                                e.name,
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              )
-                              .toList(),
+                                )
+                                .toList(),
+                          ] else ...[
+                            ...Provider.of<DataContext>(context)
+                                .foodTypes
+                                .map(
+                                  (e) => Theme(
+                                    data: ThemeData(
+                                      brightness: filters.containsKey('type') && filters['type'] == e.name ? Brightness.dark : Brightness.light,
+                                      cardColor: filters.containsKey('type') && filters['type'] == e.name ? CRIMSON : Colors.white,
+                                    ),
+                                    child: Card(
+                                      color: filters.containsKey('type') && filters['type'] == e.name ? CRIMSON : Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(50),
+                                      ),
+                                      child: InkWell(
+                                        borderRadius: BorderRadius.circular(50),
+                                        onTap: () {
+                                          setState(() {
+                                            filters['type'] = e.name;
+                                          });
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.all(10),
+                                          child: Row(
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              TextTranslator(
+                                                e.name,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                          ]
                       ] else ...[
                         if (type != 'food')
                           Theme(
@@ -1388,7 +1427,7 @@ class _AtributesDialogState extends State<AtributesDialog> {
                         children: [
                           FadeInImage.assetNetwork(
                             placeholder: 'assets/images/loading.gif',
-                            image: att.imageURL,
+                            image: att?.imageURL ?? "",
                             height: 25,
                             width: 25,
                             imageErrorBuilder: (_, __, ___) => Container(
@@ -1436,10 +1475,7 @@ class _AtributesDialogState extends State<AtributesDialog> {
           InkWell(
             onTap: () {
               List<FoodAttribute> selectedAttributes = [];
-
-              // selectedAttributes = dataContext.isAllAttribute ? attributes : attributes.where((element) => element.isChecked).toList();
-              selectedAttributes = /*dataContext.isAllAttribute ? [] : */ attributes.where((element) => element.isChecked).toList();
-
+              selectedAttributes = attributes.where((element) => element.isChecked).toList();
               Navigator.of(context).pop(selectedAttributes);
             },
             child: Container(
@@ -1448,7 +1484,15 @@ class _AtributesDialogState extends State<AtributesDialog> {
                 color: TEAL,
               ),
               child: Center(
-                child: TextTranslator("Valider", textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
+                child: TextTranslator(
+                  "Valider",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
+                ),
               ),
             ),
           )

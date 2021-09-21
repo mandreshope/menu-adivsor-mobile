@@ -79,6 +79,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
   String foodType;
 
   Map<String, List<Food>> foods = {};
+  Map<String, List<Food>> foodsLock = {};
 
   Restaurant restaurant;
 
@@ -93,7 +94,6 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
   List<FoodAttribute> attributeFilter;
   List<Menu> menus;
 
-  Map<int, Widget> _segmentChilder;
   List<FoodTypeItem> _foodTypes = [];
 
   RestaurantContext _restaurantContext;
@@ -150,6 +150,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
       ).catchError((onError) {
         print(onError);
       });
+      drinks.sort((a, b) => a.priority.compareTo(b.priority));
 
       tabController = TabController(
         vsync: this,
@@ -157,7 +158,6 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
         length: 3 /*+ restaurant.foodTypes.length*/,
       );
 
-      _segmentChilder = Map();
       restaurant.foodTypes.sort((a, b) => a.priority.compareTo(b.priority));
       _restaurantContext.init(restaurant.foodTypes);
       _foodTypes = _restaurantContext.foodTypes;
@@ -186,12 +186,11 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
       });
 
       _scrollController.addListener(() {
-        print("_scrollController.offset ${_scrollController.offset}");
+        // print("_scrollController.offset ${_scrollController.offset}");
         // if (itemPositionsListener.itemPositions.value.first.index < itemPositionsListener.itemPositions.value.length)
       });
 
       filters['restaurant'] = restaurant.id;
-      // if (restaurant.foodTypes.length > 0) foodType = restaurant.foodTypes.first.name;
 
       restaurant.foodTypes.sort((a, b) => a.priority.compareTo(b.priority));
 
@@ -208,15 +207,22 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
             'type': element,
           },
         );
+
+        ///sort food by priority, ex: 1,5,10,12 (asc)
+        foodsByType.sort((a, b) => a.priority.compareTo(b.priority));
+
         foods[element] = foodsByType;
+        foodsLock[element] = foodsByType;
         // searchResult.addAll(foods[element].where((element) => element.type.tag != "drink").toList());
         searchResult.addAll(foods[element]);
       }
       foods.forEach((key, value) {
         value.forEach((element) {
-          /*element.attributes?.forEach((att) async {
-            element.foodAttributes.add(att);
-          });*/
+          element.allergens = element.allergens;
+        });
+      });
+      foodsLock.forEach((key, value) {
+        value.forEach((element) {
           element.allergens = element.allergens;
         });
       });
@@ -226,10 +232,6 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
       });
 
       menus.sort((a, b) => a.priority.compareTo(b.priority));
-
-      /*await Future.forEach(menus, (element){
-        return Future.forEach(element.foods, (element) => element = api.getFood(id: element.id,lang: "fr"));
-      });*/
 
       setState(() {
         loading = false;
@@ -251,24 +253,37 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
     });
 
     _initSearch();
+  }
 
-    // if (timer?.isActive ?? false) {
-    //   timer.cancel();
-    // }
+  void _iniFilterFood() {
+    foodsLock.forEach((key, value) {
+      foods.addAll(Map.from({key: value.map((e) => Food.copy(e)).toList()}));
+    });
+    setState(() {});
+  }
 
-    // timer = Timer(
-    //   Duration(seconds: 1),
-    //   _initSearch,
-    // );
+  void _filterFood() {
+    _iniFilterFood();
+    foods.updateAll((key, value) {
+      if (attributeFilter.isEmpty) {
+        return value;
+      }
+      for (var attr in attributeFilter) {
+        if (attr.tag.contains("allergen")) {
+          value.retainWhere((food) => !food.allergens.map((e) => e.sId).contains(attr.sId));
+        } else {
+          value.retainWhere((food) => food.attributes.map((e) => e.sId).contains(attr.sId));
+        }
+      }
+      return value;
+    });
+    setState(() {});
   }
 
   Future _initSearch() async {
     if (searchValue == '') {
-      // timer?.cancel();
       return;
     }
-
-    // if (!mounted) return;
 
     String type = filters.containsKey('type') ? filters['type'] : "";
     List<String> attributes = filters.containsKey('attributes') ? filters['attributes'] : [];
@@ -576,6 +591,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                           filters: filters,
                           type: type,
                           range: Provider.of<SettingContext>(context).range,
+                          restaurantFoodTypes: restaurant.foodTypes,
                         ),
                       );
                       if (filters is Map && filters.entries.length > 0) {
@@ -679,11 +695,6 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                     ),
                                     Row(
                                       children: [
-                                        /*  Icon(FontAwesomeIcons.mapPin,size: 15,
-                                          color: CRIMSON,),
-                                           SizedBox(
-                                          width: 5,
-                                        ),*/
                                         TextTranslator(
                                           "Distance : ${Provider.of<SettingContext>(context).distanceBetweenString(restaurant.location.coordinates.last, restaurant.location.coordinates.first)}",
                                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -705,10 +716,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                         InkWell(
                                           onTap: () async {
                                             Position currentPosition = await Geolocator.getCurrentPosition();
-                                            // Position currentPosition = Provider.of<SettingContext>(context).position;
                                             var coordinates = restaurant.location.coordinates;
-                                            // MapUtils.openMap(currentPosition.latitude, currentPosition.longitude,
-                                            // coordinates.last,coordinates.first);
                                             RouteUtil.goTo(
                                               context: context,
                                               child: MapPolylinePage(
@@ -993,8 +1001,10 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                       builder: (_) {
                                         return AtributesDialog();
                                       });
-                                  if (result != null) attributeFilter = result;
-                                  setState(() {});
+                                  if (result != null) {
+                                    attributeFilter = result;
+                                    _filterFood();
+                                  }
                                 },
                               ),
                               alignment: Alignment.centerRight,
@@ -1054,7 +1064,6 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                   ),
                                 ],
                               );
-                            /*if (index == 3 + restaurant.foodTypes.length - 1)*/
                             if (tabController.index == 2)
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,

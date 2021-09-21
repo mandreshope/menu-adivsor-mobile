@@ -291,9 +291,7 @@ class Api {
         if (fromQrcode) {
           return list.map((data) => Food.fromJson(data)).where((element) => element.status).toList();
         }
-        print(list);
         foods = list.map((data) => Food.fromJson(data)).where((element) => element.status && element.statut).toList();
-        print(foods);
         return foods;
       }
 
@@ -540,16 +538,17 @@ class Api {
   }
 
   Future<List<Menu>> getMenus(String lang, String id, {bool fromCommand = true}) {
-    final url = Uri.parse('$_apiURL/restaurants/$id/menus?lang=$lang');
+    ///@deprecated
+    // final url = Uri.parse('$_apiURL/restaurants/$id/menus?lang=$lang');
+    final url = Uri.parse("$_apiURL/restaurants/pages/$id?lang=$lang");
     print("$logTrace $url");
 
     return http.get(url).then<List<Menu>>(
-      // Future<List<Menu>> getMenus(String lang, String id) => http.get('$_apiURL/restaurants/$id/menus').then<List<Menu>>(
       (response) {
-        print("$_apiURL/restaurants/$id/menus?lang=$lang");
+        print("$_apiURL/restaurants/pages/$id?lang=$lang");
         if (response.statusCode == 200) {
-          List datas = jsonDecode(response.body);
-          return datas.map<Menu>((e) => Menu.fromJson(e, fromCommand: fromCommand)).toList();
+          final datas = jsonDecode(response.body);
+          return datas["menu"]?.map<Menu>((e) => Menu.fromJson(e, fromCommand: fromCommand))?.toList() ?? [];
         }
 
         return Future.error(
@@ -946,6 +945,20 @@ class Api {
         .then((value) {
       print("confirmCode $value");
       return true;
+    });
+  }
+
+  Future<List<FoodType>> getFoodTypesByRestaurantId(String restaurantId) {
+    final url = Uri.parse('$_apiURL/foodTypes');
+    print("$logTrace $url");
+
+    return http.get(url).then<List<FoodType>>((response) {
+      if (response.statusCode == 200) {
+        final list = jsonDecode(response.body);
+        final List<FoodType> foodTypes = list.map<FoodType>((data) => FoodType.fromJson(data)).toList();
+        return foodTypes.where((e) => e?.restaurant?.id == restaurantId).toList();
+      }
+      return [];
     });
   }
 

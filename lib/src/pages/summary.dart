@@ -831,7 +831,7 @@ class _SummaryState extends State<Summary> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SectionTitle(
-                "Plat populaires",
+                "Plats recommandés",
               ),
               /*Container(
                 margin: const EdgeInsets.only(

@@ -545,7 +545,7 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SectionTitle(
-                "Nouveau restaurant",
+                "Nouveaux restaurants",
               ),
               Container(
                 margin: const EdgeInsets.only(
@@ -578,8 +578,8 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
           Consumer<DataContext>(builder: (_, dataContext, __) {
-            var restaurants = dataContext.nearestRestaurants;
-            var loading = dataContext.loadingNearestRestaurants;
+            var restaurants = dataContext.newRestaurants;
+            var loading = dataContext.loadingNewRestaurants;
 
             if (loading)
               return Container(

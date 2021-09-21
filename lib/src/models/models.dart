@@ -165,7 +165,9 @@ class Food {
   int get totalPrice {
     int price = (this.price.amount ?? 0);
     if (price == 0) return 0;
-    if (this.optionSelected == null) return price;
+    if (this.optionSelected == null) {
+      return price * quantity;
+    }
     this.optionSelected.forEach((element) {
       element.itemOptionSelected.forEach((e) {
         price += (e.price.amount ?? 0) * e.quantity;
@@ -173,6 +175,18 @@ class Food {
     });
 
     return price * quantity;
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is Food && other.id == id && other.name == name && other.title == title && other.restaurant == restaurant;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^ name.hashCode ^ restaurant.hashCode ^ title.hashCode;
   }
 }
 
@@ -1050,8 +1064,14 @@ class FoodType {
   dynamic tag;
   dynamic name;
   int priority;
+  dynamic restaurant;
 
-  FoodType({this.tag, this.name, this.id});
+  FoodType({
+    this.tag,
+    this.name,
+    this.id,
+    this.restaurant,
+  });
 
   FoodType.fromJson(var json) {
     if (json is String)
@@ -1061,6 +1081,11 @@ class FoodType {
       name = (json['name'] is String) ? json['name'] : json['name']["fr"];
       id = json["_id"];
       priority = json["priority"];
+      restaurant = json["restaurant"] != null
+          ? (json["restaurant"] is String)
+              ? json["restaurant"]
+              : Restaurant.fromJson(json["restaurant"])
+          : null;
     }
   }
 
@@ -1310,12 +1335,27 @@ class Option {
   List<ItemsOption> items;
   String title;
   int maxOptions;
+  bool isObligatory;
 
   List<ItemsOption> itemOptionSelected = [];
 
-  Option({this.sId, this.items, this.title, this.maxOptions, this.itemOptionSelected});
+  Option({
+    this.sId,
+    this.items,
+    this.title,
+    this.maxOptions,
+    this.itemOptionSelected,
+    this.isObligatory,
+  });
 
-  factory Option.copy(Option o) => Option(itemOptionSelected: o.itemOptionSelected?.map((e) => ItemsOption.copy(e))?.toList(), items: o.items, maxOptions: o.maxOptions, sId: o.sId, title: o.title);
+  factory Option.copy(Option o) => Option(
+        itemOptionSelected: o.itemOptionSelected?.map((e) => ItemsOption.copy(e))?.toList(),
+        items: o.items,
+        maxOptions: o.maxOptions,
+        sId: o.sId,
+        title: o.title,
+        isObligatory: o.isObligatory,
+      );
 
   Option.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
@@ -1327,6 +1367,7 @@ class Option {
     }
     title = json['title'];
     maxOptions = json['maxOptions'];
+    isObligatory = json['isObligatory'];
   }
 
   Map<String, dynamic> toJson() {
@@ -1337,11 +1378,11 @@ class Option {
     }
     data['title'] = this.title;
     data['maxOptions'] = this.maxOptions;
+    data['isObligatory'] = this.isObligatory;
     return data;
   }
 
   bool get isMaxOptions {
-    bool isMax = false;
     int val = 0;
     for (ItemsOption itemsOption in itemOptionSelected) {
       val += itemsOption.quantity;

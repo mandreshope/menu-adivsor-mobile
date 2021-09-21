@@ -192,75 +192,6 @@ class _FoodPageState extends State<FoodPage> {
   Widget build(BuildContext context) {
     return !widget.modalMode
         ? Scaffold(
-            /*
-            appBar: AppBar(
-              elevation: 0,
-              backgroundColor: Colors.transparent,
-              leading: IconButton(
-                icon: Icon(
-                  Icons.keyboard_arrow_left,
-                  // color: Colors.black,
-                ),
-                onPressed: () => RouteUtil.goBack(context: context),
-              ),
-              centerTitle: true,
-              title: TextTranslator(widget.food.name),
-              actions: [
-                showFavorite
-                    ? IconButton(
-                        onPressed: !switchingFavorite
-                            ? () async {
-                                AuthContext authContext = Provider.of<AuthContext>(
-                                  context,
-                                  listen: false,
-                                );
-
-                                setState(() {
-                                  switchingFavorite = true;
-                                });
-                                if (!isInFavorite)
-                                  await authContext.addToFavoriteFoods(widget.food);
-                                else
-                                  await authContext.removeFromFavoriteFoods(widget.food);
-                                setState(() {
-                                  switchingFavorite = false;
-                                  isInFavorite = !isInFavorite;
-                                });
-                                Fluttertoast.showToast(
-                                  msg: AppLocalizations.of(context).translate(
-                                    isInFavorite ? 'added_to_favorite' : 'removed_from_favorite',
-                                  ),
-                                );
-                              }
-                            : null,
-                        icon: !switchingFavorite
-                            ? Icon(
-                                isInFavorite ? Icons.favorite : Icons.favorite_border,
-                              )
-                            : SizedBox(
-                                width: 15,
-                                height: 15,
-                                child: FittedBox(
-                                  child: CircularProgressIndicator(
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                      )
-                    : Container(),
-                IconButton(
-                    icon: Icon(
-                      FontAwesomeIcons.share,
-                      // color: Colors.white,
-                    ),
-                    onPressed: () {
-                      Share.share("Menu advisor");
-                    }),
-              ],
-            ),
-            */
             body: mainContent,
           )
         : Scaffold(
@@ -401,22 +332,6 @@ class _FoodPageState extends State<FoodPage> {
           SizedBox(
             height: 10,
           ),
-          //description
-          /* Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 28.0),
-                    child: TextTranslator(
-                      AppLocalizations.of(context).translate('description'),
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Divider(),*/
-
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 28),
             child: TextTranslator(
@@ -427,10 +342,6 @@ class _FoodPageState extends State<FoodPage> {
               ),
             ),
           ),
-          /*SizedBox(
-                    height: 12,
-                  ),*/
-          // Divider(),
         ],
       );
 
@@ -515,12 +426,13 @@ class _FoodPageState extends State<FoodPage> {
                     : InkWell(
                         onTap: () {
                           showDialog(
-                              context: context,
-                              builder: (_) {
-                                return SheduleDialog(
-                                  openingTimes: restaurant.openingTimes,
-                                );
-                              });
+                            context: context,
+                            builder: (_) {
+                              return SheduleDialog(
+                                openingTimes: restaurant.openingTimes,
+                              );
+                            },
+                          );
                         },
                         child: Container(
                           margin: EdgeInsets.symmetric(horizontal: 20),
@@ -895,53 +807,54 @@ class _FoodPageState extends State<FoodPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          /* if (showFavorite)
-                          SizedBox(
-                            width: 20,
-                          ),*/
                           itemCount == 0
                               ? Container()
-                              : Consumer<CartContext>(builder: (_, cartContext, __) {
-                                  this.itemCount = foodAdded.quantity;
-                                  if (this.itemCount == 0) {
-                                    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                                      setState(() {
-                                        _init();
+                              : Consumer<CartContext>(
+                                  builder: (_, cartContext, __) {
+                                    this.itemCount = foodAdded.quantity;
+                                    if (this.itemCount == 0) {
+                                      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                                        setState(() {
+                                          _init();
+                                        });
                                       });
-                                    });
-                                  }
-                                  return itemCount == 0
-                                      ? Container()
-                                      : ButtonItemCountWidget(
-                                          foodAdded,
-                                          onAdded: () async {
-                                            setState(() {
-                                              ++this.itemCount;
-                                              foodAdded.quantity = this.itemCount;
-                                              if (this.itemCount > 1)
-                                                this.isAdded = true;
-                                              else
-                                                this.isAdded = false;
-                                            });
-                                          },
-                                          onRemoved: () {
-                                            setState(() {
-                                              --this.itemCount;
-                                              foodAdded.quantity = this.itemCount;
-                                              if (this.itemCount <= 0) {
-                                                this.itemCount = 0;
-                                                this.isAdded = false;
-                                                _init();
-                                              } else if (itemCount == 1) {
-                                                this.isAdded = false;
-                                              }
-                                            });
-                                          },
-                                          itemCount: foodAdded.quantity,
-                                          isContains: isContains,
-                                          isSmal: false,
-                                        );
-                                })
+                                    }
+                                    return itemCount == 0
+                                        ? Container()
+                                        : ButtonItemCountWidget(
+                                            foodAdded,
+                                            onAdded: () async {
+                                              print("$logTrace increment total price");
+                                              setState(() {
+                                                ++this.itemCount;
+                                                foodAdded.quantity = this.itemCount;
+                                                if (this.itemCount > 1) {
+                                                  this.isAdded = true;
+                                                } else {
+                                                  this.isAdded = false;
+                                                }
+                                              });
+                                            },
+                                            onRemoved: () {
+                                              print("$logTrace decrement total price");
+                                              setState(() {
+                                                --this.itemCount;
+                                                foodAdded.quantity = this.itemCount;
+                                                if (this.itemCount <= 0) {
+                                                  this.itemCount = 0;
+                                                  this.isAdded = false;
+                                                  _init();
+                                                } else if (itemCount == 1) {
+                                                  this.isAdded = false;
+                                                }
+                                              });
+                                            },
+                                            itemCount: foodAdded.quantity,
+                                            isContains: isContains,
+                                            isSmal: false,
+                                          );
+                                  },
+                                )
                         ],
                       ),
                     ],
@@ -992,10 +905,16 @@ class _FoodPageState extends State<FoodPage> {
                                       color: Colors.white,
                                     )
                                   : Container(),
-                              FlatButton(
-                                color: Colors.transparent,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
+                              TextButton(
+                                style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(
+                                    Colors.transparent,
+                                  ),
+                                  shape: MaterialStateProperty.all(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
                                 ),
                                 onPressed: () async {
                                   // if (!widget.food.isPopular)
@@ -1519,6 +1438,7 @@ class _FoodPageState extends State<FoodPage> {
                         child: IconButton(
                           icon: Icon(Icons.add_circle_outlined, color: Colors.grey, size: 25),
                           onPressed: () {
+                            print("$logTrace add");
                             if (this.isAdded) return;
                             if (option.isMaxOptions) {
                               _.value.quantity = 1;

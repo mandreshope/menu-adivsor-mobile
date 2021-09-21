@@ -10,8 +10,8 @@ class DataContext extends ChangeNotifier {
   List<Food> popularFoods = [];
   bool loadingPopularFoods = true;
 
-  List<Restaurant> nearestRestaurants = [];
-  bool loadingNearestRestaurants = true;
+  List<Restaurant> newRestaurants = [];
+  bool loadingNewRestaurants = true;
 
   List<Restaurant> recommendedRestaurants = [];
   bool loadingRecommendedRestaurants = true;
@@ -81,13 +81,13 @@ class DataContext extends ChangeNotifier {
   Future refresh(String lang, Location location) async {
     loadingFoodCategories = true;
     loadingPopularFoods = true;
-    loadingNearestRestaurants = true;
+    loadingNewRestaurants = true;
     loadingOnSiteFoods = true;
     loadingFoodAttributes = true;
     loadingBlog = true;
     notifyListeners();
 
-    await _fetchNearestRestaurants(location, lang);
+    await _fetchNewRestaurants(location, lang);
 
     await _fetchRecommendedRestaurants(location, lang);
 
@@ -118,12 +118,12 @@ class DataContext extends ChangeNotifier {
     }
   }
 
-  _fetchNearestRestaurants(Location location, lang) async {
-    loadingNearestRestaurants = true;
+  _fetchNewRestaurants(Location location, lang) async {
+    loadingNewRestaurants = true;
     notifyListeners();
 
     try {
-      nearestRestaurants.clear();
+      newRestaurants.clear();
       List<Restaurant> temp = await _api.getRestaurants(
         filters: {
           "searchCategory": "priority",
@@ -133,15 +133,15 @@ class DataContext extends ChangeNotifier {
         },
       );
 
-      nearestRestaurants = temp.where((element) => element.status).toList();
-      nearestRestaurants.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      newRestaurants = temp.where((element) => element.status).toList();
+      newRestaurants.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     } catch (error) {
       print(
         "Error while fetching popular restaurants",
       );
       print(error);
     } finally {
-      loadingNearestRestaurants = false;
+      loadingNewRestaurants = false;
       notifyListeners();
     }
   }
@@ -162,7 +162,7 @@ class DataContext extends ChangeNotifier {
           );
 
       recommendedRestaurants = temp.where((element) => element.status).toList();
-      recommendedRestaurants.sort((a, b) => a.priority.compareTo(a.priority));
+      recommendedRestaurants.sort((a, b) => a.priority.compareTo(b.priority));
     } catch (error) {
       print(
         "$logTrace while fetching recommended restaurants",
@@ -204,7 +204,7 @@ class DataContext extends ChangeNotifier {
           return f;
         }
       }).toList();
-      nearbyRestaurants.sort((a, b) => a.priority.compareTo(a.priority));
+      nearbyRestaurants.sort((a, b) => a.priority.compareTo(b.priority));
     } catch (error) {
       print(
         "$logTrace while fetching nearby restaurants",
@@ -265,6 +265,7 @@ class DataContext extends ChangeNotifier {
         },
       );
       onSiteFoods = _onSiteFoods.where((element) => element.status).toList();
+      onSiteFoods.sort((a, b) => a.priority.compareTo(b.priority));
       // _searchResult.take(5).forEach((e) {
       //   onSiteFoods.add(Food.fromJson(e.content));
       // });
@@ -284,6 +285,7 @@ class DataContext extends ChangeNotifier {
     try {
       List<Food> _foods = await _api.getFoods(lang, filters: filters);
       foods = _foods.where((element) => element.status).toList();
+      foods.sort((a, b) => a.priority.compareTo(b.priority));
     } catch (error) {
       print(
         'Error while fetching foods...',
