@@ -59,7 +59,10 @@ class AuthContext extends ChangeNotifier {
         notifyListeners();
         return true;
       }).catchError((error) {
-        return Future.error(error['body']);
+        if (error is Map) {
+          throw error['body']["message"];
+        }
+        throw "Un problème s'est produit lors de la connexion";
       });
 
   Future<bool> logout() async {

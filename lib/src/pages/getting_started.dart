@@ -69,7 +69,7 @@ class _GettingStartedPageState extends State<GettingStartedPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    FlatButton(
+                    TextButton(
                       child: TextTranslator(
                         "Passer".toUpperCase(),
                         style: TextStyle(

@@ -134,10 +134,16 @@ class _ConfirmEmailPageState extends State<ConfirmEmailPage> with SingleTickerPr
               Spacer(),
               Padding(
                 padding: const EdgeInsets.all(20),
-                child: RaisedButton(
-                  padding: EdgeInsets.all(15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                child: ElevatedButton(
+                  style: ButtonStyle(
+                    padding: MaterialStateProperty.all(
+                      EdgeInsets.all(15),
+                    ),
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
                   ),
                   onPressed: _submitForm,
                   child: loading

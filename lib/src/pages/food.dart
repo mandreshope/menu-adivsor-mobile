@@ -84,7 +84,7 @@ class _FoodPageState extends State<FoodPage> {
   _scrollListener() {
     double offset = _scrollController.offset;
     if (offset <= 50) {
-      print("offset $offset");
+      // print("offset $offset");
       isTransparentSink.add(true);
     } else {
       isTransparentSink.add(false);

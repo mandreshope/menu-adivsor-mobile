@@ -27,19 +27,19 @@ class ButtonItemCountWidget extends StatefulWidget {
     this.isMenu = false,
     this.fromRestaurant = false,
   }) : super();
-  Function onAdded;
-  Function onRemoved;
-  Function onPressed;
+  final Function onAdded;
+  final Function onRemoved;
+  final Function onPressed;
   int itemCount;
-  bool isFromDelevery;
-  bool isContains;
-  dynamic food;
-  bool isMenu;
-  bool fromRestaurant;
-  bool withPrice;
-  List<Option> options;
-  int quantity = 0;
-  bool isSmal;
+  final bool isFromDelevery;
+  final bool isContains;
+  final dynamic food;
+  final bool isMenu;
+  final bool fromRestaurant;
+  final bool withPrice;
+  final List<Option> options;
+  final int quantity = 0;
+  final bool isSmal;
 
   @override
   _ButtonItemCountWidgetState createState() => _ButtonItemCountWidgetState();
@@ -89,22 +89,8 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                 return;
               }
             }
-
-            // widget.onAdded(++widget.itemCount);
             int value = ++widget.itemCount;
-            /*if (widget.food.options.isNotEmpty) {
-              var optionSelected = await showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (_) => OptionChoiceDialog(
-                  food: widget.food,
-                  withPrice: widget.withPrice,
-                ),
-              );
-              if (optionSelected != null) _cartContext.addItem(widget.food, value, true);
-            } else {*/
             _cartContext.addItem(widget.food, value, true);
-            //}
           },
           child: FaIcon(
             FontAwesomeIcons.plus,
@@ -133,11 +119,7 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                 size: 12,
               ),
               onPressed: () async {
-                // onRemove
-                // widget.onRemoved(--widget.itemCount);
-                // if (widget.food.quantity == 1){
                 widget.food.quantity--;
-                // }
                 widget.onRemoved();
               },
             ),

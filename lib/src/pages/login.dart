@@ -253,7 +253,7 @@ class _LoginPageState extends State<LoginPage> {
                             );
                           },
                         ),
-                        FlatButton(
+                        TextButton(
                           child: TextTranslator(
                             AppLocalizations.of(context).translate("skip_for_now"),
                           ),
@@ -369,11 +369,19 @@ class _LoginPageState extends State<LoginPage> {
       }
     } catch (error) {
       print("$logTrace login error $error");
-      Fluttertoast.showToast(
-        msg: AppLocalizations.of(context).translate("invalid_email_or_password"),
-        backgroundColor: CRIMSON,
-        textColor: Colors.white,
-      );
+      if (error.contains("Incorrect phone number or password")) {
+        Fluttertoast.showToast(
+          msg: AppLocalizations.of(context).translate("invalid_email_or_password"),
+          backgroundColor: CRIMSON,
+          textColor: Colors.white,
+        );
+      } else {
+        Fluttertoast.showToast(
+          msg: await (error as String).translator(Provider.of<SettingContext>(context, listen: false).languageCode),
+          backgroundColor: CRIMSON,
+          textColor: Colors.white,
+        );
+      }
     } finally {
       setState(() {
         loading = false;

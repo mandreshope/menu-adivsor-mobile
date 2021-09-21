@@ -257,36 +257,16 @@ class OrderButton extends StatelessWidget {
               ],
             ),
           ),
-          // ),
-          /*Align(
-            alignment: Alignment.center,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: 
-              InkWell(
-                onTap: (){
-                   RouteUtil.goTo(
-                    context: context,
-                    child: OrderPage(
-                      withPrice: withPrice,
-                    ),
-                    routeName: orderRoute,
-                  );
-                },
-                child: TextTranslator("Voir le panier",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold
-                ),))
-            ),
-           ),*/
           Visibility(
               visible: true,
               child: Positioned(
                 right: 0,
-                child: RaisedButton(
-                  padding: EdgeInsets.all(25),
+                child: ElevatedButton(
+                  style: ButtonStyle(
+                    padding: MaterialStateProperty.all(
+                      EdgeInsets.all(25),
+                    ),
+                  ),
                   onPressed: () {
                     RouteUtil.goTo(
                       context: context,

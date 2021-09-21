@@ -300,7 +300,19 @@ class _ProfilePageState extends State<ProfilePage> {
                         SizedBox(
                           height: 20,
                         ),
-                        RaisedButton(
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            padding: MaterialStateProperty.all(
+                              const EdgeInsets.symmetric(
+                                vertical: 8,
+                              ),
+                            ),
+                            shape: MaterialStateProperty.all(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(40),
+                              ),
+                            ),
+                          ),
                           onPressed: () {
                             RouteUtil.goTo(
                               context: context,
@@ -308,12 +320,6 @@ class _ProfilePageState extends State<ProfilePage> {
                               routeName: changePasswordRoute,
                             );
                           },
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(40),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 8,
-                          ),
                           child: TextTranslator(
                             AppLocalizations.of(context).translate('change_password'),
                             style: GoogleFonts.raleway(
@@ -335,7 +341,19 @@ class _ProfilePageState extends State<ProfilePage> {
                         SizedBox(
                           height: 5,
                         ),
-                        RaisedButton(
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            padding: MaterialStateProperty.all(
+                              const EdgeInsets.symmetric(
+                                vertical: 8,
+                              ),
+                            ),
+                            shape: MaterialStateProperty.all(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(40),
+                              ),
+                            ),
+                          ),
                           onPressed: () {
                             RouteUtil.goTo(
                               context: context,
@@ -343,12 +361,6 @@ class _ProfilePageState extends State<ProfilePage> {
                               routeName: paymentCardListRoute,
                             );
                           },
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(40),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 8,
-                          ),
                           child: TextTranslator(
                             AppLocalizations.of(context).translate('manage_cards'),
                             style: GoogleFonts.raleway(
@@ -369,7 +381,19 @@ class _ProfilePageState extends State<ProfilePage> {
                         SizedBox(
                           height: 5,
                         ),
-                        RaisedButton(
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            padding: MaterialStateProperty.all(
+                              const EdgeInsets.symmetric(
+                                vertical: 8,
+                              ),
+                            ),
+                            shape: MaterialStateProperty.all(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(40),
+                              ),
+                            ),
+                          ),
                           onPressed: () {
                             RouteUtil.goTo(
                               context: context,
@@ -377,12 +401,6 @@ class _ProfilePageState extends State<ProfilePage> {
                               routeName: favoritesRoute,
                             );
                           },
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(40),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 8,
-                          ),
                           child: TextTranslator(
                             AppLocalizations.of(context).translate('view_favorites'),
                             style: GoogleFonts.raleway(
@@ -404,7 +422,19 @@ class _ProfilePageState extends State<ProfilePage> {
                         SizedBox(
                           height: 5,
                         ),
-                        RaisedButton(
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            padding: MaterialStateProperty.all(
+                              const EdgeInsets.symmetric(
+                                vertical: 8,
+                              ),
+                            ),
+                            shape: MaterialStateProperty.all(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(40),
+                              ),
+                            ),
+                          ),
                           onPressed: () {
                             RouteUtil.goTo(
                               context: context,
@@ -414,12 +444,6 @@ class _ProfilePageState extends State<ProfilePage> {
                               routeName: "",
                             );
                           },
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(40),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 8,
-                          ),
                           child: TextTranslator(
                             "CGV",
                             style: GoogleFonts.raleway(
@@ -433,7 +457,19 @@ class _ProfilePageState extends State<ProfilePage> {
                         SizedBox(
                           height: 5,
                         ),
-                        RaisedButton(
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            padding: MaterialStateProperty.all(
+                              const EdgeInsets.symmetric(
+                                vertical: 8,
+                              ),
+                            ),
+                            shape: MaterialStateProperty.all(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(40),
+                              ),
+                            ),
+                          ),
                           onPressed: () {
                             RouteUtil.goTo(
                               context: context,
@@ -443,12 +479,6 @@ class _ProfilePageState extends State<ProfilePage> {
                               routeName: "",
                             );
                           },
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(40),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 8,
-                          ),
                           child: TextTranslator(
                             "Aide",
                             style: GoogleFonts.raleway(
@@ -462,7 +492,19 @@ class _ProfilePageState extends State<ProfilePage> {
                         SizedBox(
                           height: 5,
                         ),
-                        RaisedButton(
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            padding: MaterialStateProperty.all(
+                              const EdgeInsets.symmetric(
+                                vertical: 8,
+                              ),
+                            ),
+                            shape: MaterialStateProperty.all(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(40),
+                              ),
+                            ),
+                          ),
                           onPressed: () {
                             RouteUtil.goTo(
                               context: context,
@@ -472,12 +514,6 @@ class _ProfilePageState extends State<ProfilePage> {
                               routeName: "",
                             );
                           },
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(40),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 8,
-                          ),
                           child: TextTranslator(
                             "A propos",
                             style: GoogleFonts.raleway(
@@ -491,7 +527,19 @@ class _ProfilePageState extends State<ProfilePage> {
                         SizedBox(
                           height: 5,
                         ),
-                        RaisedButton(
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            padding: MaterialStateProperty.all(
+                              const EdgeInsets.symmetric(
+                                vertical: 8,
+                              ),
+                            ),
+                            shape: MaterialStateProperty.all(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(40),
+                              ),
+                            ),
+                          ),
                           onPressed: () {
                             RouteUtil.goTo(
                               context: context,
@@ -499,12 +547,6 @@ class _ProfilePageState extends State<ProfilePage> {
                               routeName: profileEditRoute,
                             );
                           },
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(40),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 8,
-                          ),
                           child: TextTranslator(
                             "Votre adresse",
                             style: GoogleFonts.raleway(
@@ -518,7 +560,19 @@ class _ProfilePageState extends State<ProfilePage> {
                         SizedBox(
                           height: 5,
                         ),
-                        RaisedButton(
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            padding: MaterialStateProperty.all(
+                              const EdgeInsets.symmetric(
+                                vertical: 8,
+                              ),
+                            ),
+                            shape: MaterialStateProperty.all(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(40),
+                              ),
+                            ),
+                          ),
                           onPressed: () {
                             showDialog<String>(
                                 context: context,
@@ -559,12 +613,6 @@ class _ProfilePageState extends State<ProfilePage> {
                               } else {}
                             });
                           },
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(40),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 8,
-                          ),
                           child: TextTranslator(
                             "Envoyer message vers l'admin",
                             textAlign: TextAlign.center,
@@ -579,33 +627,6 @@ class _ProfilePageState extends State<ProfilePage> {
                         SizedBox(
                           height: 5,
                         ),
-                        /*SizedBox(
-                          height: 20,
-                        ),
-                        RaisedButton(
-                          onPressed: () {
-                            RouteUtil.goTo(
-                              context: context,
-                              child: CommandHistoryPage(),
-                              routeName: commandHistoryRoute,
-                            );
-                          },
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(40),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 15,
-                          ),
-                          child: TextTranslator(
-                            AppLocalizations.of(context).translate('view_command_history'),
-                            style: GoogleFonts.raleway(
-                              textStyle: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                              ),
-                            ),
-                          ),
-                        ),*/
                       ],
                     ),
                   ),
@@ -617,46 +638,4 @@ class _ProfilePageState extends State<ProfilePage> {
       },
     );
   }
-
-  Widget _profilSettings() => Container(
-        height: 250,
-        child: GridView.count(
-          crossAxisCount: 2,
-          //padding: EdgeInsets.all(10),
-          crossAxisSpacing: 15.0,
-          mainAxisSpacing: 15.0,
-          childAspectRatio: 4,
-          children: [
-            _buttonSetting(),
-            _buttonSetting(),
-            _buttonSetting(),
-            _buttonSetting(),
-          ],
-        ),
-      );
-
-  Widget _buttonSetting({Function onTap, String title}) => RaisedButton(
-        onPressed: () {
-          RouteUtil.goTo(
-            context: context,
-            child: ChangePasswordPage(),
-            routeName: changePasswordRoute,
-          );
-        },
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(40),
-        ),
-        padding: const EdgeInsets.symmetric(
-          vertical: 8,
-        ),
-        child: TextTranslator(
-          AppLocalizations.of(context).translate('change_password'),
-          style: GoogleFonts.raleway(
-            textStyle: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-            ),
-          ),
-        ),
-      );
 }

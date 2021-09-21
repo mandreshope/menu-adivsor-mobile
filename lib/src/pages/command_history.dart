@@ -177,58 +177,6 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
                 : Column(
                     children: [
                       Expanded(child: _renderViewItem(commandType)),
-                      /*SizedBox(height: 10,),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      RaisedButton(
-                        padding: EdgeInsets.all(15),
-                        color: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        onPressed: () async {
-                          setState(() {
-                            dateTri = null;
-                          });
-                        },
-                        child: TextTranslator(
-                          "Afficher tous",
-                          style: TextStyle(
-                            color: CRIMSON,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ),
-                      RaisedButton(
-                        padding: EdgeInsets.all(15),
-                        color: CRIMSON,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        onPressed: () async {
-                          DateTime date = await showDatePicker(
-                              context: context, initialDate: DateTime.now(), firstDate: DateTime(2021), lastDate: DateTime(2984));
-
-                          if (date != null){
-                            setState(() {
-                              dateTri = date;
-                            });
-                          }else{
-                            print("date null");
-                          }
-                        },
-                        child: TextTranslator(
-                          "Trie par date",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ),
-                    
-                    ],
-                  ),*/
                       SizedBox(
                         height: 10,
                       ),
@@ -237,25 +185,6 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
   }
 
   Widget _renderViewItem(String title) {
-    /// test tri par date
-    /*   var commandTemp = commands
-        .where((element){
-          if (dateTri != null) {
-            if (element.commandType == title &&
-            element.createdAt.day == dateTri.day &&
-            element.createdAt.month == dateTri.month &&
-            element.createdAt.year == dateTri.year) {
-              return true;
-            }
-            return false;
-          }
-          if (element.commandType == title) return true;
-            return false;
-
-
-    })
-        
-        .toList();*/
     var commandTemp = commands.where((element) => element.commandType == title).toList();
     print(commandTemp);
 

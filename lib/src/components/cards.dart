@@ -1401,15 +1401,16 @@ class _BagItemState extends State<BagItem> {
                       ]
                     ],
                   ],
-                  FlatButton(
-                      onPressed: () {
-                        setState(() {
-                          expand = !expand;
-                        });
-                      },
-                      child: Center(
-                        child: Icon(expand ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down),
-                      ))
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        expand = !expand;
+                      });
+                    },
+                    child: Center(
+                      child: Icon(expand ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down),
+                    ),
+                  )
                 ]
               ],
               if (!widget.food.isMenu && widget.food.optionSelected != null && widget.food.optionSelected.isNotEmpty) ...[
@@ -1418,15 +1419,16 @@ class _BagItemState extends State<BagItem> {
                   _options(widget.food),
                   Divider(),
                 ],
-                FlatButton(
-                    onPressed: () {
-                      setState(() {
-                        expand = !expand;
-                      });
-                    },
-                    child: Center(
-                      child: Icon(expand ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down),
-                    ))
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      expand = !expand;
+                    });
+                  },
+                  child: Center(
+                    child: Icon(expand ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down),
+                  ),
+                )
               ]
               // Divider(),
             ],

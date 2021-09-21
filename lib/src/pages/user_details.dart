@@ -294,13 +294,19 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                   ),*/
                 // ],
                 Spacer(),
-                FlatButton(
-                  color: CRIMSON,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: const EdgeInsets.all(
-                    20.0,
+                TextButton(
+                  style: ButtonStyle(
+                    padding: MaterialStateProperty.all(
+                      EdgeInsets.all(20),
+                    ),
+                    backgroundColor: MaterialStateProperty.all(
+                      CRIMSON,
+                    ),
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
                   ),
                   onPressed: _submitForm,
                   child: this.sendingCommand

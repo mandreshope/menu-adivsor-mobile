@@ -355,7 +355,7 @@ class _OrderPageState extends State<OrderPage> {
                 child: Consumer3<CommandContext, AuthContext, CartContext>(
                   builder: (_, commandContext, authContext, cartContext, __) => Container(
                     width: MediaQuery.of(context).size.width - 100,
-                    child: FlatButton(
+                    child: TextButton(
                       onPressed: () async {
                         if (cartContext.pricelessItems || !widget.withPrice) {
                           commandContext.commandType = 'on_site';
@@ -370,13 +370,19 @@ class _OrderPageState extends State<OrderPage> {
                             );
                         }
                       },
-                      padding: const EdgeInsets.all(
-                        20.0,
+                      style: ButtonStyle(
+                        padding: MaterialStateProperty.all(
+                          EdgeInsets.all(20),
+                        ),
+                        backgroundColor: MaterialStateProperty.all(
+                          Colors.teal,
+                        ),
+                        shape: MaterialStateProperty.all(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      color: Colors.teal,
                       child: isRestaurantLoading
                           ? CupertinoActivityIndicator(
                               animating: true,

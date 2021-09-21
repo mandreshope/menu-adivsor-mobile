@@ -463,7 +463,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                         isSimple: true,
                         content: """Frais de livraison par km : ${widget.restaurant.priceByMiles} km
                             \nDistance entre vous et le restaurant : ${commandContext.getDeliveryDistanceByMiles(widget.restaurant).toInt()} km
-                            \nFrais de livraison par kilomètre : ${commandContext.getDeliveryPriceByMiles(widget.restaurant).toInt()} €
+                            \nTotal frais de livraison que vous deviez payer : ${commandContext.getDeliveryPriceByMiles(widget.restaurant).toInt()} €
                             \nVoulez-vous continuer ?""",
                       ),
                     );

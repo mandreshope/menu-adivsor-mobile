@@ -46,7 +46,7 @@ class _DetailMenuState extends State<DetailMenu> {
   _scrollListener() {
     double offset = _scrollController.offset;
     if (offset <= 50) {
-      print("offset $offset");
+      // print("offset $offset");
       isTransparentSink.add(true);
     } else {
       isTransparentSink.add(false);
@@ -257,10 +257,16 @@ class _DetailMenuState extends State<DetailMenu> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  FlatButton(
-                                    color: Colors.transparent,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
+                                  TextButton(
+                                    style: ButtonStyle(
+                                      backgroundColor: MaterialStateProperty.all(
+                                        Colors.transparent,
+                                      ),
+                                      shape: MaterialStateProperty.all(
+                                        RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                      ),
                                     ),
                                     onPressed: () async {
                                       // if (!restaurant.isOpen) {

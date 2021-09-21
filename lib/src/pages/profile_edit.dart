@@ -164,11 +164,19 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
               SizedBox(
                 height: 30,
               ),
-              RaisedButton(
-                padding: EdgeInsets.all(15),
-                color: CRIMSON,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+              ElevatedButton(
+                style: ButtonStyle(
+                  padding: MaterialStateProperty.all(
+                    EdgeInsets.all(15),
+                  ),
+                  backgroundColor: MaterialStateProperty.all(
+                    CRIMSON,
+                  ),
+                  shape: MaterialStateProperty.all(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
                 ),
                 onPressed: _submitForm,
                 child: inProgress

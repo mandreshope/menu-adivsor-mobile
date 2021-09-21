@@ -190,12 +190,20 @@ class _PaymentCardDetailsPageState extends State<PaymentCardDetailsPage> {
                 Spacer(),
                 Padding(
                   padding: const EdgeInsets.all(30),
-                  child: FlatButton(
-                    color: Colors.teal,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                  child: TextButton(
+                    style: ButtonStyle(
+                      padding: MaterialStateProperty.all(
+                        const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                      ),
+                      backgroundColor: MaterialStateProperty.all(
+                        Colors.teal,
+                      ),
+                      shape: MaterialStateProperty.all(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
                     ),
-                    padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
                     onPressed: _submitForm,
                     child: Row(
                       mainAxisSize: MainAxisSize.max,

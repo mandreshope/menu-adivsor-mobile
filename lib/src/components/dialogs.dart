@@ -272,8 +272,12 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
                     padding: const EdgeInsets.only(
                       right: 25.0,
                     ),
-                    child: RaisedButton(
-                      color: CRIMSON,
+                    child: ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all(
+                          CRIMSON,
+                        ),
+                      ),
                       child: TextTranslator(
                         cartContext.contains(widget.food) ? AppLocalizations.of(context).translate('edit') : AppLocalizations.of(context).translate('add'),
                         style: TextStyle(
@@ -1064,11 +1068,19 @@ class _OptionChoiceDialogState extends State<OptionChoiceDialog> {
                   );
                 },
               ),
-              RaisedButton(
-                padding: EdgeInsets.all(8),
-                color: CRIMSON,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+              ElevatedButton(
+                style: ButtonStyle(
+                  padding: MaterialStateProperty.all(
+                    EdgeInsets.all(8),
+                  ),
+                  backgroundColor: MaterialStateProperty.all(
+                    CRIMSON,
+                  ),
+                  shape: MaterialStateProperty.all(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
                 ),
                 onPressed: () => Navigator.of(context).pop(optionSelected),
                 child: TextTranslator(
