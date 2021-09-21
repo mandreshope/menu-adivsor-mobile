@@ -456,12 +456,19 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                       return;
                     }
 
+                    if (commandContext.getDeliveryDistanceByMiles(widget.restaurant).toInt() > widget.restaurant.deleveryDistanceMax) {
+                      await Fluttertoast.showToast(
+                        msg: "Pas de livraison plus ${widget.restaurant.deleveryDistanceMax} km",
+                      );
+                      return;
+                    }
+
                     final confirm = await showDialog(
                       context: context,
                       builder: (_) => ConfirmationDialog(
                         title: "",
                         isSimple: true,
-                        content: """Frais de livraison par km : ${widget.restaurant.priceByMiles} km
+                        content: """Frais de livraison par km : ${widget.restaurant.priceByMiles} €
                             \nDistance entre vous et le restaurant : ${commandContext.getDeliveryDistanceByMiles(widget.restaurant).toInt()} km
                             \nTotal frais de livraison que vous deviez payer : ${commandContext.getDeliveryPriceByMiles(widget.restaurant).toInt()} €
                             \nVoulez-vous continuer ?""",

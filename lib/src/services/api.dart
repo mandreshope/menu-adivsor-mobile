@@ -458,7 +458,15 @@ class Api {
     });
   }
 
-  Future<List<SearchResult>> search(String query, String lang, {String type, Map<String, dynamic> filters, int range = 20, Map location, bool fromQrcode = false}) {
+  Future<List<SearchResult>> search(
+    String query,
+    String lang, {
+    String type,
+    Map<String, dynamic> filters,
+    int range = 20,
+    Map location,
+    bool fromQrcode = false,
+  }) {
     String searchQuery;
 
     if (location == null) {
@@ -484,7 +492,6 @@ class Api {
           return results.map((e) => SearchResult.fromJson(e)).where((element) => element.content['status'] ?? true).toList();
         }
       }
-
       return Future.error(
         jsonDecode(response.body),
       );

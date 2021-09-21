@@ -475,7 +475,7 @@ class Restaurant {
   /// unit: km
   double get deleveryDistanceMax {
     final String distanceMax = livraison?.matrix?.length != 0 ? livraison?.matrix?.first : 0;
-    final res = (double.tryParse(distanceMax) ?? 0.0) / 1000;
+    final res = (double.tryParse(distanceMax) ?? 0.0);
     return res;
   }
 
