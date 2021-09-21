@@ -931,6 +931,7 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                     'range': distanceAround,
                     "shedule": shedule,
                     "foodAttributSelected": _foodAttributSelected,
+                    "attributes": _foodAttributSelected.map((e) => e.sId).toList(),
                   },
                 ),
                 child: TextTranslator(

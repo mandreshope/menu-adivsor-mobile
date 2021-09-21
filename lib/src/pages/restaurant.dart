@@ -289,21 +289,37 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
     List<String> attributes = filters.containsKey('attributes') ? filters['attributes'] : [];
 
     searchFood = searchResult.where((element) {
-      bool filter = false;
       bool isType = false;
-      if (type.isEmpty && attributes.isEmpty) return true && element.name.toLowerCase().contains(searchValue.toLowerCase());
+      bool isFilter = false;
+      final nameFound = element.name.toLowerCase().contains(searchValue.toLowerCase());
+      if (type.isEmpty && attributes.isEmpty) {
+        return nameFound;
+      }
+      final attributeIds = element.attributes.map((e) => e.sId).toList();
+      if (attributes.isNotEmpty) {
+        for (var attr in attributes) {
+          final attributesFound = attributeIds.contains(attr);
+          if (attributesFound) {
+            isFilter = attributesFound;
+          }
+        }
+      } else {
+        isFilter = nameFound;
+      }
 
-      element.attributes.forEach((att) {
-        if (attributes.contains(att.sId)) filter = true;
-      });
-      // if (element.type category != null)
-      if (type.toLowerCase() == element.type.name.toLowerCase() || type.isEmpty)
-        isType = true;
-      else
-        isType = false;
+      if (type.isNotEmpty) {
+        if (type.toLowerCase() == element.type.name.toLowerCase()) {
+          isType = true;
+        } else {
+          isType = false;
+        }
+      } else {
+        isType = nameFound;
+      }
 
-      return filter && isType && element.name.toLowerCase().contains(searchValue);
+      return isType && isFilter && nameFound;
     }).toList();
+    print(searchFood);
     setState(() {
       searchLoading = false;
     });
@@ -489,7 +505,6 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                               AppLocalizations.of(context).translate('no_result'),
                             ),
                           ),
-
                         ...searchFood
                             .map((e) => Padding(
                                   padding: const EdgeInsets.only(
@@ -501,42 +516,6 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                   ),
                                 ))
                             .toList()
-
-                        // ...searchResults.map((SearchResult e) {
-                        //   if (e.type.toString() == 'SearchResultType.restaurant')
-                        //     return Padding(
-                        //       padding: const EdgeInsets.only(
-                        //         bottom: 10,
-                        //       ),
-                        //       child: RestaurantCard(
-                        //         restaurant: Restaurant.fromJson(e.content),
-                        //         withPrice: widget.withPrice,
-                        //       ),
-                        //     );
-                        //   else if (e.type.toString() == 'SearchResultType.food')
-                        //     return Padding(
-                        //       padding: const EdgeInsets.only(
-                        //         bottom: 10,
-                        //       ),
-                        //       child: FoodCard(
-                        //         food: Food.fromJson(e.content),
-                        //         withPrice: widget.withPrice,
-                        //       ),
-                        //     );
-                        //   else if (e.type.toString() == 'SearchResultType.menu')
-                        //     return Padding(
-                        //       padding: const EdgeInsets.only(
-                        //         bottom: 10,
-                        //       ),
-                        //       child: MenuCard(
-                        //         lang: _lang,
-                        //         withPrice: widget.withPrice,
-                        //         menu: Menu.fromJson(e.content,resto: widget.restaurant),
-                        //       ),
-                        //     );
-
-                        //   return null;
-                        // }).toList(),
                       ],
                     ),
                   ),
