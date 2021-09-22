@@ -693,7 +693,7 @@ class _FoodPageState extends State<FoodPage> {
                                                       ...[
                                                       FadeInImage.assetNetwork(
                                                         placeholder: 'assets/images/loading.gif',
-                                                        image: attribute.imageURL,
+                                                        image: attribute?.imageURL ?? "",
                                                         height: 14,
                                                         imageErrorBuilder: (_, __, ___) => Container(
                                                           width: 14,

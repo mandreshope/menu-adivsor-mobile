@@ -275,12 +275,12 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                     );
                   } else {
                     Fluttertoast.showToast(
-                      msg: 'Echec du paiemenet',
+                      msg: 'Echec du paiement',
                     );
                   }
                 } catch (error) {
                   Fluttertoast.showToast(
-                    msg: 'Echec du paiemenet. Carte invalide',
+                    msg: 'Echec du paiement. Carte invalide',
                   );
                 } finally {
                   setState(() {

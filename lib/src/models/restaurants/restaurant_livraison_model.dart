@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:menu_advisor/src/models/restaurants/restaurant_livraison_matrix_model.dart';
 
 class RestaurantLivraison {
   final List<String> freeCity;

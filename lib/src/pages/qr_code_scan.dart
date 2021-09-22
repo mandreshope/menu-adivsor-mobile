@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/pages/list_lang.dart';
 import 'package:menu_advisor/src/pages/restaurant.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
@@ -90,7 +91,7 @@ class _QRCodeScanPageState extends State<QRCodeScanPage> {
   }
 
   void _handleQRcode(String scanData) async {
-    if (!scanData.startsWith(Api.apiURL)) {
+    if (!scanData.startsWith(QR_CODE_URL)) {
       Fluttertoast.showToast(
         msg: AppLocalizations.of(context).translate('invalid_qr_code'),
       );

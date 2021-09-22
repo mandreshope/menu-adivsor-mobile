@@ -28,6 +28,7 @@ final ThemeData theme = ThemeData(
   ),
   appBarTheme: AppBarTheme(
     centerTitle: true,
+    backgroundColor: CRIMSON,
   ),
   inputDecorationTheme: InputDecorationTheme(
     border: OutlineInputBorder(

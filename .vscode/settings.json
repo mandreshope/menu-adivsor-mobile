@@ -2,5 +2,5 @@
   "dart.lineLength": 200,
   // "editor.formatOnSaveMode": "modifications",
   "editor.formatOnSave": true,
-  "dart.flutterSdkPath": "C:\\flutter_windows_2.2.1-stable"
+  "dart.flutterSdkPath": "C:\\flutter_windows_2.5.1-stable"
 }

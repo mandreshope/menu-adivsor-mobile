@@ -37,7 +37,7 @@ class MapUtils {
       text: title,
       style: TextStyle(
         fontSize: 35.0,
-        color: Theme.of(context).accentColor,
+        color: Theme.of(context).colorScheme.secondary,
         letterSpacing: 1.0,
       ),
     );

@@ -105,7 +105,6 @@ class _BodyState extends State<_Body> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Container(
       child: AnimatedSize(
-          vsync: this,
           duration: widget.sleep,
           child: Container(
             constraints: BoxConstraints(
