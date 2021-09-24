@@ -190,24 +190,10 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                       contentPadding: EdgeInsets.symmetric(horizontal: 10),
                     ),
                     onTap: () async {
-                      // LocationResult result = await showLocationPicker(
-                      //   context,
-                      //   "AIzaSyBu8U8tbY6BlxJezbjt8g3Lzi4k1I75iYw",
-                      //   initialCenter: LatLng(31.1975844, 29.9598339),
-                      //   //                      automaticallyAnimateToCurrentLocation: true,
-                      //   //                      mapStylePath: 'assets/mapStyle.json',
-                      //   myLocationButtonEnabled: true,
-                      //   // requiredGPS: true,
-                      //   layersButtonEnabled: true,
-                      //   // countries: ['AE', 'NG']
-
-                      //   //                      resultCardAlignment: Alignment.bottomCenter,
-                      //   desiredAccuracy: LocationAccuracy.best,
-                      // );
                       LocationResult result = await Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => PlacePicker(
-                            "AIzaSyCL8_ZHnuPxDiElzyy4CCZEbJBv4ankXVc",
+                            GOOGLE_API_KEY,
                             displayLocation: LatLng(31.1975844, 29.9598339),
                           ),
                         ),

@@ -38,6 +38,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
   Restaurant _restaurant;
 
   CommandContext commandContext;
+  AuthContext authContext;
   bool sendingCommand = false;
   TextEditingController addrContr = TextEditingController();
   TextEditingController postalCodeContr = TextEditingController();
@@ -46,6 +47,8 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
 
   bool isCollapseDateTime = false;
   bool isCollapseLivraison = false;
+
+  bool myAddressLoading = false;
 
   //Devant la porte - Rdv à la porte - A l'exterieur -- behind_the_door / on_the_door / out --
 
@@ -57,6 +60,10 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
     _restaurant = widget.restaurant;
     _restaurant.optionLivraison = optionRdv;
     commandContext = Provider.of<CommandContext>(
+      context,
+      listen: false,
+    );
+    authContext = Provider.of<AuthContext>(
       context,
       listen: false,
     );
@@ -104,6 +111,46 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                           ),
                           color: Colors.white,
                           child: TextFormFieldTranslator(
+                            suffixIcon: SizedBox(
+                              width: 100,
+                              child: TextButton(
+                                style: ButtonStyle(backgroundColor: MaterialStateProperty.all(CRIMSON)),
+                                onPressed: () async {
+                                  setState(() {
+                                    myAddressLoading = true;
+                                  });
+                                  final res = await commandContext.getLatLngFromAddress(authContext.currentUser.address);
+                                  if (res != null) {
+                                    addrContr.text = authContext.currentUser.address;
+                                    // addrContr.text = res.formattedAddress;
+                                    final latLng = LatLng(res.geometry.location.lat, res.geometry.location.lng);
+                                    commandContext.deliveryLatLng = latLng;
+                                  } else {
+                                    Fluttertoast.showToast(
+                                      msg: 'Adresse introvable',
+                                    );
+                                  }
+
+                                  setState(() {
+                                    myAddressLoading = false;
+                                  });
+                                },
+                                child: myAddressLoading
+                                    ? SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                        ),
+                                      )
+                                    : Text(
+                                        "Utiliser mon addresse",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                              ),
+                            ),
                             controller: addrContr,
                             keyboardType: TextInputType.streetAddress,
                             textInputAction: TextInputAction.done,
@@ -117,7 +164,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                               LocationResult result = await Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (context) => PlacePicker(
-                                    "AIzaSyCL8_ZHnuPxDiElzyy4CCZEbJBv4ankXVc",
+                                    GOOGLE_API_KEY,
                                     displayLocation: LatLng(31.1975844, 29.9598339),
                                   ),
                                 ),

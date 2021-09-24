@@ -2,15 +2,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_webservice/geocoding.dart';
+import 'package:google_maps_webservice/geolocation.dart';
+import 'package:google_maps_webservice/places.dart';
 import 'package:menu_advisor/src/animations/FadeAnimation.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/components/utilities.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/pages/map_polyline.dart';
 import 'package:menu_advisor/src/pages/photo_view.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
@@ -111,9 +114,14 @@ class _SummaryState extends State<Summary> {
                           onTap: () async {
                             Position currentPosition = await Geolocator.getCurrentPosition();
                             String q = widget.commande.shippingAddress ?? widget.commande.relatedUser["address"];
+
+                            // final geocoding = GoogleMapsGeocoding(apiKey: GOOGLE_API_KEY);
+                            final places = new GoogleMapsPlaces(apiKey: GOOGLE_API_KEY);
+
                             List<Location> locations = [];
                             try {
-                              locations = await locationFromAddress(q);
+                              PlacesSearchResponse response = await places.searchByText(q);
+                              locations = response.results.map((e) => e.geometry.location).toList();
                             } catch (error) {
                               Fluttertoast.showToast(
                                 msg: 'Adresse introvable',
@@ -126,7 +134,7 @@ class _SummaryState extends State<Summary> {
                               child: MapPolylinePage(
                                 restaurant: widget.commande.restaurant,
                                 initialPosition: LatLng(currentPosition.latitude, currentPosition.longitude),
-                                destinationPosition: LatLng(locations.first.latitude, locations.first.longitude),
+                                destinationPosition: LatLng(locations.first.lat, locations.first.lng),
                               ),
                               routeName: restaurantRoute,
                             );

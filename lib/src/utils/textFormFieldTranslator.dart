@@ -24,6 +24,7 @@ class TextFormFieldTranslator extends StatelessWidget {
     this.suffixIcon,
     this.border,
     this.onTap,
+    this.prefixIcon,
   }) : super(key: key);
 
   final FocusNode focusNode;
@@ -43,6 +44,7 @@ class TextFormFieldTranslator extends StatelessWidget {
   final InputBorder border;
   final void Function() onTap;
   final bool enabled;
+  final Widget prefixIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +63,7 @@ class TextFormFieldTranslator extends StatelessWidget {
                   ? InputDecoration(
                       labelText: snapshot.data,
                       suffixIcon: suffixIcon,
+                      prefixIcon: prefixIcon,
                       border: border,
                       prefixText: decoration.prefixText ?? "",
                     )

@@ -33,7 +33,7 @@ class _MapPolylinePageState extends State<MapPolylinePage> {
   LatLng _destinationPosition;
 
   //google maps
-  static final _googleMapsApiKey = "AIzaSyCL8_ZHnuPxDiElzyy4CCZEbJBv4ankXVc";
+  static final _googleMapsApiKey = GOOGLE_API_KEY;
   Completer<GoogleMapController> _mapController = Completer();
   final PolylinePoints _polylinePoints = PolylinePoints();
 

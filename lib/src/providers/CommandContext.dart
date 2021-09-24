@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_webservice/geocoding.dart';
+import 'package:google_maps_webservice/places.dart';
+import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/models/models.dart';
 
 class CommandContext extends ChangeNotifier {
@@ -53,6 +56,18 @@ class CommandContext extends ChangeNotifier {
   }
 
   TimeOfDay get deliveryTime => _deliveryTime;
+
+  Future<PlacesSearchResult> getLatLngFromAddress(String address) async {
+    // final geocoding = GoogleMapsGeocoding(apiKey: GOOGLE_API_KEY);
+    final places = new GoogleMapsPlaces(apiKey: GOOGLE_API_KEY);
+
+    PlacesSearchResponse response = await places.searchByText(address);
+    print(response.results);
+    if (response.results.isNotEmpty) {
+      return response.results.first;
+    }
+    return null;
+  }
 
   double getDeliveryDistanceByMiles(Restaurant restaurant) {
     if (restaurant == null || deliveryLatLng == null) {

@@ -75,7 +75,8 @@ dependencies:
       ref: 5636f06cbe854a18d71e64e4a2d30f733ff0b5d7
   photo_view: ^0.12.0
   responsive_framework: ^0.1.4
-  geocoding: ^2.0.1
+  # geocoding: ^2.0.1
+  google_maps_webservice: ^0.0.20-nullsafety.5
   sliding_up_panel: ^2.0.0+1
   auto_size_text: ^2.1.0
   carousel_slider: ^4.0.0

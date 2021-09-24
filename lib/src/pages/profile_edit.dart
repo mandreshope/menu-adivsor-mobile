@@ -132,7 +132,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                   LocationResult result = await Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => PlacePicker(
-                        "AIzaSyCL8_ZHnuPxDiElzyy4CCZEbJBv4ankXVc",
+                        GOOGLE_API_KEY,
                         displayLocation: LatLng(31.1975844, 29.9598339),
                       ),
                     ),
