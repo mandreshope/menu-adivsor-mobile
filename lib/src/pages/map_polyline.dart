@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
@@ -54,11 +56,11 @@ class _MapPolylinePageState extends State<MapPolylinePage> {
       _currentPosition = Position(
         longitude: _initialPosition.longitude,
         latitude: _initialPosition.latitude,
-        accuracy: null,
-        altitude: null,
-        heading: null,
-        speed: null,
-        speedAccuracy: null,
+        accuracy: 0.0,
+        altitude: 0.0,
+        heading: 0.0,
+        speed: 0.0,
+        speedAccuracy: 0.0,
         timestamp: null,
       );
       _destinationPosition = widget.destinationPosition;
@@ -191,6 +193,11 @@ class _MapPolylinePageState extends State<MapPolylinePage> {
         children: [
           _currentPosition != null
               ? GoogleMap(
+                  gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
+                    Factory<OneSequenceGestureRecognizer>(
+                      () => EagerGestureRecognizer(),
+                    ),
+                  ].toSet(),
                   onTap: (latlong) {
                     setState(() {
                       showInfo = false;
@@ -241,76 +248,6 @@ class _MapPolylinePageState extends State<MapPolylinePage> {
                 restaurant: widget.restaurant,
                 fromMapItineraire: true,
               ),
-              /*            
-               Container(
-                padding: EdgeInsets.all(15),
-                width: 350,
-                // height: 350,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(15)
-                ), 
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextTranslator(
-                      'Nom  ',
-                      style: TextStyle(
-                          color: Colors.black, fontWeight: FontWeight.w600,
-                          fontSize: 12
-                      ),
-                    ),
-                    TextTranslator(
-                      "\t${widget.restaurant.name}",
-                      style: TextStyle(
-                        fontSize: 16
-                      ),
-                    ),
-                    SizedBox(height: 20,),
-                    TextTranslator('Adresse ',
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.w600,
-                            fontSize: 12
-                        ),),
-                    TextTranslator(
-                      "\t${widget.restaurant.address}",
-                      style: TextStyle(
-                          fontSize: 16
-                      ),
-                    ),
-                    SizedBox(height: 20,),
-                    TextTranslator('Tel  ',style: TextStyle(color: Colors.black,fontWeight: FontWeight.w600,fontSize: 12),),
-                    TextTranslator(
-                      "\t${widget.restaurant.phoneNumber}",
-                      style: TextStyle(
-                          fontSize: 16
-                      ),
-                    ),
-                    SizedBox(height: 20,),
-                    InkWell(
-                      onTap: (){
-                      RouteUtil.goBack(context: context);
-                    },
-                    child: Container(
-                        width: double.infinity,
-                        height: 45,
-                        decoration: BoxDecoration(
-                          color: CRIMSON,
-                          borderRadius: BorderRadius.circular(12)
-                        ),
-                        child: Center(
-                          child: TextTranslator("Voir restaurant",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600
-                          ),),
-                        )),
-                    ),
-                  ],
-                ),
-              ),
-*/
             ),
           )
         ],

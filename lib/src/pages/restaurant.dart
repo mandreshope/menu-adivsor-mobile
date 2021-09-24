@@ -675,8 +675,14 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                     Row(
                                       children: [
                                         TextTranslator(
-                                          "Distance : ${Provider.of<SettingContext>(context).distanceBetweenString(restaurant.location.coordinates.last, restaurant.location.coordinates.first)}",
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                          "Distance : ${Provider.of<SettingContext>(context).distanceBetweenString(
+                                            restaurant.location.coordinates.last,
+                                            restaurant.location.coordinates.first,
+                                          )}",
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                       ],
                                     ),

@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -213,7 +215,8 @@ class _MapPageState extends State<MapPage> {
           }
           // return (restaurant.isOpen == (isopen == "Ouvert" ? true : false)) && restaurant.status;
         }).toList();
-      } catch (error) {} finally {
+      } catch (error) {
+      } finally {
         if (mounted)
           setState(() {
             _loading = false;
@@ -272,10 +275,14 @@ class _MapPageState extends State<MapPage> {
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Stack(
-          fit: StackFit.expand,
           children: [
             _currentPosition != null
                 ? GoogleMap(
+                    gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
+                      Factory<OneSequenceGestureRecognizer>(
+                        () => EagerGestureRecognizer(),
+                      ),
+                    ].toSet(),
                     mapType: MapType.normal,
                     initialCameraPosition: CameraPosition(
                       target: LatLng(_currentPosition.latitude, _currentPosition.longitude),
