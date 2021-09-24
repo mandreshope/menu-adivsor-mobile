@@ -86,16 +86,16 @@ class _SearchPageState extends State<SearchPage> {
     });
     try {
       var results = await _api.search(
-        _searchValue,
-        Provider.of<SettingContext>(
-          context,
-          listen: false,
-        ).languageCode,
-        type: filters.containsKey("category") && !filters.containsKey("attributes") ? type = 'restaurant' : type,
-        filters: filters,
-        range: range,
-        location: widget.location,
-      );
+          _searchValue,
+          Provider.of<SettingContext>(
+            context,
+            listen: false,
+          ).languageCode,
+          type: filters.containsKey("category") && !filters.containsKey("attributes") ? type = 'restaurant' : type,
+          filters: filters,
+          range: range,
+          location: null //TODO: change to widget.location when geocoding web is ok
+          );
       setState(() {
         _searchResults = results.where((search) {
           if (search.type.toString() == "SearchResultType.food") {
