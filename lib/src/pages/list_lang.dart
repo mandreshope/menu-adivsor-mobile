@@ -38,6 +38,18 @@ class ListLang extends StatelessWidget {
             String code;
             if (langFromQRcode != null) {
               code = langFromQRcode[position];
+              switch (code.codeCountry) {
+                case "zh-CN":
+                  code = "cn";
+                  break;
+                case "hi":
+                  code = "in";
+                  break;
+                case "ja":
+                  code = "jp";
+                  break;
+                default:
+              }
             } else {
               code = _settingContext.supportedLanguages[position];
             }
