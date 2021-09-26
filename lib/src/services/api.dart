@@ -721,6 +721,8 @@ class Api {
   Future<Map> sendCommand({
     String relatedUser,
     String commandType,
+    bool discountIsPrice,
+    String discount,
     int totalPrice,
     String restaurant,
     var items,
@@ -747,6 +749,8 @@ class Api {
         post = jsonEncode({
           'relatedUser': relatedUser,
           'commandType': commandType,
+          'discountIsPrice': discountIsPrice,
+          'discount': discount,
           'totalPrice': totalPrice.toString(),
           'restaurant': restaurant,
           'items': items,

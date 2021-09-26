@@ -292,34 +292,6 @@ class _OrderPageState extends State<OrderPage> {
                 ),
               ),
               if (widget.withPrice) ...[
-                /*_cartContext.pricelessItems ? Container() :
-                Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            TextTranslator(
-                              'Frais de livraison : ',
-                              style: TextStyle(
-                                fontWeight: FontWeight.normal,
-                                fontSize: 18,
-                                color: Colors.grey
-                              ),
-                            ),
-                            Text(
-                              _restaurant?.priceDelevery == null ? "" : '${_restaurant?.priceDelevery/100 ?? ''}€',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                                color: Colors.grey
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),*/
                 Consumer<CartContext>(
                   builder: (_, cartContext, __) => cartContext.pricelessItems
                       ? Container()
@@ -327,23 +299,57 @@ class _OrderPageState extends State<OrderPage> {
                           padding: const EdgeInsets.symmetric(
                             horizontal: 20,
                           ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          child: Column(
                             children: [
-                              TextTranslator(
-                                '${AppLocalizations.of(context).translate('total_to_pay')} : ',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: 18,
+                              Visibility(
+                                visible: ((_restaurant?.delivery == true) || (_restaurant?.aEmporter == true)) && ((double.tryParse(_restaurant?.discount ?? "0.0") ?? 0.0) > 0),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        TextTranslator(
+                                          'Remise ${_restaurant?.discountType == "SurTotalité" ? "sur la totalité" : _restaurant?.discountType == "SurTransport" ? "sur le transport" : "sur la commande"}: ',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.normal,
+                                            fontSize: 18,
+                                          ),
+                                        ),
+                                        Text(
+                                          _restaurant?.discountIsPrice == true ? '${_restaurant?.discount ?? 0} €' : '${_restaurant?.discount ?? 0} % ',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                  ],
                                 ),
                               ),
-                              Text(
-                                !Provider.of<CartContext>(context, listen: false).withPrice ? "_" : '${cartContext.totalPrice.toStringAsFixed(2)}€',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                ),
+                              Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  TextTranslator(
+                                    '${AppLocalizations.of(context).translate('total_to_pay')}: ',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                  Text(
+                                    !cartContext.withPrice ? "_" : '${cartContext.totalPrice.toStringAsFixed(2)}€',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),

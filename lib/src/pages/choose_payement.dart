@@ -69,17 +69,34 @@ class ChoosePayement extends StatelessWidget {
               priceLivraison = (restaurant.priceDelevery != null ? restaurant.priceDelevery : 0).toInt();
               totalPrice = ((cartContext.totalPrice * 100) + priceLivraison).round();
             } else {
-              if (commandContext.commandType == "delivery") {
+              if (commandContext.commandType == "delivery" || commandContext.commandType == "delivery") {
                 if (restaurant.isFreeCP(commandContext.deliveryAddress) || restaurant.isFreeCity(commandContext.deliveryAddress)) {
                   /// livraison gratuite
                   priceLivraison = 0;
                 } else {
                   priceLivraison = commandContext.getDeliveryPriceByMiles(restaurant).toInt();
+                  if (restaurant.discountType == "SurTransport") {
+                    priceLivraison = cartContext.calculremise(totalPrice: priceLivraison.toDouble(), restaurant: restaurant).toInt();
+                    if (priceLivraison.isNegative) {
+                      priceLivraison = 0;
+                    }
+                    totalPrice = (cartContext.totalPrice + priceLivraison).toInt();
+                  } else if (restaurant.discountType == "SurCommande") {
+                    int totalPriceWithRemise = cartContext.calculremise(totalPrice: cartContext.totalPrice, restaurant: restaurant).toInt();
+                    if (totalPriceWithRemise.isNegative) {
+                      totalPriceWithRemise = 0;
+                    }
+                    totalPrice = (totalPriceWithRemise + priceLivraison).toInt();
+                  } else {
+                    totalPrice = cartContext.calculremise(totalPrice: cartContext.totalPrice + priceLivraison, restaurant: restaurant).toInt();
+                    if (totalPrice.isNegative) {
+                      totalPrice = 0;
+                    }
+                  }
                 }
               }
-              totalPrice = ((cartContext.totalPrice * 100) + priceLivraison).round();
+              totalPrice = (totalPrice * 100).toInt();
             }
-
             var command = await Api.instance.sendCommand(
               priceLivraison: priceLivraison.toString(),
               paiementLivraison: true,
@@ -96,18 +113,22 @@ class ChoosePayement extends StatelessWidget {
                   .map((e) => {'quantity': e.quantity, 'item': e.id, 'options': e.optionSelected != null ? e.optionSelected : [], 'comment': e.message})
                   .toList(),
               restaurant: cartContext.currentOrigin,
+              discountIsPrice: (restaurant != null && restaurant?.discountIsPrice != null) ? restaurant?.discountIsPrice : "",
+              discount: (restaurant != null && restaurant?.discount != null) ? restaurant?.discount : "0",
               totalPrice: totalPrice,
               menu: cartContext.items.where((e) => e.isMenu).map((e) => {'quantity': e.quantity, 'item': e.id, 'foods': e.foodMenuSelecteds}).toList(),
               shippingAddress: commandContext.deliveryAddress,
               shipAsSoonAsPossible: commandContext.deliveryDate == null && commandContext.deliveryTime == null,
-              shippingTime: commandContext.deliveryDate
-                      ?.add(
-                        Duration(
-                          minutes: commandContext.deliveryTime.hour * 60 + commandContext.deliveryTime.minute,
-                        ),
-                      )
-                      ?.millisecondsSinceEpoch ??
-                  null,
+              shippingTime: (commandContext.deliveryDate == null && commandContext.deliveryTime == null)
+                  ? null
+                  : commandContext.deliveryDate
+                          ?.add(
+                            Duration(
+                              minutes: commandContext.deliveryTime.hour * 60 + commandContext.deliveryTime.minute,
+                            ),
+                          )
+                          ?.millisecondsSinceEpoch ??
+                      null,
               priceless: !cartContext.withPrice,
             );
             Command cm = Command.fromJson(command);

@@ -172,17 +172,35 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                   int priceLivraison = 0;
                   if (widget.restaurant.deliveryFixed) {
                     priceLivraison = (widget.restaurant.priceDelevery != null ? widget.restaurant.priceDelevery : 0).toInt();
-                    totalPrice = ((cartContext.totalPrice * 100) + priceLivraison).round();
+                    totalPrice = ((cartContext.totalPrice + priceLivraison) * 100).round();
                   } else {
-                    if (commandContext.commandType == "delivery") {
+                    if (commandContext.commandType == "delivery" || commandContext.commandType == "delivery") {
                       if (widget.restaurant.isFreeCP(commandContext.deliveryAddress) || widget.restaurant.isFreeCity(commandContext.deliveryAddress)) {
                         /// livraison gratuite
                         priceLivraison = 0;
                       } else {
                         priceLivraison = commandContext.getDeliveryPriceByMiles(widget.restaurant).toInt();
+                        if (widget.restaurant.discountType == "SurTransport") {
+                          priceLivraison = cartContext.calculremise(totalPrice: priceLivraison.toDouble(), restaurant: widget.restaurant).toInt();
+                          if (priceLivraison.isNegative) {
+                            priceLivraison = 0;
+                          }
+                          totalPrice = (cartContext.totalPrice + priceLivraison).toInt();
+                        } else if (widget.restaurant.discountType == "SurCommande") {
+                          int totalPriceWithRemise = cartContext.calculremise(totalPrice: cartContext.totalPrice, restaurant: widget.restaurant).toInt();
+                          if (totalPriceWithRemise.isNegative) {
+                            totalPriceWithRemise = 0;
+                          }
+                          totalPrice = (totalPriceWithRemise + priceLivraison).toInt();
+                        } else {
+                          totalPrice = cartContext.calculremise(totalPrice: cartContext.totalPrice + priceLivraison, restaurant: widget.restaurant).toInt();
+                          if (totalPrice.isNegative) {
+                            totalPrice = 0;
+                          }
+                        }
                       }
                     }
-                    totalPrice = ((cartContext.totalPrice * 100) + priceLivraison).round();
+                    totalPrice = (totalPrice * 100).toInt();
                   }
 
                   StripeTransactionResponse payment = await StripeService.payViaExistingCard(
@@ -215,6 +233,8 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                 })
                             .toList(),
                         restaurant: cartContext.currentOrigin,
+                        discountIsPrice: (widget.restaurant != null && widget.restaurant?.discountIsPrice != null) ? widget.restaurant?.discountIsPrice : "",
+                        discount: (widget.restaurant != null && widget.restaurant?.discount != null) ? widget.restaurant?.discount : "0",
                         totalPrice: totalPrice,
                         menu: cartContext.items
                             .where((e) => e.isMenu)

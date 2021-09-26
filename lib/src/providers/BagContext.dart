@@ -119,6 +119,45 @@ class CartContext extends ChangeNotifier {
     return totalPrice;
   }
 
+  //in Euro
+  double priceOrPourcent({
+    @required double totalPrice,
+    @required Restaurant restaurant,
+  }) {
+    final discount = (double.tryParse(restaurant?.discount ?? "0.0") ?? 0.0 / 100);
+    if (restaurant != null && restaurant.discountIsPrice) {
+      return totalPrice - discount;
+    }
+
+    if (restaurant != null && !restaurant.discountIsPrice) {
+      final remiseInEuro = ((totalPrice * discount) / 100);
+      return (totalPrice - remiseInEuro);
+    }
+    return 0;
+  }
+
+  double calculremise({
+    @required double totalPrice,
+    @required Restaurant restaurant,
+  }) {
+    if (restaurant == null) {
+      return totalPrice;
+    }
+    if (restaurant.discountType == 'SurTotalité') {
+      return priceOrPourcent(totalPrice: totalPrice, restaurant: restaurant);
+    }
+
+    if (restaurant.discountType == 'SurTransport' && restaurant != null && (restaurant.delivery)) {
+      return priceOrPourcent(totalPrice: totalPrice, restaurant: restaurant);
+    }
+
+    if (restaurant.discountType == 'SurCommande' && restaurant != null && (restaurant.aEmporter)) {
+      return priceOrPourcent(totalPrice: totalPrice, restaurant: restaurant);
+    }
+
+    return totalPrice;
+  }
+
   bool contains(dynamic food) {
     if (food.isFoodForMenu)
       return _items.firstWhere(

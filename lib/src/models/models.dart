@@ -437,6 +437,8 @@ class Restaurant {
   final String postalCode;
   final String fixedLinePhoneNumber;
   final String discount;
+  final bool discountIsPrice;
+  final String discountType;
   final String qrcodeLink;
   final String qrcodePricelessLink;
   final String customerStripeKey;
@@ -474,7 +476,7 @@ class Restaurant {
 
   /// unit: km
   double get deleveryDistanceMax {
-    final String distanceMax = livraison?.matrix?.length != 0 ? livraison?.matrix?.first : 0;
+    final String distanceMax = livraison?.matrix?.length != 0 ? livraison?.matrix?.first : "0";
     final res = (double.tryParse(distanceMax) ?? 0.0);
     return res;
   }
@@ -511,6 +513,8 @@ class Restaurant {
     this.city,
     this.codeappartement,
     this.discount,
+    this.discountIsPrice,
+    this.discountType,
     this.fixedLinePhoneNumber,
     this.isBoissonActive,
     this.isMenuActive,
@@ -561,6 +565,8 @@ class Restaurant {
       codeappartement: json['codeappartement'],
       city: json['city'],
       discount: json['discount'],
+      discountIsPrice: json['discountIsPrice'],
+      discountType: json['discountType'],
       fixedLinePhoneNumber: json['fixedLinePhoneNumber'],
       isBoissonActive: json['isBoissonActive'],
       isMenuActive: json['isMenuActive'],
@@ -836,6 +842,8 @@ class Command {
   final String id;
   final dynamic relatedUser;
   final String commandType;
+  final String discount;
+  final bool discountIsPrice;
   final int totalPrice;
   final bool validated;
   final bool revoked;
@@ -883,6 +891,8 @@ class Command {
     this.paiementLivraison,
     this.customer,
     this.priceLivraison,
+    this.discount,
+    this.discountIsPrice,
   });
 
   factory Command.fromJson(Map<String, dynamic> json) => Command(
@@ -890,6 +900,8 @@ class Command {
         relatedUser: json['relatedUser'],
         commandType: json['commandType'],
         totalPrice: json['totalPrice'],
+        discountIsPrice: json['discountIsPrice'],
+        discount: json['discount'],
         validated: json['validated'],
         revoked: json['revoked'],
         items: json['items'] != null ? (json['items'] as List).map((e) => CommandItem.fromJson(e)).toList() : [],

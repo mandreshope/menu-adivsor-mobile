@@ -8,6 +8,7 @@ import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/pages/confirm_sms.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
+import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/CommandContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
@@ -125,6 +126,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                     // addrContr.text = res.formattedAddress;
                                     final latLng = LatLng(res.geometry.location.lat, res.geometry.location.lng);
                                     commandContext.deliveryLatLng = latLng;
+                                    commandContext.deliveryAddress = authContext.currentUser.address;
                                   } else {
                                     Fluttertoast.showToast(
                                       msg: 'Adresse introvable',
@@ -481,6 +483,10 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                       context,
                       listen: false,
                     );
+                    CartContext cartContext = Provider.of<CartContext>(
+                      context,
+                      listen: false,
+                    );
 
                     if (widget.restaurant.deliveryFixed == true) {
                       _next(authContext);
@@ -502,24 +508,91 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                       _next(authContext);
                       return;
                     }
-
-                    if (commandContext.getDeliveryDistanceByMiles(widget.restaurant).toInt() > widget.restaurant.deleveryDistanceMax) {
+                    final distance = commandContext.getDeliveryDistanceByMiles(widget.restaurant).toInt();
+                    if ((distance > widget.restaurant.deleveryDistanceMax) && widget.restaurant.deleveryDistanceMax != 0) {
                       await Fluttertoast.showToast(
                         msg: "Pas de livraison plus ${widget.restaurant.deleveryDistanceMax} km",
                       );
                       return;
                     }
+                    int priceLivraison = commandContext.getDeliveryPriceByMiles(widget.restaurant).toInt();
+                    int totalDeliveryPriceWithRemise = cartContext.calculremise(totalPrice: priceLivraison.toDouble(), restaurant: widget.restaurant).toInt();
 
+                    final deliveryPrice = "Frais de livraison par km : ${widget.restaurant.priceByMiles} €";
+                    final totalDeliveryPrice = "Total frais de livraison : $priceLivraison €";
+                    final totalDeliveryPriceWithRemiseMsg = "Total frais de livraison avec remise à payer : ${totalDeliveryPriceWithRemise.isNegative ? 0 : totalDeliveryPriceWithRemise} €";
+                    final distanceCustomerResto = "Distance entre vous et le restaurant : ${commandContext.getDeliveryDistanceByMiles(widget.restaurant).toInt()} km";
+                    final totalPrice = "Total à payer : ${cartContext.totalPrice + priceLivraison} €";
+                    String remise;
+                    String totalPriceWithRemiseMsg;
+                    if (((_restaurant?.delivery == true) || (_restaurant?.aEmporter == true)) && ((double.tryParse(_restaurant?.discount ?? "0.0") ?? 0.0) > 0)) {
+                      String remiseMsg =
+                          "Remise ${_restaurant.discountType == "SurTotalité" ? "sur la totalité" : _restaurant.discountType == "SurTransport" ? "sur le transport" : "sur la commande"}";
+                      remise = "$remiseMsg : ${_restaurant?.discountIsPrice == true ? '${_restaurant?.discount ?? 0} €' : '${_restaurant?.discount ?? 0} % '}";
+
+                      if (_restaurant.discountType == "SurTransport") {
+                        priceLivraison = cartContext.calculremise(totalPrice: priceLivraison.toDouble(), restaurant: _restaurant).toInt();
+                        if (priceLivraison.isNegative) {
+                          priceLivraison = 0;
+                        }
+                        totalPriceWithRemiseMsg = "Total à payer avec $remiseMsg : ${cartContext.totalPrice + priceLivraison} €";
+                      } else if (_restaurant.discountType == "SurCommande") {
+                        int totalPriceWithRemise = cartContext.calculremise(totalPrice: cartContext.totalPrice, restaurant: _restaurant).toInt();
+                        if (totalPriceWithRemise.isNegative) {
+                          totalPriceWithRemise = 0;
+                        }
+                        totalPriceWithRemiseMsg = "Total à payer avec $remiseMsg : ${totalPriceWithRemise + priceLivraison} €";
+                      } else {
+                        totalPriceWithRemiseMsg = "Total à payer avec $remiseMsg : ${cartContext.calculremise(totalPrice: cartContext.totalPrice + priceLivraison, restaurant: widget.restaurant)} €";
+                      }
+                    }
                     final confirm = await showDialog(
                       context: context,
                       builder: (_) => ConfirmationDialog(
-                        title: "",
-                        isSimple: true,
-                        content: """Frais de livraison par km : ${widget.restaurant.priceByMiles} €
-                            \nDistance entre vous et le restaurant : ${commandContext.getDeliveryDistanceByMiles(widget.restaurant).toInt()} km
-                            \nTotal frais de livraison que vous deviez payer : ${commandContext.getDeliveryPriceByMiles(widget.restaurant).toInt()} €
-                            \nVoulez-vous continuer ?""",
-                      ),
+                          title: "",
+                          isSimple: true,
+                          content: null,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              TextTranslator(
+                                deliveryPrice,
+                              ),
+                              TextTranslator(
+                                distanceCustomerResto,
+                              ),
+                              Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (_restaurant.discountType == "SurTransport") ...[
+                                    TextTranslator(
+                                      totalDeliveryPrice,
+                                    ),
+                                    TextTranslator(
+                                      totalDeliveryPriceWithRemiseMsg,
+                                    ),
+                                  ] else ...[
+                                    TextTranslator(
+                                      totalDeliveryPrice,
+                                    ),
+                                  ],
+                                ],
+                              ),
+                              TextTranslator(
+                                totalPrice,
+                              ),
+                              if (totalPriceWithRemiseMsg != null) ...[
+                                TextTranslator(
+                                  remise,
+                                ),
+                                TextTranslator(
+                                  totalPriceWithRemiseMsg,
+                                ),
+                              ]
+                            ],
+                          )),
                     );
                     if (confirm != true) {
                       return;

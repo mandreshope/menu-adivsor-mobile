@@ -256,13 +256,61 @@ class _SummaryState extends State<Summary> {
                       ),
                       Divider(),
                     ],
+                    Visibility(
+                      visible: ((widget.commande?.restaurant?.delivery == true) || (widget.commande?.restaurant?.aEmporter == true)) &&
+                          ((double.tryParse(widget.commande?.restaurant?.discount ?? "0.0") ?? 0.0) > 0),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                TextTranslator(
+                                  'Remise ${widget.commande?.restaurant?.discountType == "SurTotalité" ? "sur la totalité" : widget.commande?.restaurant?.discountType == "SurTransport" ? "sur le transport" : "sur la commande"}: ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                                Text(
+                                  widget.commande?.restaurant?.discountIsPrice == true ? '${widget.commande?.restaurant?.discount ?? 0} €' : '${widget.commande?.restaurant?.discount ?? 0} % ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Divider(),
+                        ],
+                      ),
+                    ),
+
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                       child: Row(
                         children: [
-                          TextTranslator('Total', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                          TextTranslator(
+                            'Total',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                           Spacer(),
-                          widget.commande.priceless ? Text(" ") : Text('${widget.commande.totalPrice / 100} €', style: TextStyle(fontSize: 16, color: CRIMSON, fontWeight: FontWeight.bold)),
+                          widget.commande.priceless
+                              ? Text(" ")
+                              : Text(
+                                  '${widget.commande.totalPrice / 100} €',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: CRIMSON,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                         ],
                       ),
                     ),

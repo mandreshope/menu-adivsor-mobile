@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models/models.dart';
@@ -84,7 +85,11 @@ class _FavoritesPageState extends State<FavoritesPage> with SingleTickerProvider
       data: Theme.of(context).copyWith(
         appBarTheme: AppBarTheme(
           color: Colors.white,
-          brightness: Brightness.light,
+          systemOverlayStyle: SystemUiOverlayStyle(
+            statusBarBrightness: Brightness.light,
+            statusBarIconBrightness: Brightness.light,
+            systemNavigationBarIconBrightness: Brightness.light,
+          ),
           centerTitle: false,
           iconTheme: IconThemeData(
             color: Colors.black,

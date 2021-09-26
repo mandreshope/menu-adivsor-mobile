@@ -21,12 +21,14 @@ import 'package:provider/provider.dart';
 class ConfirmationDialog extends StatelessWidget {
   final String title;
   final String content;
+  final Widget child;
   final bool isSimple;
 
   const ConfirmationDialog({
     Key key,
     @required this.title,
     @required this.content,
+    this.child,
     this.isSimple = false,
   }) : super(key: key);
 
@@ -38,9 +40,11 @@ class ConfirmationDialog extends StatelessWidget {
           : TextTranslator(
               title,
             ),
-      content: TextTranslator(
-        content,
-      ),
+      content: content == null
+          ? child
+          : TextTranslator(
+              content,
+            ),
       actions: [
         TextButton(
           onPressed: () {
