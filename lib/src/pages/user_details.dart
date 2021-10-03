@@ -9,7 +9,6 @@ import 'package:menu_advisor/src/constants/validators.dart';
 import 'package:menu_advisor/src/models/models.dart';
 import 'package:menu_advisor/src/pages/confirm_sms.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
-import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/CommandContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
@@ -335,11 +334,6 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
     FormState formState = _formKey.currentState;
 
     CommandContext commandContext = Provider.of<CommandContext>(
-      context,
-      listen: false,
-    );
-
-    CartContext cartContext = Provider.of<CartContext>(
       context,
       listen: false,
     );

@@ -17,7 +17,6 @@ import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/pages/map_polyline.dart';
 import 'package:menu_advisor/src/pages/photo_view.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
-import 'package:menu_advisor/src/providers/CommandContext.dart';
 import 'package:menu_advisor/src/providers/DataContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
@@ -54,10 +53,10 @@ class _SummaryState extends State<Summary> {
   @override
   Widget build(BuildContext context) {
     this.context = context;
-    final CommandContext commandContext = Provider.of<CommandContext>(
-      context,
-      listen: false,
-    );
+    // final CommandContext commandContext = Provider.of<CommandContext>(
+    //   context,
+    //   listen: false,
+    // );
 
     if (widget.commande.restaurant is String) {
       Api.instance.getRestaurant(id: widget.commande.restaurant).then((value) {

@@ -47,8 +47,8 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Consumer<SettingContext>(
       builder: (_, settingContext, __) {
-        String languageCode = settingContext.languageCode;
-        bool isSystemSetting = settingContext.isSystemSetting;
+        // String languageCode = settingContext.languageCode;
+        // bool isSystemSetting = settingContext.isSystemSetting;
         _languages = settingContext.languages;
         _supportedLanguages = settingContext.supportedLanguages;
 

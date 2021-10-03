@@ -5,7 +5,6 @@ import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models/models.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/HistoryContext.dart';
-import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
@@ -92,10 +91,10 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
     setState(() {
       loading = true;
     });
-    SettingContext settingContext = Provider.of<SettingContext>(
-      context,
-      listen: false,
-    );
+    // SettingContext settingContext = Provider.of<SettingContext>(
+    //   context,
+    //   listen: false,
+    // );
 
     AuthContext authContext = Provider.of<AuthContext>(
       context,

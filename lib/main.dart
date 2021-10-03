@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:menu_advisor/src/app.dart';
+import 'package:menu_advisor/src/services/http_overrides.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -21,6 +24,8 @@ Future main() async {
     Permission.locationWhenInUse,
     Permission.camera,
   ].request();
+
+  HttpOverrides.global = MyHttpOverrides();
 
   runApp(MyApp());
 }

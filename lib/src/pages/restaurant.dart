@@ -767,7 +767,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                             child: InkWell(
                                                 onTap: () async {
                                                   Position currentPosition = await Geolocator.getCurrentPosition();
-                                                  ;
+
                                                   var coordinates = restaurant.location.coordinates;
                                                   MapUtils.openMap(currentPosition.latitude, currentPosition.longitude, coordinates.last, coordinates.first);
                                                 },

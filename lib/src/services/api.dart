@@ -931,7 +931,7 @@ class Api {
     });
   }
 
-  Future<Map<String, dynamic>> ConfirmSms(String idCommande, String code, String commandType) async {
+  Future<Map<String, dynamic>> confirmSms(String idCommande, String code, String commandType) async {
     await _refreshTokens();
     final url = Uri.parse('$_apiURL/commands/$idCommande/confirm');
     print("$logTrace $url");

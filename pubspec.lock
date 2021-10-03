@@ -654,12 +654,10 @@ packages:
   place_picker:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "5636f06cbe854a18d71e64e4a2d30f733ff0b5d7"
-      resolved-ref: "5636f06cbe854a18d71e64e4a2d30f733ff0b5d7"
-      url: "git://github.com/mandreshope/locationpicker.git"
-    source: git
-    version: "0.9.18-nullsafety"
+      name: place_picker
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.9.19-nullsafety"
   platform:
     dependency: transitive
     description:
@@ -750,7 +748,7 @@ packages:
       name: shared_preferences
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.7"
+    version: "2.0.8"
   shared_preferences_linux:
     dependency: transitive
     description:
