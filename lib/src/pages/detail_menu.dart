@@ -76,7 +76,7 @@ class _DetailMenuState extends State<DetailMenu> {
 
     // sort menu type by priority
     // widget.menu.foods.sort((a, b) => a.food.type.priority.compareTo(b.food.type.priority));
-    widget.menu.foodsGrouped = widget.menu.foods ?? [];
+    // widget.menu.foodsGrouped = widget.menu.foods ?? [];
     widget.menu.count = _cartContext.getFoodCountByIdNew(widget.menu);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _scrollController.addListener(_scrollListener);
@@ -110,11 +110,6 @@ class _DetailMenuState extends State<DetailMenu> {
           });
         });
       }
-      // else{
-      //   setState(() {
-      //     loading = false;
-      //   });
-      // }
     });
   }
 
@@ -269,13 +264,6 @@ class _DetailMenuState extends State<DetailMenu> {
                                       ),
                                     ),
                                     onPressed: () async {
-                                      // if (!restaurant.isOpen) {
-                                      //   Fluttertoast.showToast(
-                                      //     msg: 'Restaurant fermé',
-                                      //   );
-                                      //   return;
-                                      // }
-
                                       if (!cartContext.hasSamePricingAsInBag(widget.menu)) {
                                         showDialog(
                                           context: context,
@@ -292,9 +280,6 @@ class _DetailMenuState extends State<DetailMenu> {
                                             RouteUtil.goBack(context: context);
                                           }
                                         });
-                                        // Fluttertoast.showToast(
-                                        //   msg: AppLocalizations.of(context).translate('priceless_and_not_priceless_not_allowed'),
-                                        // );
                                       } else if (!cartContext.hasSameOriginAsInBag(widget.menu)) {
                                         showDialog(
                                           context: context,
@@ -385,39 +370,12 @@ class _DetailMenuState extends State<DetailMenu> {
                     size: 250,
                   ),
           ),
-          // )
-
-          /* Positioned.fill(
-              bottom: 0,
-              left: 0,
-              child: Container(
-                height: 50,
-                width: double.infinity,
-                // color: Colors.black.withAlpha(150),
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    height: 50,
-                    width: double.infinity,
-                    color: Colors.black.withAlpha(70),
-                    child: Center(
-                      child: TextTranslator(
-                        widget.menu.name,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 25,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                ),
-              ))*/
         ],
       );
 
   Widget _renderTitlePlat(context) {
     String name = "";
-    for (var entry in widget.menu.foodsGrouped.entries) name += entry.key + " + ";
+    for (var entry in widget.menu.foods) name += entry.title + " + ";
     return TextTranslator(
       name.isEmpty ? name : name.substring(0, name.length - 2),
       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
@@ -433,7 +391,7 @@ class _DetailMenuState extends State<DetailMenu> {
             padding: EdgeInsets.all(25),
             child: Column(
               children: [
-                for (var entry in widget.menu.foodsGrouped.entries)
+                for (var entry in widget.menu.foods)
                   Column(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -442,29 +400,24 @@ class _DetailMenuState extends State<DetailMenu> {
                         height: 15,
                       ),
                       TextTranslator(
-                        entry.key,
+                        entry.title,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Divider(),
-                      for (var menuFood in entry.value) ...[
+                      for (var food in entry.foods) ...[
                         Consumer<CartContext>(builder: (context, menuContext, w) {
                           return InkWell(
                             onTap: () {
-                              // if (_cartContext.contains(widget.menu)){
                               if (widget.menu.count == 0 || widget.menu.count == 1) {
-                                widget.menu.setFoodMenuSelected(entry.key, menuFood.food);
-                                _food = menuFood.food;
-                                widget.menu.select(_cartContext, entry.key, menuFood.food, () => menuContext.refresh());
+                                widget.menu.setFoodMenuSelected(entry.sId, food);
+                                _food = food;
+                                widget.menu.select(_cartContext, entry.sId, food, () => menuContext.refresh());
                                 if (widget.menu.count == 0) {
                                   widget.menu.count++;
-                                  // _cartContext.addItem(widget.menu, 1, true);
                                 }
-                              } else {
-                                // Fluttertoast.showToast(
-                                //     msg: "Veuillez ajouter le menu dans le panier");
                               }
                             },
                             child: Card(
@@ -482,8 +435,8 @@ class _DetailMenuState extends State<DetailMenu> {
                                             RouteUtil.goTo(
                                                 context: context,
                                                 child: PhotoViewPage(
-                                                  tag: 'tag:${menuFood.food.imageURL}',
-                                                  img: menuFood.food.imageURL,
+                                                  tag: 'tag:${food.imageURL}',
+                                                  img: food.imageURL,
                                                 ),
                                                 routeName: null);
                                           },
@@ -491,7 +444,7 @@ class _DetailMenuState extends State<DetailMenu> {
                                             borderRadius: BorderRadius.circular(0),
                                             child: FadeInImage.assetNetwork(
                                               placeholder: 'assets/images/loading.gif',
-                                              image: menuFood.food.imageURL,
+                                              image: food.imageURL,
                                               imageErrorBuilder: (_, o, s) {
                                                 return Container(
                                                   width: 75,
@@ -511,57 +464,47 @@ class _DetailMenuState extends State<DetailMenu> {
                                         Align(
                                           alignment: Alignment.center,
                                           child: TextTranslator(
-                                            menuFood.food.name,
+                                            food.name,
                                             textAlign: TextAlign.center,
                                           ),
                                         ),
                                         if (widget.menu.type == MenuType.fixed_price.value && _cartContext.withPrice) ...[
                                           Spacer(),
-                                          if (menuFood.food.additionalPrice.amount != null) ...[
-                                            menuFood.food.additionalPrice.amount == 0
-                                                ? Text("")
-                                                : Text("+ ${(menuFood.food.additionalPrice.amount / 100)} €", style: TextStyle(fontWeight: FontWeight.bold))
+                                          if (food.additionalPrice?.amount != null) ...[
+                                            food.additionalPrice.amount == 0 ? Text("") : Text("+ ${(food.additionalPrice.amount / 100)} €", style: TextStyle(fontWeight: FontWeight.bold))
                                           ],
                                         ] else if (widget.menu.type == MenuType.priceless.value) ...[
                                           Text(" ")
                                         ] else ...[
                                           Spacer(),
-                                          if (_cartContext.withPrice)
-                                            menuFood.food?.price?.amount == null ? Text("") : Text("${menuFood.food.price.amount / 100} €", style: TextStyle(fontWeight: FontWeight.bold)),
+                                          if (_cartContext.withPrice) food?.price?.amount == null ? Text("") : Text("${food.price.amount / 100} €", style: TextStyle(fontWeight: FontWeight.bold)),
                                         ],
                                         Spacer(),
                                         IconButton(
-                                            icon: Icon(
-                                              widget.menu.selectedMenu[entry.key]?.first?.id != menuFood.food.id ? Icons.check_box_outline_blank : Icons.check_box,
-                                              color: widget.menu.selectedMenu[entry.key]?.first?.id != menuFood.food.id ? Colors.grey : CRIMSON,
-                                            ),
-                                            onPressed: () {
-                                              print("$logTrace food selected");
-                                              /*                                          if (_cartContext.contains(widget.menu)){
-                                               _cartContext.foodMenuSelected[entry.key] = food;
-                                               _food = food;
-                                              }*/
-                                              if (widget.menu.count == 0 || widget.menu.count == 1) {
-                                                widget.menu.setFoodMenuSelected(entry.key, menuFood.food);
-                                                _food = menuFood.food;
-                                                widget.menu.select(_cartContext, entry.key, menuFood.food, () => menuContext.refresh());
-                                                if (widget.menu.count == 0) {
-                                                  widget.menu.count++;
-                                                  // _cartContext.addItem(widget.menu, 1, true);
-                                                }
-                                              } else {
-                                                // Fluttertoast.showToast(
-                                                //     msg: "Veuillez ajouter le menu dans le panier");
+                                          icon: Icon(
+                                            widget.menu.selectedMenu[entry.sId]?.first?.id == food.id ? Icons.check_box : Icons.check_box_outline_blank,
+                                            color: widget.menu.selectedMenu[entry.sId]?.first?.id == food.id ? CRIMSON : Colors.grey,
+                                          ),
+                                          onPressed: () {
+                                            print("$logTrace food selected");
+                                            if (widget.menu.count == 0 || widget.menu.count == 1) {
+                                              widget.menu.setFoodMenuSelected(entry.sId, food);
+                                              _food = food;
+                                              widget.menu.select(_cartContext, entry.sId, food, () => menuContext.refresh());
+                                              if (widget.menu.count == 0) {
+                                                widget.menu.count++;
                                               }
-                                            }),
+                                            } else {}
+                                          },
+                                        ),
                                       ],
                                     ),
-                                    if (widget.menu.selectedMenu[entry.key]?.first?.id == menuFood.food.id) ...[
+                                    if (widget.menu.selectedMenu[entry.sId]?.first?.id == food.id) ...[
                                       MenuItemFoodOption(
-                                        food: menuFood.food,
+                                        food: food,
                                         menu: widget.menu,
                                         withPrice: _cartContext.withPrice,
-                                        subMenu: entry.key,
+                                        subMenu: entry.title,
                                       )
                                       // Container()
                                     ] else
@@ -584,14 +527,7 @@ class _DetailMenuState extends State<DetailMenu> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        /* if (showFavorite)
-                          SizedBox(
-                            width: 20,
-                          ),*/
         Consumer<CartContext>(builder: (_, cartContext, __) {
-          // widget.menu.count = widget.menu.quantity;
-
-          // if (widget.menu.quantity == 0) {
           if (widget.menu.quantity <= 0) {
             WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
               showDialog(
@@ -602,10 +538,6 @@ class _DetailMenuState extends State<DetailMenu> {
                 ),
               ).then((result) {
                 if (result is bool && result) {
-                  // _cartContext.removeAllFood(widget.food);
-                  // _cartContext.removeItemAtPosition(widget.position);
-                  // if (!widget.fromRestaurant)
-                  // RouteUtil.goBack(context: context);
                   RouteUtil.goBack(context: context);
                 } else {
                   widget.menu.quantity = 1;
@@ -613,40 +545,15 @@ class _DetailMenuState extends State<DetailMenu> {
                 }
               });
             });
-
-            // _cartContext.addItem(widget.food, 0, false);
-            // if(_cartContext.items.length == 0){
-            //   // RouteUtil.goBack(context: context);
-            // }
-
           }
           return widget.menu.foodMenuSelecteds.isEmpty || !_cartContext.hasOptionSelectioned(_food)
               ? Container()
               : ButtonItemCountWidget(
                   widget.menu,
                   onAdded: () async {
-                    // setState(() {
-                    //  ++ widget.menu.count;
-                    // widget.menu.quantity = widget.menu.count;
-                    // if(widget.menu.count > 1)
-                    // this.isAdded = true;
-                    // else
-                    // this.isAdded = false;
-                    // });
                     cartContext.refresh();
                   },
                   onRemoved: () {
-                    // setState(() {
-                    // -- widget.menu.count;
-                    // widget.menu.quantity = widget.menu.count;
-                    // if (widget.menu.count <= 0) {
-                    //   widget.menu.count = 0;
-                    //   this.isAdded = false;
-                    //   _init();
-                    // }else if (itemCount == 1){
-                    //   this.isAdded = false;
-                    // }
-                    // });
                     cartContext.refresh();
                   },
                   itemCount: widget.menu.quantity,

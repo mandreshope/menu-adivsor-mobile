@@ -237,27 +237,6 @@ class Menu {
       this.statut,
       this.priority});
 
-  _setPrice() {
-    price = Price(amount: 0, currency: "€");
-    this.foods?.forEach((f) {
-      f.food.isFoodForMenu = true;
-      f.food.idMenu = this.id;
-      if (f.food.price != null && f.food.price.amount != null) price.amount += f.food.price.amount;
-    });
-    print("prince ${price.amount}");
-  }
-
-  Map<String, List<MenuFood>> _foodsGrouped;
-  set foodsGrouped(List<MenuFood> foods) => _foodsGrouped = foods.groupBy((f) {
-        // f.isMenu = true;
-        return (f.food.type is String)
-            ? f.food.type
-            : (f.food.type.name is String)
-                ? f.food.type.name
-                : f.food.type.name;
-      });
-  get foodsGrouped => _foodsGrouped;
-
   select(CartContext cartContext, String entry, food, Function onFinish) {
     if (this.selectedMenu[entry] != null && selectedMenu[entry].firstWhere((element) => element.id != food.id, orElse: () => null) != null) {
       foodMenuSelected[entry].optionSelected = [];
@@ -266,21 +245,9 @@ class Menu {
       cartContext.refresh();
     } else
       selectedMenu[entry] = [food];
-    /*if (_foodsGrouped.length == selectedMenu.length) {
-
-      _selectedFood.clear();
-      for (var entry in selectedMenu.entries){
-        _selectedFood.addAll(entry.value);
-      }
-
-    }else{
-
-    }*/
     onFinish();
-    // notifyListeners();
   }
 
-  // Food _foodMenuSelected;
   setFoodMenuSelected(String key, value) {
     _foodMenuSelected[key] = value;
     _foodMenuSelected[key].isMenu = true;
@@ -355,7 +322,7 @@ class Menu {
       id: json['_id'],
       name: json['name'],
       imageURL: json['imageURL'] ?? "",
-      foods: json['foods'] is List ? json['foods']?.map<MenuFood>((data) => MenuFood.fromJSON(data))?.toList() ?? [] : [],
+      foods: json['foods'] is List ? json['foods']?.map<MenuFood>((data) => MenuFood.fromJson(data))?.toList() ?? [] : [],
       description: json['description'],
       restaurant: json['restaurant'] is String ? json['restaurant'] : Restaurant.fromJson(json["restaurant"]),
       type: json['type'],
@@ -365,43 +332,62 @@ class Menu {
       optionSelected: json['options'] != null ? (json['options'] as List).map((e) => Option.fromJson(e)).where((element) => element.maxOptions > 0).toList() : [],
     );
     _menu.isMenu = true;
-    // if (!fromCommand)
-    // _menu._setPrice();
-
-    /*if (_menu.foods.isNotEmpty){
-        Food food = _menu.foods.first.food;
-        _menu.statut = food.statut;
-        _menu.status = food.status;
-      }*/
     return _menu;
   }
 
-  toJson() => {"_id": this.id, "name": this.name, "imageURL": this.imageURL, "foods": this.foods.map((v) => v.food.toJson()).toList(), "description": this.description};
+  toJson() => {"_id": this.id, "name": this.name, "imageURL": this.imageURL, "foods": this.foods.map((v) => v.toJson()).toList(), "description": this.description};
 }
 
 class MenuFood {
-  dynamic food;
-  Price additionalPrice;
+  String sId;
+  List<Food> foods;
+  String title;
+  int maxOptions;
+  bool isObligatory;
 
-  MenuFood({this.food, this.additionalPrice});
-  factory MenuFood.fromJSON(var json) {
-    MenuFood mFood = MenuFood(
-      food: (json['food'] is String) ? json['food'] : Food.fromJson(json['food']),
-      additionalPrice: Price.fromJson(json['additionalPrice']),
-    );
-    if (mFood.food is String) {
-    } else {
-      mFood.food.isFoodForMenu = true;
+  List<ItemsOption> itemOptionSelected = [];
+
+  MenuFood({
+    this.sId,
+    this.foods,
+    this.title,
+    this.maxOptions,
+    this.itemOptionSelected,
+    this.isObligatory,
+  });
+
+  factory MenuFood.copy(MenuFood o) => MenuFood(
+        itemOptionSelected: o.itemOptionSelected?.map((e) => ItemsOption.copy(e))?.toList(),
+        foods: o.foods,
+        maxOptions: o.maxOptions,
+        sId: o.sId,
+        title: o.title,
+        isObligatory: o.isObligatory,
+      );
+
+  MenuFood.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    if (json['items'] != null) {
+      foods = <Food>[];
+      json['items'].forEach((v) {
+        if (!(v is String)) foods.add(Food.fromJson(v));
+      });
     }
-
-    return mFood;
+    title = json['title'];
+    maxOptions = json['maxOptions'];
+    isObligatory = json['isObligatory'];
   }
 
-  factory MenuFood.copy(MenuFood menuFood) {
-    MenuFood mFood = MenuFood(food: Food.copy(menuFood.food), additionalPrice: Price.copy(menuFood.additionalPrice));
-    mFood.food.additionalPrice = mFood.additionalPrice;
-    mFood.food.isFoodForMenu = true;
-    return mFood;
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['_id'] = this.sId;
+    if (this.itemOptionSelected != null) {
+      data['items'] = this.itemOptionSelected.map((v) => v.toJson()).toList();
+    }
+    data['title'] = this.title;
+    data['maxOptions'] = this.maxOptions;
+    data['isObligatory'] = this.isObligatory;
+    return data;
   }
 }
 
@@ -799,14 +785,6 @@ class User {
       name: UserName.fromJson(json['name']),
       favoriteRestaurants: (json['favoriteRestaurants'] as List).map<String>((e) => e).toList(),
       favoriteFoods: (json['favoriteFoods'] as List).map<String>((e) => e).toList(),
-      /* paymentCards: json['paymentCards'] is List
-            ? json['paymentCards']
-                    ?.map<PaymentCard>(
-                      (data) => PaymentCard.fromJson(data),
-                    )
-                    ?.toList() ??
-                []
-            : [],*/
       paymentCards: json['paymentCards'] is List ? (json['paymentCards'] as List).map((e) => e).toList() ?? [] : [],
       address: json['address'],
       phoneNumber: json['phoneNumber']);
@@ -1030,16 +1008,6 @@ class CommandItem {
     if (json['item'] is String) food = json['item'];
     if (isMenu) {
       menu = json['item'] != null ? Menu.fromJson(json['item'], fromCommand: true) : null;
-      /*if (json['foods'] != null)
-          foods = json['foods'] is List ? json['foods']?.map<Food>((data)
-            {
-              Food food = menu.foods.firstWhere((f) => f.id == data["_id"],orElse: ()=>null);
-              food.options = data['options'];
-          //  Food.fromJson(data);
-          return food;
-           }
-           )?.toList() ?? [] : [];
-      */
       foodMenuSelected = json['foods'] is List ? json['foods']?.map<FoodSelectedFromCommandMenu>((data) => FoodSelectedFromCommandMenu.fromJson(data))?.toList() ?? [] : [];
     } else {
       food = json['item'] != null ? Food.fromJson(json['item'], fromCommande: true) : null;
@@ -1460,9 +1428,6 @@ class ItemsOption {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    // data['_id'] = this.sId;
-    // data['name'] = this.name;
-    // data['price'] = this.price.toJson();
     data['quantity'] = this.quantity;
     data['item'] = {
       "_id": this.sId,

@@ -68,10 +68,7 @@ class CategoryCard extends StatelessWidget {
                           height: 40,
                           color: DARK_BLUE,
                         )
-                      : /*Hero(
-                          // tag: 'tag:$imageURL',
-                          child: */
-                      ClipRRect(
+                      : ClipRRect(
                           borderRadius: BorderRadius.circular(50),
                           child: FadeInImage.assetNetwork(
                             placeholder: 'assets/images/loading.gif',
@@ -152,7 +149,6 @@ class _FoodCardState extends State<FoodCard> {
   @override
   void initState() {
     super.initState();
-    // _cartContext = Provider.of<CartContext>(context);
     var restaurantId = widget.food.restaurant is String ? widget.food.restaurant : widget.food.restaurant['_id'];
     api.getRestaurantName(id: restaurantId).then((res) {
       if (mounted)
@@ -163,12 +159,6 @@ class _FoodCardState extends State<FoodCard> {
     }).catchError((error) {
       restaurantName = AppLocalizations.of(context).translate('no_associated_restaurant');
     });
-    // Timer.periodic(Duration(milliseconds: 5), (time){
-    //   setState(() {
-    //     loading = false;
-    //   });
-    //   time.cancel();
-    // });
   }
 
   @override
@@ -259,31 +249,6 @@ class _FoodCardState extends State<FoodCard> {
                                           color: Colors.grey,
                                         ),
                                       ),
-                                      // loadingRestaurantName
-                                      //     ? SizedBox(
-                                      //         height: 10,
-                                      //         child: FittedBox(
-                                      //           child: CircularProgressIndicator(
-                                      //             valueColor: AlwaysStoppedAnimation<Color>(
-                                      //               CRIMSON,
-                                      //             ),
-                                      //           ),
-                                      //         ),
-                                      //       )
-                                      //     : TextTranslator(
-                                      //         restaurantName ?? AppLocalizations.of(context).translate('no_associated_restaurant'),
-                                      //         style: TextStyle(
-                                      //           fontSize: 16,
-                                      //         ),
-                                      //       ),
-                                      // if (widget.food.price != null && widget.food.price?.amount != null) ...[
-                                      //   SizedBox(height: 5),
-                                      //   Text(
-                                      //     Provider.of<CartContext>(context).withPrice ? "${widget.food.price.amount / 100}€" : "",
-                                      //     style: TextStyle(fontSize: 21, color: Colors.yellow[700], fontWeight: FontWeight.bold),
-                                      //   ),
-                                      // ] else
-                                      //   ...[]
                                       Wrap(
                                         children: [
                                           ...widget.food.attributes
@@ -565,31 +530,6 @@ class _FoodCardState extends State<FoodCard> {
                       ],
                     ),
                   ),
-                  // Positioned(
-                  //   right: 0,
-                  //   top: 0,
-                  //   bottom: 0,
-                  //   left: widget.showButton ? 30 : null,
-                  //   child: Container(
-                  //     child: Hero(
-                  //         tag: widget.imageTag ?? 'foodImage${widget.food.id}',
-                  //         child: widget.food.imageURL != null
-                  //             ? ClipRRect(
-                  //                   borderRadius: BorderRadius.only(bottomRight: Radius.circular(widget.showButton ? 10 : 30),topRight: Radius.circular(widget.showButton ? 10 : 30)),
-                  //                   child: FadeInImage.assetNetwork(
-                  //                   image: widget.food.imageURL,
-                  //                   placeholder: 'assets/images/loading.gif',
-                  //                   width: 100,
-                  //                   fit: BoxFit.cover,
-                  //                 ),
-                  //             )
-                  //             : Icon(
-                  //                 Icons.fastfood,
-                  //                 size: 60,
-                  //               ),
-                  //       ),
-                  //   ),
-                  // ),
                 ],
               ),
             ),
@@ -688,9 +628,6 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              /*Hero(
-                    tag: widget.food.id,
-                    child: */
               ClipRRect(
                 borderRadius: BorderRadius.only(bottomLeft: Radius.circular(5), topLeft: Radius.circular(5)),
                 child: Stack(
@@ -814,11 +751,6 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                                                           ),
                                                     child: Builder(
                                                       builder: (_) {
-                                                        // var attribute = dataContext.attributes.firstWhere(
-                                                        //   (element) => element['tag'] == e,
-                                                        //   orElse: null,
-                                                        // );
-
                                                         return Row(
                                                           children: [
                                                             // for (var attribute in dataContext.attributes)
@@ -878,11 +810,6 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                                                           ),
                                                     child: Builder(
                                                       builder: (_) {
-                                                        // var attribute = dataContext.attributes.firstWhere(
-                                                        //   (element) => element['tag'] == e,
-                                                        //   orElse: null,
-                                                        // );
-
                                                         return Row(
                                                           children: [
                                                             // for (var attribute in dataContext.attributes)
@@ -1095,7 +1022,7 @@ class MenuCard extends StatelessWidget {
   Widget build(BuildContext context) {
     MenuContext _controller = Provider.of<MenuContext>(context, listen: false);
     if (restaurant != null) menu.restaurant = restaurant;
-    menu.foodsGrouped = menu.foods ?? [];
+    // menu.foodsGrouped = menu.foods ?? [];
 
     return InkWell(
       onTap: () {
@@ -1171,7 +1098,7 @@ class MenuCard extends StatelessWidget {
 
   Widget _renderListPlat(context, controller) {
     String name = "";
-    for (var entry in menu.foodsGrouped.entries) name += entry.key + " + ";
+    for (var entry in menu.foods) name += entry.title + " + ";
     return TextTranslator(
       name.isEmpty ? name : name.substring(0, name.length - 2),
       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
@@ -1539,17 +1466,10 @@ class _BagItemState extends State<BagItem> {
                     );
 
                     if (result is bool && result) {
-                      // _cartContext.removeAllFood(widget.food);
                       _cartContext.removeItemAtPosition(widget.position);
-                      // if (!widget.fromRestaurant)
-                      // RouteUtil.goBack(context: context);
                     } else {
                       widget.food.quantity = 1;
                     }
-                    // _cartContext.addItem(widget.food, 0, false);
-                    // if(_cartContext.items.length == 0){
-                    //   // RouteUtil.goBack(context: context);
-                    // }
                   }
                   setState(() {
                     _cartContext.refresh();
@@ -1565,10 +1485,6 @@ class _BagItemState extends State<BagItem> {
   }
 
   Widget _options(Food f, {Menu menu}) {
-    // int i = 0;
-    /*List<Option> options = _cartContext.options[widget.food.id]
-        .expand((element) => element)
-        .toList();*/
     var options = f.optionSelected ?? [];
     return Container(
       // margin: EdgeInsets.only(left: MediaQuery.of(context).size.width/4),
@@ -1633,11 +1549,6 @@ class _BagItemState extends State<BagItem> {
                         ),
                         TextTranslator('${itemsOption.name}', style: TextStyle(fontSize: 16)),
                         Spacer(),
-                        /*Image.network(
-                          item.imageURL,
-                          width: 25,
-                        ),*/
-                        // SizedBox(width: 8),
                         if (itemsOption.price.amount == 0 || !widget.withPrice || (menu != null && menu?.type == MenuType.priceless.value))
                           Text("")
                         else
@@ -1691,21 +1602,13 @@ class CommandHistoryItem extends StatelessWidget {
             children: [
               TextTranslator('${command.restaurant.name}'),
               TextTranslator('${command.code?.toString()?.padLeft(6, '0')}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              // SizedBox(width: 15),
-              // Image.network(
-              //   item.imageURL,
-              //   width: 25,
-              // ),
-              // SizedBox(width: 8),
               _validated(),
-              // Spacer(),
               Column(
                 children: [
                   TextTranslator("${command.createdAt.dateToString('dd/MM/yy HH:mm')}", style: TextStyle(fontSize: 16)),
                   if (command.shippingTime != null) TextTranslator("${command.shippingTime.dateToString('dd/MM/yy HH:mm')}", style: TextStyle(fontSize: 16)),
                 ],
               )
-              // if (command.createdAt != null)
             ],
           ),
         ),
@@ -1782,18 +1685,12 @@ class BlogCard extends StatelessWidget {
                 // ),
                 Divider(),
                 Container(
-                  // height: 50,
                   width: double.infinity,
-                  // color: Colors.black.withAlpha(150),
                   child: Align(
                     alignment: Alignment.bottomCenter,
                     child: Container(
-                      // height: 35,
                       width: double.infinity,
-                      decoration: BoxDecoration(
-                          // borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20), bottomRight: Radius.circular(20)),
-                          // color: Colors.black.withAlpha(150),
-                          ),
+                      decoration: BoxDecoration(),
                       child: Center(
                         child: TextTranslator(
                           blog.title,
