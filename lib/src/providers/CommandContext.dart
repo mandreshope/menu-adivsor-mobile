@@ -13,6 +13,7 @@ class CommandContext extends ChangeNotifier {
   DateTime _deliveryDate;
   TimeOfDay _deliveryTime;
   List<Food> _items;
+  bool withCodeDiscount = false;
 
   set paymentCard(PaymentCard paymentCard) {
     _paymentCard = paymentCard;
@@ -117,6 +118,7 @@ class CommandContext extends ChangeNotifier {
     _deliveryTime = null;
     _items = null;
     _deliveryLatLng = null;
+    withCodeDiscount = false;
     notifyListeners();
   }
 }

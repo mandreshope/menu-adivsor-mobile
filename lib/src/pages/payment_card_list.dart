@@ -174,30 +174,39 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                     priceLivraison = (widget.restaurant.priceDelevery != null ? widget.restaurant.priceDelevery : 0).toInt();
                     totalPrice = ((cartContext.totalPrice + priceLivraison) * 100).round();
                   } else {
-                    if (commandContext.commandType == "delivery" || commandContext.commandType == "delivery") {
+                    if (commandContext.commandType == "delivery") {
                       if (widget.restaurant.isFreeCP(commandContext.deliveryAddress) || widget.restaurant.isFreeCity(commandContext.deliveryAddress)) {
                         /// livraison gratuite
                         priceLivraison = 0;
                       } else {
                         priceLivraison = commandContext.getDeliveryPriceByMiles(widget.restaurant).toInt();
-                        if (widget.restaurant.discountType == "SurTransport") {
-                          priceLivraison = cartContext.calculremise(totalPrice: priceLivraison.toDouble(), restaurant: widget.restaurant).toInt();
-                          if (priceLivraison.isNegative) {
-                            priceLivraison = 0;
-                          }
-                          totalPrice = (cartContext.totalPrice + priceLivraison).toInt();
-                        } else if (widget.restaurant.discountType == "SurCommande") {
-                          int totalPriceWithRemise = cartContext.calculremise(totalPrice: cartContext.totalPrice, restaurant: widget.restaurant).toInt();
-                          if (totalPriceWithRemise.isNegative) {
-                            totalPriceWithRemise = 0;
-                          }
-                          totalPrice = (totalPriceWithRemise + priceLivraison).toInt();
-                        } else {
-                          totalPrice = cartContext.calculremise(totalPrice: cartContext.totalPrice + priceLivraison, restaurant: widget.restaurant).toInt();
-                          if (totalPrice.isNegative) {
-                            totalPrice = 0;
-                          }
+                        double remiseWithCodeDiscount = cartContext.totalPrice + priceLivraison;
+                        if (commandContext.withCodeDiscount) {
+                          remiseWithCodeDiscount = cartContext.calculremise(
+                            totalPrice: cartContext.totalPrice + priceLivraison,
+                            discountIsPrice: widget.restaurant?.discount?.codeDiscount?.discountIsPrice,
+                            discountValue: widget.restaurant?.discount?.codeDiscount?.valueDouble,
+                          );
                         }
+                        // if (widget.restaurant.discountType == "SurTransport") {
+                        //   priceLivraison = cartContext.calculremise(totalPrice: priceLivraison.toDouble(), restaurant: widget.restaurant).toInt();
+                        //   if (priceLivraison.isNegative) {
+                        //     priceLivraison = 0;
+                        //   }
+                        //   totalPrice = (cartContext.totalPrice + priceLivraison).toInt();
+                        // } else if (widget.restaurant.discountType == "SurCommande") {
+                        //   int totalPriceWithRemise = cartContext.calculremise(totalPrice: cartContext.totalPrice, restaurant: widget.restaurant).toInt();
+                        //   totalPrice = (totalPriceWithRemise + priceLivraison).toInt();
+                        // } else {
+                        //   totalPrice = cartContext.calculremise(totalPrice: cartContext.totalPrice + priceLivraison, restaurant: widget.restaurant).toInt();
+                        // }
+                        totalPrice = cartContext
+                            .calculremise(
+                              totalPrice: remiseWithCodeDiscount,
+                              discountIsPrice: widget.restaurant?.discount?.delivery?.discountIsPrice,
+                              discountValue: widget.restaurant?.discount?.delivery?.valueDouble,
+                            )
+                            .toInt();
                       }
                     }
                     totalPrice = (totalPrice * 100).toInt();
@@ -233,7 +242,6 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                 })
                             .toList(),
                         restaurant: cartContext.currentOrigin,
-                        discountIsPrice: (widget.restaurant != null && widget.restaurant?.discountIsPrice != null) ? widget.restaurant?.discountIsPrice : "",
                         discount: (widget.restaurant != null && widget.restaurant?.discount != null) ? widget.restaurant?.discount : "0",
                         totalPrice: totalPrice,
                         menu: cartContext.items
@@ -258,6 +266,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                         priceless: !cartContext.withPrice);
 
                     Command cm = Command.fromJson(command);
+                    cm.withCodeDiscount = commandContext.withCodeDiscount;
 
                     Api.instance.setCommandToPayedStatus(
                       true,

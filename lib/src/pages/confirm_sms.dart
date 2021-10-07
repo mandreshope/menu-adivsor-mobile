@@ -247,7 +247,23 @@ class _ConfirmSmsState extends State<ConfirmSms> {
         setState(() {
           loading = true;
         });
-
+        int totalPrice = 0;
+        double remiseWithCodeDiscount = cartContext.totalPrice;
+        if (commandContext.withCodeDiscount) {
+          remiseWithCodeDiscount = cartContext.calculremise(
+            totalPrice: cartContext.totalPrice,
+            discountIsPrice: widget.restaurant?.discount?.codeDiscount?.discountIsPrice,
+            discountValue: widget.restaurant?.discount?.codeDiscount?.valueDouble,
+          );
+        }
+        totalPrice = cartContext
+            .calculremise(
+              totalPrice: remiseWithCodeDiscount,
+              discountIsPrice: widget.restaurant?.discount?.aEmporter?.discountIsPrice,
+              discountValue: widget.restaurant?.discount?.aEmporter?.valueDouble,
+            )
+            .toInt();
+        totalPrice = (totalPrice * 100).toInt();
         var command = await Api.instance.sendCommand(
           relatedUser: authContext.currentUser?.id ?? null,
           comment: cartContext.comment,
@@ -255,7 +271,7 @@ class _ConfirmSmsState extends State<ConfirmSms> {
           items:
               cartContext.items.where((e) => !e.isMenu).map((e) => {'quantity': e.quantity, 'item': e.id, 'options': e.optionSelected != null ? e.optionSelected : [], 'comment': e.message}).toList(),
           restaurant: cartContext.currentOrigin,
-          totalPrice: (cartContext.totalPrice * 100).round(),
+          totalPrice: totalPrice,
           customer: widget.customer,
           shippingTime: commandContext.deliveryDate
                   ?.add(
@@ -269,6 +285,7 @@ class _ConfirmSmsState extends State<ConfirmSms> {
           priceless: !cartContext.withPrice,
         );
         Command cm = Command.fromJson(command);
+        cm.withCodeDiscount = commandContext.withCodeDiscount;
 
         commandContext.clear();
         cartContext.clear();

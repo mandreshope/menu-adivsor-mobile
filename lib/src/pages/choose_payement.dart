@@ -69,30 +69,39 @@ class ChoosePayement extends StatelessWidget {
               priceLivraison = (restaurant.priceDelevery != null ? restaurant.priceDelevery : 0).toInt();
               totalPrice = ((cartContext.totalPrice * 100) + priceLivraison).round();
             } else {
-              if (commandContext.commandType == "delivery" || commandContext.commandType == "delivery") {
+              if (commandContext.commandType == "delivery") {
                 if (restaurant.isFreeCP(commandContext.deliveryAddress) || restaurant.isFreeCity(commandContext.deliveryAddress)) {
                   /// livraison gratuite
                   priceLivraison = 0;
                 } else {
                   priceLivraison = commandContext.getDeliveryPriceByMiles(restaurant).toInt();
-                  if (restaurant.discountType == "SurTransport") {
-                    priceLivraison = cartContext.calculremise(totalPrice: priceLivraison.toDouble(), restaurant: restaurant).toInt();
-                    if (priceLivraison.isNegative) {
-                      priceLivraison = 0;
-                    }
-                    totalPrice = (cartContext.totalPrice + priceLivraison).toInt();
-                  } else if (restaurant.discountType == "SurCommande") {
-                    int totalPriceWithRemise = cartContext.calculremise(totalPrice: cartContext.totalPrice, restaurant: restaurant).toInt();
-                    if (totalPriceWithRemise.isNegative) {
-                      totalPriceWithRemise = 0;
-                    }
-                    totalPrice = (totalPriceWithRemise + priceLivraison).toInt();
-                  } else {
-                    totalPrice = cartContext.calculremise(totalPrice: cartContext.totalPrice + priceLivraison, restaurant: restaurant).toInt();
-                    if (totalPrice.isNegative) {
-                      totalPrice = 0;
-                    }
+                  double remiseWithCodeDiscount = cartContext.totalPrice + priceLivraison;
+                  if (commandContext.withCodeDiscount) {
+                    remiseWithCodeDiscount = cartContext.calculremise(
+                      totalPrice: cartContext.totalPrice + priceLivraison,
+                      discountIsPrice: restaurant?.discount?.codeDiscount?.discountIsPrice,
+                      discountValue: restaurant?.discount?.codeDiscount?.valueDouble,
+                    );
                   }
+                  // if (restaurant.discountType == "SurTransport") {
+                  //   priceLivraison = cartContext.calculremise(totalPrice: priceLivraison.toDouble(), restaurant: restaurant).toInt();
+                  //   totalPrice = (cartContext.totalPrice + priceLivraison).toInt();
+                  // } else if (restaurant.discountType == "SurCommande") {
+                  //   int totalPriceWithRemise = cartContext.calculremise(totalPrice: cartContext.totalPrice, restaurant: restaurant).toInt();
+                  //   if (totalPriceWithRemise.isNegative) {
+                  //     totalPriceWithRemise = 0;
+                  //   }
+                  //   totalPrice = (totalPriceWithRemise + priceLivraison).toInt();
+                  // } else {
+                  //   totalPrice = cartContext.calculremise(totalPrice: cartContext.totalPrice + priceLivraison, restaurant: restaurant).toInt();
+                  // }
+                  totalPrice = cartContext
+                      .calculremise(
+                        totalPrice: remiseWithCodeDiscount,
+                        discountIsPrice: restaurant?.discount?.delivery?.discountIsPrice,
+                        discountValue: restaurant?.discount?.delivery?.valueDouble,
+                      )
+                      .toInt();
                 }
               }
               totalPrice = (totalPrice * 100).toInt();
@@ -113,8 +122,7 @@ class ChoosePayement extends StatelessWidget {
                   .map((e) => {'quantity': e.quantity, 'item': e.id, 'options': e.optionSelected != null ? e.optionSelected : [], 'comment': e.message})
                   .toList(),
               restaurant: cartContext.currentOrigin,
-              discountIsPrice: (restaurant != null && restaurant?.discountIsPrice != null) ? restaurant?.discountIsPrice : "",
-              discount: (restaurant != null && restaurant?.discount != null) ? restaurant?.discount : "0",
+              discount: restaurant?.discount,
               totalPrice: totalPrice,
               menu: cartContext.items.where((e) => e.isMenu).map((e) => {'quantity': e.quantity, 'item': e.id, 'foods': e.foodMenuSelecteds}).toList(),
               shippingAddress: commandContext.deliveryAddress,
@@ -132,6 +140,7 @@ class ChoosePayement extends StatelessWidget {
               priceless: !cartContext.withPrice,
             );
             Command cm = Command.fromJson(command);
+            cm.withCodeDiscount = commandContext.withCodeDiscount;
 
             commandContext.clear();
             cartContext.clear();

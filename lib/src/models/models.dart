@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/constants/constant.dart';
+import 'package:menu_advisor/src/models/restaurants/restaurant_discount_model.dart';
 import 'package:menu_advisor/src/models/restaurants/restaurant_livraison_model.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/types/types.dart';
@@ -422,7 +423,7 @@ class Restaurant {
   final String city;
   final String postalCode;
   final String fixedLinePhoneNumber;
-  final String discount;
+  final RestaurantDiscount discount;
   final bool discountIsPrice;
   final String discountType;
   final String qrcodeLink;
@@ -435,7 +436,7 @@ class Restaurant {
   DateTime get updatedAtDateTime => DateTime.tryParse(updatedAt);
   final RestaurantLivraison livraison;
   final String minPriceIsDelivery;
-  double get minPriceIsDeliveryDouble => double.tryParse(minPriceIsDelivery) ?? 0;
+  double get minPriceIsDeliveryDouble => double.tryParse(minPriceIsDelivery ?? "0.0") ?? 0;
   int priceDelevery;
   final bool deliveryFixed;
   final double priceByMiles;
@@ -445,7 +446,7 @@ class Restaurant {
   int etage = 0;
 
   bool isFreeCP(String cp) {
-    final v = livraison?.freeCP?.contains(cp);
+    final v = livraison?.freeCP?.contains(cp) == true;
     if (v) {
       print("$logTrace free CP");
     }
@@ -453,7 +454,7 @@ class Restaurant {
   }
 
   bool isFreeCity(String city) {
-    final v = livraison?.freeCity?.contains(city);
+    final v = livraison?.freeCity?.contains(city) == true;
     if (v) {
       print("$logTrace free City");
     }
@@ -463,7 +464,7 @@ class Restaurant {
   /// unit: km
   double get deleveryDistanceMax {
     final String distanceMax = livraison?.matrix?.length != 0 ? livraison?.matrix?.first : "0";
-    final res = (double.tryParse(distanceMax) ?? 0.0);
+    final res = (double.tryParse(distanceMax ?? '0.0') ?? 0.0);
     return res;
   }
 
@@ -550,7 +551,7 @@ class Restaurant {
       cbDirectToAdvisor: json['cbDirectToAdvisor'],
       codeappartement: json['codeappartement'],
       city: json['city'],
-      discount: json['discount'],
+      discount: RestaurantDiscount.fromMap(json['discount']),
       discountIsPrice: json['discountIsPrice'],
       discountType: json['discountType'],
       fixedLinePhoneNumber: json['fixedLinePhoneNumber'],
@@ -820,7 +821,6 @@ class Command {
   final String id;
   final dynamic relatedUser;
   final String commandType;
-  final String discount;
   final bool discountIsPrice;
   final int totalPrice;
   final bool validated;
@@ -843,6 +843,7 @@ class Command {
   int etage;
   dynamic paiementLivraison;
   dynamic customer;
+  bool withCodeDiscount = false;
 
   Command({
     this.id,
@@ -869,7 +870,6 @@ class Command {
     this.paiementLivraison,
     this.customer,
     this.priceLivraison,
-    this.discount,
     this.discountIsPrice,
   });
 
@@ -879,7 +879,6 @@ class Command {
         commandType: json['commandType'],
         totalPrice: json['totalPrice'],
         discountIsPrice: json['discountIsPrice'],
-        discount: json['discount'],
         validated: json['validated'],
         revoked: json['revoked'],
         items: json['items'] != null ? (json['items'] as List).map((e) => CommandItem.fromJson(e)).toList() : [],

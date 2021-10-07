@@ -122,40 +122,35 @@ class CartContext extends ChangeNotifier {
   //in Euro
   double priceOrPourcent({
     @required double totalPrice,
-    @required Restaurant restaurant,
+    @required bool discountIsPrice,
+    @required double discountValue,
   }) {
-    final discount = (double.tryParse(restaurant?.discount ?? "0.0") ?? 0.0 / 100);
-    if (restaurant != null && restaurant.discountIsPrice) {
-      return totalPrice - discount;
+    double total = 0.0;
+    if (discountIsPrice) {
+      total = totalPrice - discountValue;
+    } else {
+      final remiseInEuro = ((totalPrice * discountValue) / 100);
+      total = (totalPrice - remiseInEuro);
     }
-
-    if (restaurant != null && !restaurant.discountIsPrice) {
-      final remiseInEuro = ((totalPrice * discount) / 100);
-      return (totalPrice - remiseInEuro);
+    if (total.isNegative) {
+      total = 0.0;
     }
-    return 0;
+    return double.parse(total.toStringAsFixed(2));
   }
 
   double calculremise({
     @required double totalPrice,
-    @required Restaurant restaurant,
+    @required bool discountIsPrice,
+    @required double discountValue,
   }) {
-    if (restaurant == null) {
+    if (discountIsPrice == null && discountValue == null) {
       return totalPrice;
     }
-    if (restaurant.discountType == 'SurTotalité') {
-      return priceOrPourcent(totalPrice: totalPrice, restaurant: restaurant);
-    }
-
-    if (restaurant.discountType == 'SurTransport' && restaurant != null && (restaurant.delivery)) {
-      return priceOrPourcent(totalPrice: totalPrice, restaurant: restaurant);
-    }
-
-    if (restaurant.discountType == 'SurCommande' && restaurant != null && (restaurant.aEmporter)) {
-      return priceOrPourcent(totalPrice: totalPrice, restaurant: restaurant);
-    }
-
-    return totalPrice;
+    return priceOrPourcent(
+      totalPrice: totalPrice,
+      discountIsPrice: discountIsPrice,
+      discountValue: discountValue,
+    );
   }
 
   bool contains(dynamic food) {

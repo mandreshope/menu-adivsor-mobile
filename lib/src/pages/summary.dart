@@ -244,11 +244,23 @@ class _SummaryState extends State<Summary> {
                         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                         child: Row(
                           children: [
-                            TextTranslator('Frais de livraison : ', style: TextStyle(fontSize: 16)),
+                            TextTranslator(
+                              'Frais de livraison : ',
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
                             Spacer(),
                             Opacity(
                               opacity: 0.6,
-                              child: Text('${widget.commande.priceLivraison ?? 0} €', style: TextStyle(fontSize: 16, color: CRIMSON, fontWeight: FontWeight.bold)),
+                              child: Text(
+                                '${widget.commande.priceLivraison ?? 0} €',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: CRIMSON,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             )
                           ],
                         ),
@@ -256,8 +268,7 @@ class _SummaryState extends State<Summary> {
                       Divider(),
                     ],
                     Visibility(
-                      visible: ((widget.commande?.restaurant?.delivery == true) || (widget.commande?.restaurant?.aEmporter == true)) &&
-                          ((double.tryParse(widget.commande?.restaurant?.discount ?? "0.0") ?? 0.0) > 0),
+                      visible: widget.commande?.withCodeDiscount,
                       child: Column(
                         children: [
                           Padding(
@@ -267,23 +278,97 @@ class _SummaryState extends State<Summary> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 TextTranslator(
-                                  'Remise ${widget.commande?.restaurant?.discountType == "SurTotalité" ? "sur la totalité" : widget.commande?.restaurant?.discountType == "SurTransport" ? "sur le transport" : "sur la commande"}: ',
+                                  'Remise code promo : ',
                                   style: TextStyle(
                                     fontWeight: FontWeight.normal,
-                                    fontSize: 18,
+                                    fontSize: 16,
                                   ),
                                 ),
                                 Text(
-                                  widget.commande?.restaurant?.discountIsPrice == true ? '${widget.commande?.restaurant?.discount ?? 0} €' : '${widget.commande?.restaurant?.discount ?? 0} % ',
+                                  widget.commande?.restaurant?.discount?.codeDiscount?.discountIsPrice == true
+                                      ? '${widget.commande?.restaurant?.discount?.codeDiscount?.valueDouble ?? 0.0} €'
+                                      : '${widget.commande?.restaurant?.discount?.codeDiscount?.valueDouble ?? 0.0} % ',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 18,
+                                    fontSize: 16,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          Divider(),
+                          SizedBox(
+                            height: 10,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Visibility(
+                      visible: (widget.commande.commandType == 'delivery') && (widget.commande?.restaurant?.discount?.delivery?.valueDouble ?? 0.0) > 0,
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                TextTranslator(
+                                  'Remise de livraison : ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                Text(
+                                  widget.commande?.restaurant?.discount?.delivery?.discountIsPrice == true
+                                      ? '${widget.commande?.restaurant?.discount?.delivery?.valueDouble ?? 0.0} €'
+                                      : '${widget.commande?.restaurant?.discount?.delivery?.valueDouble ?? 0.0} % ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Visibility(
+                      visible: (widget.commande.commandType == 'takeaway') && (widget.commande?.restaurant?.discount?.aEmporter?.valueDouble ?? 0.0) > 0,
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                TextTranslator(
+                                  'Remise des plat à emporter : ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                Text(
+                                  widget.commande?.restaurant?.discount?.aEmporter?.discountIsPrice == true
+                                      ? '${widget.commande?.restaurant?.discount?.aEmporter?.valueDouble ?? 0.0} €'
+                                      : '${widget.commande?.restaurant?.discount?.aEmporter?.valueDouble ?? 0.0} % ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
                         ],
                       ),
                     ),

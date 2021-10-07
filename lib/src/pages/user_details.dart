@@ -367,6 +367,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
               'email': _emailController.value.text
             },
             code: code,
+            restaurant: _restaurant,
           ),
           routeName: homeRoute,
           // method: RoutingMethod.atTop,

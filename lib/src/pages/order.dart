@@ -44,6 +44,7 @@ class _OrderPageState extends State<OrderPage> {
   TextEditingController comment = TextEditingController();
 
   TextEditingController _messageController = TextEditingController();
+  TextEditingController _codePromoController = TextEditingController();
 
   @override
   void initState() {
@@ -267,6 +268,24 @@ class _OrderPageState extends State<OrderPage> {
                           ),
                           ...list,
                           Divider(),
+                          if (_restaurant?.discount?.codeDiscount?.code?.length != 0) ...[
+                            Card(
+                              elevation: 2.0,
+                              margin: const EdgeInsets.all(10.0),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 25),
+                                child: TextFormField(
+                                  controller: _codePromoController,
+                                  showCursor: true,
+                                  decoration: InputDecoration(border: InputBorder.none, hintText: "Code promo"),
+                                ),
+                              ),
+                            ),
+                            Divider(),
+                          ],
                           Card(
                             elevation: 2.0,
                             margin: const EdgeInsets.all(10.0),
@@ -302,32 +321,64 @@ class _OrderPageState extends State<OrderPage> {
                           child: Column(
                             children: [
                               Visibility(
-                                visible: ((_restaurant?.delivery == true) || (_restaurant?.aEmporter == true)) && ((double.tryParse(_restaurant?.discount ?? "0.0") ?? 0.0) > 0),
+                                visible: ((_restaurant?.delivery == true) || (_restaurant?.aEmporter == true)) &&
+                                    (((double.tryParse(_restaurant.discount.delivery.value ?? "0.0") ?? 0.0) > 0) || (((double.tryParse(_restaurant.discount.aEmporter.value ?? "0.0") ?? 0.0) > 0))),
                                 child: Column(
                                   children: [
-                                    Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        TextTranslator(
-                                          'Remise ${_restaurant?.discountType == "SurTotalité" ? "sur la totalité" : _restaurant?.discountType == "SurTransport" ? "sur le transport" : "sur la commande"}: ',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.normal,
-                                            fontSize: 18,
+                                    if ((_restaurant?.discount?.delivery?.valueDouble ?? 0.0) > 0) ...[
+                                      Row(
+                                        mainAxisSize: MainAxisSize.max,
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          TextTranslator(
+                                            'Remise de livraison : ',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.normal,
+                                              fontSize: 18,
+                                            ),
                                           ),
-                                        ),
-                                        Text(
-                                          _restaurant?.discountIsPrice == true ? '${_restaurant?.discount ?? 0} €' : '${_restaurant?.discount ?? 0} % ',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 18,
+                                          Text(
+                                            _restaurant?.discount?.delivery?.discountIsPrice == true
+                                                ? '${_restaurant?.discount?.delivery?.valueDouble ?? 0.0} €'
+                                                : '${_restaurant?.discount?.delivery?.valueDouble ?? 0.0} % ',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
+                                            ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                    ],
+                                    if ((_restaurant?.discount?.aEmporter?.valueDouble ?? 0.0) > 0) ...[
+                                      Row(
+                                        mainAxisSize: MainAxisSize.max,
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          TextTranslator(
+                                            'Remise des plat à emporter : ',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.normal,
+                                              fontSize: 18,
+                                            ),
+                                          ),
+                                          Text(
+                                            _restaurant?.discount?.aEmporter?.discountIsPrice == true
+                                                ? '${_restaurant?.discount?.aEmporter?.valueDouble ?? 0.0} €'
+                                                : '${_restaurant?.discount?.aEmporter?.valueDouble ?? 0.0} % ',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                    ]
                                   ],
                                 ),
                               ),
@@ -367,6 +418,15 @@ class _OrderPageState extends State<OrderPage> {
                           commandContext.commandType = 'on_site';
                           _command(commandContext, authContext, cartContext);
                         } else {
+                          commandContext.withCodeDiscount = false;
+                          if (_codePromoController.text.isNotEmpty && _restaurant?.discount?.codeDiscount?.code?.contains(_codePromoController.text) == false) {
+                            Fluttertoast.showToast(
+                              msg: "code promo invalide",
+                            );
+                            return;
+                          } else if (_restaurant?.discount?.codeDiscount?.code?.contains(_codePromoController.text) == true) {
+                            commandContext.withCodeDiscount = true;
+                          }
                           if (!isRestaurantLoading)
                             showModalBottomSheet(
                               context: context,

@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/models/models.dart';
+import 'package:menu_advisor/src/models/restaurants/restaurant_discount_model.dart';
 import 'package:menu_advisor/src/types/types.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -721,8 +722,7 @@ class Api {
   Future<Map> sendCommand({
     String relatedUser,
     String commandType,
-    bool discountIsPrice,
-    String discount,
+    RestaurantDiscount discount,
     int totalPrice,
     String restaurant,
     var items,
@@ -749,8 +749,7 @@ class Api {
         post = jsonEncode({
           'relatedUser': relatedUser,
           'commandType': commandType,
-          'discountIsPrice': discountIsPrice,
-          'discount': discount,
+          'discount': discount?.toMap(),
           'totalPrice': totalPrice.toString(),
           'restaurant': restaurant,
           'items': items,
