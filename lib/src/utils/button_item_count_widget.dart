@@ -69,7 +69,6 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                 child: Material(
                   child: FoodPage(
                     food: widget.food,
-                    imageTag: widget.food.id,
                   ),
                 ),
                 routeName: foodRoute,

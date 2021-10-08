@@ -8,16 +8,21 @@ import 'package:menu_advisor/src/animations/FadeAnimation.dart';
 import 'package:menu_advisor/src/components/backgrounds.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/components/cards.dart';
+import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/components/logo.dart';
 import 'package:menu_advisor/src/components/utilities.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/models/models.dart';
+import 'package:menu_advisor/src/pages/food.dart';
 import 'package:menu_advisor/src/pages/order.dart';
+import 'package:menu_advisor/src/pages/restaurant.dart';
 import 'package:menu_advisor/src/pages/search.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/DataContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
+import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/services/stripe.dart';
 import 'package:menu_advisor/src/types/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
@@ -25,6 +30,7 @@ import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -998,7 +1004,71 @@ class _HomePageState extends State<HomePage> {
                   ),
                 );
 
-              return CarouselSliderBlog(context: context, blogs: blogs);
+              return CarouselSliderBlog(
+                context: context,
+                blogs: blogs,
+                onTap: (blog) async {
+                  print("$logTrace tap blog");
+                  if (blog.urlMobile == null) {
+                    if (await canLaunch(blog.url)) launch(blog.url);
+                  } else {
+                    final uriMobile = Uri.parse(blog.urlMobile);
+                    if (!uriMobile.hasAbsolutePath && !uriMobile.isAbsolute) {
+                      Fluttertoast.showToast(
+                        msg: "Invalide url interne",
+                      );
+                      return;
+                    }
+                    final page = uriMobile.pathSegments.first;
+                    final id = uriMobile.pathSegments.last;
+                    if ("restaurants" == page.toLowerCase()) {
+                      //go to restaurant page
+                      RouteUtil.goTo(
+                        context: context,
+                        child: RestaurantPage(
+                          restaurant: id,
+                        ),
+                        routeName: restaurantRoute,
+                      );
+                    } else if ("foods" == page.toLowerCase()) {
+                      String lang = Provider.of<SettingContext>(
+                        context,
+                        listen: false,
+                      ).languageCode;
+                      try {
+                        showDialogProgress(context, msg: "");
+                        // Food food = await Api.instance.getFood(id: id, lang: lang); TODO: bug web service
+                        List<Food> foods = await Api.instance.getFoods(lang);
+                        final food = foods.where((e) => e.id == id).toList();
+                        dismissDialogProgress(context);
+                        if (food.isEmpty) {
+                          Fluttertoast.showToast(
+                            msg: "Plat non trouvé",
+                          );
+                          return;
+                        }
+                        //go to food page
+                        RouteUtil.goTo(
+                          context: context,
+                          child: FoodPage(
+                            food: food.first,
+                          ),
+                          routeName: foodRoute,
+                        );
+                      } catch (e) {
+                        dismissDialogProgress(context);
+                        Fluttertoast.showToast(
+                          msg: "Une erreur est survenue lors du chargement",
+                        );
+                      }
+                    } else {
+                      Fluttertoast.showToast(
+                        msg: "Invalide url interne",
+                      );
+                    }
+                  }
+                },
+              );
             },
           ),
         ],
@@ -1012,10 +1082,12 @@ class CarouselSliderBlog extends StatefulWidget {
     Key key,
     @required this.context,
     @required this.blogs,
+    @required this.onTap,
   }) : super(key: key);
 
   final BuildContext context;
   final List<Blog> blogs;
+  final Function(Blog) onTap;
 
   @override
   _CarouselSliderBlogState createState() => _CarouselSliderBlogState();
@@ -1027,9 +1099,10 @@ class _CarouselSliderBlogState extends State<CarouselSliderBlog> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Stack(children: [
-        CarouselSlider(
-          options: CarouselOptions(
+      child: Stack(
+        children: [
+          CarouselSlider(
+            options: CarouselOptions(
               height: MediaQuery.of(context).size.height / 3.6,
               autoPlay: true,
               enlargeCenterPage: true,
@@ -1038,52 +1111,20 @@ class _CarouselSliderBlogState extends State<CarouselSliderBlog> {
                 setState(() {
                   _current = position;
                 });
-              }),
-          items: widget.blogs.map((blog) {
-            return Builder(
-              builder: (BuildContext context) {
-                return BlogCard(blog);
               },
-            );
-          }).toList(),
-        ),
-        // dots
-        /*Positioned.fill(
-          bottom: 0,
-          left: 0,
-          child: Container(
-            height: 50,
-            width: double.infinity,
-            // color: Colors.black.withAlpha(150),
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                height: 20,
-                width: double.infinity,
-                color: Colors.transparent,
-                child: Container(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: widget.blogs.map((url) {
-                      int index = widget.blogs.indexOf(url);
-                      return Container(
-                        width: 10.0,
-                        height: 10.0,
-                        margin: EdgeInsets.symmetric(horizontal: 4.0),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          // color : Colors.red
-                          color: _current == index
-                            ? Colors.white
-                            : Colors.grey.withAlpha(150),
-                        ),
-                      );
-                    }).toList(),
-                ),
-              ),
             ),
-        )))*/
-      ]),
+            items: widget.blogs.map((blog) {
+              return Builder(
+                builder: (BuildContext context) {
+                  return BlogCard(blog, (blog) {
+                    widget.onTap(blog);
+                  });
+                },
+              );
+            }).toList(),
+          ),
+        ],
+      ),
     );
   }
 }

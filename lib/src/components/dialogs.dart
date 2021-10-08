@@ -1519,7 +1519,7 @@ class _AtributesDialogState extends State<AtributesDialog> {
   }
 }
 
-showDialogProgress(BuildContext context, {bool barrierDismissible = true}) {
+showDialogProgress(BuildContext context, {bool barrierDismissible = true, String msg}) {
   showDialog(
       barrierDismissible: barrierDismissible,
       context: context,
@@ -1538,10 +1538,33 @@ showDialogProgress(BuildContext context, {bool barrierDismissible = true}) {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 20,
-                ),
-                TextTranslator("Peut prendre quelque minutes...", style: TextStyle(fontSize: 15, color: Colors.white, decoration: TextDecoration.none, fontWeight: FontWeight.w400))
+                if (msg == null) ...[
+                  SizedBox(
+                    height: 20,
+                  ),
+                  TextTranslator(
+                    "Peut prendre quelque minutes...",
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Colors.white,
+                      decoration: TextDecoration.none,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  )
+                ] else if (msg.isNotEmpty) ...[
+                  SizedBox(
+                    height: 20,
+                  ),
+                  TextTranslator(
+                    msg,
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Colors.white,
+                      decoration: TextDecoration.none,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  )
+                ]
               ],
             ),
           ),

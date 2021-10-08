@@ -511,7 +511,7 @@ class _SummaryState extends State<Summary> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextTranslator(
-                widget.commande.restaurant.name,
+                widget.commande.restaurant.originName,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,

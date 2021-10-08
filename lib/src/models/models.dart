@@ -395,6 +395,11 @@ class MenuFood {
 class Restaurant {
   final String id;
   final String name;
+  String get originName {
+    final origin = name.split(" ")..removeAt(0);
+    return origin.join(" ");
+  }
+
   final String logo;
   final String type;
   final Location location;
@@ -1475,18 +1480,30 @@ class Blog {
   String title;
   String description;
   String url;
+  String urlMobile;
   String imageURL;
   String postedAt;
   String updatedAt;
   int iV;
 
-  Blog({this.sId, this.title, this.description, this.url, this.imageURL, this.postedAt, this.updatedAt, this.iV});
+  Blog({
+    this.sId,
+    this.title,
+    this.description,
+    this.url,
+    this.urlMobile,
+    this.imageURL,
+    this.postedAt,
+    this.updatedAt,
+    this.iV,
+  });
 
   Blog.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
     title = json['title'];
     description = json['description'];
     url = json['url'];
+    urlMobile = json['urlMobile'];
     imageURL = json['imageURL'];
     postedAt = json['postedAt'];
     updatedAt = json['updatedAt'];
@@ -1499,6 +1516,7 @@ class Blog {
     data['title'] = this.title;
     data['description'] = this.description;
     data['url'] = this.url;
+    data['urlMobile'] = this.urlMobile;
     data['imageURL'] = this.imageURL;
     data['postedAt'] = this.postedAt;
     data['updatedAt'] = this.updatedAt;

@@ -159,7 +159,7 @@ class _OrderPageState extends State<OrderPage> {
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           TextTranslator(
-                                            _restaurant.name,
+                                            _restaurant.originName,
                                             style: TextStyle(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 15,

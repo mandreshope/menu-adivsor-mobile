@@ -27,7 +27,6 @@ import 'package:provider/provider.dart';
 
 class FoodPage extends StatefulWidget {
   final Food food;
-  final String imageTag;
   final String restaurantName;
   final bool modalMode;
   final bool fromDelevery;
@@ -36,7 +35,6 @@ class FoodPage extends StatefulWidget {
   FoodPage({
     this.food,
     this.subMenu,
-    this.imageTag,
     this.restaurantName,
     this.modalMode = false,
     this.fromDelevery = false,
@@ -269,31 +267,6 @@ class _FoodPageState extends State<FoodPage> {
                   : Container(),
             ],
           ),
-          /*loading
-                      ? Center(
-                          child: CupertinoActivityIndicator(
-                          animating: true,
-                        ))
-                      : Center(
-                          child: InkWell(
-                            onTap: () {
-                              if (widget.fromRestaurant)
-                                RouteUtil.goBack(context: context);
-                              else
-                                RouteUtil.goTo(
-                                  context: context,
-                                  child: RestaurantPage(
-                                    restaurant: (widget.food.restaurant is String) ? widget.food.restaurant : widget.food.restaurant['_id'],
-                                  ),
-                                  routeName: restaurantRoute,
-                                );
-                            },
-                            child: TextTranslator(
-                              restaurantName,
-                              style: TextStyle(color: Colors.blue, fontSize: 20, decoration: TextDecoration.underline, fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                        ),*/
           Divider(),
           Container(
             width: double.infinity,
@@ -506,8 +479,6 @@ class _FoodPageState extends State<FoodPage> {
                     SizedBox(
                       height: 5,
                     ),
-                    // _renderCategorie(),
-                    // SizedBox(height: 5,),
                     Divider(),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -617,13 +588,11 @@ class _FoodPageState extends State<FoodPage> {
                   Padding(
                     padding: EdgeInsets.only(
                       top: 10,
-                      right: 5 /** MediaQuery.of(context).size.width / 7*/,
+                      right: 5,
                     ),
                     child: widget.food.attributes.length > 0
                         ? Consumer<DataContext>(builder: (_, dataContext, __) {
-                            return /*!dataContext.loadingFoodAttributes
-                                ?*/
-                                Padding(
+                            return Padding(
                               padding: const EdgeInsets.only(
                                 left: 5.0,
                               ),
@@ -720,10 +689,6 @@ class _FoodPageState extends State<FoodPage> {
                                     .toList(),
                               ]),
                             );
-                            /*: CircularProgressIndicator(
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                    CRIMSON,
-                                  ));*/
                           })
                         : Padding(
                             padding: const EdgeInsets.only(
@@ -917,13 +882,6 @@ class _FoodPageState extends State<FoodPage> {
                                   ),
                                 ),
                                 onPressed: () async {
-                                  // if (!widget.food.isPopular)
-                                  // if (!restaurant.isOpen){
-                                  //    Fluttertoast.showToast(
-                                  //       msg: 'Restaurant fermé',
-                                  //     );
-                                  //   return;
-                                  // }
                                   if (widget.food.isPopular) {
                                     RouteUtil.goTo(
                                       context: context,
@@ -1009,17 +967,6 @@ class _FoodPageState extends State<FoodPage> {
                 ),
               ),
             ),
-            /*Positioned(
-                bottom: 0,
-                right: 0,
-                left: 0,
-                child: Consumer<CartContext>(
-                  builder: (_, cartContext, __) => cartContext.items.isNotEmpty
-                      ? OrderButton(
-                          totalPrice: _cartContext.totalPrice,
-                        )
-                      : SizedBox(),
-                )),*/
             Align(
                 alignment: Alignment.topCenter,
                 // right: 0,
@@ -1056,21 +1003,6 @@ class _FoodPageState extends State<FoodPage> {
                                 ),
                               ),
                               Spacer(),
-                              /*Container(
-                          padding: EdgeInsets.only(left: 5),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: CRIMSON
-                            ),
-                          child: IconButton(
-                              icon: Icon(
-                                FontAwesomeIcons.share,
-                                color: snapshot.data ? Colors.white : Colors.white,
-                              ),
-                              onPressed: () {
-                                Share.share("Menu advisor");
-                              }),
-                        ),*/
                             ],
                           ),
                         );
@@ -1087,8 +1019,6 @@ class _FoodPageState extends State<FoodPage> {
         child: Stack(
           children: [
             InkWell(
-              // child: Hero(
-              //   tag: widget.imageTag ?? 'foodImage${widget.food.id}',
               child: widget.food.imageURL != null
                   ? Stack(
                       children: <Widget>[

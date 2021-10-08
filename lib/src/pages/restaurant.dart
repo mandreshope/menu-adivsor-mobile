@@ -376,7 +376,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
           appBar: _isSearching
               ? AppBar(
                   title: TextTranslator(
-                    restaurant.name ?? "",
+                    restaurant.originName ?? "",
                   ),
                 )
               : null,
@@ -661,7 +661,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     TextTranslator(
-                                      restaurant.name,
+                                      restaurant.originName,
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 20,
@@ -1177,7 +1177,7 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
             height: 80,
             child: AppBar(
               title: TextTranslator(
-                restaurant.name,
+                restaurant.originName,
               ),
               actions: [
                 InkWell(

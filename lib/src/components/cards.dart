@@ -5,7 +5,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/components/pointer_paint.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
-import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/models/models.dart';
 import 'package:menu_advisor/src/pages/detail_menu.dart';
 import 'package:menu_advisor/src/pages/food.dart';
@@ -24,7 +23,6 @@ import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 import 'package:menu_advisor/src/utils/extensions.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class CategoryCard extends StatelessWidget {
   final String imageURL;
@@ -191,7 +189,6 @@ class _FoodCardState extends State<FoodCard> {
                         context: context,
                         child: FoodPage(
                           food: widget.food,
-                          imageTag: widget.imageTag,
                           restaurantName: restaurantName,
                         ),
                         routeName: foodRoute,
@@ -386,7 +383,6 @@ class _FoodCardState extends State<FoodCard> {
                                                     context: context,
                                                     child: FoodPage(
                                                       food: widget.food,
-                                                      imageTag: widget.imageTag,
                                                       restaurantName: restaurantName,
                                                     ),
                                                     routeName: foodRoute,
@@ -396,7 +392,6 @@ class _FoodCardState extends State<FoodCard> {
                                                         context: context,
                                                         child: FoodPage(
                                                           food: widget.food,
-                                                          imageTag: widget.imageTag,
                                                           restaurantName: restaurantName,
                                                         ),
                                                         routeName: foodRoute,
@@ -610,7 +605,6 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                 child: Material(
                   child: FoodPage(
                     food: widget.food,
-                    imageTag: widget.food.id,
                     fromRestaurant: true,
                   ),
                 ),
@@ -922,7 +916,6 @@ class _DrinkCardState extends State<DrinkCard> {
             context: context,
             child: FoodPage(
               food: widget.food,
-              imageTag: widget.food.id,
             ),
             routeName: foodRoute,
           );
@@ -1160,7 +1153,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                           mainAxisSize: MainAxisSize.max,
                           children: [
                             TextTranslator(
-                              widget.restaurant.name ?? "",
+                              widget.restaurant.originName ?? "",
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
@@ -1600,7 +1593,7 @@ class CommandHistoryItem extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              TextTranslator('${command.restaurant.name}'),
+              TextTranslator('${command.restaurant.originName}'),
               TextTranslator('${command.code?.toString()?.padLeft(6, '0')}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               _validated(),
               Column(
@@ -1645,91 +1638,75 @@ class CommandHistoryItem extends StatelessWidget {
 }
 
 class BlogCard extends StatelessWidget {
-  BlogCard(this.blog);
+  final Function(Blog) onTap;
+  BlogCard(
+    this.blog,
+    this.onTap,
+  );
   final Blog blog;
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4,
-      color: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(5),
-      ),
-      child: Container(
-        child: Stack(
-          fit: StackFit.loose,
-          children: [
-            // Hero(
-            //     tag: 'tag:${blog.imageURL}',
-            // child:
-
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  height: 160,
-                  width: double.infinity,
-                  padding: EdgeInsets.only(bottom: 5, top: 5),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: FadeInImage.assetNetwork(
-                      image: blog.imageURL,
+    return InkWell(
+      onTap: () async {
+        onTap(blog);
+      },
+      child: Card(
+        elevation: 4,
+        color: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5),
+        ),
+        child: Container(
+          child: Stack(
+            fit: StackFit.loose,
+            children: [
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    height: 160,
+                    width: double.infinity,
+                    padding: EdgeInsets.only(bottom: 5, top: 5),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: FadeInImage.assetNetwork(
+                      image: blog?.imageURL ?? "",
                       placeholder: 'assets/images/loading.gif',
                       fit: BoxFit.contain,
                       imageErrorBuilder: (_, __, ___) => Container(
-                            color: Colors.white,
-                          )),
-                ),
-                // ),
-                Divider(),
-                Container(
-                  width: double.infinity,
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(),
-                      child: Center(
-                        child: TextTranslator(
-                          blog.title,
-                          style: TextStyle(color: Colors.grey[600], fontSize: 18, fontWeight: FontWeight.bold),
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  // ),
+                  Divider(),
+                  Container(
+                    width: double.infinity,
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(),
+                        child: Center(
+                          child: TextTranslator(
+                            blog.title,
+                            style: TextStyle(color: Colors.grey[600], fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                Container(
-                  child: Center(
-                    child: TextTranslator(blog.description),
-                  ),
-                )
-              ],
-            ),
-            if (blog.url != null)
-              Positioned(
-                top: 0,
-                right: 0,
-                child: Card(
-                  elevation: 4,
-                  color: CRIMSON,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(150),
-                  ),
-                  child: TextButton(
-                    child: TextTranslator(
-                      "En savoir plus",
-                      style: TextStyle(color: Colors.white, fontSize: 18),
+                  Container(
+                    child: Center(
+                      child: TextTranslator(blog.description),
                     ),
-                    onPressed: () async {
-                      print("$logTrace tap blog");
-                      if (await canLaunch(blog.url)) launch(blog.url);
-                    },
-                  ),
-                ),
-              )
-          ],
+                  )
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
