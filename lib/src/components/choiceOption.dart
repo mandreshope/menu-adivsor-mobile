@@ -37,11 +37,6 @@ class ChoiceOption extends StatelessWidget {
                           onPressed: () {
                             itemsOption.quantity = 1;
                             itemsOption.isSelected = !itemsOption.isSelected;
-                            /* if (widget.fromMenu){
-                                                        menu.optionSelected = options;
-                                                        widget.food.optionSelected = options;
-                                                        _cartContext.addOption(menu, options,key: widget.subMenu);
-                                                      }*/
                             _cartContext.refresh();
                           },
                         )
@@ -66,13 +61,6 @@ class ChoiceOption extends StatelessWidget {
                                     } else {
                                       itemsOption.quantity--;
                                     }
-                                    /* if (widget.fromMenu){
-                                                             menu.optionSelected = _optionSelected;
-                                                             widget.food.optionSelected = _optionSelected;
-                                                             _cartContext.addOption(menu, options,key: widget.subMenu);
-                                                           }else{
-                                                             widget.food.optionSelected = _optionSelected;
-                                                           }*/
                                     _cartContext.refresh();
                                   }),
                               SizedBox(
@@ -88,7 +76,6 @@ class ChoiceOption extends StatelessWidget {
                               IconButton(
                                   icon: Icon(Icons.add_circle_outlined, color: CRIMSON, size: 35),
                                   onPressed: () {
-                                    // if (_optionContext.quantityOptions == option.maxOptions){
                                     if (option.isMaxOptions) {
                                       itemsOption.quantity++;
                                       _cartContext.refresh();
@@ -127,10 +114,6 @@ class ChoiceOption extends StatelessWidget {
                   ),
                   Container(
                     padding: EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                        // shape: BoxShape.circle,
-                        // color: _.value.price == 0 ? null : Colors.grey[400]
-                        ),
                     child: !_cartContext.withPrice || itemsOption.price.amount == null
                         ? Text("")
                         : Text(

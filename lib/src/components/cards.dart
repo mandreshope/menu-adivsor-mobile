@@ -1305,17 +1305,13 @@ class _BagItemState extends State<BagItem> {
               _foodRender(widget.food),
               //
               if (widget.food.isMenu) ...[
-                // _foodRender(_cartContext.foodMenuSelecteds.first),
                 if (_cartContext.foodMenuSelecteds != null) ...[
                   if (expand) ...[
                     for (Food f in widget.food.foodMenuSelecteds) ...[
                       if (f != null) ...[
-                        // if (expand)...[
                         _foodRender(f),
                         Divider(),
                         _options(f, menu: widget.food),
-                        // Divider(),
-                        // ],
                       ] else ...[
                         Container()
                       ]
@@ -1371,7 +1367,7 @@ class _BagItemState extends State<BagItem> {
         f.isFoodForMenu
             ? Container()
             : TextTranslator(
-                '${widget.food.quantity}x ',
+                '${f.quantity}x ',
                 style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 20),
               ),
         SizedBox(
@@ -1380,10 +1376,7 @@ class _BagItemState extends State<BagItem> {
         f.isMenu
             ? Container()
             : f.imageURL != null
-                ? /*Hero(
-                          tag: widget.imageTag ?? widget.food.id,
-        child:*/
-                CircleAvatar(
+                ? CircleAvatar(
                     backgroundImage: NetworkImage(
                       f.imageURL,
                     ),
@@ -1413,23 +1406,27 @@ class _BagItemState extends State<BagItem> {
               f.isFoodForMenu
                   ? Container()
                   : TextTranslator(
-                      widget.food?.description ?? "",
-                      style: TextStyle(fontSize: widget.food?.description == null ? 0 : 15, fontWeight: FontWeight.bold, color: Colors.grey[600]),
+                      f?.description ?? "",
+                      style: TextStyle(
+                        fontSize: f?.description == null ? 0 : 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey[600],
+                      ),
                     ),
-              if (widget.food.price?.amount != null) ...[
+              if (f?.price?.amount != null) ...[
                 f.isFoodForMenu
                     ? Container()
-                    : widget.food.isMenu
+                    : f.isMenu
                         ? Text(
-                            !_cartContext.withPrice || widget.food.type == MenuType.priceless.value
+                            !_cartContext.withPrice || f.type == MenuType.priceless.value
                                 ? ""
-                                : widget.food.type == MenuType.per_food.value
-                                    ? '${(widget.food.totalPrice.toDouble() / widget.food.quantity) / 100}€'
-                                    : '${widget.food.price.amount / 100}€',
+                                : f.type == MenuType.per_food.value
+                                    ? '${(f.totalPrice.toDouble() / f.quantity) / 100}€'
+                                    : '${f.price.amount / 100}€',
                             style: TextStyle(fontSize: 18, color: Colors.grey[600], fontWeight: FontWeight.bold),
                           )
                         : Text(
-                            !_cartContext.withPrice || (menu != null && menu?.type == MenuType.priceless.value) ? "" : '${widget.food.price.amount / 100}€',
+                            !_cartContext.withPrice || (menu != null && menu?.type == MenuType.priceless.value) ? "" : '${f.price.amount / 100}€',
                             style: TextStyle(fontSize: 18, color: Colors.grey[600], fontWeight: FontWeight.bold),
                           ),
               ]
@@ -1442,14 +1439,14 @@ class _BagItemState extends State<BagItem> {
         f.isFoodForMenu
             ? Container()
             : ButtonItemCountWidget(
-                widget.food,
+                f,
                 onAdded: () {
                   setState(() {
                     _cartContext.refresh();
                   });
                 },
                 onRemoved: () async {
-                  if (widget.food.quantity <= 0) {
+                  if (f.quantity <= 0) {
                     var result = await showDialog(
                       context: context,
                       builder: (_) => ConfirmationDialog(
@@ -1461,16 +1458,16 @@ class _BagItemState extends State<BagItem> {
                     if (result is bool && result) {
                       _cartContext.removeItemAtPosition(widget.position);
                     } else {
-                      widget.food.quantity = 1;
+                      f.quantity = 1;
                     }
                   }
                   setState(() {
                     _cartContext.refresh();
                   });
                 },
-                itemCount: widget.food.quantity,
+                itemCount: f.quantity,
                 isContains: _cartContext.contains(
-                  widget.food,
+                  f,
                 ),
               ),
       ],
@@ -1480,13 +1477,15 @@ class _BagItemState extends State<BagItem> {
   Widget _options(Food f, {Menu menu}) {
     var options = f.optionSelected ?? [];
     return Container(
-      // margin: EdgeInsets.only(left: MediaQuery.of(context).size.width/4),
       child: Column(
         children: [
-          // for (Option option in options)...[
           Container(
-            padding: EdgeInsets.only(top: 15, bottom: 15, left: MediaQuery.of(context).size.width / 3, right: 25),
-            // color: a%2 == 0 ? Colors.grey.withAlpha(20) : Colors.white,
+            padding: EdgeInsets.only(
+              top: 15,
+              bottom: 15,
+              left: MediaQuery.of(context).size.width / 3,
+              right: 25,
+            ),
             child: Column(
               children: [
                 for (Option option in options) ...[
@@ -1494,7 +1493,15 @@ class _BagItemState extends State<BagItem> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       SizedBox(width: 15),
-                      TextTranslator('${option.title}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black, decoration: TextDecoration.underline)),
+                      TextTranslator(
+                        '${option.title}',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
                       SizedBox(width: 5),
                     ],
                   ),
@@ -1545,7 +1552,15 @@ class _BagItemState extends State<BagItem> {
                         if (itemsOption.price.amount == 0 || !widget.withPrice || (menu != null && menu?.type == MenuType.priceless.value))
                           Text("")
                         else
-                          itemsOption.price?.amount == null ? Text("") : TextTranslator('${itemsOption.price.amount / 100} €', style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
+                          itemsOption.price?.amount == null
+                              ? Text("")
+                              : TextTranslator(
+                                  '${itemsOption.price.amount / 100} €',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.normal,
+                                  ),
+                                ),
                       ],
                     ),
                   ],

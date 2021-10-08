@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
@@ -43,6 +44,8 @@ class _DetailMenuState extends State<DetailMenu> {
   Restaurant restaurant;
   bool loading = false;
 
+  List<MenuFood> menuFoods = [];
+
   _scrollListener() {
     double offset = _scrollController.offset;
     if (offset <= 50) {
@@ -74,15 +77,12 @@ class _DetailMenuState extends State<DetailMenu> {
     _cartContext = Provider.of<CartContext>(context, listen: false);
     _cartContext.itemsTemp.clear();
 
-    // sort menu type by priority
-    // widget.menu.foods.sort((a, b) => a.food.type.priority.compareTo(b.food.type.priority));
-    // widget.menu.foodsGrouped = widget.menu.foods ?? [];
-    widget.menu.count = _cartContext.getFoodCountByIdNew(widget.menu);
+    menuFoods = widget.menu.foods.map((e) => MenuFood.copy(e)).toList();
+
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _scrollController.addListener(_scrollListener);
       if (widget.menu.restaurant is String) {
         setState(() {
-          // restaurant = res;
           loading = true;
         });
         Api.instance
@@ -193,23 +193,14 @@ class _DetailMenuState extends State<DetailMenu> {
                       ),
                       Divider(),
                       _renderListPlat(context),
-                      widget.menu.foods.isEmpty ? Container() : _renderAddMenu(),
+                      menuFoods.isEmpty ? Container() : _renderAddMenu(),
                       SizedBox(
                         height: 50,
                       ),
-                      Consumer<CartContext>(
-                        builder: (_, cart, w) {
-                          return cart.getFoodCountByIdNew(widget.menu) > 0
-                              ? SizedBox(
-                                  height: 150,
-                                )
-                              : Container();
-                        },
-                      )
                     ],
                   ),
                 ),
-                widget.menu.foods.isNotEmpty
+                menuFoods.isNotEmpty
                     ? Container()
                     : Align(
                         alignment: Alignment.bottomCenter,
@@ -239,15 +230,11 @@ class _DetailMenuState extends State<DetailMenu> {
                       children: [
                         Expanded(
                           child: Consumer<CartContext>(builder: (_, cartContext, __) {
-                            widget.menu.count = _cartContext.getFoodCountByIdNew(widget.menu);
                             return Container(
                               color: widget.menu.foodMenuSelecteds.isEmpty || !_cartContext.hasOptionSelectioned(_food) ? Colors.grey : CRIMSON,
                               width: double.infinity,
                               height: 45,
-                              child:
-                                  /*  */
-
-                                  Row(
+                              child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -302,7 +289,6 @@ class _DetailMenuState extends State<DetailMenu> {
                                       } else {
                                         if (cartContext.hasOptionSelectioned(_food)) {
                                           _cartContext.addItem(widget.menu, 1, true);
-                                          // setState(() {});
                                           RouteUtil.goBack(context: context);
                                         } else
                                           Fluttertoast.showToast(
@@ -375,7 +361,7 @@ class _DetailMenuState extends State<DetailMenu> {
 
   Widget _renderTitlePlat(context) {
     String name = "";
-    for (var entry in widget.menu.foods) name += entry.title + " + ";
+    for (var menuFood in menuFoods) name += menuFood.title + " + ";
     return TextTranslator(
       name.isEmpty ? name : name.substring(0, name.length - 2),
       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
@@ -383,15 +369,18 @@ class _DetailMenuState extends State<DetailMenu> {
   }
 
   Widget _renderListPlat(context) {
-    return widget.menu.foods.isEmpty
+    return menuFoods.isEmpty
         ? Container()
         : Container(
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(0)),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(0),
+            ),
             margin: EdgeInsets.all(15),
             padding: EdgeInsets.all(25),
             child: Column(
               children: [
-                for (var entry in widget.menu.foods)
+                for (var menuFood in menuFoods)
                   Column(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -400,34 +389,35 @@ class _DetailMenuState extends State<DetailMenu> {
                         height: 15,
                       ),
                       TextTranslator(
-                        entry.title,
+                        menuFood.title,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+                      TextTranslator(
+                        "Choisissez-en jusqu'à ${menuFood.maxOptions}",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       Divider(),
-                      for (var food in entry.foods) ...[
+                      for (final food in menuFood.foods) ...[
                         Consumer<CartContext>(builder: (context, menuContext, w) {
-                          return InkWell(
-                            onTap: () {
-                              if (widget.menu.count == 0 || widget.menu.count == 1) {
-                                widget.menu.setFoodMenuSelected(entry.sId, food);
-                                _food = food;
-                                widget.menu.select(_cartContext, entry.sId, food, () => menuContext.refresh());
-                                if (widget.menu.count == 0) {
-                                  widget.menu.count++;
-                                }
-                              }
-                            },
-                            child: Card(
-                              elevation: 2,
-                              child: Container(
-                                // margin: EdgeInsets.all(15),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Row(
+                          return ExpandableNotifier(
+                            child: Column(
+                              children: <Widget>[
+                                ScrollOnExpand(
+                                  scrollOnExpand: true,
+                                  scrollOnCollapse: false,
+                                  child: ExpandablePanel(
+                                    theme: const ExpandableThemeData(
+                                      headerAlignment: ExpandablePanelHeaderAlignment.center,
+                                      tapBodyToCollapse: true,
+                                      hasIcon: false,
+                                    ),
+                                    header: Row(
                                       mainAxisAlignment: MainAxisAlignment.start,
                                       children: [
                                         InkWell(
@@ -470,48 +460,77 @@ class _DetailMenuState extends State<DetailMenu> {
                                         ),
                                         if (widget.menu.type == MenuType.fixed_price.value && _cartContext.withPrice) ...[
                                           Spacer(),
-                                          if (food.additionalPrice?.amount != null) ...[
-                                            food.additionalPrice.amount == 0 ? Text("") : Text("+ ${(food.additionalPrice.amount / 100)} €", style: TextStyle(fontWeight: FontWeight.bold))
-                                          ],
+                                          food?.price?.amount == null
+                                              ? Text("")
+                                              : Text(
+                                                  "${food.price.amount / 100} €",
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
                                         ] else if (widget.menu.type == MenuType.priceless.value) ...[
                                           Text(" ")
                                         ] else ...[
                                           Spacer(),
-                                          if (_cartContext.withPrice) food?.price?.amount == null ? Text("") : Text("${food.price.amount / 100} €", style: TextStyle(fontWeight: FontWeight.bold)),
+                                          if (_cartContext.withPrice)
+                                            food?.price?.amount == null
+                                                ? Text("")
+                                                : Text(
+                                                    "${food.price.amount / 100} €",
+                                                    style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                  ),
                                         ],
                                         Spacer(),
                                         IconButton(
                                           icon: Icon(
-                                            widget.menu.selectedMenu[entry.sId]?.first?.id == food.id ? Icons.check_box : Icons.check_box_outline_blank,
-                                            color: widget.menu.selectedMenu[entry.sId]?.first?.id == food.id ? CRIMSON : Colors.grey,
+                                            food.isSelected ? Icons.check_box : Icons.check_box_outline_blank,
+                                            color: food.isSelected ? CRIMSON : Colors.grey,
                                           ),
                                           onPressed: () {
+                                            food.isSelected = !food.isSelected;
                                             print("$logTrace food selected");
-                                            if (widget.menu.count == 0 || widget.menu.count == 1) {
-                                              widget.menu.setFoodMenuSelected(entry.sId, food);
+                                            if (menuFood.isMaxOptions) {
+                                              widget.menu.setFoodMenuSelected(
+                                                menuFood.sId,
+                                                food,
+                                                menuFood.foods,
+                                              );
                                               _food = food;
-                                              widget.menu.select(_cartContext, entry.sId, food, () => menuContext.refresh());
-                                              if (widget.menu.count == 0) {
-                                                widget.menu.count++;
-                                              }
-                                            } else {}
+                                              widget.menu.select(
+                                                _cartContext,
+                                                menuFood.sId,
+                                                food,
+                                                () => menuContext.refresh(),
+                                              );
+                                            } else {
+                                              food.isSelected = false;
+                                              menuContext.refresh();
+                                              print("$logTrace max options");
+                                              Fluttertoast.showToast(msg: "maximum selection ${menuFood.title} : ${menuFood.maxOptions}");
+                                            }
                                           },
                                         ),
                                       ],
                                     ),
-                                    if (widget.menu.selectedMenu[entry.sId]?.first?.id == food.id) ...[
-                                      MenuItemFoodOption(
-                                        food: food,
-                                        menu: widget.menu,
-                                        withPrice: _cartContext.withPrice,
-                                        subMenu: entry.title,
-                                      )
-                                      // Container()
-                                    ] else
-                                      Container()
-                                  ],
+                                    collapsed: Container(),
+                                    expanded: MenuItemFoodOption(
+                                      food: food,
+                                      menu: widget.menu,
+                                      withPrice: _cartContext.withPrice,
+                                      subMenu: menuFood.title,
+                                    ),
+                                    builder: (_, collapsed, expanded) {
+                                      return Expandable(
+                                        collapsed: collapsed,
+                                        expanded: expanded,
+                                        theme: const ExpandableThemeData(crossFadePoint: 0),
+                                      );
+                                    },
+                                  ),
                                 ),
-                              ),
+                              ],
                             ),
                           );
                         })

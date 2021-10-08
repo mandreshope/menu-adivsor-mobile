@@ -134,6 +134,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.1"
+  expandable:
+    dependency: "direct main"
+    description:
+      name: expandable
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "5.0.1"
   fake_async:
     dependency: transitive
     description:
@@ -227,13 +234,6 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_balloon_slider
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.1"
-  flutter_collapse:
-    dependency: "direct main"
-    description:
-      name: flutter_collapse
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.1"

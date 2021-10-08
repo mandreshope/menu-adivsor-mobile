@@ -120,15 +120,9 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
           avatarBorderColor: Colors.white,
         ),
         padding: EdgeInsets.zero,
-        // wrapped: true,
-        // textDirection: TextDirection.ltr,
         direction: Axis.vertical,
         onChanged: (value) {
-          // int diff =
-          if (widget.menu.count > 1) return;
           setState(() {
-            // if (widget.menu.count > 2) return;
-
             singleItemOptionSelected = value;
             singleItemOptionSelected.isSingle = true;
             singleItemOptionSelected.quantity = 1;
@@ -206,8 +200,6 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                   InkWell(
                     onTap: () {
                       print("$logTrace food checked");
-
-                      if (widget.menu.count > 1) return;
                       _.select(!_.selected);
                       _cartContext.refresh();
                       setState(() {});
@@ -245,18 +237,13 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
       value: option.itemOptionSelected,
       padding: EdgeInsets.zero,
       onChanged: (value) {
-        if (widget.menu.count > 1) return;
-        // int diff =
         setState(() {
-          // if (widget.menu.count > 1) return;
           if (option.itemOptionSelected?.length == option.maxOptions) {
             if (option.itemOptionSelected.length >= value.length) {
               option.itemOptionSelected = value.cast<ItemsOption>();
               widget.menu.optionSelected = options;
               widget.food.optionSelected = options;
               _cartContext.addOption(widget.menu, options, key: widget.subMenu);
-
-              // _cartContext.addItem(widget.menu, 1,true);
               _cartContext.refresh();
             } else {
               print("$logTrace max options");
@@ -349,7 +336,6 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                       ? IconButton(
                           icon: Icon(Icons.add_circle_outlined, color: Colors.grey, size: 25),
                           onPressed: () {
-                            if (widget.menu.count > 1) return;
                             if (option.isMaxOptions) {
                               _.value.quantity = 1;
                               _.select(!_.selected);
@@ -374,7 +360,6 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                                     size: 25,
                                   ),
                                   onPressed: () {
-                                    if (widget.menu.count > 1) return;
                                     if (_.value.quantity == 1) {
                                       _.value.quantity = 0;
                                       _.select(false);
@@ -398,8 +383,6 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                               IconButton(
                                 icon: Icon(Icons.add_circle_outlined, color: CRIMSON, size: 25),
                                 onPressed: () {
-                                  // if (_optionContext.quantityOptions == option.maxOptions){
-                                  if (widget.menu.count > 1) return;
                                   if (option.isMaxOptions) {
                                     _.value.quantity++;
                                     _.select(true);

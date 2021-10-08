@@ -1,9 +1,9 @@
+import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter_collapse/flutter_collapse.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
-import 'package:menu_advisor/src/components/flutter_collapse.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/pages/confirm_sms.dart';
@@ -45,9 +45,6 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
   TextEditingController postalCodeContr = TextEditingController();
   TextEditingController codepostalCodeContr = TextEditingController();
   TextEditingController etageContr = TextEditingController();
-
-  bool isCollapseDateTime = false;
-  bool isCollapseLivraison = false;
 
   bool myAddressLoading = false;
 
@@ -232,213 +229,244 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                         SizedBox(
                           height: 30,
                         ),
-                        Collapse(
-                          onChange: (value) {
-                            setState(() {
-                              isCollapseLivraison = value;
-                            });
-                          },
-                          value: isCollapseLivraison,
-                          title: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 35.0,
-                              vertical: 15,
-                            ),
-                            child: TextTranslator(
-                              "Options de livraison",
-                              textAlign: TextAlign.start,
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          body: Container(
+                        ExpandableNotifier(
+                          child: Container(
                             color: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 5,
-                            ),
-                            child: Column(
-                              children: [
-                                Material(
-                                  color: Colors.transparent,
-                                  child: InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        optionRdv = "behind_the_door";
-                                        _restaurant.optionLivraison = optionRdv;
-                                      });
-                                    },
-                                    child: ListTile(
-                                      contentPadding: const EdgeInsets.symmetric(horizontal: 25.0),
-                                      title: TextTranslator(
-                                        "Devant la porte",
-                                      ),
-                                      leading: Icon(
-                                        Icons.timer,
-                                      ),
-                                      trailing: optionRdv == "behind_the_door"
-                                          ? Icon(
-                                              Icons.check,
-                                              color: Colors.green[300],
-                                            )
-                                          : null,
-                                    ),
+                            child: ScrollOnExpand(
+                              scrollOnExpand: true,
+                              scrollOnCollapse: false,
+                              child: ExpandablePanel(
+                                theme: const ExpandableThemeData(
+                                  headerAlignment: ExpandablePanelHeaderAlignment.center,
+                                  tapBodyToCollapse: true,
+                                  hasIcon: true,
+                                ),
+                                header: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 35.0,
+                                    vertical: 15,
+                                  ),
+                                  child: TextTranslator(
+                                    "Options de livraison",
+                                    textAlign: TextAlign.start,
+                                    style: TextStyle(fontWeight: FontWeight.bold),
                                   ),
                                 ),
-                                Divider(),
-                                Material(
-                                  color: Colors.transparent,
-                                  child: InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        optionRdv = "on_the_door";
-                                        _restaurant.optionLivraison = optionRdv;
-                                      });
-                                    },
-                                    child: ListTile(
-                                      contentPadding: const EdgeInsets.symmetric(horizontal: 25.0),
-                                      title: TextTranslator(
-                                        "Rdv à la porte",
+                                collapsed: Container(),
+                                expanded: Container(
+                                  color: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 5,
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: () {
+                                            setState(() {
+                                              optionRdv = "behind_the_door";
+                                              _restaurant.optionLivraison = optionRdv;
+                                            });
+                                          },
+                                          child: ListTile(
+                                            contentPadding: const EdgeInsets.symmetric(horizontal: 25.0),
+                                            title: TextTranslator(
+                                              "Devant la porte",
+                                            ),
+                                            leading: Icon(
+                                              Icons.timer,
+                                            ),
+                                            trailing: optionRdv == "behind_the_door"
+                                                ? Icon(
+                                                    Icons.check,
+                                                    color: Colors.green[300],
+                                                  )
+                                                : null,
+                                          ),
+                                        ),
                                       ),
-                                      leading: Icon(
-                                        Icons.timer,
+                                      Divider(),
+                                      Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: () {
+                                            setState(() {
+                                              optionRdv = "on_the_door";
+                                              _restaurant.optionLivraison = optionRdv;
+                                            });
+                                          },
+                                          child: ListTile(
+                                            contentPadding: const EdgeInsets.symmetric(horizontal: 25.0),
+                                            title: TextTranslator(
+                                              "Rdv à la porte",
+                                            ),
+                                            leading: Icon(
+                                              Icons.timer,
+                                            ),
+                                            trailing: optionRdv == "on_the_door"
+                                                ? Icon(
+                                                    Icons.check,
+                                                    color: Colors.green[300],
+                                                  )
+                                                : null,
+                                          ),
+                                        ),
                                       ),
-                                      trailing: optionRdv == "on_the_door"
-                                          ? Icon(
-                                              Icons.check,
-                                              color: Colors.green[300],
-                                            )
-                                          : null,
-                                    ),
+                                      Divider(),
+                                      Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: () {
+                                            setState(() {
+                                              optionRdv = "out";
+                                              _restaurant.optionLivraison = optionRdv;
+                                            });
+                                          },
+                                          child: ListTile(
+                                            contentPadding: const EdgeInsets.symmetric(horizontal: 25.0),
+                                            title: TextTranslator(
+                                              "A l'exterieur",
+                                            ),
+                                            leading: Icon(
+                                              Icons.timer,
+                                            ),
+                                            trailing: optionRdv == "out"
+                                                ? Icon(
+                                                    Icons.check,
+                                                    color: Colors.green[300],
+                                                  )
+                                                : null,
+                                          ),
+                                        ),
+                                      ),
+                                      Divider(),
+                                    ],
                                   ),
                                 ),
-                                Divider(),
-                                Material(
-                                  color: Colors.transparent,
-                                  child: InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        optionRdv = "out";
-                                        _restaurant.optionLivraison = optionRdv;
-                                      });
-                                    },
-                                    child: ListTile(
-                                      contentPadding: const EdgeInsets.symmetric(horizontal: 25.0),
-                                      title: TextTranslator(
-                                        "A l'exterieur",
-                                      ),
-                                      leading: Icon(
-                                        Icons.timer,
-                                      ),
-                                      trailing: optionRdv == "out"
-                                          ? Icon(
-                                              Icons.check,
-                                              color: Colors.green[300],
-                                            )
-                                          : null,
-                                    ),
-                                  ),
-                                ),
-                                Divider(),
-                              ],
+                                builder: (_, collapsed, expanded) {
+                                  return Expandable(
+                                    collapsed: collapsed,
+                                    expanded: expanded,
+                                    theme: const ExpandableThemeData(crossFadePoint: 0),
+                                  );
+                                },
+                              ),
                             ),
                           ),
                         ),
-                        Collapse(
-                          padding: EdgeInsets.zero,
-                          onChange: (value) {
-                            setState(() {
-                              isCollapseDateTime = value;
-                            });
-                          },
-                          value: isCollapseDateTime,
-                          title: Container(
-                            // color: Colors.grey,
-                            // width: MediaQuery.of(context).size.width - 50,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 35.0,
-                              vertical: 15,
-                            ),
-                            child: TextTranslator(
-                              AppLocalizations.of(context).translate('date_and_time'),
-                              textAlign: TextAlign.start,
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          body: Container(
+                        ExpandableNotifier(
+                          child: Container(
                             color: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 5,
-                            ),
-                            child: Column(
-                              children: [
-                                Material(
-                                  color: Colors.transparent,
-                                  child: InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        deliveryDate = null;
-                                        deliveryTime = null;
-                                      });
-                                    },
-                                    child: ListTile(
-                                      contentPadding: const EdgeInsets.symmetric(horizontal: 25.0),
-                                      title: TextTranslator(
-                                        AppLocalizations.of(context).translate('as_soon_as_possible'),
-                                      ),
-                                      leading: Icon(
-                                        Icons.timer,
-                                      ),
-                                      trailing: deliveryDate == null && deliveryTime == null
-                                          ? Icon(
-                                              Icons.check,
-                                              color: Colors.green[300],
-                                            )
-                                          : null,
-                                    ),
+                            child: ScrollOnExpand(
+                              scrollOnExpand: true,
+                              scrollOnCollapse: false,
+                              child: ExpandablePanel(
+                                theme: const ExpandableThemeData(
+                                  headerAlignment: ExpandablePanelHeaderAlignment.center,
+                                  tapBodyToCollapse: true,
+                                  hasIcon: true,
+                                ),
+                                header: Container(
+                                  // color: Colors.grey,
+                                  // width: MediaQuery.of(context).size.width - 50,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 35.0,
+                                    vertical: 15,
+                                  ),
+                                  child: TextTranslator(
+                                    AppLocalizations.of(context).translate('date_and_time'),
+                                    textAlign: TextAlign.start,
+                                    style: TextStyle(fontWeight: FontWeight.bold),
                                   ),
                                 ),
-                                Divider(),
-                                Material(
-                                  color: Colors.transparent,
-                                  child: InkWell(
-                                    onTap: () async {
-                                      setState(() {
-                                        deliveryDate = now.add(Duration(days: 0));
-                                        deliveryTime = TimeOfDay(hour: now.hour, minute: 00);
-
-                                        commandContext.deliveryDate = deliveryDate;
-                                        commandContext.deliveryTime = deliveryTime;
-                                      });
-                                    },
-                                    child: ListTile(
-                                      contentPadding: const EdgeInsets.symmetric(horizontal: 25.0),
-                                      title: TextTranslator(
-                                        'Planifier une commande',
-                                      ),
-                                      leading: Icon(
-                                        Icons.calendar_today_outlined,
-                                      ),
-                                      trailing: deliveryDate != null && deliveryTime != null
-                                          ? Icon(
-                                              Icons.check,
-                                              color: Colors.green[300],
-                                            )
-                                          : null,
-                                    ),
+                                collapsed: Container(),
+                                expanded: Container(
+                                  color: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 5,
                                   ),
-                                ),
-                                if (deliveryDate != null) ...[
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  child: Column(
                                     children: [
-                                      _datePicker(),
-                                      _timePicker(),
+                                      Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: () {
+                                            setState(() {
+                                              deliveryDate = null;
+                                              deliveryTime = null;
+                                            });
+                                          },
+                                          child: ListTile(
+                                            contentPadding: const EdgeInsets.symmetric(horizontal: 25.0),
+                                            title: TextTranslator(
+                                              AppLocalizations.of(context).translate('as_soon_as_possible'),
+                                            ),
+                                            leading: Icon(
+                                              Icons.timer,
+                                            ),
+                                            trailing: deliveryDate == null && deliveryTime == null
+                                                ? Icon(
+                                                    Icons.check,
+                                                    color: Colors.green[300],
+                                                  )
+                                                : null,
+                                          ),
+                                        ),
+                                      ),
+                                      Divider(),
+                                      Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: () async {
+                                            setState(() {
+                                              deliveryDate = now.add(Duration(days: 0));
+                                              deliveryTime = TimeOfDay(hour: now.hour, minute: 00);
+
+                                              commandContext.deliveryDate = deliveryDate;
+                                              commandContext.deliveryTime = deliveryTime;
+                                            });
+                                          },
+                                          child: ListTile(
+                                            contentPadding: const EdgeInsets.symmetric(horizontal: 25.0),
+                                            title: TextTranslator(
+                                              'Planifier une commande',
+                                            ),
+                                            leading: Icon(
+                                              Icons.calendar_today_outlined,
+                                            ),
+                                            trailing: deliveryDate != null && deliveryTime != null
+                                                ? Icon(
+                                                    Icons.check,
+                                                    color: Colors.green[300],
+                                                  )
+                                                : null,
+                                          ),
+                                        ),
+                                      ),
+                                      if (deliveryDate != null) ...[
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            _datePicker(),
+                                            _timePicker(),
+                                          ],
+                                        ),
+                                      ],
                                     ],
                                   ),
-                                ],
-                              ],
+                                ),
+                                builder: (_, collapsed, expanded) {
+                                  return Expandable(
+                                    collapsed: collapsed,
+                                    expanded: expanded,
+                                    theme: const ExpandableThemeData(crossFadePoint: 0),
+                                  );
+                                },
+                              ),
                             ),
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),

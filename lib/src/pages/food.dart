@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:chips_choice/chips_choice.dart';
+import 'package:expandable/expandable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_collapse/flutter_collapse.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
@@ -57,11 +57,8 @@ class _FoodPageState extends State<FoodPage> {
   CartContext _cartContext;
   List<Option> options = [];
   // bool collaspse = true;
-  Map<String, bool> collaspse = Map();
 
   OptionContext _optionContext;
-
-  List<Option> _optionSelected = [];
 
   Menu menu;
   Food foodAdded;
@@ -169,10 +166,6 @@ class _FoodPageState extends State<FoodPage> {
     foodAdded = Food.copy(widget.food);
     foodAdded.idNewFood = DateTime.now().millisecondsSinceEpoch.toString();
     options = widget.food.options.map((e) => Option.copy(e)).toList();
-
-    options.forEach((element) {
-      collaspse[element.sId] = true;
-    });
 
     itemCount = foodAdded.quantity;
     this.isAdded = false;
@@ -733,29 +726,67 @@ class _FoodPageState extends State<FoodPage> {
                                       SizedBox(
                                         height: 15,
                                       ),
-                                      Collapse(
-                                        title: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          mainAxisAlignment: MainAxisAlignment.start,
-                                          children: [
-                                            TextTranslator(
-                                              "${option.title}",
-                                              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
-                                              textAlign: TextAlign.start,
+                                      ExpandableNotifier(
+                                        child: Container(
+                                          color: Colors.white,
+                                          child: ScrollOnExpand(
+                                            scrollOnExpand: true,
+                                            scrollOnCollapse: false,
+                                            child: ExpandablePanel(
+                                              theme: const ExpandableThemeData(
+                                                headerAlignment: ExpandablePanelHeaderAlignment.center,
+                                                tapBodyToCollapse: true,
+                                                hasIcon: true,
+                                              ),
+                                              header: Container(
+                                                margin: EdgeInsets.symmetric(horizontal: 10),
+                                                padding: const EdgeInsets.all(8.0),
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                  children: [
+                                                    TextTranslator(
+                                                      "${option.title}",
+                                                      style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontWeight: FontWeight.bold,
+                                                        fontSize: 16,
+                                                      ),
+                                                      textAlign: TextAlign.start,
+                                                    ),
+                                                    TextTranslator(
+                                                      "Choisissez-en jusqu'à ${option.maxOptions}",
+                                                      style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              collapsed: Container(),
+                                              expanded: Container(
+                                                color: Colors.white,
+                                                margin: EdgeInsets.symmetric(horizontal: 10),
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(0),
+                                                  child: _choice(
+                                                    option,
+                                                    option.maxOptions == 1 ? true : false,
+                                                  ),
+                                                ),
+                                              ),
+                                              builder: (_, collapsed, expanded) {
+                                                return Expandable(
+                                                  collapsed: collapsed,
+                                                  expanded: expanded,
+                                                  theme: const ExpandableThemeData(crossFadePoint: 0),
+                                                );
+                                              },
                                             ),
-                                            TextTranslator("Choisissez-en jusqu'à ${option.maxOptions}", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
-                                          ],
+                                          ),
                                         ),
-                                        body: Container(
-                                          child: Padding(padding: const EdgeInsets.all(0), child: _choice(option, option.maxOptions == 1 ? true : false)),
-                                        ),
-                                        value: collaspse[option.sId],
-                                        onChange: (value) {
-                                          setState(() {
-                                            collaspse[option.sId] = value;
-                                          });
-                                        },
-                                      )
+                                      ),
                                     ],
                                   );
                                 },
@@ -1395,7 +1426,7 @@ class _FoodPageState extends State<FoodPage> {
                                   icon: Icon(
                                     Icons.remove_circle,
                                     color: CRIMSON,
-                                    size: 35,
+                                    size: 25,
                                   ),
                                   onPressed: () {
                                     print("$logTrace decrement option");
@@ -1421,7 +1452,7 @@ class _FoodPageState extends State<FoodPage> {
                                 width: 2,
                               ),
                               IconButton(
-                                  icon: Icon(Icons.add_circle_outlined, color: CRIMSON, size: 35),
+                                  icon: Icon(Icons.add_circle_outlined, color: CRIMSON, size: 25),
                                   onPressed: () {
                                     // if (_optionContext.quantityOptions == option.maxOptions){
                                     if (this.isAdded) return;

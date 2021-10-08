@@ -294,11 +294,6 @@ class CartContext extends ChangeNotifier {
     return hasOption;
   }
 
-  int getFoodCountByIdNew(dynamic food) {
-    int count = _itemsTemp.where((element) => element.idNewFood == food.idNewFood).toList().length;
-    return count;
-  }
-
   int get totalItems {
     int total = 0;
     items.forEach((element) {

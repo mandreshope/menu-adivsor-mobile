@@ -70,7 +70,7 @@ class Food {
 
   String idNewFood = "";
 
-  Price additionalPrice;
+  bool isSelected = false;
 
   Food({
     @required this.id,
@@ -217,9 +217,8 @@ class Menu {
 
   String idNewFood = "";
 
-  Map<String, Food> _foodMenuSelected = Map();
+  Map<String, List<Food>> _foodMenuSelected = Map();
   Map<String, List<Food>> selectedMenu = Map();
-  int count = 1;
 
   Menu(
       {@required this.id,
@@ -238,26 +237,22 @@ class Menu {
       this.statut,
       this.priority});
 
-  select(CartContext cartContext, String entry, food, Function onFinish) {
-    if (this.selectedMenu[entry] != null && selectedMenu[entry].firstWhere((element) => element.id != food.id, orElse: () => null) != null) {
-      foodMenuSelected[entry].optionSelected = [];
-      selectedMenu[entry] = [food];
-      cartContext.addOption(this, foodMenuSelected[entry].optionSelected);
+  select(CartContext cartContext, String entry, Food food, Function onFinish) {
+    _foodMenuSelected[entry].forEach((food) {
+      cartContext.addOption(this, food.optionSelected);
       cartContext.refresh();
-    } else
-      selectedMenu[entry] = [food];
+    });
     onFinish();
   }
 
-  setFoodMenuSelected(String key, value) {
-    _foodMenuSelected[key] = value;
-    _foodMenuSelected[key].isMenu = true;
+  setFoodMenuSelected(String key, Food food, List<Food> foods) {
+    _foodMenuSelected[key] = foods.where((e) => e.isSelected).toList();
   }
 
   List<Food> get foodMenuSelecteds {
     List<Food> foods = [];
     _foodMenuSelected.forEach((key, value) {
-      foods.add(value);
+      foods.addAll(value);
     });
 
     return foods;
@@ -268,22 +263,22 @@ class Menu {
 
     if (type == MenuType.priceless.value) return 0;
 
-    this._foodMenuSelected.forEach((key, food) {
-      food.quantity = 1;
-      if (type == MenuType.fixed_price.value) {
-        food.optionSelected?.forEach((option) {
-          option?.itemOptionSelected?.forEach((item) {
-            if (item.price?.amount != null) price += item.price.amount * item.quantity;
+    this._foodMenuSelected.forEach((key, foods) {
+      foods.forEach((food) {
+        food.quantity = 1;
+        if (type == MenuType.fixed_price.value) {
+          if (food.isSelected) {
+            price += (food?.price?.amount ?? 0.0);
+          }
+          food.optionSelected?.forEach((option) {
+            option?.itemOptionSelected?.forEach((item) {
+              if (item.price?.amount != null) price += item.price.amount * item.quantity;
+            });
           });
-        });
-      } else {
-        price += food.totalPrice * quantity;
-      }
-      if (type == MenuType.fixed_price.value) {
-        if (food.additionalPrice != null) {
-          price += food.additionalPrice.amount;
+        } else {
+          price += food.totalPrice * quantity;
         }
-      }
+      });
     });
 
     if (type == MenuType.fixed_price.value) {
@@ -295,7 +290,7 @@ class Menu {
     return price;
   }
 
-  Map<String, Food> get foodMenuSelected => _foodMenuSelected;
+  Map<String, List<Food>> get foodMenuSelected => _foodMenuSelected;
 
   factory Menu.clone(Menu menu) {
     Menu clone = Menu(
@@ -346,20 +341,21 @@ class MenuFood {
   int maxOptions;
   bool isObligatory;
 
-  List<ItemsOption> itemOptionSelected = [];
+  bool get isMaxOptions {
+    final foodSelected = foods.where((e) => e.isSelected).toList();
+    return this.maxOptions >= foodSelected.length;
+  }
 
   MenuFood({
     this.sId,
     this.foods,
     this.title,
     this.maxOptions,
-    this.itemOptionSelected,
     this.isObligatory,
   });
 
   factory MenuFood.copy(MenuFood o) => MenuFood(
-        itemOptionSelected: o.itemOptionSelected?.map((e) => ItemsOption.copy(e))?.toList(),
-        foods: o.foods,
+        foods: o.foods.map((e) => Food.copy(e)).toList(),
         maxOptions: o.maxOptions,
         sId: o.sId,
         title: o.title,
@@ -382,9 +378,6 @@ class MenuFood {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['_id'] = this.sId;
-    if (this.itemOptionSelected != null) {
-      data['items'] = this.itemOptionSelected.map((v) => v.toJson()).toList();
-    }
     data['title'] = this.title;
     data['maxOptions'] = this.maxOptions;
     data['isObligatory'] = this.isObligatory;
