@@ -4,6 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:menu_advisor/src/animations/FadeAnimation.dart';
 import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
@@ -15,6 +16,7 @@ import 'package:menu_advisor/src/pages/user_details.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/CommandContext.dart';
+import 'package:menu_advisor/src/providers/DataContext.dart';
 import 'package:menu_advisor/src/providers/MenuContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
@@ -387,7 +389,7 @@ class _OrderPageState extends State<OrderPage> {
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   TextTranslator(
-                                    '${AppLocalizations.of(context).translate('total_to_pay')}: ',
+                                    '${AppLocalizations.of(context).translate('total_to_pay')} : ',
                                     style: TextStyle(
                                       fontWeight: FontWeight.normal,
                                       fontSize: 18,
@@ -407,6 +409,7 @@ class _OrderPageState extends State<OrderPage> {
                         ),
                 ),
               ],
+              _renderPopularFoods(),
               Padding(
                 padding: const EdgeInsets.all(15),
                 child: Consumer3<CommandContext, AuthContext, CartContext>(
@@ -476,6 +479,77 @@ class _OrderPageState extends State<OrderPage> {
                 ),
               ),
             ),
+        ],
+      ),
+    );
+  }
+
+  Widget _renderPopularFoods() {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(
+        top: 10,
+        bottom: 0,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Consumer<DataContext>(
+            builder: (_, dataContext, __) {
+              var foods = dataContext.popularFoods.map((e) => Food.copy(e));
+              var loading = dataContext.loadingPopularFoods;
+
+              if (loading)
+                return Container(
+                  height: 200,
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        CRIMSON,
+                      ),
+                    ),
+                  ),
+                );
+
+              if (foods.length == 0)
+                return Container(
+                  height: 200,
+                  child: Center(
+                    child: TextTranslator(
+                      AppLocalizations.of(context).translate('no_food'),
+                      style: TextStyle(
+                        fontSize: 22,
+                      ),
+                    ),
+                  ),
+                );
+
+              return SingleChildScrollView(
+                physics: BouncingScrollPhysics(),
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.only(
+                  left: 20,
+                  right: 20,
+                  bottom: 10,
+                ),
+                child: Row(
+                  children: [
+                    for (Food food in foods)
+                      if (food.price?.amount == null)
+                        SizedBox()
+                      else
+                        FadeAnimation(
+                          1,
+                          FoodCard(
+                            food: food..isPopular = false,
+                            minified: true,
+                          ),
+                        )
+                  ],
+                ),
+              );
+            },
+          ),
         ],
       ),
     );

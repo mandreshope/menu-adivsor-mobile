@@ -1178,6 +1178,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                           image: widget.restaurant.logo,
                           placeholder: 'assets/images/loading.gif',
                           width: 120,
+                          height: double.infinity,
                           fit: BoxFit.cover,
                           imageErrorBuilder: (_, __, ___) => Container(
                             width: 125,

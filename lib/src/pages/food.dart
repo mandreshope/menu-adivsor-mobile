@@ -727,6 +727,7 @@ class _FoodPageState extends State<FoodPage> {
                                         height: 15,
                                       ),
                                       ExpandableNotifier(
+                                        initialExpanded: true,
                                         child: Container(
                                           color: Colors.white,
                                           child: ScrollOnExpand(

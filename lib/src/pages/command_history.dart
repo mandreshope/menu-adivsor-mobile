@@ -207,6 +207,7 @@ class _CommandHistoryPageState extends State<CommandHistoryPage> with SingleTick
                 children: [
                   ...commandByType.entries.map((e) {
                     return ExpandableNotifier(
+                      initialExpanded: true,
                       child: Container(
                         color: Colors.white,
                         child: ScrollOnExpand(

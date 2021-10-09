@@ -417,62 +417,51 @@ class _DetailMenuState extends State<DetailMenu> {
                                       tapBodyToCollapse: true,
                                       hasIcon: false,
                                     ),
-                                    header: Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: [
-                                        InkWell(
-                                          onTap: () {
-                                            RouteUtil.goTo(
-                                                context: context,
-                                                child: PhotoViewPage(
-                                                  tag: 'tag:${food.imageURL}',
-                                                  img: food.imageURL,
-                                                ),
-                                                routeName: null);
-                                          },
-                                          child: ClipRRect(
-                                            borderRadius: BorderRadius.circular(0),
-                                            child: FadeInImage.assetNetwork(
-                                              placeholder: 'assets/images/loading.gif',
-                                              image: food.imageURL,
-                                              imageErrorBuilder: (_, o, s) {
-                                                return Container(
-                                                  width: 75,
-                                                  height: 75,
-                                                  color: Colors.white,
-                                                );
-                                              },
-                                              height: 75,
-                                              width: 75,
-                                              fit: BoxFit.cover,
+                                    header: Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 5),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: [
+                                          InkWell(
+                                            onTap: () {
+                                              RouteUtil.goTo(
+                                                  context: context,
+                                                  child: PhotoViewPage(
+                                                    tag: 'tag:${food.imageURL}',
+                                                    img: food.imageURL,
+                                                  ),
+                                                  routeName: null);
+                                            },
+                                            child: ClipRRect(
+                                              borderRadius: BorderRadius.circular(0),
+                                              child: FadeInImage.assetNetwork(
+                                                placeholder: 'assets/images/loading.gif',
+                                                image: food.imageURL,
+                                                imageErrorBuilder: (_, o, s) {
+                                                  return Container(
+                                                    width: 75,
+                                                    height: 75,
+                                                    color: Colors.white,
+                                                  );
+                                                },
+                                                height: 75,
+                                                width: 75,
+                                                fit: BoxFit.cover,
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                        SizedBox(
-                                          width: MediaQuery.of(context).size.width / 6,
-                                        ),
-                                        Align(
-                                          alignment: Alignment.center,
-                                          child: TextTranslator(
-                                            food.name,
-                                            textAlign: TextAlign.center,
+                                          SizedBox(
+                                            width: MediaQuery.of(context).size.width / 6,
                                           ),
-                                        ),
-                                        if (widget.menu.type == MenuType.fixed_price.value && _cartContext.withPrice) ...[
-                                          Spacer(),
-                                          food?.price?.amount == null
-                                              ? Text("")
-                                              : Text(
-                                                  "${food.price.amount / 100} €",
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                        ] else if (widget.menu.type == MenuType.priceless.value) ...[
-                                          Text(" ")
-                                        ] else ...[
-                                          Spacer(),
-                                          if (_cartContext.withPrice)
+                                          Align(
+                                            alignment: Alignment.center,
+                                            child: TextTranslator(
+                                              food.name,
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                          if (widget.menu.type == MenuType.fixed_price.value && _cartContext.withPrice) ...[
+                                            Spacer(),
                                             food?.price?.amount == null
                                                 ? Text("")
                                                 : Text(
@@ -481,38 +470,52 @@ class _DetailMenuState extends State<DetailMenu> {
                                                       fontWeight: FontWeight.bold,
                                                     ),
                                                   ),
-                                        ],
-                                        Spacer(),
-                                        IconButton(
-                                          icon: Icon(
-                                            food.isSelected ? Icons.check_box : Icons.check_box_outline_blank,
-                                            color: food.isSelected ? CRIMSON : Colors.grey,
+                                          ] else if (widget.menu.type == MenuType.priceless.value) ...[
+                                            Text(" ")
+                                          ] else ...[
+                                            Spacer(),
+                                            if (_cartContext.withPrice)
+                                              food?.price?.amount == null
+                                                  ? Text("")
+                                                  : Text(
+                                                      "${food.price.amount / 100} €",
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
+                                                    ),
+                                          ],
+                                          Spacer(),
+                                          IconButton(
+                                            icon: Icon(
+                                              food.isSelected ? Icons.check_box : Icons.check_box_outline_blank,
+                                              color: food.isSelected ? CRIMSON : Colors.grey,
+                                            ),
+                                            onPressed: () {
+                                              food.isSelected = !food.isSelected;
+                                              print("$logTrace food selected");
+                                              if (menuFood.isMaxOptions) {
+                                                widget.menu.setFoodMenuSelected(
+                                                  menuFood.sId,
+                                                  food,
+                                                  menuFood.foods,
+                                                );
+                                                _food = food;
+                                                widget.menu.select(
+                                                  _cartContext,
+                                                  menuFood.sId,
+                                                  food,
+                                                  () => menuContext.refresh(),
+                                                );
+                                              } else {
+                                                food.isSelected = false;
+                                                menuContext.refresh();
+                                                print("$logTrace max options");
+                                                Fluttertoast.showToast(msg: "maximum selection ${menuFood.title} : ${menuFood.maxOptions}");
+                                              }
+                                            },
                                           ),
-                                          onPressed: () {
-                                            food.isSelected = !food.isSelected;
-                                            print("$logTrace food selected");
-                                            if (menuFood.isMaxOptions) {
-                                              widget.menu.setFoodMenuSelected(
-                                                menuFood.sId,
-                                                food,
-                                                menuFood.foods,
-                                              );
-                                              _food = food;
-                                              widget.menu.select(
-                                                _cartContext,
-                                                menuFood.sId,
-                                                food,
-                                                () => menuContext.refresh(),
-                                              );
-                                            } else {
-                                              food.isSelected = false;
-                                              menuContext.refresh();
-                                              print("$logTrace max options");
-                                              Fluttertoast.showToast(msg: "maximum selection ${menuFood.title} : ${menuFood.maxOptions}");
-                                            }
-                                          },
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                     collapsed: Container(),
                                     expanded: MenuItemFoodOption(
