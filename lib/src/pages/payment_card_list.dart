@@ -4,6 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/models/models.dart';
+import 'package:menu_advisor/src/models/restaurants/restaurant_discount_model.dart';
 import 'package:menu_advisor/src/pages/add_payment_card.dart';
 import 'package:menu_advisor/src/pages/summary.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
@@ -180,33 +181,41 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                         priceLivraison = 0;
                       } else {
                         priceLivraison = commandContext.getDeliveryPriceByMiles(widget.restaurant).toInt();
-                        double remiseWithCodeDiscount = cartContext.totalPrice + priceLivraison;
+                        double remiseWithCodeDiscount = cartContext.totalPrice;
                         if (commandContext.withCodeDiscount) {
                           remiseWithCodeDiscount = cartContext.calculremise(
-                            totalPrice: cartContext.totalPrice + priceLivraison,
+                            totalPrice: cartContext.totalPrice,
                             discountIsPrice: widget.restaurant?.discount?.codeDiscount?.discountIsPrice,
                             discountValue: widget.restaurant?.discount?.codeDiscount?.valueDouble,
                           );
                         }
-                        // if (widget.restaurant.discountType == "SurTransport") {
-                        //   priceLivraison = cartContext.calculremise(totalPrice: priceLivraison.toDouble(), restaurant: widget.restaurant).toInt();
-                        //   if (priceLivraison.isNegative) {
-                        //     priceLivraison = 0;
-                        //   }
-                        //   totalPrice = (cartContext.totalPrice + priceLivraison).toInt();
-                        // } else if (widget.restaurant.discountType == "SurCommande") {
-                        //   int totalPriceWithRemise = cartContext.calculremise(totalPrice: cartContext.totalPrice, restaurant: widget.restaurant).toInt();
-                        //   totalPrice = (totalPriceWithRemise + priceLivraison).toInt();
-                        // } else {
-                        //   totalPrice = cartContext.calculremise(totalPrice: cartContext.totalPrice + priceLivraison, restaurant: widget.restaurant).toInt();
-                        // }
-                        totalPrice = cartContext
-                            .calculremise(
-                              totalPrice: remiseWithCodeDiscount,
-                              discountIsPrice: widget.restaurant?.discount?.delivery?.discountIsPrice,
-                              discountValue: widget.restaurant?.discount?.delivery?.valueDouble,
-                            )
-                            .toInt();
+                        if (widget.restaurant?.discount?.delivery?.discountType == DiscountType.SurTransport) {
+                          priceLivraison = cartContext
+                              .calculremise(
+                                totalPrice: priceLivraison.toDouble(),
+                                discountIsPrice: widget.restaurant?.discount?.delivery?.discountIsPrice,
+                                discountValue: widget.restaurant?.discount?.delivery?.valueDouble,
+                              )
+                              .toInt();
+                          totalPrice = (remiseWithCodeDiscount + priceLivraison).toInt();
+                        } else if (widget.restaurant?.discount?.delivery?.discountType == DiscountType.SurCommande) {
+                          int totalPriceWithRemise = cartContext
+                              .calculremise(
+                                totalPrice: remiseWithCodeDiscount,
+                                discountIsPrice: widget.restaurant?.discount?.delivery?.discountIsPrice,
+                                discountValue: widget.restaurant?.discount?.delivery?.valueDouble,
+                              )
+                              .toInt();
+                          totalPrice = (totalPriceWithRemise + priceLivraison).toInt();
+                        } else {
+                          totalPrice = cartContext
+                              .calculremise(
+                                totalPrice: remiseWithCodeDiscount + priceLivraison,
+                                discountIsPrice: widget.restaurant?.discount?.delivery?.discountIsPrice,
+                                discountValue: widget.restaurant?.discount?.delivery?.valueDouble,
+                              )
+                              .toInt();
+                        }
                       }
                     }
                     totalPrice = (totalPrice * 100).toInt();

@@ -1,4 +1,5 @@
 import 'package:expandable/expandable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter_collapse/flutter_collapse.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -6,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/constants/constant.dart';
+import 'package:menu_advisor/src/models/restaurants/restaurant_discount_model.dart';
 import 'package:menu_advisor/src/pages/confirm_sms.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
@@ -547,14 +549,14 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                     int totalDeliveryPriceWithRemise = cartContext
                         .calculremise(
                           totalPrice: priceLivraison.toDouble(),
-                          discountIsPrice: null,
-                          discountValue: null,
+                          discountIsPrice: widget.restaurant?.discount?.delivery?.discountIsPrice,
+                          discountValue: widget.restaurant?.discount?.delivery?.valueDouble,
                         )
                         .toInt();
 
                     final deliveryPrice = "Frais de livraison par km : ${widget.restaurant.priceByMiles} €";
-                    final totalDeliveryPrice = "Total frais de livraison : $priceLivraison €";
-                    final totalDeliveryPriceWithRemiseMsg = "Total frais de livraison avec remise à payer : ${totalDeliveryPriceWithRemise.isNegative ? 0 : totalDeliveryPriceWithRemise} €";
+                    final totalDeliveryPrice = "Frais de livraison : $priceLivraison €";
+                    final totalDeliveryPriceWithRemiseMsg = "Frais de livraison avec remise : $totalDeliveryPriceWithRemise €";
                     final distanceCustomerResto = "Distance entre vous et le restaurant : ${commandContext.getDeliveryDistanceByMiles(widget.restaurant).toInt()} km";
                     final totalPrice = "Total à payer : ${cartContext.totalPrice + priceLivraison} €";
                     final codePromoMsg =
@@ -562,45 +564,46 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                     String remise;
                     String totalPriceWithRemiseMsg;
                     if (((_restaurant?.delivery == true) || (_restaurant?.aEmporter == true)) && ((_restaurant?.discount?.delivery?.valueDouble ?? 0.0) > 0)) {
-                      // String remiseMsg =
-                      //     "Remise ${_restaurant.discountType == "SurTotalité" ? "sur la totalité" : _restaurant.discountType == "SurTransport" ? "sur le transport" : "sur la commande"}";
+                      String remiseMsg =
+                          "Remise ${_restaurant?.discount?.delivery?.discountType == DiscountType.SurTotalite ? "sur la totalité" : _restaurant?.discount?.delivery?.discountType == DiscountType.SurTransport ? "sur le transport" : "sur la commande"}";
                       remise =
-                          "Remise : ${_restaurant?.discount?.delivery?.discountIsPrice == true ? '${_restaurant?.discount?.delivery?.valueDouble ?? 0} €' : '${_restaurant?.discount?.delivery?.valueDouble ?? 0} % '}";
+                          "$remiseMsg : ${_restaurant?.discount?.delivery?.discountIsPrice == true ? '${_restaurant?.discount?.delivery?.valueDouble ?? 0} €' : '${_restaurant?.discount?.delivery?.valueDouble ?? 0} % '}";
 
-                      //   if (_restaurant.discountType == "SurTransport") {
-                      //     priceLivraison = cartContext
-                      //         .calculremise(
-                      //           totalPrice: priceLivraison.toDouble(),
-                      //           discountIsPrice: null,
-                      //           discountValue: null,
-                      //         )
-                      //         .toInt();
-                      //     if (priceLivraison.isNegative) {
-                      //       priceLivraison = 0;
-                      //     }
-                      //     totalPriceWithRemiseMsg = "Total à payer avec $remiseMsg : ${cartContext.totalPrice + priceLivraison} €";
-                      //   } else if (_restaurant.discountType == "SurCommande") {
-                      //     int totalPriceWithRemise = cartContext.calculremise(totalPrice: cartContext.totalPrice, restaurant: _restaurant).toInt();
-                      //     if (totalPriceWithRemise.isNegative) {
-                      //       totalPriceWithRemise = 0;
-                      //     }
-                      //     totalPriceWithRemiseMsg = "Total à payer avec $remiseMsg : ${totalPriceWithRemise + priceLivraison} €";
-                      //   } else {
-                      //     totalPriceWithRemiseMsg = "Total à payer avec $remiseMsg : ${cartContext.calculremise(totalPrice: cartContext.totalPrice + priceLivraison, restaurant: widget.restaurant)} €";
-                      //   }
-                      double remiseWithCodeDiscount = cartContext.totalPrice + priceLivraison;
+                      double remiseWithCodeDiscount = cartContext.totalPrice;
                       if (commandContext.withCodeDiscount) {
                         remiseWithCodeDiscount = cartContext.calculremise(
-                          totalPrice: cartContext.totalPrice + priceLivraison,
+                          totalPrice: cartContext.totalPrice,
                           discountIsPrice: widget.restaurant?.discount?.codeDiscount?.discountIsPrice,
                           discountValue: widget.restaurant?.discount?.codeDiscount?.valueDouble,
                         );
                       }
-                      totalPriceWithRemiseMsg = "Total à payer avec remise : ${cartContext.calculremise(
-                        totalPrice: remiseWithCodeDiscount,
-                        discountIsPrice: widget.restaurant?.discount?.delivery?.discountIsPrice,
-                        discountValue: widget.restaurant?.discount?.delivery?.valueDouble,
-                      )} €";
+
+                      if (_restaurant?.discount?.delivery?.discountType == DiscountType.SurTransport) {
+                        priceLivraison = cartContext
+                            .calculremise(
+                              totalPrice: priceLivraison.toDouble(),
+                              discountIsPrice: widget.restaurant?.discount?.delivery?.discountIsPrice,
+                              discountValue: widget.restaurant?.discount?.delivery?.valueDouble,
+                            )
+                            .toInt();
+                        totalPriceWithRemiseMsg = "Total à payer avec $remiseMsg : ${remiseWithCodeDiscount + priceLivraison} €";
+                      } else if (_restaurant?.discount?.delivery?.discountType == DiscountType.SurCommande) {
+                        int totalPriceWithRemise = cartContext
+                            .calculremise(
+                              totalPrice: remiseWithCodeDiscount,
+                              discountIsPrice: widget.restaurant?.discount?.delivery?.discountIsPrice,
+                              discountValue: widget.restaurant?.discount?.delivery?.valueDouble,
+                            )
+                            .toInt();
+
+                        totalPriceWithRemiseMsg = "Total à payer avec $remiseMsg : ${totalPriceWithRemise + priceLivraison} €";
+                      } else {
+                        totalPriceWithRemiseMsg = "Total à payer avec $remiseMsg : ${cartContext.calculremise(
+                          totalPrice: remiseWithCodeDiscount + priceLivraison,
+                          discountIsPrice: widget.restaurant?.discount?.delivery?.discountIsPrice,
+                          discountValue: widget.restaurant?.discount?.delivery?.valueDouble,
+                        )} €";
+                      }
                     }
                     final confirm = await showDialog(
                       context: context,
@@ -622,34 +625,35 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  if (_restaurant.discountType == "SurTransport") ...[
+                                  if (_restaurant?.discount?.delivery?.discountType == DiscountType.SurTransport) ...[
                                     TextTranslator(
                                       totalDeliveryPrice,
                                     ),
                                     TextTranslator(
                                       totalDeliveryPriceWithRemiseMsg,
                                     ),
-                                  ] else ...[
-                                    TextTranslator(
-                                      totalDeliveryPrice,
-                                    ),
-                                  ],
+                                  ]
                                 ],
                               ),
-                              TextTranslator(
-                                totalPrice,
-                              ),
+                              if (totalPriceWithRemiseMsg == null)
+                                TextTranslator(
+                                  totalPrice,
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
                               if (commandContext.withCodeDiscount) ...[
                                 TextTranslator(
                                   codePromoMsg,
+                                  style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
                               ],
                               if (totalPriceWithRemiseMsg != null) ...[
                                 TextTranslator(
                                   remise,
+                                  style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
                                 TextTranslator(
                                   totalPriceWithRemiseMsg,
+                                  style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
                               ],
                             ],

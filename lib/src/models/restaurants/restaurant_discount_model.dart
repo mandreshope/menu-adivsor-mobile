@@ -2,6 +2,12 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
+enum DiscountType {
+  SurTransport,
+  SurCommande,
+  SurTotalite,
+}
+
 class RestaurantDiscount {
   final Delivery delivery;
   final AEmporter aEmporter;
@@ -62,18 +68,22 @@ class Delivery {
   final bool discountIsPrice;
   final String value;
   double get valueDouble => double.tryParse(value) ?? 0.0;
+  final DiscountType discountType;
   Delivery({
     this.discountIsPrice,
     this.value,
+    this.discountType,
   });
 
   Delivery copyWith({
     bool discountIsPrice,
     String value,
+    DiscountType discountType,
   }) {
     return Delivery(
       discountIsPrice: discountIsPrice ?? this.discountIsPrice,
       value: value ?? this.value,
+      discountType: discountType ?? this.discountType,
     );
   }
 
@@ -81,6 +91,7 @@ class Delivery {
     return {
       'discountIsPrice': discountIsPrice,
       'value': value,
+      'discountType': describeEnum(discountType),
     };
   }
 
@@ -88,6 +99,11 @@ class Delivery {
     return Delivery(
       discountIsPrice: map['discountIsPrice'],
       value: map['value'],
+      discountType: map['discountType'] == "SurTransport"
+          ? DiscountType.SurTransport
+          : map['discountType'] == "SurCommande"
+              ? DiscountType.SurCommande
+              : DiscountType.SurTotalite,
     );
   }
 
@@ -96,35 +112,39 @@ class Delivery {
   factory Delivery.fromJson(String source) => Delivery.fromMap(json.decode(source));
 
   @override
-  String toString() => 'Delivery(discountIsPrice: $discountIsPrice, value: $value)';
+  String toString() => 'Delivery(discountIsPrice: $discountIsPrice, value: $value, discountType: $discountType)';
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is Delivery && other.discountIsPrice == discountIsPrice && other.value == value;
+    return other is Delivery && other.discountIsPrice == discountIsPrice && other.value == value && other.discountType == discountType;
   }
 
   @override
-  int get hashCode => discountIsPrice.hashCode ^ value.hashCode;
+  int get hashCode => discountIsPrice.hashCode ^ value.hashCode ^ discountType.hashCode;
 }
 
 class AEmporter {
   final bool discountIsPrice;
   final String value;
   double get valueDouble => double.tryParse(value) ?? 0.0;
+  final DiscountType discountType;
   AEmporter({
     this.discountIsPrice,
     this.value,
+    this.discountType,
   });
 
   AEmporter copyWith({
     bool discountIsPrice,
     String value,
+    DiscountType discountType,
   }) {
     return AEmporter(
       discountIsPrice: discountIsPrice ?? this.discountIsPrice,
       value: value ?? this.value,
+      discountType: discountType ?? this.discountType,
     );
   }
 
@@ -132,6 +152,7 @@ class AEmporter {
     return {
       'discountIsPrice': discountIsPrice,
       'value': value,
+      'discountType': describeEnum(discountType),
     };
   }
 
@@ -139,6 +160,11 @@ class AEmporter {
     return AEmporter(
       discountIsPrice: map['discountIsPrice'],
       value: map['value'],
+      discountType: map['discountType'] == "SurTransport"
+          ? DiscountType.SurTransport
+          : map['discountType'] == "SurCommande"
+              ? DiscountType.SurCommande
+              : DiscountType.SurTotalite,
     );
   }
 
@@ -147,17 +173,17 @@ class AEmporter {
   factory AEmporter.fromJson(String source) => AEmporter.fromMap(json.decode(source));
 
   @override
-  String toString() => 'AEmporter(discountIsPrice: $discountIsPrice, value: $value)';
+  String toString() => 'AEmporter(discountIsPrice: $discountIsPrice, value: $value, discountType: $discountType)';
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is AEmporter && other.discountIsPrice == discountIsPrice && other.value == value;
+    return other is AEmporter && other.discountIsPrice == discountIsPrice && other.value == value && other.discountType == discountType;
   }
 
   @override
-  int get hashCode => discountIsPrice.hashCode ^ value.hashCode;
+  int get hashCode => discountIsPrice.hashCode ^ value.hashCode ^ discountType.hashCode;
 }
 
 class CodeDiscount {

@@ -14,6 +14,7 @@ import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/components/utilities.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/constants/constant.dart';
+import 'package:menu_advisor/src/models/restaurants/restaurant_discount_model.dart';
 import 'package:menu_advisor/src/pages/map_polyline.dart';
 import 'package:menu_advisor/src/pages/photo_view.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
@@ -313,7 +314,7 @@ class _SummaryState extends State<Summary> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 TextTranslator(
-                                  'Remise de livraison : ',
+                                  "Remise ${widget.commande?.restaurant?.discount?.delivery?.discountType == DiscountType.SurTotalite ? "sur la totalité" : widget.commande?.restaurant?.discount?.delivery?.discountType == DiscountType.SurTransport ? "sur le transport" : "sur la commande"}",
                                   style: TextStyle(
                                     fontWeight: FontWeight.normal,
                                     fontSize: 16,

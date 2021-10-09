@@ -53,8 +53,6 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
   void initState() {
     super.initState();
     _cartContext = Provider.of<CartContext>(context, listen: false);
-    // widget.itemCount = _cartContext.getCount(widget.food);
-    // widget.isContains = _cartContext.contains(widget.food);
   }
 
   @override
@@ -63,7 +61,7 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
       return CircleButton(
           backgroundColor: TEAL,
           onPressed: () async {
-            if (widget.fromRestaurant && (widget.food is Food) /*&& widget.food.options.length > 0*/) {
+            if (widget.fromRestaurant && (widget.food is Food)) {
               RouteUtil.goTo(
                 context: context,
                 child: Material(
