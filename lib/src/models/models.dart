@@ -388,8 +388,11 @@ class MenuFood {
 class Restaurant {
   final String id;
   final String name;
-  String get originName {
-    final origin = name.split(" ")..removeAt(0);
+  static String originName(String nam) {
+    if (nam == null) {
+      return "";
+    }
+    final origin = nam.split(" ")..removeAt(0);
     return origin.join(" ");
   }
 
@@ -520,7 +523,7 @@ class Restaurant {
   factory Restaurant.fromJson(Map<String, dynamic> json) {
     Restaurant res = Restaurant(
       id: json['_id'],
-      name: json['name'],
+      name: Restaurant.originName(json['name']),
       type: json['categorie'],
       logo: json['logo'] ?? "",
       location: Location.fromJson(

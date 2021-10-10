@@ -231,7 +231,7 @@ class _DetailMenuState extends State<DetailMenu> {
                         Expanded(
                           child: Consumer<CartContext>(builder: (_, cartContext, __) {
                             return Container(
-                              color: widget.menu.foodMenuSelecteds.isEmpty || !_cartContext.hasOptionSelectioned(_food) ? Colors.grey : CRIMSON,
+                              color: (_cartContext.hasMenuObligatorySelected(widget.menu, menuFoods) && cartContext.hasOptionSelectioned(_food)) ? CRIMSON : Colors.grey,
                               width: double.infinity,
                               height: 45,
                               child: Row(
@@ -287,12 +287,18 @@ class _DetailMenuState extends State<DetailMenu> {
                                         //   msg: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
                                         // );
                                       } else {
-                                        if (cartContext.hasOptionSelectioned(_food)) {
-                                          _cartContext.addItem(widget.menu, 1, true);
-                                          RouteUtil.goBack(context: context);
+                                        if (cartContext.hasMenuObligatorySelected(widget.menu, menuFoods)) {
+                                          if (cartContext.hasOptionSelectioned(_food)) {
+                                            _cartContext.addItem(widget.menu, 1, true);
+                                            RouteUtil.goBack(context: context);
+                                          } else {
+                                            Fluttertoast.showToast(
+                                              msg: 'Ajouter une option',
+                                            );
+                                          }
                                         } else
                                           Fluttertoast.showToast(
-                                            msg: 'Ajouter une option',
+                                            msg: 'Ajouter au moin un menu obligatoire',
                                           );
                                         //}
                                       }
@@ -324,41 +330,6 @@ class _DetailMenuState extends State<DetailMenu> {
     );
   }
 
-  Widget _renderHeaderPicture() => Stack(
-        children: [
-          InkWell(
-            onTap: () {
-              RouteUtil.goTo(
-                  context: context,
-                  child: PhotoViewPage(
-                    tag: widget.menu.id,
-                    img: widget.menu.imageURL,
-                  ),
-                  routeName: null);
-            },
-            // child: Hero(
-            //   tag: widget.menu.id,
-            child: widget.menu.imageURL != null
-                ? Image.network(
-                    widget.menu.imageURL,
-                    width: MediaQuery.of(context).size.width,
-                    height: 250,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Center(
-                      child: Icon(
-                        Icons.fastfood,
-                        size: 250,
-                      ),
-                    ),
-                  )
-                : Icon(
-                    Icons.fastfood,
-                    size: 250,
-                  ),
-          ),
-        ],
-      );
-
   Widget _renderTitlePlat(context) {
     String name = "";
     for (var menuFood in menuFoods) name += menuFood.title + " + ";
@@ -388,12 +359,26 @@ class _DetailMenuState extends State<DetailMenu> {
                       SizedBox(
                         height: 15,
                       ),
-                      TextTranslator(
-                        menuFood.title,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          TextTranslator(
+                            menuFood.title,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          if (menuFood.isObligatory)
+                            Text(
+                              "*",
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                              ),
+                            )
+                        ],
                       ),
                       TextTranslator(
                         "Choisissez-en jusqu'à ${menuFood.maxOptions}",

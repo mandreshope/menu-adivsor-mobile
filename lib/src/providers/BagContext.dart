@@ -274,6 +274,28 @@ class CartContext extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool hasMenuObligatorySelected(Menu menu, List<MenuFood> menuFoods) {
+    bool hasObligatorySelected = false;
+    final menuIds = menu.foodMenuSelected.keys.toList();
+    if (menuIds.isEmpty) {
+      return hasObligatorySelected;
+    }
+    List<bool> list = [];
+    for (final menuFood in menuFoods) {
+      menu.foodMenuSelected.forEach((menuId, value) {
+        if (menuId == menuFood.sId) {
+          if (menuFood.isObligatory && value.isNotEmpty) {
+            list.add(true);
+          } else {
+            list.add(false);
+          }
+        }
+      });
+    }
+    hasObligatorySelected = list.where((e) => e).toList().isNotEmpty;
+    return hasObligatorySelected;
+  }
+
   bool hasOptionSelectioned(Food food) {
     if (food == null) return false;
     bool hasOption = true;

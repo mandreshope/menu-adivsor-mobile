@@ -138,11 +138,11 @@ class _SearchPageState extends State<SearchPage> {
 
         _searchResultsGrouped = _searchResults.groupBy((s) {
           if (s.type.toString() == "SearchResultType.menu") {
-            return s.content["restaurant"]["name"];
+            return Restaurant.originName(s.content["restaurant"]["name"]);
           } else if (s.type.toString() == "SearchResultType.food") {
-            return s.content["restaurant"]["name"];
+            return Restaurant.originName(s.content["restaurant"]["name"]);
           } else {
-            return s.content['name'];
+            return Restaurant.originName(s.content['name']);
           }
         });
 

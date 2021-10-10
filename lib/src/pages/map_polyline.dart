@@ -102,7 +102,7 @@ class _MapPolylinePageState extends State<MapPolylinePage> {
           _destinationPosition.longitude,
         ),
         infoWindow: InfoWindow(
-          title: "${widget.restaurant.originName}",
+          title: "${widget.restaurant.name}",
         ),
         onTap: () {
           setState(() {

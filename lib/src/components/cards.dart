@@ -1153,7 +1153,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                           mainAxisSize: MainAxisSize.max,
                           children: [
                             TextTranslator(
-                              widget.restaurant.originName ?? "",
+                              widget.restaurant.name ?? "",
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
@@ -1609,7 +1609,7 @@ class CommandHistoryItem extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              TextTranslator('${command.restaurant.originName}'),
+              TextTranslator('${command.restaurant.name}'),
               TextTranslator('${command.code?.toString()?.padLeft(6, '0')}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               _validated(),
               Column(

@@ -74,7 +74,7 @@ class MapWindowMarker extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  TextTranslator(this.restaurant.originName),
+                  TextTranslator(this.restaurant.name),
                   SizedBox(
                     width: 5,
                   ),

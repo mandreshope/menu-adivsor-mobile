@@ -176,12 +176,12 @@ class SettingContext extends ChangeNotifier {
   }
 
   double distanceBetween(double lat, double long) {
-    distanceWithRestaurant = Geolocator.distanceBetween(position.latitude, position.longitude, lat, long);
+    distanceWithRestaurant = Geolocator.distanceBetween(position?.latitude ?? 0.0, position?.longitude ?? 0.0, lat, long);
     return distanceWithRestaurant;
   }
 
   String distanceBetweenString(double lat, double long) {
-    distanceWithRestaurant = Geolocator.distanceBetween(position.latitude, position.longitude, lat, long);
+    distanceWithRestaurant = Geolocator.distanceBetween(position?.latitude ?? 0.0, position?.longitude ?? 0.0, lat, long);
     if (distanceWithRestaurant >= 1000) {
       double km = distanceWithRestaurant / 1000;
       return km.toStringAsFixed(2) + " kilomètres";
