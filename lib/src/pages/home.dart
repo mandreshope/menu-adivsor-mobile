@@ -1094,7 +1094,7 @@ class CarouselSliderBlog extends StatefulWidget {
 }
 
 class _CarouselSliderBlogState extends State<CarouselSliderBlog> {
-  int _current = 0;
+  int current = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -1109,7 +1109,7 @@ class _CarouselSliderBlogState extends State<CarouselSliderBlog> {
               viewportFraction: 0.90,
               onPageChanged: (position, _) {
                 setState(() {
-                  _current = position;
+                  current = position;
                 });
               },
             ),

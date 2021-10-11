@@ -93,12 +93,8 @@ class _OrderPageState extends State<OrderPage> {
                   child: Consumer<CartContext>(
                     builder: (_, cartContext, __) {
                       final List<Widget> list = [];
-                      String id = "-1";
                       int position = 0;
                       cartContext.items.forEach((food) {
-                        //if (food.price != null)
-                        /* if (food.id != id){
-                            id = food.id;*/
                         list.add(
                           BagItem(
                             food: food,
@@ -511,18 +507,7 @@ class _OrderPageState extends State<OrderPage> {
                   ),
                 );
 
-              if (foods.length == 0)
-                return Container(
-                  height: 200,
-                  child: Center(
-                    child: TextTranslator(
-                      AppLocalizations.of(context).translate('no_food'),
-                      style: TextStyle(
-                        fontSize: 22,
-                      ),
-                    ),
-                  ),
-                );
+              if (foods.length == 0) return SizedBox.shrink();
 
               return SingleChildScrollView(
                 physics: BouncingScrollPhysics(),

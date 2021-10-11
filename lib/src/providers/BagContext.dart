@@ -275,25 +275,44 @@ class CartContext extends ChangeNotifier {
   }
 
   bool hasMenuObligatorySelected(Menu menu, List<MenuFood> menuFoods) {
-    bool hasObligatorySelected = false;
+    bool hasMenuObligatorySelected = false;
+    bool hasOptionSelected = false;
     final menuIds = menu.foodMenuSelected.keys.toList();
     if (menuIds.isEmpty) {
-      return hasObligatorySelected;
+      return hasMenuObligatorySelected;
     }
-    List<bool> list = [];
+    List<bool> listMenu = [];
+    List<bool> listOption = [];
     for (final menuFood in menuFoods) {
       menu.foodMenuSelected.forEach((menuId, value) {
         if (menuId == menuFood.sId) {
           if (menuFood.isObligatory && value.isNotEmpty) {
-            list.add(true);
+            listMenu.add(true);
           } else {
-            list.add(false);
+            listMenu.add(false);
           }
         }
+        value.forEach((food) {
+          if (hasOptionSelectioned(food)) {
+            listOption.add(true);
+          } else {
+            listOption.add(false);
+          }
+        });
       });
     }
-    hasObligatorySelected = list.where((e) => e).toList().isNotEmpty;
-    return hasObligatorySelected;
+    hasMenuObligatorySelected = listMenu.where((e) => e).toList().isNotEmpty;
+    if (listOption.contains(false)) {
+      hasOptionSelected = false;
+    } else {
+      hasOptionSelected = true;
+    }
+
+    if (hasMenuObligatorySelected && hasOptionSelected) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   bool hasOptionSelectioned(Food food) {
@@ -302,17 +321,25 @@ class CartContext extends ChangeNotifier {
     if (food.options.isEmpty) return true;
     if (food.optionSelected == null || food.optionSelected.isEmpty) return false;
 
+    List<bool> list = [];
     for (Option option in food.optionSelected) {
       if (option.itemOptionSelected.isEmpty) {
-        hasOption = false;
+        list.add(false);
       } else {
+        if (food.options.length == 1) {
+          list.add(true);
+        }
+
         /// rehefa obligatoir ny option dia tonga dia afaka mi-ajouter à mon panier
         /// rehefa avy ni-séléctionner option.itemOption
         if (option?.isObligatory == true) {
-          hasOption = true;
+          list.add(true);
+        } else {
+          list.add(false);
         }
       }
     }
+    hasOption = list.where((e) => e).toList().isNotEmpty;
     return hasOption;
   }
 

@@ -31,8 +31,6 @@ class DetailMenu extends StatefulWidget {
 class _DetailMenuState extends State<DetailMenu> {
   // MenuContext _controller;
   CartContext _cartContext;
-  // int count = 0;
-  Food _food;
 
   StreamController<bool> _streamController = StreamController();
   StreamSink<bool> get isTransparentSink => _streamController.sink;
@@ -231,7 +229,7 @@ class _DetailMenuState extends State<DetailMenu> {
                         Expanded(
                           child: Consumer<CartContext>(builder: (_, cartContext, __) {
                             return Container(
-                              color: (_cartContext.hasMenuObligatorySelected(widget.menu, menuFoods) && cartContext.hasOptionSelectioned(_food)) ? CRIMSON : Colors.grey,
+                              color: (_cartContext.hasMenuObligatorySelected(widget.menu, menuFoods)) ? CRIMSON : Colors.grey,
                               width: double.infinity,
                               height: 45,
                               child: Row(
@@ -283,24 +281,14 @@ class _DetailMenuState extends State<DetailMenu> {
                                             RouteUtil.goBack(context: context);
                                           }
                                         });
-                                        // Fluttertoast.showToast(
-                                        //   msg: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
-                                        // );
                                       } else {
                                         if (cartContext.hasMenuObligatorySelected(widget.menu, menuFoods)) {
-                                          if (cartContext.hasOptionSelectioned(_food)) {
-                                            _cartContext.addItem(widget.menu, 1, true);
-                                            RouteUtil.goBack(context: context);
-                                          } else {
-                                            Fluttertoast.showToast(
-                                              msg: 'Ajouter une option',
-                                            );
-                                          }
+                                          _cartContext.addItem(widget.menu, 1, true);
+                                          RouteUtil.goBack(context: context);
                                         } else
                                           Fluttertoast.showToast(
-                                            msg: 'Ajouter au moin un menu obligatoire',
+                                            msg: 'Ajouter au moin un menu obligatoire et une option',
                                           );
-                                        //}
                                       }
                                     },
                                     child: TextTranslator(
@@ -484,7 +472,6 @@ class _DetailMenuState extends State<DetailMenu> {
                                                   food,
                                                   menuFood.foods,
                                                 );
-                                                _food = food;
                                                 widget.menu.select(
                                                   _cartContext,
                                                   menuFood.sId,
@@ -553,9 +540,8 @@ class _DetailMenuState extends State<DetailMenu> {
               });
             });
           }
-          return widget.menu.foodMenuSelecteds.isEmpty || !_cartContext.hasOptionSelectioned(_food)
-              ? Container()
-              : ButtonItemCountWidget(
+          return _cartContext.hasMenuObligatorySelected(widget.menu, menuFoods)
+              ? ButtonItemCountWidget(
                   widget.menu,
                   onAdded: () async {
                     cartContext.refresh();
@@ -564,9 +550,10 @@ class _DetailMenuState extends State<DetailMenu> {
                     cartContext.refresh();
                   },
                   itemCount: widget.menu.quantity,
-                  isContains: !(widget.menu.foodMenuSelecteds.isEmpty || !_cartContext.hasOptionSelectioned(_food)),
+                  isContains: _cartContext.hasMenuObligatorySelected(widget.menu, menuFoods),
                   isSmal: false,
-                );
+                )
+              : Container();
         })
       ],
     );

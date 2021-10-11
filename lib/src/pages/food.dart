@@ -14,7 +14,6 @@ import 'package:menu_advisor/src/pages/restaurant.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/DataContext.dart';
-import 'package:menu_advisor/src/providers/MenuContext.dart';
 import 'package:menu_advisor/src/providers/OptionContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
@@ -101,21 +100,9 @@ class _FoodPageState extends State<FoodPage> {
     _optionContext = Provider.of<OptionContext>(context, listen: false);
     _cartContext = Provider.of<CartContext>(context, listen: false);
     _cartContext.itemsTemp.clear();
-    // if (_cartContext.contains(widget.food)) itemCount = _cartContext.getCount(widget.food);
-    MenuContext _menuContext = Provider.of<MenuContext>(context, listen: false);
-    // menu = _menuContext.menu;
-
-    // _streamController.add(true);
     _scrollController = ScrollController();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      /*Food f = await api.getFood(
-        id: widget.food.id,
-        lang: 'fr'
-      );
-
-     widget.food = f;*/
-
       _scrollController.addListener(_scrollListener);
       api
           .getRestaurant(
@@ -152,12 +139,7 @@ class _FoodPageState extends State<FoodPage> {
               null;
 
       DataContext dataContext = Provider.of<DataContext>(context, listen: false);
-      // dataContext.fetchFoodAttributes(widget.food.attributes);
       dataContext.attributes = widget.food.attributes;
-      // setState(() {
-
-      // });
-      // options = widget.food.options;
       _init();
     });
   }
@@ -173,7 +155,6 @@ class _FoodPageState extends State<FoodPage> {
 
     if (options.isEmpty) {
       itemCount = 1;
-      // _cartContext.addItem(foodAdded, 1, true);
       foodAdded.quantity = 1;
     }
     if (foodAdded.optionSelected == null) isContains = true;
@@ -211,7 +192,6 @@ class _FoodPageState extends State<FoodPage> {
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 20,
-                    // fontWeight: FontWeight.bold
                   ),
                 ),
               ),
@@ -746,14 +726,23 @@ class _FoodPageState extends State<FoodPage> {
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   mainAxisAlignment: MainAxisAlignment.start,
                                                   children: [
-                                                    TextTranslator(
-                                                      "${option.title}",
-                                                      style: TextStyle(
-                                                        color: Colors.black,
-                                                        fontWeight: FontWeight.bold,
-                                                        fontSize: 16,
-                                                      ),
-                                                      textAlign: TextAlign.start,
+                                                    Row(
+                                                      children: [
+                                                        TextTranslator(
+                                                          "${option.title}",
+                                                          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
+                                                          textAlign: TextAlign.start,
+                                                        ),
+                                                        if (option.isObligatory)
+                                                          Text(
+                                                            "*",
+                                                            style: TextStyle(
+                                                              color: Colors.red,
+                                                              fontWeight: FontWeight.bold,
+                                                              fontSize: 20,
+                                                            ),
+                                                          )
+                                                      ],
                                                     ),
                                                     TextTranslator(
                                                       "Choisissez-en jusqu'à ${option.maxOptions}",

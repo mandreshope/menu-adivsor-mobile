@@ -276,14 +276,4 @@ class MapWindowMarker extends StatelessWidget {
       ),
     );
   }
-
-  Widget _renderCategorie() {
-    String name = "";
-    for (var category in restaurant.category) name += category['name']['fr'] + ", ";
-    return TextTranslator(
-      name.isEmpty ? name : name.substring(0, name.length - 2),
-      isAutoSizeText: true,
-      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-    );
-  }
 }

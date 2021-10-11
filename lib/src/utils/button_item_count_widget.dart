@@ -12,6 +12,7 @@ import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 
+// ignore: must_be_immutable
 class ButtonItemCountWidget extends StatefulWidget {
   ButtonItemCountWidget(
     this.food, {

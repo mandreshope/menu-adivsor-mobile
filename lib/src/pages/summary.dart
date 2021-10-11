@@ -7,18 +7,14 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/geocoding.dart';
 import 'package:google_maps_webservice/geolocation.dart';
 import 'package:google_maps_webservice/places.dart';
-import 'package:menu_advisor/src/animations/FadeAnimation.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
-import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
-import 'package:menu_advisor/src/components/utilities.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/models/restaurants/restaurant_discount_model.dart';
 import 'package:menu_advisor/src/pages/map_polyline.dart';
 import 'package:menu_advisor/src/pages/photo_view.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
-import 'package:menu_advisor/src/providers/DataContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
@@ -847,15 +843,16 @@ class _SummaryState extends State<Summary> {
                 InkWell(
                   onTap: () {
                     RouteUtil.goTo(
-                        context: context,
-                        child: PhotoViewPage(
-                          tag: 'tag:${item.food.imageURL}',
-                          img: item.food.imageURL,
-                        ),
-                        routeName: null);
+                      context: context,
+                      child: PhotoViewPage(
+                        tag: 'tag:${item.food.imageURL}',
+                        img: item.food.imageURL,
+                      ),
+                      routeName: null,
+                    );
                   },
                   child: Image.network(
-                    item.food.imageURL ?? "",
+                    item?.food?.imageURL ?? "",
                     width: 35,
                     errorBuilder: (_, __, ___) => Center(
                       child: Icon(
@@ -866,7 +863,13 @@ class _SummaryState extends State<Summary> {
                   ),
                 ),
                 SizedBox(width: 8),
-                TextTranslator('${item.food.name}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                TextTranslator(
+                  '${item.food.name}',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 Spacer(),
                 if (item.food.type == MenuType.fixed_price.value) ...[
                   Text(" ")
@@ -875,7 +878,12 @@ class _SummaryState extends State<Summary> {
                       ? Text(" ")
                       : item.food.price?.amount == null
                           ? Text("_")
-                          : Text("${item.food.price.amount / 100} €", style: TextStyle(fontSize: 16)),
+                          : Text(
+                              "${item.food.price.amount / 100} €",
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
                 ]
               ],
             ),

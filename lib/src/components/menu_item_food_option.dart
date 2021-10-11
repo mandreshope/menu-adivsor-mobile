@@ -70,13 +70,27 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                       height: 2,
                     ),
                     Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        TextTranslator(
-                          "${option.title}",
-                          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
-                          textAlign: TextAlign.start,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            TextTranslator(
+                              "${option.title}",
+                              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
+                              textAlign: TextAlign.start,
+                            ),
+                            if (option.isObligatory)
+                              Text(
+                                "*",
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                ),
+                              )
+                          ],
                         ),
                         TextTranslator(
                           "Choisissez-en jusqu'à ${option.maxOptions}",

@@ -156,7 +156,7 @@ class Food {
   Map<String, dynamic> toJson() {
     return this.isMenu
         ? {"food": id, if (optionSelected != null) "options": this.optionSelected.map((v) => v.toJson()).toList()}
-        : {"id": id, "name": name, "category": category.toJson(), if (optionSelected != null) "options": this.optionSelected.map((v) => v.toJson()).toList()};
+        : {"id": id, "name": name, "category": category?.toJson(), if (optionSelected != null) "options": this.optionSelected.map((v) => v.toJson()).toList()};
   }
 
   void copyOptions(List<Option> options) {
@@ -744,14 +744,9 @@ class Restaurant {
             open = true;
             return;
           }
-          // }else{
-          //   open = false;
-          //   return;
-          // }
-
         }
       } else {
-        print("$logTrace other day...");
+        print("$logTrace other day... isOpen: $open");
       }
     });
     return open;
@@ -883,7 +878,16 @@ class Command {
         validated: json['validated'],
         revoked: json['revoked'],
         items: json['items'] != null ? (json['items'] as List).map((e) => CommandItem.fromJson(e)).toList() : [],
-        menus: json['menus'] != null ? (json['menus'] as List).map((e) => CommandItem.fromJson(e, isMenu: true)).toList() : [],
+        menus: json['menus'] != null
+            ? (json['menus'] as List)
+                .map(
+                  (e) => CommandItem.fromJson(
+                    e,
+                    isMenu: true, //TODO: BUG COMMAND DATA RETURN
+                  ),
+                )
+                .toList()
+            : [],
         createdAt: json['createdAt'] != null
             ? (json['createdAt'] is String)
                 ? DateTime.parse(json['createdAt'])
@@ -1035,8 +1039,11 @@ class FoodSelectedFromCommandMenu {
 
   FoodSelectedFromCommandMenu({this.id, this.options, this.food});
 
-  factory FoodSelectedFromCommandMenu.fromJson(var json) =>
-      FoodSelectedFromCommandMenu(id: json['_id'], food: Food.fromJson(json['food']), options: json['options'] == null ? [] : (json['options'] as List).map((e) => Option.fromJson(e)).toList());
+  factory FoodSelectedFromCommandMenu.fromJson(var json) => FoodSelectedFromCommandMenu(
+        id: json['_id'],
+        food: Food.fromJson(json['food']), //TODO: BUG COMMAND DATA RETURN -> json['food'] is null
+        options: json['options'] == null ? [] : (json['options'] as List).map((e) => Option.fromJson(e)).toList(),
+      );
 }
 
 class FoodType {
