@@ -550,18 +550,35 @@ class _OrderPageState extends State<OrderPage> {
               sendingCommand = true;
             });
 
+            int totalPrice = 0;
+            double remiseWithCodeDiscount = cartContext.totalPrice;
+            if (commandContext.withCodeDiscount) {
+              remiseWithCodeDiscount = cartContext.calculremise(
+                totalPrice: cartContext.totalPrice,
+                discountIsPrice: _restaurant?.discount?.codeDiscount?.discountIsPrice,
+                discountValue: _restaurant?.discount?.codeDiscount?.valueDouble,
+              );
+            }
+            totalPrice = (remiseWithCodeDiscount * 100).toInt();
+
             var command = await Api.instance.sendCommand(
-                comment: cartContext.comment,
-                relatedUser: authContext.currentUser?.id ?? null,
-                commandType: commandContext.commandType,
-                items: cartContext.items
-                    .where((f) => !f.isMenu)
-                    .map((e) => {'quantity': e.quantity, 'item': e.id, 'options': e.optionSelected != null ? e.optionSelected : [], 'comment': e.message})
-                    .toList(),
-                restaurant: cartContext.currentOrigin,
-                totalPrice: (cartContext.totalPrice * 100).round(),
-                menu: cartContext.items.where((e) => e.isMenu).map((e) => {'quantity': e.quantity, 'item': e.id, 'foods': e.foodMenuSelecteds}).toList(),
-                priceless: !cartContext.withPrice);
+              discount: _restaurant?.discount?.copyWith(
+                delivery: _restaurant?.discount?.delivery?.copyWith(value: "0"),
+                aEmporter: _restaurant?.discount?.aEmporter?.copyWith(value: "0"),
+                codeDiscount: commandContext.withCodeDiscount ? _restaurant?.discount?.codeDiscount : _restaurant?.discount?.codeDiscount?.copyWith(value: "0"),
+              ),
+              comment: cartContext.comment,
+              relatedUser: authContext.currentUser?.id ?? null,
+              commandType: commandContext.commandType,
+              items: cartContext.items
+                  .where((f) => !f.isMenu)
+                  .map((e) => {'quantity': e.quantity, 'item': e.id, 'options': e.optionSelected != null ? e.optionSelected : [], 'comment': e.message})
+                  .toList(),
+              restaurant: cartContext.currentOrigin,
+              totalPrice: totalPrice,
+              menu: cartContext.items.where((e) => e.isMenu).map((e) => {'quantity': e.quantity, 'item': e.id, 'foods': e.foodMenuSelecteds}).toList(),
+              priceless: !cartContext.withPrice,
+            );
             Command cm = Command.fromJson(command);
 
             cartContext.clear();
@@ -616,24 +633,38 @@ class _OrderPageState extends State<OrderPage> {
           arguments: _restaurant);
     } else if (commandContext.commandType == 'takeaway') {
       RouteUtil.goTo(context: context, child: UserDetailsPage(), routeName: userDetailsRoute, arguments: _restaurant);
-    } else if (commandContext.commandType == 'on_site' /* || commandContext.commandType == 'takeaway'*/) {
+    } else if (commandContext.commandType == 'on_site') {
       try {
         setState(() {
           sendingCommand = true;
         });
+        int totalPrice = 0;
+        double remiseWithCodeDiscount = cartContext.totalPrice;
+        if (commandContext.withCodeDiscount) {
+          remiseWithCodeDiscount = cartContext.calculremise(
+            totalPrice: cartContext.totalPrice,
+            discountIsPrice: _restaurant?.discount?.codeDiscount?.discountIsPrice,
+            discountValue: _restaurant?.discount?.codeDiscount?.valueDouble,
+          );
+        }
+        totalPrice = (remiseWithCodeDiscount * 100).toInt();
 
         var command = await Api.instance.sendCommand(
-            comment: cartContext.comment,
-            relatedUser: authContext.currentUser.id,
-            commandType: commandContext.commandType,
-            items: cartContext.items
-                .where((e) => !e.isMenu)
-                .map((e) => {'quantity': e.quantity, 'item': e.id, 'options': e.optionSelected != null ? e.optionSelected : [], 'comment': e.message})
-                .toList(),
-            restaurant: cartContext.currentOrigin,
-            totalPrice: (cartContext.totalPrice * 100).round(),
-            menu: cartContext.items.where((e) => e.isMenu).map((e) => {'quantity': e.quantity, 'item': e.id, 'foods': e.foodMenuSelecteds}).toList(),
-            priceless: !cartContext.withPrice);
+          discount: _restaurant?.discount?.copyWith(
+            delivery: _restaurant?.discount?.delivery?.copyWith(value: "0"),
+            aEmporter: _restaurant?.discount?.aEmporter?.copyWith(value: "0"),
+            codeDiscount: commandContext.withCodeDiscount ? _restaurant?.discount?.codeDiscount : _restaurant?.discount?.codeDiscount?.copyWith(value: "0"),
+          ),
+          comment: cartContext.comment,
+          relatedUser: authContext.currentUser.id,
+          commandType: commandContext.commandType,
+          items:
+              cartContext.items.where((e) => !e.isMenu).map((e) => {'quantity': e.quantity, 'item': e.id, 'options': e.optionSelected != null ? e.optionSelected : [], 'comment': e.message}).toList(),
+          restaurant: cartContext.currentOrigin,
+          totalPrice: totalPrice,
+          menu: cartContext.items.where((e) => e.isMenu).map((e) => {'quantity': e.quantity, 'item': e.id, 'foods': e.foodMenuSelecteds}).toList(),
+          priceless: !cartContext.withPrice,
+        );
         Command cm = Command.fromJson(command);
 
         cartContext.clear();

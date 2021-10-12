@@ -128,12 +128,28 @@ class ChoosePayement extends StatelessWidget {
               commandType: commandContext.commandType,
               items: cartContext.items
                   .where((e) => !e.isMenu)
-                  .map((e) => {'quantity': e.quantity, 'item': e.id, 'options': e.optionSelected != null ? e.optionSelected : [], 'comment': e.message})
+                  .map((e) => {
+                        'quantity': e.quantity,
+                        'item': e.id,
+                        'options': e.optionSelected != null ? e.optionSelected : [],
+                        'comment': e.message,
+                      })
                   .toList(),
               restaurant: cartContext.currentOrigin,
-              discount: restaurant?.discount,
+              discount: restaurant?.discount?.copyWith(
+                delivery: restaurant?.discount?.delivery,
+                aEmporter: restaurant?.discount?.aEmporter?.copyWith(value: "0"),
+                codeDiscount: commandContext.withCodeDiscount ? restaurant?.discount?.codeDiscount : restaurant?.discount?.codeDiscount?.copyWith(value: "0"),
+              ),
               totalPrice: totalPrice,
-              menu: cartContext.items.where((e) => e.isMenu).map((e) => {'quantity': e.quantity, 'item': e.id, 'foods': e.foodMenuSelecteds}).toList(),
+              menu: cartContext.items
+                  .where((e) => e.isMenu)
+                  .map((e) => {
+                        'quantity': e.quantity,
+                        'item': e.id,
+                        'foods': e.foodMenuSelecteds,
+                      })
+                  .toList(),
               shippingAddress: commandContext.deliveryAddress,
               shipAsSoonAsPossible: commandContext.deliveryDate == null && commandContext.deliveryTime == null,
               shippingTime: (commandContext.deliveryDate == null && commandContext.deliveryTime == null)

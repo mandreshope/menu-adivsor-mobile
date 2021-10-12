@@ -772,6 +772,7 @@ class Api {
         post = jsonEncode({
           'relatedUser': relatedUser,
           'commandType': commandType,
+          'discount': discount?.toMap(),
           'totalPrice': totalPrice.toString(),
           'restaurant': restaurant,
           'items': items,

@@ -223,16 +223,16 @@ class _ConfirmSmsState extends State<ConfirmSms> {
       AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
 
       //TODO: COMMENT THIS SMS CHECK FOR TEST DELEVERY
-      // if (widget.code != pin) {
-      //   Fluttertoast.showToast(msg: "Invalide sms code");
-      //   return;
-      // }
+      if (widget.code != pin) {
+        Fluttertoast.showToast(msg: "Invalide sms code");
+        return;
+      }
 
       //TODO: COMMENT THIS SMS CHECK FOR TEST DELEVERY
-      // if (this.dateDelai.isBefore(DateTime.now())) {
-      //   Fluttertoast.showToast(msg: "Votre délai de confirmation est épuisé. Veuillez renvoyer votre code de confirmation.");
-      //   return;
-      // }
+      if (this.dateDelai.isBefore(DateTime.now())) {
+        Fluttertoast.showToast(msg: "Votre délai de confirmation est épuisé. Veuillez renvoyer votre code de confirmation.");
+        return;
+      }
 
       if (widget.fromDelivery) {
         RouteUtil.goTo(
@@ -265,6 +265,11 @@ class _ConfirmSmsState extends State<ConfirmSms> {
             .toInt();
         totalPrice = (totalPrice * 100).toInt();
         var command = await Api.instance.sendCommand(
+          discount: widget.restaurant?.discount?.copyWith(
+            delivery: widget.restaurant?.discount?.delivery?.copyWith(value: "0"),
+            aEmporter: widget.restaurant?.discount?.aEmporter,
+            codeDiscount: commandContext.withCodeDiscount ? widget.restaurant?.discount?.codeDiscount : widget.restaurant?.discount?.codeDiscount?.copyWith(value: "0"),
+          ),
           relatedUser: authContext.currentUser?.id ?? null,
           comment: cartContext.comment,
           commandType: commandContext.commandType,

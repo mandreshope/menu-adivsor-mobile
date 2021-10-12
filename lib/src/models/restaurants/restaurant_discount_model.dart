@@ -91,7 +91,7 @@ class Delivery {
     return {
       'discountIsPrice': discountIsPrice,
       'value': value,
-      'discountType': describeEnum(discountType),
+      'discountType': discountType == DiscountType.SurTotalite ? "SurTotalité" : describeEnum(discountType),
     };
   }
 
@@ -152,7 +152,7 @@ class AEmporter {
     return {
       'discountIsPrice': discountIsPrice,
       'value': value,
-      'discountType': describeEnum(discountType),
+      'discountType': discountType == DiscountType.SurTotalite ? "SurTotalité" : describeEnum(discountType),
     };
   }
 
