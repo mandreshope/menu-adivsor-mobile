@@ -136,11 +136,7 @@ class ChoosePayement extends StatelessWidget {
                       })
                   .toList(),
               restaurant: cartContext.currentOrigin,
-              discount: restaurant?.discount?.copyWith(
-                delivery: restaurant?.discount?.delivery,
-                aEmporter: restaurant?.discount?.aEmporter?.copyWith(value: "0"),
-                codeDiscount: commandContext.withCodeDiscount ? restaurant?.discount?.codeDiscount : restaurant?.discount?.codeDiscount?.copyWith(value: "0"),
-              ),
+              discount: restaurant?.discount,
               totalPrice: totalPrice,
               menu: cartContext.items
                   .where((e) => e.isMenu)

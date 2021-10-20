@@ -254,6 +254,9 @@ class Menu {
     _foodMenuSelected.forEach((key, value) {
       foods.addAll(value);
     });
+    foods.forEach((food) {
+      food.isMenu = true;
+    });
 
     return foods;
   }
@@ -883,7 +886,7 @@ class Command {
                 .map(
                   (e) => CommandItem.fromJson(
                     e,
-                    isMenu: true, //TODO: BUG COMMAND DATA RETURN
+                    isMenu: true,
                   ),
                 )
                 .toList()
@@ -1041,7 +1044,7 @@ class FoodSelectedFromCommandMenu {
 
   factory FoodSelectedFromCommandMenu.fromJson(var json) => FoodSelectedFromCommandMenu(
         id: json['_id'],
-        food: Food.fromJson(json['food']), //TODO: BUG COMMAND DATA RETURN -> json['food'] is null
+        food: json['food'] != null ? Food.fromJson(json['food']) : null,
         options: json['options'] == null ? [] : (json['options'] as List).map((e) => Option.fromJson(e)).toList(),
       );
 }

@@ -265,11 +265,7 @@ class _ConfirmSmsState extends State<ConfirmSms> {
             .toInt();
         totalPrice = (totalPrice * 100).toInt();
         var command = await Api.instance.sendCommand(
-          discount: widget.restaurant?.discount?.copyWith(
-            delivery: widget.restaurant?.discount?.delivery?.copyWith(value: "0"),
-            aEmporter: widget.restaurant?.discount?.aEmporter,
-            codeDiscount: commandContext.withCodeDiscount ? widget.restaurant?.discount?.codeDiscount : widget.restaurant?.discount?.codeDiscount?.copyWith(value: "0"),
-          ),
+          discount: widget.restaurant?.discount,
           relatedUser: authContext.currentUser?.id ?? null,
           comment: cartContext.comment,
           commandType: commandContext.commandType,

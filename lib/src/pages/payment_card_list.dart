@@ -251,11 +251,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                 })
                             .toList(),
                         restaurant: cartContext.currentOrigin,
-                        discount: widget.restaurant?.discount?.copyWith(
-                          delivery: widget.restaurant?.discount?.delivery,
-                          aEmporter: widget.restaurant?.discount?.aEmporter?.copyWith(value: "0"),
-                          codeDiscount: commandContext.withCodeDiscount ? widget.restaurant?.discount?.codeDiscount : widget.restaurant?.discount?.codeDiscount?.copyWith(value: "0"),
-                        ),
+                        discount: widget.restaurant?.discount,
                         totalPrice: totalPrice,
                         menu: cartContext.items
                             .where((e) => e.isMenu)

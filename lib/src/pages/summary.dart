@@ -664,7 +664,7 @@ class _SummaryState extends State<Summary> {
     return Column(
       children: [
         Container(
-          padding: EdgeInsets.symmetric(vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
@@ -693,7 +693,7 @@ class _SummaryState extends State<Summary> {
                 ),
               ),
               SizedBox(width: 8),
-              TextTranslator('${item.name}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              TextTranslator(item.isMenu == true ? (item.name as Map).values?.first : item.name ?? "item", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               Spacer(),
               item.isMenu
                   ? widget.commande.priceless || item.type == MenuType.per_food.value || item.type == MenuType.priceless.value
@@ -830,12 +830,12 @@ class _SummaryState extends State<Summary> {
   }
 
   Widget _renderMenus(FoodSelectedFromCommandMenu item) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 80),
+    return Container(
+      margin: const EdgeInsets.only(left: 80),
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -902,47 +902,50 @@ class _SummaryState extends State<Summary> {
               height: 5,
             ),
             for (ItemsOption itemsOption in option.items) ...[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  SizedBox(width: 150),
-                  if (itemsOption.quantity != null && itemsOption.quantity > 0) Text("${itemsOption.quantity}x\t", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  InkWell(
-                    onTap: () {
-                      RouteUtil.goTo(
-                          context: context,
-                          child: PhotoViewPage(
-                            tag: 'tag:${item.food.imageURL}',
-                            img: item.food.imageURL,
-                          ),
-                          routeName: null);
-                    },
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(50),
-                      child: FadeInImage.assetNetwork(
-                        placeholder: 'assets/images/loading.gif',
-                        image: itemsOption.item.imageUrl,
-                        height: 20,
-                        width: 20,
-                        fit: BoxFit.cover,
-                        imageErrorBuilder: (_, __, ___) => Container(
-                          width: 20,
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(width: 150),
+                    if (itemsOption.quantity != null && itemsOption.quantity > 0) Text("${itemsOption.quantity}x\t", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    InkWell(
+                      onTap: () {
+                        RouteUtil.goTo(
+                            context: context,
+                            child: PhotoViewPage(
+                              tag: 'tag:${item.food.imageURL}',
+                              img: item.food.imageURL,
+                            ),
+                            routeName: null);
+                      },
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(50),
+                        child: FadeInImage.assetNetwork(
+                          placeholder: 'assets/images/loading.gif',
+                          image: itemsOption.item.imageUrl,
                           height: 20,
-                          color: Colors.white,
+                          width: 20,
+                          fit: BoxFit.cover,
+                          imageErrorBuilder: (_, __, ___) => Container(
+                            width: 20,
+                            height: 20,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  TextTranslator('${itemsOption.item.name}', style: TextStyle(fontSize: 16)),
-                  Spacer(),
-                  if (widget.commande.priceless)
-                    Text("")
-                  else
-                    itemsOption.item.price.amount == null ? Text("") : TextTranslator('${itemsOption.item.price.amount / 100} €', style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
-                ],
+                    SizedBox(
+                      width: 5,
+                    ),
+                    TextTranslator('${itemsOption.item.name}', style: TextStyle(fontSize: 16)),
+                    Spacer(),
+                    if (widget.commande.priceless)
+                      Text("")
+                    else
+                      itemsOption.item.price.amount == null ? Text("") : TextTranslator('${itemsOption.item.price.amount / 100} €', style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
+                  ],
+                ),
               ),
             ],
             Divider(),

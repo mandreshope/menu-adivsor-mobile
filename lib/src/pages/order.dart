@@ -562,11 +562,7 @@ class _OrderPageState extends State<OrderPage> {
             totalPrice = (remiseWithCodeDiscount * 100).toInt();
 
             var command = await Api.instance.sendCommand(
-              discount: _restaurant?.discount?.copyWith(
-                delivery: _restaurant?.discount?.delivery?.copyWith(value: "0"),
-                aEmporter: _restaurant?.discount?.aEmporter?.copyWith(value: "0"),
-                codeDiscount: commandContext.withCodeDiscount ? _restaurant?.discount?.codeDiscount : _restaurant?.discount?.codeDiscount?.copyWith(value: "0"),
-              ),
+              discount: _restaurant?.discount,
               comment: cartContext.comment,
               relatedUser: authContext.currentUser?.id ?? null,
               commandType: commandContext.commandType,
@@ -650,11 +646,7 @@ class _OrderPageState extends State<OrderPage> {
         totalPrice = (remiseWithCodeDiscount * 100).toInt();
 
         var command = await Api.instance.sendCommand(
-          discount: _restaurant?.discount?.copyWith(
-            delivery: _restaurant?.discount?.delivery?.copyWith(value: "0"),
-            aEmporter: _restaurant?.discount?.aEmporter?.copyWith(value: "0"),
-            codeDiscount: commandContext.withCodeDiscount ? _restaurant?.discount?.codeDiscount : _restaurant?.discount?.codeDiscount?.copyWith(value: "0"),
-          ),
+          discount: _restaurant?.discount,
           comment: cartContext.comment,
           relatedUser: authContext.currentUser.id,
           commandType: commandContext.commandType,
