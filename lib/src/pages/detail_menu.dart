@@ -466,6 +466,9 @@ class _DetailMenuState extends State<DetailMenu> {
                                               color: food.isSelected ? CRIMSON : Colors.grey,
                                             ),
                                             onPressed: () {
+                                              setState(() {
+                                                food.isSelected = !food.isSelected;
+                                              });
                                               food.expandableController.expanded = !food.expandableController.expanded;
                                               if (!food.expandableController.expanded) {
                                                 food.optionSelected.forEach((option) {
@@ -474,7 +477,7 @@ class _DetailMenuState extends State<DetailMenu> {
                                                   menuContext.refresh();
                                                 });
                                               }
-                                              food.isSelected = !food.isSelected;
+
                                               print("$logTrace food selected");
                                               if (menuFood.isMaxOptions) {
                                                 widget.menu.setFoodMenuSelected(
