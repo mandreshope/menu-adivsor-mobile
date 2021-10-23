@@ -35,17 +35,16 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
   List<Option> optionSelected = [];
   List<Option> options = [];
   CartContext _cartContext;
-  ItemsOption singleItemOptionSelected;
 
   @override
   void initState() {
     super.initState();
     options = widget.food.options;
-    options.forEach((element) {
-      element.itemOptionSelected = [];
+    options.forEach((option) {
+      option.itemOptionSelected = [];
+      option.singleItemOptionSelected = null;
     });
     _cartContext = Provider.of<CartContext>(context, listen: false);
-    singleItemOptionSelected = null;
   }
 
   @override
@@ -123,7 +122,7 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
   Widget _choice(Option option, bool isSingle) {
     if (isSingle) {
       return ChipsChoice.single(
-        value: singleItemOptionSelected,
+        value: option.singleItemOptionSelected,
         choiceStyle: C2ChoiceStyle(
           borderColor: Colors.white,
           disabledColor: Colors.white,
@@ -137,9 +136,9 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
         direction: Axis.vertical,
         onChanged: (value) {
           setState(() {
-            singleItemOptionSelected = value;
-            singleItemOptionSelected.isSingle = true;
-            singleItemOptionSelected.quantity = 1;
+            option.singleItemOptionSelected = value;
+            option.singleItemOptionSelected.isSingle = true;
+            option.singleItemOptionSelected.quantity = 1;
             if (option.itemOptionSelected.isEmpty) option.itemOptionSelected = [];
 
             option.itemOptionSelected.removeWhere((element) => element.isSingle);

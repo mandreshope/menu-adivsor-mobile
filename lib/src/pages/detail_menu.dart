@@ -47,7 +47,6 @@ class _DetailMenuState extends State<DetailMenu> {
   _scrollListener() {
     double offset = _scrollController.offset;
     if (offset <= 50) {
-      // print("offset $offset");
       isTransparentSink.add(true);
     } else {
       isTransparentSink.add(false);
@@ -377,20 +376,23 @@ class _DetailMenuState extends State<DetailMenu> {
                       ),
                       Divider(),
                       for (final food in menuFood.foods) ...[
-                        Consumer<CartContext>(builder: (context, menuContext, w) {
-                          return ExpandableNotifier(
-                            child: Column(
-                              children: <Widget>[
-                                ScrollOnExpand(
-                                  scrollOnExpand: true,
-                                  scrollOnCollapse: false,
-                                  child: ExpandablePanel(
-                                    theme: const ExpandableThemeData(
-                                      headerAlignment: ExpandablePanelHeaderAlignment.center,
-                                      tapBodyToCollapse: true,
-                                      hasIcon: false,
-                                    ),
-                                    header: Padding(
+                        ExpandableNotifier(
+                          child: Column(
+                            children: <Widget>[
+                              ScrollOnExpand(
+                                scrollOnExpand: true,
+                                scrollOnCollapse: false,
+                                child: ExpandablePanel(
+                                  controller: food.expandableController,
+                                  theme: ExpandableThemeData(
+                                    headerAlignment: ExpandablePanelHeaderAlignment.center,
+                                    tapBodyToCollapse: true,
+                                    hasIcon: false,
+                                    tapHeaderToExpand: false,
+                                    tapBodyToExpand: false,
+                                  ),
+                                  header: Consumer<CartContext>(builder: (context, menuContext, w) {
+                                    return Padding(
                                       padding: const EdgeInsets.symmetric(vertical: 5),
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.start,
@@ -464,6 +466,14 @@ class _DetailMenuState extends State<DetailMenu> {
                                               color: food.isSelected ? CRIMSON : Colors.grey,
                                             ),
                                             onPressed: () {
+                                              food.expandableController.expanded = !food.expandableController.expanded;
+                                              if (!food.expandableController.expanded) {
+                                                food.optionSelected.forEach((option) {
+                                                  option.itemOptionSelected.clear();
+                                                  option.singleItemOptionSelected = null;
+                                                  menuContext.refresh();
+                                                });
+                                              }
                                               food.isSelected = !food.isSelected;
                                               print("$logTrace food selected");
                                               if (menuFood.isMaxOptions) {
@@ -488,27 +498,29 @@ class _DetailMenuState extends State<DetailMenu> {
                                           ),
                                         ],
                                       ),
-                                    ),
-                                    collapsed: Container(),
-                                    expanded: MenuItemFoodOption(
+                                    );
+                                  }),
+                                  collapsed: Container(),
+                                  expanded: Consumer<CartContext>(builder: (context, menuContext, w) {
+                                    return MenuItemFoodOption(
                                       food: food,
                                       menu: widget.menu,
                                       withPrice: _cartContext.withPrice,
                                       subMenu: menuFood.title,
-                                    ),
-                                    builder: (_, collapsed, expanded) {
-                                      return Expandable(
-                                        collapsed: collapsed,
-                                        expanded: expanded,
-                                        theme: const ExpandableThemeData(crossFadePoint: 0),
-                                      );
-                                    },
-                                  ),
+                                    );
+                                  }),
+                                  builder: (_, collapsed, expanded) {
+                                    return Expandable(
+                                      collapsed: collapsed,
+                                      expanded: expanded,
+                                      theme: const ExpandableThemeData(crossFadePoint: 0),
+                                    );
+                                  },
                                 ),
-                              ],
-                            ),
-                          );
-                        })
+                              ),
+                            ],
+                          ),
+                        )
                       ]
                     ],
                   )

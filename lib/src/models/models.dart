@@ -1,3 +1,4 @@
+import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/models/restaurants/restaurant_discount_model.dart';
@@ -72,6 +73,8 @@ class Food {
 
   bool isSelected = false;
 
+  final ExpandableController expandableController;
+
   Food({
     @required this.id,
     @required this.name,
@@ -98,7 +101,7 @@ class Food {
     this.imageNotContractual,
     this.isAvailable,
     this.priority,
-  });
+  }) : expandableController = ExpandableController();
 
   factory Food.fromJson(Map<String, dynamic> json, {bool fromCommande = false, bool isPopular = false}) => Food(
         id: json['_id'],
@@ -1328,6 +1331,7 @@ class Option {
   bool isObligatory;
 
   List<ItemsOption> itemOptionSelected = [];
+  ItemsOption singleItemOptionSelected;
 
   Option({
     this.sId,
