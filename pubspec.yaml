@@ -75,7 +75,7 @@ dependencies:
   sliding_up_panel: ^2.0.0+1
   auto_size_text: ^2.1.0
   carousel_slider: ^4.0.0
-  firebase_analytics: ^8.3.2
+  firebase_analytics: ^8.3.4
 
 dev_dependencies:
   flutter_test:
