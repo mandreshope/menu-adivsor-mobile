@@ -91,10 +91,11 @@ class _SearchPageState extends State<SearchPage> {
     ).languageCode;
     try {
       type = filters.containsKey("category") && !filters.containsKey("attributes") ? type = 'restaurant' : type;
+      final attributes = filters.entries.where((e) => e.key == "attributes").toList();
+      final listId = attributes.isEmpty ? [] : attributes?.first?.value;
 
       ///TODO: implement searchByAttibuteAllergen
-      if (type == "food") {
-        List<String> listId = filters.values.map<String>((e) => e.toString()).toList();
+      if (type == "food" && attributes.isNotEmpty) {
         results = await _api.searchByAttibuteAllergen(
           _searchValue,
           listId,

@@ -461,13 +461,25 @@ class Api {
 
   Future searchByAttibuteAllergen(
     String query,
-    List<String> listId,
+    List listId,
     String lang, {
     bool fromQrcode = false,
   }) {
     final url = Uri.parse('$_apiURL/searchByAttibuteAllergen');
+    final data = json.encode({
+      "name": query,
+      "data": listId,
+      "lang": lang,
+    });
     print("$logTrace $url");
-    return http.post(url, body: jsonEncode({"name": query, "data": listId, "lang": lang})).then<List<SearchResult>>((response) {
+    print(data);
+    return http.post(
+      url,
+      body: data,
+      headers: {
+        'Content-type': 'application/json',
+      },
+    ).then<List<SearchResult>>((response) {
       if (response.statusCode == 200) {
         List<dynamic> results = jsonDecode(response.body);
         if (fromQrcode) {

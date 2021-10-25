@@ -162,7 +162,7 @@ class AuthContext extends ChangeNotifier {
 
   Future<bool> autoLogin() async {
     final pref = await SharedPreferences.getInstance();
-    if (!pref.getBool('remember_password') ?? false) {
+    if (!(pref?.getBool('remember_password') ?? false)) {
       return false;
     }
     return login(pref.getString('email'), pref.getString('password'), isPasswordRemember: true);
