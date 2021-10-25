@@ -333,6 +333,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
           cvvCode: creditCard.securityCode.toString(),
           cardNumber: creditCard.cardNumber.toString(),
           expiryDate: '${creditCard.expiryMonth}/${creditCard.expiryYear}',
+          onCreditCardWidgetChange: (creditCardBrand) {},
         ),
       ),
     );

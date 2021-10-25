@@ -126,7 +126,7 @@ packages:
       name: dotted_line
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.1"
+    version: "3.1.0"
   enum_to_string:
     dependency: transitive
     description:
@@ -243,7 +243,7 @@ packages:
       name: flutter_credit_card
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.0"
+    version: "3.0.1"
   flutter_html:
     dependency: "direct main"
     description:
@@ -328,7 +328,7 @@ packages:
       name: geolocator
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "7.7.0"
+    version: "7.7.1"
   geolocator_android:
     dependency: transitive
     description:
@@ -650,7 +650,7 @@ packages:
       name: photo_view
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.12.0"
+    version: "0.13.0"
   pinput:
     dependency: "direct main"
     description:
@@ -741,7 +741,7 @@ packages:
       name: scrollable_positioned_list
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.10"
+    version: "0.2.2"
   share:
     dependency: "direct main"
     description:
@@ -797,7 +797,7 @@ packages:
       name: simple_animations
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.2.0"
+    version: "4.0.1"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -866,20 +866,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.4"
-  supercharged:
-    dependency: transitive
-    description:
-      name: supercharged
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.1.1"
-  supercharged_dart:
-    dependency: transitive
-    description:
-      name: supercharged_dart
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.1.1"
   term_glyph:
     dependency: transitive
     description:
