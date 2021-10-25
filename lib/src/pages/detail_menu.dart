@@ -468,15 +468,15 @@ class _DetailMenuState extends State<DetailMenu> {
                                             onPressed: () {
                                               setState(() {
                                                 food.isSelected = !food.isSelected;
+                                                food.expandableController.expanded = !food.expandableController.expanded;
+                                                if (!food.expandableController.expanded) {
+                                                  food?.optionSelected?.forEach((option) {
+                                                    option.itemOptionSelected.clear();
+                                                    option.singleItemOptionSelected = null;
+                                                    menuContext.refresh();
+                                                  });
+                                                }
                                               });
-                                              food.expandableController.expanded = !food.expandableController.expanded;
-                                              if (!food.expandableController.expanded) {
-                                                food.optionSelected.forEach((option) {
-                                                  option.itemOptionSelected.clear();
-                                                  option.singleItemOptionSelected = null;
-                                                  menuContext.refresh();
-                                                });
-                                              }
 
                                               print("$logTrace food selected");
                                               if (menuFood.isMaxOptions) {

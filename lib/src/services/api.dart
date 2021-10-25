@@ -459,6 +459,29 @@ class Api {
     });
   }
 
+  Future searchByAttibuteAllergen(
+    String query,
+    List<String> listId,
+    String lang, {
+    bool fromQrcode = false,
+  }) {
+    final url = Uri.parse('$_apiURL/searchByAttibuteAllergen');
+    print("$logTrace $url");
+    return http.post(url, body: jsonEncode({"name": query, "data": listId, "lang": lang})).then<List<SearchResult>>((response) {
+      if (response.statusCode == 200) {
+        List<dynamic> results = jsonDecode(response.body);
+        if (fromQrcode) {
+          return results.map((e) => SearchResult.fromJson(e)).toList();
+        } else {
+          return results.map((e) => SearchResult.fromJson(e)).where((element) => element.content['status'] ?? true).toList();
+        }
+      }
+      return Future.error(
+        jsonDecode(response.body),
+      );
+    });
+  }
+
   Future<List<SearchResult>> search(
     String query,
     String lang, {

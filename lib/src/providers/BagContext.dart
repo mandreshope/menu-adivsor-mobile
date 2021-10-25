@@ -318,28 +318,26 @@ class CartContext extends ChangeNotifier {
   bool hasOptionSelectioned(Food food) {
     if (food == null) return false;
     bool hasOption = true;
-    if (food.options.isEmpty) return true;
-    if (food.optionSelected == null || food.optionSelected.isEmpty) return false;
+    if (food.options.isEmpty) {
+      return true;
+    }
+    if (food.optionSelected == null || food.optionSelected.isEmpty) {
+      return false;
+    }
 
-    List<bool> list = [];
+    List<bool> checkList = [];
+    final obligatoryList = food.optionSelected.where((option) => option.isObligatory).toList();
+    final obligatoryCheckList = obligatoryList.map((option) => option?.isObligatory == true && option.itemOptionSelected.isNotEmpty).toList();
     for (Option option in food.optionSelected) {
       if (option.itemOptionSelected.isEmpty) {
-        list.add(false);
+        checkList.add(false);
+      } else if (food.options.length == 1) {
+        checkList.add(true);
       } else {
-        if (food.options.length == 1) {
-          list.add(true);
-        }
-
-        /// rehefa obligatoir ny option dia tonga dia afaka mi-ajouter à mon panier
-        /// rehefa avy ni-séléctionner option.itemOption
-        if (option?.isObligatory == true) {
-          list.add(true);
-        } else {
-          list.add(false);
-        }
+        checkList.add(false);
       }
     }
-    hasOption = list.where((e) => e).toList().isNotEmpty;
+    hasOption = checkList.where((e) => e).toList().isNotEmpty || (!obligatoryCheckList.contains(false) && obligatoryCheckList.isNotEmpty);
     return hasOption;
   }
 

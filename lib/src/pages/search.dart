@@ -84,18 +84,34 @@ class _SearchPageState extends State<SearchPage> {
     setState(() {
       _loading = true;
     });
+    var results;
+    String lang = Provider.of<SettingContext>(
+      context,
+      listen: false,
+    ).languageCode;
     try {
-      var results = await _api.search(
+      type = filters.containsKey("category") && !filters.containsKey("attributes") ? type = 'restaurant' : type;
+
+      ///TODO: implement searchByAttibuteAllergen
+      if (type == "food") {
+        List<String> listId = filters.values.map<String>((e) => e.toString()).toList();
+        results = await _api.searchByAttibuteAllergen(
           _searchValue,
-          Provider.of<SettingContext>(
-            context,
-            listen: false,
-          ).languageCode,
-          type: filters.containsKey("category") && !filters.containsKey("attributes") ? type = 'restaurant' : type,
+          listId,
+          lang,
+        );
+      } else {
+        results = await _api.search(
+          _searchValue,
+          lang,
+          type: type,
           filters: filters,
           range: range,
           location: null //TODO: change to widget.location when geocoding web is ok
-          );
+          ,
+        );
+      }
+
       setState(() {
         _searchResults = results.where((search) {
           if (search.type.toString() == "SearchResultType.food") {
