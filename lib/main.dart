@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:menu_advisor/src/app.dart';
 import 'package:menu_advisor/src/services/http_overrides.dart';
+import 'package:menu_advisor/src/services/stripe.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -26,6 +27,10 @@ Future main() async {
   ].request();
 
   HttpOverrides.global = MyHttpOverrides();
+
+  ///flutter_stripe config
+  await StripeService.init();
+  //
 
   runApp(MyApp());
 }

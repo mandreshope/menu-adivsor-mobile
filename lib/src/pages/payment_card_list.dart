@@ -230,6 +230,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
 
                   if (payment.success) {
                     var command = await Api.instance.sendCommand(
+                        isCodePromo: commandContext.withCodeDiscount,
                         priceLivraison: priceLivraison.toString(),
                         optionLivraison: widget.restaurant.optionLivraison,
                         etage: widget.restaurant.etage,

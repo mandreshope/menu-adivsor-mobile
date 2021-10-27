@@ -249,6 +249,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  flutter_stripe:
+    dependency: "direct main"
+    description:
+      name: flutter_stripe
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.1"
   flutter_svg:
     dependency: "direct main"
     description:
@@ -280,6 +287,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "9.2.0"
+  freezed_annotation:
+    dependency: transitive
+    description:
+      name: freezed_annotation
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.14.3"
   geolocator:
     dependency: "direct main"
     description:
@@ -560,6 +574,34 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.3"
+  pay:
+    dependency: "direct main"
+    description:
+      name: pay
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.6"
+  pay_android:
+    dependency: transitive
+    description:
+      name: pay_android
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.5"
+  pay_ios:
+    dependency: transitive
+    description:
+      name: pay_ios
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.5"
+  pay_platform_interface:
+    dependency: transitive
+    description:
+      name: pay_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.2"
   pdf:
     dependency: "direct main"
     description:
@@ -789,13 +831,27 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0"
-  stripe_payment:
-    dependency: "direct main"
+  stripe_android:
+    dependency: transitive
     description:
-      name: stripe_payment
+      name: stripe_android
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.4"
+    version: "2.0.0"
+  stripe_ios:
+    dependency: transitive
+    description:
+      name: stripe_ios
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
+  stripe_platform_interface:
+    dependency: transitive
+    description:
+      name: stripe_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   term_glyph:
     dependency: transitive
     description:
@@ -887,6 +943,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "5.3.1"
+  yaml:
+    dependency: transitive
+    description:
+      name: yaml
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.1.0"
 sdks:
   dart: ">=2.14.0 <3.0.0"
   flutter: ">=2.5.0"

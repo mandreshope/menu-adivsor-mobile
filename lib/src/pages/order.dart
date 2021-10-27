@@ -562,6 +562,7 @@ class _OrderPageState extends State<OrderPage> {
             totalPrice = (remiseWithCodeDiscount * 100).toInt();
 
             var command = await Api.instance.sendCommand(
+              isCodePromo: commandContext.withCodeDiscount,
               discount: _restaurant?.discount,
               comment: cartContext.comment,
               relatedUser: authContext.currentUser?.id ?? null,
@@ -646,6 +647,7 @@ class _OrderPageState extends State<OrderPage> {
         totalPrice = (remiseWithCodeDiscount * 100).toInt();
 
         var command = await Api.instance.sendCommand(
+          isCodePromo: commandContext.withCodeDiscount,
           discount: _restaurant?.discount,
           comment: cartContext.comment,
           relatedUser: authContext.currentUser.id,

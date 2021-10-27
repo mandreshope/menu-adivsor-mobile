@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -118,4 +120,11 @@ extension Type on MenuType {
 
 extension Time on TimeOfDay {
   double get timeOfDayToDouble => this.hour + this.minute / 60.0;
+}
+
+extension PrettyJson on Map<String, dynamic> {
+  String toPrettyString() {
+    var encoder = JsonEncoder.withIndent("     ");
+    return encoder.convert(this);
+  }
 }

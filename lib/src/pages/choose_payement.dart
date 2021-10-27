@@ -116,6 +116,7 @@ class ChoosePayement extends StatelessWidget {
               totalPrice = (totalPrice * 100).toInt();
             }
             var command = await Api.instance.sendCommand(
+              isCodePromo: commandContext.withCodeDiscount,
               priceLivraison: priceLivraison.toString(),
               paiementLivraison: true,
               isDelivery: true,

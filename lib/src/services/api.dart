@@ -755,6 +755,7 @@ class Api {
   }
 
   Future<Map> sendCommand({
+    @required bool isCodePromo,
     String relatedUser,
     String commandType,
     RestaurantDiscount discount,
@@ -782,6 +783,7 @@ class Api {
       var post;
       if (isDelivery) {
         post = jsonEncode({
+          'isCodePromo': isCodePromo,
           'relatedUser': relatedUser,
           'commandType': commandType,
           'discount': discount?.toMap(),
@@ -805,6 +807,7 @@ class Api {
         });
       } else {
         post = jsonEncode({
+          'isCodePromo': isCodePromo,
           'relatedUser': relatedUser,
           'commandType': commandType,
           'discount': discount?.toMap(),

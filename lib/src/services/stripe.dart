@@ -2,9 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/models/models.dart';
 import 'package:http/http.dart' as http;
-import 'package:stripe_payment/stripe_payment.dart';
 
 class StripeTransactionResponse {
   String message;
@@ -30,16 +31,13 @@ class StripeService {
 
   static bool initialized = false;
 
-  static init() {
+  static init() async {
     // Initialization logics
     if (!initialized) {
-      StripePayment.setOptions(
-        StripeOptions(
-          publishableKey: 'pk_test_51HVB0bBBj0M16v6H7XMi6OeecfyebnUynW3gQ4N6DhPQ5ynDZOEfoLPmZh8RSgTf1XoA7VnsFGEooySSfuhdHYWu00YJQCvxbS',
-          merchantId: 'Test',
-          androidPayMode: 'test',
-        ),
-      );
+      Stripe.publishableKey = stripePublishableKey;
+      Stripe.merchantIdentifier = 'Test';
+      Stripe.urlScheme = 'flutterstripe';
+      await Stripe.instance.applySettings();
       initialized = true;
     }
   }
@@ -51,14 +49,12 @@ class StripeService {
     PaymentCard card,
   }) async {
     try {
-      var paymentMethod = await StripePayment.createPaymentMethod(
-        PaymentMethodRequest(
-          card: CreditCard(
-            number: card.cardNumber.toString(),
-            cvc: card.securityCode.toString(),
-            expMonth: int.parse(card.expiryMonth),
-            expYear: int.parse(card.expiryYear),
-          ),
+      await Stripe.instance.dangerouslyUpdateCardDetails(
+        CardDetails(
+          number: card.cardNumber,
+          expirationMonth: int.parse(card.expiryMonth),
+          expirationYear: int.parse(card.expiryYear),
+          cvc: card.securityCode,
         ),
       );
       var paymentIntent = await _createPaymentIntent(
@@ -66,20 +62,24 @@ class StripeService {
         currency: currency,
         customerStripeKey: restaurant.customerStripeKey,
       );
-      var response = await StripePayment.confirmPaymentIntent(
-        PaymentIntent(
-          clientSecret: paymentIntent['client_secret'],
-          paymentMethodId: paymentMethod.id,
+      var response = await Stripe.instance.confirmPayment(
+        paymentIntent['client_secret'],
+        PaymentMethodParams.card(
+          setupFutureUsage: PaymentIntentsFutureUsage.OnSession,
+          billingDetails: BillingDetails(
+            name: card.owner,
+          ),
         ),
       );
-      if (response.status == 'succeeded') {
-        return new StripeTransactionResponse(
+
+      if (response.status == PaymentIntentsStatus.Succeeded) {
+        return StripeTransactionResponse(
           message: 'Transaction successful',
           success: true,
-          paymentIntentId: response.paymentIntentId,
+          paymentIntentId: response.paymentMethodId,
         );
       } else {
-        return new StripeTransactionResponse(
+        return StripeTransactionResponse(
           message: 'Transaction failed',
           success: false,
         );
@@ -87,7 +87,7 @@ class StripeService {
     } on PlatformException catch (err) {
       return _getPlatformExceptionErrorResult(err);
     } catch (err) {
-      return new StripeTransactionResponse(
+      return StripeTransactionResponse(
         message: 'Transaction failed: ${err.toString()}',
         success: false,
       );
