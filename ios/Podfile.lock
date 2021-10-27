@@ -166,8 +166,6 @@ PODS:
     - Flutter
     - GoogleMLKit/BarcodeScanning
     - MTBBarcodeScanner
-  - qr_code_tools (0.0.7):
-    - Flutter
   - share (0.0.1):
     - Flutter
   - shared_preferences (0.0.1):
@@ -196,7 +194,6 @@ DEPENDENCIES:
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
   - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
   - qr_code_scanner (from `.symlinks/plugins/qr_code_scanner/ios`)
-  - qr_code_tools (from `.symlinks/plugins/qr_code_tools/ios`)
   - share (from `.symlinks/plugins/share/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
   - stripe_payment (from `.symlinks/plugins/stripe_payment/ios`)
@@ -261,8 +258,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/permission_handler/ios"
   qr_code_scanner:
     :path: ".symlinks/plugins/qr_code_scanner/ios"
-  qr_code_tools:
-    :path: ".symlinks/plugins/qr_code_tools/ios"
   share:
     :path: ".symlinks/plugins/share/ios"
   shared_preferences:
@@ -311,7 +306,6 @@ SPEC CHECKSUMS:
   PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
   Protobuf: e9b99dd5da72f665ec503b19191f245a22188b4d
   qr_code_scanner: 74554842ebf56eee67defb3db918823ef29042dd
-  qr_code_tools: 5b5dd44ccdfa4b81f645c251e421f61003254b81
   share: 0b2c3e82132f5888bccca3351c504d0003b3b410
   shared_preferences: 5033afbb22d372e15aff8ff766df9021b845f273
   SSZipArchive: e7b4f3d9e780c2acc1764cd88fbf2de28f26e5b2
@@ -320,6 +314,6 @@ SPEC CHECKSUMS:
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
   url_launcher: b6e016d912f04be9f5bf6e8e82dc599b7ba59649
 
-PODFILE CHECKSUM: f22fa6fd97ca85863713d3f7f812bb283985f063
+PODFILE CHECKSUM: 41f9116ed56b70f17d67156e0692517907da9042
 
 COCOAPODS: 1.11.2

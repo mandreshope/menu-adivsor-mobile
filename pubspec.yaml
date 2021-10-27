@@ -57,7 +57,7 @@ dependencies:
   flag: ^5.0.1
   mlkit_translate: ^1.0.0+1
   url_launcher: ^6.0.10
-  #flutter_html: ^2.1.5 #Dependencies: webview_flutter
+  #flutter_html: ^2.1.5 #Dependencies: webview_flutter build ios fail
   flutter_balloon_slider: ^0.1.1
   firebase_core: ^1.8.0
   map_launcher: ^2.1.1
