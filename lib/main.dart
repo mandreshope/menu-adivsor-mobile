@@ -15,7 +15,7 @@ Future main() async {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
 
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  await Firebase.initializeApp();
+  // await Firebase.initializeApp(); ///TODO: Firebase IOS config
   await AppLocalizations.instance.load();
 
   await [
