@@ -15,7 +15,7 @@ Future main() async {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
 
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  // await Firebase.initializeApp(); ///TODO: Firebase IOS config
+  await Firebase.initializeApp();
   await AppLocalizations.instance.load();
 
   await [
@@ -24,6 +24,7 @@ Future main() async {
     Permission.locationAlways,
     Permission.locationWhenInUse,
     Permission.camera,
+    Permission.appTrackingTransparency,
   ].request();
 
   HttpOverrides.global = MyHttpOverrides();
