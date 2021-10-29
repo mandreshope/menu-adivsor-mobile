@@ -170,6 +170,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                 });
                 try {
                   int totalPrice = 0;
+                  int totalPriceSansRemise = (cartContext.totalPrice * 100).toInt();
                   int priceLivraison = 0;
                   if (widget.restaurant.deliveryFixed) {
                     priceLivraison = (widget.restaurant.priceDelevery != null ? widget.restaurant.priceDelevery : 0).toInt();
@@ -254,6 +255,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                         restaurant: cartContext.currentOrigin,
                         discount: widget.restaurant?.discount,
                         totalPrice: totalPrice,
+                        totalPriceSansRemise: totalPriceSansRemise,
                         menu: cartContext.items
                             .where((e) => e.isMenu)
                             .toList()

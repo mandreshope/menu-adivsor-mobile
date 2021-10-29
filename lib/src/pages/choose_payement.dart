@@ -65,6 +65,7 @@ class ChoosePayement extends StatelessWidget {
             AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
 
             int totalPrice = 0;
+            int totalPriceSansRemise = (cartContext.totalPrice * 100).toInt();
             int priceLivraison = 0;
             if (restaurant.deliveryFixed) {
               priceLivraison = (restaurant.priceDelevery != null ? restaurant.priceDelevery : 0).toInt();
@@ -139,6 +140,7 @@ class ChoosePayement extends StatelessWidget {
               restaurant: cartContext.currentOrigin,
               discount: restaurant?.discount,
               totalPrice: totalPrice,
+              totalPriceSansRemise: totalPriceSansRemise,
               menu: cartContext.items
                   .where((e) => e.isMenu)
                   .map((e) => {

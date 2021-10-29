@@ -551,6 +551,7 @@ class _OrderPageState extends State<OrderPage> {
             });
 
             int totalPrice = 0;
+            int totalPriceSansRemise = (cartContext.totalPrice * 100).toInt();
             double remiseWithCodeDiscount = cartContext.totalPrice;
             if (commandContext.withCodeDiscount) {
               remiseWithCodeDiscount = cartContext.calculremise(
@@ -573,6 +574,7 @@ class _OrderPageState extends State<OrderPage> {
                   .toList(),
               restaurant: cartContext.currentOrigin,
               totalPrice: totalPrice,
+              totalPriceSansRemise: totalPriceSansRemise,
               menu: cartContext.items.where((e) => e.isMenu).map((e) => {'quantity': e.quantity, 'item': e.id, 'foods': e.foodMenuSelecteds}).toList(),
               priceless: !cartContext.withPrice,
             );

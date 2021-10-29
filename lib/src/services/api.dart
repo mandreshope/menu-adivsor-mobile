@@ -402,6 +402,7 @@ class Api {
     });
   }
 
+  /// params String foodId
   Future<bool> addToFavoriteFood(Food food) async {
     await _refreshTokens();
     final url = Uri.parse('$_apiURL/users/favoriteFoods');
@@ -760,6 +761,7 @@ class Api {
     String commandType,
     RestaurantDiscount discount,
     int totalPrice,
+    int totalPriceSansRemise,
     String restaurant,
     var items,
     int shippingTime,
@@ -788,6 +790,7 @@ class Api {
           'commandType': commandType,
           'discount': discount?.toMap(),
           'totalPrice': totalPrice.toString(),
+          'totalPriceSansRemise': totalPriceSansRemise.toString(),
           'restaurant': restaurant,
           'items': items,
           'shippingTime': shippingTime,
@@ -812,6 +815,7 @@ class Api {
           'commandType': commandType,
           'discount': discount?.toMap(),
           'totalPrice': totalPrice.toString(),
+          'totalPriceSansRemise': totalPriceSansRemise.toString(),
           'restaurant': restaurant,
           'items': items,
           'shippingTime': shippingTime,

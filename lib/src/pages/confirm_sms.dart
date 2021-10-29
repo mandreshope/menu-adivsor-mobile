@@ -250,6 +250,7 @@ class _ConfirmSmsState extends State<ConfirmSms> {
           loading = true;
         });
         int totalPrice = 0;
+        int totalPriceSansRemise = (cartContext.totalPrice * 100).toInt();
         double remiseWithCodeDiscount = cartContext.totalPrice;
         if (commandContext.withCodeDiscount) {
           remiseWithCodeDiscount = cartContext.calculremise(
@@ -276,6 +277,7 @@ class _ConfirmSmsState extends State<ConfirmSms> {
               cartContext.items.where((e) => !e.isMenu).map((e) => {'quantity': e.quantity, 'item': e.id, 'options': e.optionSelected != null ? e.optionSelected : [], 'comment': e.message}).toList(),
           restaurant: cartContext.currentOrigin,
           totalPrice: totalPrice,
+          totalPriceSansRemise: totalPriceSansRemise,
           customer: widget.customer,
           shippingTime: commandContext.deliveryDate
                   ?.add(

@@ -142,6 +142,9 @@ class _FoodCardState extends State<FoodCard> {
   String restaurantName;
   Api api = Api.instance;
   bool loading = true;
+  bool switchingFavorite = false;
+  bool showFavorite = false;
+  bool isInFavorite = false;
   // CartContext _cartContext;
 
   @override
@@ -157,6 +160,18 @@ class _FoodCardState extends State<FoodCard> {
     }).catchError((error) {
       restaurantName = AppLocalizations.of(context).translate('no_associated_restaurant');
     });
+
+    AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
+    if (authContext.currentUser == null)
+      showFavorite = false;
+    else
+      showFavorite = true;
+    isInFavorite = authContext.currentUser != null &&
+        authContext.currentUser.favoriteFoods.firstWhere(
+              (element) => element == widget.food.id,
+              orElse: () => null,
+            ) !=
+            null;
   }
 
   @override
@@ -443,84 +458,159 @@ class _FoodCardState extends State<FoodCard> {
                             ],
                           ),
                         ),
-                        Container(
-                          // child: Hero(
-                          // tag: widget.imageTag ?? 'foodImage${widget.food.id}',
-                          child: widget.food.imageURL != null
-                              ? ClipRRect(
-                                  borderRadius: BorderRadius.only(bottomRight: Radius.circular(widget.showButton ? 10 : 30), topRight: Radius.circular(widget.showButton ? 10 : 30)),
-                                  child: Stack(
-                                    children: [
-                                      FadeInImage.assetNetwork(
-                                        image: widget.food.imageURL,
-                                        placeholder: 'assets/images/loading.gif',
-                                        imageErrorBuilder: (_, o, s) {
-                                          return Container(
+                        Stack(
+                          children: [
+                            Container(
+                              // child: Hero(
+                              // tag: widget.imageTag ?? 'foodImage${widget.food.id}',
+                              child: widget.food.imageURL != null
+                                  ? ClipRRect(
+                                      borderRadius: BorderRadius.only(
+                                        bottomRight: Radius.circular(widget.showButton ? 10 : 30),
+                                        topRight: Radius.circular(
+                                          widget.showButton ? 10 : 30,
+                                        ),
+                                      ),
+                                      child: Stack(
+                                        children: [
+                                          FadeInImage.assetNetwork(
+                                            image: widget.food.imageURL,
+                                            placeholder: 'assets/images/loading.gif',
+                                            imageErrorBuilder: (_, o, s) {
+                                              return Container(
+                                                width: 100,
+                                                height: double.infinity,
+                                                color: Colors.white,
+                                              );
+                                            },
                                             width: 100,
                                             height: double.infinity,
-                                            color: Colors.white,
-                                          );
-                                        },
-                                        width: 100,
-                                        height: double.infinity,
-                                        fit: BoxFit.cover,
+                                            fit: BoxFit.cover,
+                                          ),
+                                          if (widget.food.imageNotContractual == true && widget.food.isAvailable == true) ...[
+                                            Positioned(
+                                              bottom: 0,
+                                              right: 0,
+                                              left: 0,
+                                              child: ClipRRect(
+                                                borderRadius: BorderRadius.only(bottomRight: Radius.circular(widget.showButton ? 10 : 30)),
+                                                child: Container(
+                                                  width: double.infinity,
+                                                  color: Colors.black.withOpacity(0.5),
+                                                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+                                                  child: Center(
+                                                    child: TextTranslator(
+                                                      AppLocalizations.of(context).translate("non_contractual_photo"),
+                                                      textAlign: TextAlign.center,
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ] else if (widget.food.isAvailable == false) ...[
+                                            Positioned(
+                                              bottom: 0,
+                                              right: 0,
+                                              left: 0,
+                                              child: ClipRRect(
+                                                borderRadius: BorderRadius.only(bottomRight: Radius.circular(widget.showButton ? 10 : 30)),
+                                                child: Container(
+                                                  width: double.infinity,
+                                                  color: Colors.black.withOpacity(0.5),
+                                                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+                                                  child: Center(
+                                                    child: TextTranslator(
+                                                      AppLocalizations.of(context).translate("non_disponible"),
+                                                      textAlign: TextAlign.center,
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            )
+                                          ]
+                                        ],
                                       ),
-                                      if (widget.food.imageNotContractual == true && widget.food.isAvailable == true) ...[
-                                        Positioned(
-                                          bottom: 0,
-                                          right: 0,
-                                          left: 0,
-                                          child: ClipRRect(
-                                            borderRadius: BorderRadius.only(bottomRight: Radius.circular(widget.showButton ? 10 : 30)),
-                                            child: Container(
-                                              width: double.infinity,
-                                              color: Colors.black.withOpacity(0.5),
-                                              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                                              child: Center(
-                                                child: TextTranslator(
-                                                  AppLocalizations.of(context).translate("non_contractual_photo"),
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    color: Colors.white,
+                                    )
+                                  : Container(
+                                      width: 80,
+                                      height: 80,
+                                      color: Colors.white,
+                                    ),
+                              // ),
+                            ),
+                            Positioned(
+                              right: 0,
+                              child: Visibility(
+                                visible: showFavorite,
+                                child: Container(
+                                  margin: EdgeInsets.all(10),
+                                  height: 40,
+                                  width: 40,
+                                  child: ElevatedButton(
+                                    style: ButtonStyle(
+                                      padding: MaterialStateProperty.all(EdgeInsets.all(0)),
+                                      backgroundColor: MaterialStateProperty.all(CRIMSON),
+                                      shape: MaterialStateProperty.all(
+                                        RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(60)),
+                                      ),
+                                    ),
+                                    onPressed: !switchingFavorite
+                                        ? () async {
+                                            AuthContext authContext = Provider.of<AuthContext>(
+                                              context,
+                                              listen: false,
+                                            );
+
+                                            setState(() {
+                                              switchingFavorite = true;
+                                            });
+                                            if (!isInFavorite) {
+                                              await authContext.addToFavoriteFoods(widget.food);
+                                            } else {
+                                              await authContext.removeFromFavoriteFoods(widget.food);
+                                            }
+
+                                            setState(() {
+                                              switchingFavorite = false;
+                                              isInFavorite = !isInFavorite;
+                                            });
+                                            Fluttertoast.showToast(
+                                              msg: AppLocalizations.of(context).translate(
+                                                isInFavorite ? 'added_to_favorite' : 'removed_from_favorite',
+                                              ),
+                                            );
+                                          }
+                                        : null,
+                                    child: Center(
+                                      child: !switchingFavorite
+                                          ? Icon(
+                                              isInFavorite ? Icons.favorite : Icons.favorite_border,
+                                              color: Colors.white,
+                                              size: 18,
+                                            )
+                                          : SizedBox(
+                                              width: 15,
+                                              height: 15,
+                                              child: FittedBox(
+                                                child: CircularProgressIndicator(
+                                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                                    Colors.white,
                                                   ),
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                        ),
-                                      ] else if (widget.food.isAvailable == false) ...[
-                                        Positioned(
-                                          bottom: 0,
-                                          right: 0,
-                                          left: 0,
-                                          child: ClipRRect(
-                                            borderRadius: BorderRadius.only(bottomRight: Radius.circular(widget.showButton ? 10 : 30)),
-                                            child: Container(
-                                              width: double.infinity,
-                                              color: Colors.black.withOpacity(0.5),
-                                              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                                              child: Center(
-                                                child: TextTranslator(
-                                                  AppLocalizations.of(context).translate("non_disponible"),
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                      ]
-                                    ],
+                                    ),
                                   ),
-                                )
-                              : Container(
-                                  width: 80,
-                                  height: 80,
-                                  color: Colors.white,
                                 ),
-                          // ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -1112,6 +1202,19 @@ class RestaurantCard extends StatefulWidget {
 
 class _RestaurantCardState extends State<RestaurantCard> {
   bool switchingFavorite = false;
+  bool isInFavorite = false;
+
+  @override
+  void initState() {
+    super.initState();
+    AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
+    isInFavorite = authContext.currentUser != null &&
+        authContext.currentUser.favoriteRestaurants.firstWhere(
+              (element) => element == widget.restaurant.id,
+              orElse: () => null,
+            ) !=
+            null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1195,47 +1298,56 @@ class _RestaurantCardState extends State<RestaurantCard> {
                                 margin: EdgeInsets.all(10),
                                 height: 40,
                                 width: 40,
-                                child: switchingFavorite
-                                    ? Padding(
-                                        padding: const EdgeInsets.all(30),
-                                        child: CircularProgressIndicator(
-                                          valueColor: AlwaysStoppedAnimation<Color>(
-                                            CRIMSON,
-                                          ),
-                                        ),
-                                      )
-                                    : ElevatedButton(
-                                        style: ButtonStyle(
-                                          padding: MaterialStateProperty.all(EdgeInsets.all(0)),
-                                          backgroundColor: MaterialStateProperty.all(CRIMSON),
-                                          shape: MaterialStateProperty.all(
-                                            RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(60)),
-                                          ),
-                                        ),
-                                        onPressed: () async {
-                                          setState(() {
-                                            switchingFavorite = true;
-                                          });
-                                          if (authContext.currentUser?.favoriteRestaurants?.contains(widget.restaurant.id) ?? false)
-                                            await authContext.removeFromFavoriteRestaurants(
-                                              widget.restaurant,
-                                            );
-                                          else
-                                            await authContext.addToFavoriteRestaurants(
-                                              widget.restaurant,
-                                            );
-                                          setState(() {
-                                            switchingFavorite = false;
-                                          });
-                                        },
-                                        child: Center(
-                                          child: Icon(
+                                child: ElevatedButton(
+                                  style: ButtonStyle(
+                                    padding: MaterialStateProperty.all(EdgeInsets.all(0)),
+                                    backgroundColor: MaterialStateProperty.all(CRIMSON),
+                                    shape: MaterialStateProperty.all(
+                                      RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(60)),
+                                    ),
+                                  ),
+                                  onPressed: () async {
+                                    setState(() {
+                                      switchingFavorite = true;
+                                    });
+                                    if (isInFavorite)
+                                      await authContext.removeFromFavoriteRestaurants(
+                                        widget.restaurant,
+                                      );
+                                    else
+                                      await authContext.addToFavoriteRestaurants(
+                                        widget.restaurant,
+                                      );
+                                    setState(() {
+                                      switchingFavorite = false;
+                                      isInFavorite = !isInFavorite;
+                                    });
+                                    Fluttertoast.showToast(
+                                      msg: AppLocalizations.of(context).translate(
+                                        isInFavorite ? 'added_to_favorite' : 'removed_from_favorite',
+                                      ),
+                                    );
+                                  },
+                                  child: Center(
+                                    child: !switchingFavorite
+                                        ? Icon(
                                             authContext.currentUser?.favoriteRestaurants?.contains(widget.restaurant.id) ?? false ? Icons.favorite : Icons.favorite_border,
                                             color: Colors.white,
                                             size: 18,
+                                          )
+                                        : SizedBox(
+                                            width: 15,
+                                            height: 15,
+                                            child: FittedBox(
+                                              child: CircularProgressIndicator(
+                                                valueColor: AlwaysStoppedAnimation<Color>(
+                                                  Colors.white,
+                                                ),
+                                              ),
+                                            ),
                                           ),
-                                        ),
-                                      ),
+                                  ),
+                                ),
                               ),
                             ),
                           ),
