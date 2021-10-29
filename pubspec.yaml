@@ -15,7 +15,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.10.0+22
+version: 1.10.1+23
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -46,7 +46,6 @@ dependencies:
   font_awesome_flutter: ^9.1.0
   qr_code_scanner: ^1.0.0-alpha.1
   # qr_code_tools: ^0.0.7
-  # stripe_payment: ^1.1.4 #⚠ WARNING: This plugin has been discontinued. Head over to migration.md for migrate to the new flutter_stripe plugin
   flutter_stripe: ^2.0.1
   pay: ^1.0.6
   scrollable_positioned_list: ^0.2.2

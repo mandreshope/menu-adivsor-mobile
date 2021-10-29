@@ -85,7 +85,6 @@ class _MyAppState extends State<MyApp> {
             const Locale('th', 'TH'),
           ],
           navigatorObservers: <NavigatorObserver>[MyApp.observer],
-          // home: Splash(),
           routes: route(),
           builder: (context, widget) => ResponsiveWrapper.builder(BouncingScrollWrapper.builder(context, widget),
               maxWidth: 1200,
