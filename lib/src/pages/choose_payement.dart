@@ -21,7 +21,9 @@ import 'package:provider/provider.dart';
 class ChoosePayement extends StatelessWidget {
   final Restaurant restaurant;
   final dynamic customer;
-  const ChoosePayement({Key key, this.restaurant, this.customer}) : super(key: key);
+
+  const ChoosePayement({Key key, this.restaurant, this.customer})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -62,62 +64,87 @@ class ChoosePayement extends StatelessWidget {
               listen: false,
             );
 
-            AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
+            AuthContext authContext =
+                Provider.of<AuthContext>(context, listen: false);
 
             int totalPrice = 0;
             int totalPriceSansRemise = (cartContext.totalPrice * 100).toInt();
             int priceLivraison = 0;
             if (restaurant.deliveryFixed) {
-              priceLivraison = (restaurant.priceDelevery != null ? restaurant.priceDelevery : 0).toInt();
-              totalPrice = ((cartContext.totalPrice * 100) + priceLivraison).round();
+              priceLivraison = (restaurant.priceDelevery != null
+                      ? restaurant.priceDelevery
+                      : 0)
+                  .toInt();
+              totalPrice =
+                  ((cartContext.totalPrice * 100) + priceLivraison).round();
             } else {
               if (commandContext.commandType == "delivery") {
-                if (restaurant.isFreeCP(commandContext.deliveryAddress) || restaurant.isFreeCity(commandContext.deliveryAddress)) {
+                if (restaurant.isFreeCP(commandContext.deliveryAddress) ||
+                    restaurant.isFreeCity(commandContext.deliveryAddress)) {
                   /// livraison gratuite
                   priceLivraison = 0;
                 } else {
-                  priceLivraison = commandContext.getDeliveryPriceByMiles(restaurant).toInt();
+                  priceLivraison = commandContext
+                      .getDeliveryPriceByMiles(restaurant)
+                      .toInt();
                   double remiseWithCodeDiscount = cartContext.totalPrice;
-                  if (commandContext.withCodeDiscount) {
+                  if (commandContext.withCodeDiscount != null) {
                     remiseWithCodeDiscount = cartContext.calculremise(
                       totalPrice: cartContext.totalPrice,
-                      discountIsPrice: restaurant?.discount?.codeDiscount?.discountIsPrice,
-                      discountValue: restaurant?.discount?.codeDiscount?.valueDouble,
+                      discountIsPrice:
+                          commandContext.withCodeDiscount.discountIsPrice,
+                      discountValue:
+                          commandContext.withCodeDiscount.value.toDouble(),
                     );
                   }
-                  if (restaurant?.discount?.delivery?.discountType == DiscountType.SurTransport) {
-                    priceLivraison = cartContext
-                        .calculremise(
-                          totalPrice: priceLivraison.toDouble(),
-                          discountIsPrice: restaurant?.discount?.delivery?.discountIsPrice,
-                          discountValue: restaurant?.discount?.delivery?.valueDouble,
-                        )
-                        .toInt();
-                    totalPrice = (remiseWithCodeDiscount + priceLivraison).toInt();
-                  } else if (restaurant?.discount?.delivery?.discountType == DiscountType.SurCommande) {
-                    int totalPriceWithRemise = cartContext
-                        .calculremise(
-                          totalPrice: remiseWithCodeDiscount,
-                          discountIsPrice: restaurant?.discount?.delivery?.discountIsPrice,
-                          discountValue: restaurant?.discount?.delivery?.valueDouble,
-                        )
-                        .toInt();
-                    totalPrice = (totalPriceWithRemise + priceLivraison).toInt();
-                  } else {
-                    totalPrice = cartContext
-                        .calculremise(
-                          totalPrice: remiseWithCodeDiscount + priceLivraison,
-                          discountIsPrice: restaurant?.discount?.delivery?.discountIsPrice,
-                          discountValue: restaurant?.discount?.delivery?.valueDouble,
-                        )
-                        .toInt();
+                  if (restaurant?.discountDelivery == true) {
+                    if (restaurant?.discount?.delivery?.discountType ==
+                        DiscountType.SurTransport) {
+                      priceLivraison = cartContext
+                          .calculremise(
+                            totalPrice: priceLivraison.toDouble(),
+                            discountIsPrice:
+                                restaurant?.discount?.delivery?.discountIsPrice,
+                            discountValue:
+                                restaurant?.discount?.delivery?.valueDouble,
+                          )
+                          .toInt();
+                      totalPrice =
+                          (remiseWithCodeDiscount + priceLivraison).toInt();
+                    } else if (restaurant?.discount?.delivery?.discountType ==
+                        DiscountType.SurCommande) {
+                      int totalPriceWithRemise = cartContext
+                          .calculremise(
+                            totalPrice: remiseWithCodeDiscount,
+                            discountIsPrice:
+                                restaurant?.discount?.delivery?.discountIsPrice,
+                            discountValue:
+                                restaurant?.discount?.delivery?.valueDouble,
+                          )
+                          .toInt();
+                      totalPrice =
+                          (totalPriceWithRemise + priceLivraison).toInt();
+                    } else {
+                      totalPrice = cartContext
+                          .calculremise(
+                            totalPrice: remiseWithCodeDiscount + priceLivraison,
+                            discountIsPrice:
+                                restaurant?.discount?.delivery?.discountIsPrice,
+                            discountValue:
+                                restaurant?.discount?.delivery?.valueDouble,
+                          )
+                          .toInt();
+                    }
                   }
                 }
               }
               totalPrice = (totalPrice * 100).toInt();
             }
+
+            ///TODO: await Api.instance.sendCommand - DELIVERY
             var command = await Api.instance.sendCommand(
-              isCodePromo: commandContext.withCodeDiscount,
+              addCodePromo: commandContext.withCodeDiscount,
+              isCodePromo: commandContext.withCodeDiscount != null,
               priceLivraison: priceLivraison.toString(),
               paiementLivraison: true,
               isDelivery: true,
@@ -133,7 +160,8 @@ class ChoosePayement extends StatelessWidget {
                   .map((e) => {
                         'quantity': e.quantity,
                         'item': e.id,
-                        'options': e.optionSelected != null ? e.optionSelected : [],
+                        'options':
+                            e.optionSelected != null ? e.optionSelected : [],
                         'comment': e.message,
                       })
                   .toList(),
@@ -150,13 +178,16 @@ class ChoosePayement extends StatelessWidget {
                       })
                   .toList(),
               shippingAddress: commandContext.deliveryAddress,
-              shipAsSoonAsPossible: commandContext.deliveryDate == null && commandContext.deliveryTime == null,
-              shippingTime: (commandContext.deliveryDate == null && commandContext.deliveryTime == null)
+              shipAsSoonAsPossible: commandContext.deliveryDate == null &&
+                  commandContext.deliveryTime == null,
+              shippingTime: (commandContext.deliveryDate == null &&
+                      commandContext.deliveryTime == null)
                   ? null
                   : commandContext.deliveryDate
                           ?.add(
                             Duration(
-                              minutes: commandContext.deliveryTime.hour * 60 + commandContext.deliveryTime.minute,
+                              minutes: commandContext.deliveryTime.hour * 60 +
+                                  commandContext.deliveryTime.minute,
                             ),
                           )
                           ?.millisecondsSinceEpoch ??
@@ -164,7 +195,8 @@ class ChoosePayement extends StatelessWidget {
               priceless: !cartContext.withPrice,
             );
             Command cm = Command.fromJson(command);
-            cm.withCodeDiscount = commandContext.withCodeDiscount;
+            cm.codeDiscount = commandContext.withCodeDiscount;
+            cm.withCodeDiscount = commandContext.withCodeDiscount != null;
 
             commandContext.clear();
             cartContext.clear();
@@ -186,7 +218,9 @@ class ChoosePayement extends StatelessWidget {
     );
   }
 
-  Widget _card(BuildContext context, String title, IconData iconData, Function onTap) => Center(
+  Widget _card(BuildContext context, String title, IconData iconData,
+          Function onTap) =>
+      Center(
         child: Theme(
           data: ThemeData(
             cardColor: CRIMSON,

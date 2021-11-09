@@ -90,8 +90,12 @@ class _SearchPageState extends State<SearchPage> {
       listen: false,
     ).languageCode;
     try {
-      type = filters.containsKey("category") && !filters.containsKey("attributes") ? type = 'restaurant' : type;
-      final attributes = filters.entries.where((e) => e.key == "attributes").toList();
+      type =
+          filters.containsKey("category") && !filters.containsKey("attributes")
+              ? type = 'restaurant'
+              : type;
+      final attributes =
+          filters.entries.where((e) => e.key == "attributes").toList();
       final listId = attributes.isEmpty ? [] : attributes?.first?.value;
 
       ///TODO: implement searchByAttibuteAllergen
@@ -108,7 +112,8 @@ class _SearchPageState extends State<SearchPage> {
           type: type,
           filters: filters,
           range: range,
-          location: null //TODO: change to widget.location when geocoding web is ok
+          location: null
+          //TODO: change to widget.location when geocoding web is ok
           ,
         );
       }
@@ -129,24 +134,36 @@ class _SearchPageState extends State<SearchPage> {
           return true;
         }).toList();
         _searchResults.sort((a, b) {
-          if (a.type.toString() == "SearchResultType.menu" && b.type.toString() == "SearchResultType.menu" ||
-              a.type.toString() == "SearchResultType.food" && b.type.toString() == "SearchResultType.menu" ||
-              a.type.toString() == "SearchResultType.food" && b.type.toString() == "SearchResultType.food") {
-            return (a.content["restaurant"]["name"]).compareTo(b.content["restaurant"]["name"]);
-          } else if (a.type.toString() == "SearchResultType.food" && b.type.toString() == "SearchResultType.restaurant") {
-            return (a.content["restaurant"]["name"]).compareTo(b.content["name"]);
-          } else if (b.type.toString() == "SearchResultType.food" && a.type.toString() == "SearchResultType.restaurant") {
-            return (a.content["name"]).compareTo(b.content["restaurant"]["name"]);
+          if (a.type.toString() == "SearchResultType.menu" &&
+                  b.type.toString() == "SearchResultType.menu" ||
+              a.type.toString() == "SearchResultType.food" &&
+                  b.type.toString() == "SearchResultType.menu" ||
+              a.type.toString() == "SearchResultType.food" &&
+                  b.type.toString() == "SearchResultType.food") {
+            return (a.content["restaurant"]["name"])
+                .compareTo(b.content["restaurant"]["name"]);
+          } else if (a.type.toString() == "SearchResultType.food" &&
+              b.type.toString() == "SearchResultType.restaurant") {
+            return (a.content["restaurant"]["name"])
+                .compareTo(b.content["name"]);
+          } else if (b.type.toString() == "SearchResultType.food" &&
+              a.type.toString() == "SearchResultType.restaurant") {
+            return (a.content["name"])
+                .compareTo(b.content["restaurant"]["name"]);
           } else /*if (a.type.toString() == "SearchResultType.restaurant" && b.type.toString() == "SearchResultType.restaurant")*/ {
             return (a.content["name"]).compareTo(b.content["name"]);
           }
         });
 
-        final allergenSelectedList = _foodAttributSelected.where((e) => e.tag.contains("allergen")).toList();
+        final allergenSelectedList = _foodAttributSelected
+            .where((e) => e.tag.contains("allergen"))
+            .toList();
         if (allergenSelectedList.length != null) {
           for (final allergenSelected in allergenSelectedList) {
             _searchResults.retainWhere((search) {
-              final getAllergenIds = (search.content["allergene"] as List).map((allergen) => allergen['_id']).toList();
+              final getAllergenIds = (search.content["allergene"] as List)
+                  .map((allergen) => allergen['_id'])
+                  .toList();
               // retain where allergen not find
               return !getAllergenIds.contains(allergenSelected.sId);
             });
@@ -155,11 +172,11 @@ class _SearchPageState extends State<SearchPage> {
 
         _searchResultsGrouped = _searchResults.groupBy((s) {
           if (s.type.toString() == "SearchResultType.menu") {
-            return Restaurant.originName(s.content["restaurant"]["name"]);
+            return s.content["restaurant"]["name"];
           } else if (s.type.toString() == "SearchResultType.food") {
-            return Restaurant.originName(s.content["restaurant"]["name"]);
+            return s.content["restaurant"]["name"];
           } else {
-            return Restaurant.originName(s.content['name']);
+            return s.content['name'];
           }
         });
 
@@ -203,7 +220,8 @@ class _SearchPageState extends State<SearchPage> {
                   child: _searchValue.length == 0 && type == 'all'
                       ? Center(
                           child: TextTranslator(
-                            AppLocalizations.of(context).translate('start_by_typing_your_research'),
+                            AppLocalizations.of(context)
+                                .translate('start_by_typing_your_research'),
                           ),
                         )
                       : Container(
@@ -214,59 +232,75 @@ class _SearchPageState extends State<SearchPage> {
                               if (_loading)
                                 Center(
                                   child: CircularProgressIndicator(
-                                    valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
+                                    valueColor:
+                                        AlwaysStoppedAnimation<Color>(CRIMSON),
                                   ),
                                 ),
-                              if (!_loading && _searchResultsGrouped.length == 0)
+                              if (!_loading &&
+                                  _searchResultsGrouped.length == 0)
                                 Center(
                                   child: TextTranslator(
-                                    AppLocalizations.of(context).translate('no_result'),
+                                    AppLocalizations.of(context)
+                                        .translate('no_result'),
                                   ),
                                 ),
                               if (!_loading)
-                                for (MapEntry<String, List<SearchResult>> values in _searchResultsGrouped.entries) ...[
+                                for (MapEntry<String, List<SearchResult>> values
+                                    in _searchResultsGrouped.entries) ...[
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     children: [
                                       Container(
                                         // padding: const EdgeInsets.only(top: 15,left: 15,bottom: 15),
-                                        margin: EdgeInsets.only(top: 15, bottom: 15),
+                                        margin: EdgeInsets.only(
+                                            top: 15, bottom: 15),
                                         height: 50,
                                         width: double.infinity,
                                         color: CRIMSON,
                                         child: Center(
                                           child: TextTranslator(
                                             values.key,
-                                            style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold),
                                           ),
                                         ),
                                       ),
                                       for (SearchResult e in values.value) ...[
-                                        if (e.type.toString() == 'SearchResultType.restaurant')
+                                        if (e.type.toString() ==
+                                            'SearchResultType.restaurant')
                                           Padding(
                                             padding: const EdgeInsets.only(
                                               bottom: 10,
                                             ),
                                             child: RestaurantCard(
-                                              restaurant: Restaurant.fromJson(e.content),
+                                              restaurant: Restaurant.fromJson(
+                                                  e.content),
                                             ),
                                           )
-                                        else if (e.type.toString() == 'SearchResultType.food')
+                                        else if (e.type.toString() ==
+                                            'SearchResultType.food')
                                           Padding(
                                             padding: const EdgeInsets.only(
                                               bottom: 10,
                                             ),
                                             child: FoodCard(
-                                              food: Food.fromJson(e.content, isPopular: true),
+                                              food: Food.fromJson(e.content,
+                                                  isPopular: true),
                                             ),
                                           )
-                                        else if (e.type.toString() == 'SearchResultType.menu')
+                                        else if (e.type.toString() ==
+                                            'SearchResultType.menu')
                                           Padding(
                                             padding: const EdgeInsets.only(
                                               bottom: 10,
                                             ),
                                             child: MenuCard(
-                                              lang: Provider.of<SettingContext>(context).languageCode,
+                                              lang: Provider.of<SettingContext>(
+                                                      context)
+                                                  .languageCode,
                                               menu: Menu.fromJson(e.content),
                                             ),
                                           )
@@ -345,7 +379,8 @@ class _SearchPageState extends State<SearchPage> {
                     Expanded(
                       child: TextFormFieldTranslator(
                         decoration: InputDecoration.collapsed(
-                          hintText: AppLocalizations.of(context).translate("find_something"),
+                          hintText: AppLocalizations.of(context)
+                              .translate("find_something"),
                         ),
                         onChanged: _onChanged,
                       ),
@@ -357,13 +392,15 @@ class _SearchPageState extends State<SearchPage> {
                           var result = await showDialog<Map<String, dynamic>>(
                             context: context,
                             builder: (_) => SearchSettingDialog(
-                              languageCode: Provider.of<SettingContext>(context).languageCode,
+                              languageCode: Provider.of<SettingContext>(context)
+                                  .languageCode,
                               filters: filters,
                               fromCategory: widget.fromCategory,
                               fromRestaurantHome: widget.fromRestaurantHome,
                               type: type,
                               range: Provider.of<SettingContext>(context).range,
-                              isDiscover: widget.barTitle == 'Découvrir' ? true : false,
+                              isDiscover:
+                                  widget.barTitle == 'Découvrir' ? true : false,
                             ),
                           );
                           if (result != null && result['filters'] is Map) {
@@ -371,7 +408,8 @@ class _SearchPageState extends State<SearchPage> {
                               filters = result['filters'];
                               type = result['type'];
                               range = result['range'];
-                              _foodAttributSelected = result['foodAttributSelected'];
+                              _foodAttributSelected =
+                                  result['foodAttributSelected'];
                             });
                             _initSearch();
                           }

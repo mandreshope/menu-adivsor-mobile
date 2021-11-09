@@ -108,16 +108,22 @@ class _SummaryState extends State<Summary> {
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: InkWell(
                           onTap: () async {
-                            Position currentPosition = await Geolocator.getCurrentPosition();
-                            String q = widget.commande.shippingAddress ?? widget.commande.relatedUser["address"];
+                            Position currentPosition =
+                                await Geolocator.getCurrentPosition();
+                            String q = widget.commande.shippingAddress ??
+                                widget.commande.relatedUser["address"];
 
                             // final geocoding = GoogleMapsGeocoding(apiKey: GOOGLE_API_KEY);
-                            final places = new GoogleMapsPlaces(apiKey: GOOGLE_API_KEY);
+                            final places =
+                                new GoogleMapsPlaces(apiKey: GOOGLE_API_KEY);
 
                             List<Location> locations = [];
                             try {
-                              PlacesSearchResponse response = await places.searchByText(q);
-                              locations = response.results.map((e) => e.geometry.location).toList();
+                              PlacesSearchResponse response =
+                                  await places.searchByText(q);
+                              locations = response.results
+                                  .map((e) => e.geometry.location)
+                                  .toList();
                             } catch (error) {
                               Fluttertoast.showToast(
                                 msg: 'Adresse introvable',
@@ -129,15 +135,21 @@ class _SummaryState extends State<Summary> {
                               context: context,
                               child: MapPolylinePage(
                                 restaurant: widget.commande.restaurant,
-                                initialPosition: LatLng(currentPosition.latitude, currentPosition.longitude),
-                                destinationPosition: LatLng(locations.first.lat, locations.first.lng),
+                                initialPosition: LatLng(
+                                    currentPosition.latitude,
+                                    currentPosition.longitude),
+                                destinationPosition: LatLng(
+                                    locations.first.lat, locations.first.lng),
                               ),
                               routeName: restaurantRoute,
                             );
                           },
                           child: TextTranslator(
                             widget.commande.shippingAddress ?? "",
-                            style: TextStyle(decoration: TextDecoration.underline, fontSize: 16, color: Colors.blue
+                            style: TextStyle(
+                                decoration: TextDecoration.underline,
+                                fontSize: 16,
+                                color: Colors.blue
                                 // color: Colors.blue
                                 ),
                           ),
@@ -150,10 +162,17 @@ class _SummaryState extends State<Summary> {
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: InkWell(
                           onTap: () async {
-                            await launch("tel:${widget.commande.restaurant.phoneNumber}");
+                            await launch(
+                                "tel:${widget.commande.restaurant.phoneNumber}");
                           },
-                          child: TextTranslator(widget.commande.relatedUser != null ? widget.commande.relatedUser["phoneNumber"] : widget.commande.customer['phoneNumber'],
-                              style: TextStyle(decoration: TextDecoration.underline, fontSize: 16, color: Colors.blue)),
+                          child: TextTranslator(
+                              widget.commande.relatedUser != null
+                                  ? widget.commande.relatedUser["phoneNumber"]
+                                  : widget.commande.customer['phoneNumber'],
+                              style: TextStyle(
+                                  decoration: TextDecoration.underline,
+                                  fontSize: 16,
+                                  color: Colors.blue)),
                         ),
                       ),
                       SizedBox(
@@ -166,7 +185,8 @@ class _SummaryState extends State<Summary> {
                             onTap: () async {
                               // await launch("tel:${widget.commande.restaurant.phoneNumber}");
                             },
-                            child: TextTranslator("Appartement : " + widget.commande.appartement,
+                            child: TextTranslator(
+                                "Appartement : " + widget.commande.appartement,
                                 style: TextStyle(
                                   // decoration: TextDecoration.underline,
                                   fontSize: 16,
@@ -183,7 +203,8 @@ class _SummaryState extends State<Summary> {
                             onTap: () async {
                               // await launch("tel:${widget.commande.restaurant.phoneNumber}");
                             },
-                            child: TextTranslator("Etage : " + widget.commande.etage.toString(),
+                            child: TextTranslator(
+                                "Etage : " + widget.commande.etage.toString(),
                                 style: TextStyle(
                                   // decoration: TextDecoration.underline,
                                   fontSize: 16,
@@ -200,7 +221,9 @@ class _SummaryState extends State<Summary> {
                             onTap: () async {
                               // await launch("tel:${widget.commande.restaurant.phoneNumber}");
                             },
-                            child: TextTranslator("Code appartemment : " + widget.commande.codeappartement,
+                            child: TextTranslator(
+                                "Code appartemment : " +
+                                    widget.commande.codeappartement,
                                 style: TextStyle(
                                   // decoration: TextDecoration.underline,
                                   fontSize: 16,
@@ -217,7 +240,15 @@ class _SummaryState extends State<Summary> {
                       child: Row(
                         children: [
                           TextTranslator("Commande ID : "),
-                          TextTranslator(widget.commande.code?.toString()?.padLeft(6, '0') ?? "", style: TextStyle(color: CRIMSON, fontWeight: FontWeight.bold, fontSize: 18)),
+                          TextTranslator(
+                              widget.commande.code
+                                      ?.toString()
+                                      ?.padLeft(6, '0') ??
+                                  "",
+                              style: TextStyle(
+                                  color: CRIMSON,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18)),
                           Spacer(),
                           _validated()
                         ],
@@ -235,10 +266,12 @@ class _SummaryState extends State<Summary> {
                     // Divider(),
                     // menu
                     if (widget.commande.menus != null)
-                      for (var command in widget.commande.menus) _items(command),
+                      for (var command in widget.commande.menus)
+                        _items(command),
                     if (widget.commande.commandType == 'delivery') ...[
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 20),
                         child: Row(
                           children: [
                             TextTranslator(
@@ -269,7 +302,8 @@ class _SummaryState extends State<Summary> {
                       child: Column(
                         children: [
                           Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 20),
                             child: Row(
                               mainAxisSize: MainAxisSize.max,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -282,9 +316,11 @@ class _SummaryState extends State<Summary> {
                                   ),
                                 ),
                                 Text(
-                                  widget.commande?.restaurant?.discount?.codeDiscount?.discountIsPrice == true
-                                      ? '${widget.commande?.restaurant?.discount?.codeDiscount?.valueDouble ?? 0.0} €'
-                                      : '${widget.commande?.restaurant?.discount?.codeDiscount?.valueDouble ?? 0.0} % ',
+                                  widget.commande?.codeDiscount
+                                              ?.discountIsPrice ==
+                                          true
+                                      ? '${widget.commande?.codeDiscount?.value ?? 0.0} €'
+                                      : '${widget.commande?.codeDiscount?.value ?? 0.0} % ',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
@@ -300,11 +336,16 @@ class _SummaryState extends State<Summary> {
                       ),
                     ),
                     Visibility(
-                      visible: (widget.commande.commandType == 'delivery') && (widget.commande?.restaurant?.discount?.delivery?.valueDouble ?? 0.0) > 0,
+                      visible: (widget.commande.commandType == 'delivery') &&
+                          (widget.commande?.restaurant?.discount?.delivery
+                                      ?.valueDouble ??
+                                  0.0) >
+                              0,
                       child: Column(
                         children: [
                           Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 20),
                             child: Row(
                               mainAxisSize: MainAxisSize.max,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -317,7 +358,9 @@ class _SummaryState extends State<Summary> {
                                   ),
                                 ),
                                 Text(
-                                  widget.commande?.restaurant?.discount?.delivery?.discountIsPrice == true
+                                  widget.commande?.restaurant?.discount
+                                              ?.delivery?.discountIsPrice ==
+                                          true
                                       ? '${widget.commande?.restaurant?.discount?.delivery?.valueDouble ?? 0.0} €'
                                       : '${widget.commande?.restaurant?.discount?.delivery?.valueDouble ?? 0.0} % ',
                                   style: TextStyle(
@@ -335,11 +378,16 @@ class _SummaryState extends State<Summary> {
                       ),
                     ),
                     Visibility(
-                      visible: (widget.commande.commandType == 'takeaway') && (widget.commande?.restaurant?.discount?.aEmporter?.valueDouble ?? 0.0) > 0,
+                      visible: (widget.commande.commandType == 'takeaway') &&
+                          (widget.commande?.restaurant?.discount?.aEmporter
+                                      ?.valueDouble ??
+                                  0.0) >
+                              0,
                       child: Column(
                         children: [
                           Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 20),
                             child: Row(
                               mainAxisSize: MainAxisSize.max,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -352,7 +400,9 @@ class _SummaryState extends State<Summary> {
                                   ),
                                 ),
                                 Text(
-                                  widget.commande?.restaurant?.discount?.aEmporter?.discountIsPrice == true
+                                  widget.commande?.restaurant?.discount
+                                              ?.aEmporter?.discountIsPrice ==
+                                          true
                                       ? '${widget.commande?.restaurant?.discount?.aEmporter?.valueDouble ?? 0.0} €'
                                       : '${widget.commande?.restaurant?.discount?.aEmporter?.valueDouble ?? 0.0} % ',
                                   style: TextStyle(
@@ -371,7 +421,8 @@ class _SummaryState extends State<Summary> {
                     ),
 
                     Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 20),
                       child: Row(
                         children: [
                           TextTranslator(
@@ -397,46 +448,59 @@ class _SummaryState extends State<Summary> {
                     ),
                     Divider(),
                     Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 20),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           TextTranslator(
-                            AppLocalizations.of(context).translate(widget.commande.commandType ?? 'on_site').toUpperCase(),
-                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                            AppLocalizations.of(context)
+                                .translate(
+                                    widget.commande.commandType ?? 'on_site')
+                                .toUpperCase(),
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.w600),
                           ),
-                          TextTranslator('${widget.commande.shippingTime == null ? "" : widget.commande.shippingTime.dateToString("dd/MM/yyyy HH:mm")}')
+                          TextTranslator(
+                              '${widget.commande.shippingTime == null ? "" : widget.commande.shippingTime.dateToString("dd/MM/yyyy HH:mm")}')
                         ],
                       ),
                     ),
                     if (widget.commande.commandType == 'delivery') ...[
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 20),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             TextTranslator(
                               "Option de livraison",
-                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                  fontSize: 15, fontWeight: FontWeight.w600),
                             ),
-                            TextTranslator(widget.commande.optionLivraison == 'behind_the_door'
+                            TextTranslator(widget.commande.optionLivraison ==
+                                    'behind_the_door'
                                 ? 'Devant la porte'
-                                : widget.commande.optionLivraison == 'on_the_door'
+                                : widget.commande.optionLivraison ==
+                                        'on_the_door'
                                     ? 'Rdv à la porte'
                                     : "A l'exterieur")
                           ],
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 20),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             TextTranslator(
                               "Mode de paiement",
-                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                  fontSize: 15, fontWeight: FontWeight.w600),
                             ),
-                            TextTranslator('${widget.commande.paiementLivraison ? "A la livraison" : "CB"}')
+                            TextTranslator(
+                                '${widget.commande.paiementLivraison ? "A la livraison" : "CB"}')
                           ],
                         ),
                       ),
@@ -449,7 +513,11 @@ class _SummaryState extends State<Summary> {
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: TextTranslator(
                         "Commentaire",
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black, decoration: TextDecoration.underline),
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                            decoration: TextDecoration.underline),
                       ),
                     ),
                     SizedBox(
@@ -524,16 +592,20 @@ class _SummaryState extends State<Summary> {
                   ),
                   InkWell(
                     onTap: () async {
-                      Position currentPosition = await Geolocator.getCurrentPosition();
-                      var coordinates = widget.commande.restaurant.location.coordinates;
+                      Position currentPosition =
+                          await Geolocator.getCurrentPosition();
+                      var coordinates =
+                          widget.commande.restaurant.location.coordinates;
                       // MapUtils.openMap(currentPosition.latitude, currentPosition.longitude,
                       // coordinates.last,coordinates.first);
                       RouteUtil.goTo(
                         context: context,
                         child: MapPolylinePage(
                           restaurant: widget.commande.restaurant,
-                          initialPosition: LatLng(currentPosition.latitude, currentPosition.longitude),
-                          destinationPosition: LatLng(coordinates.last, coordinates.first),
+                          initialPosition: LatLng(currentPosition.latitude,
+                              currentPosition.longitude),
+                          destinationPosition:
+                              LatLng(coordinates.last, coordinates.first),
                         ),
                         routeName: restaurantRoute,
                       );
@@ -544,7 +616,11 @@ class _SummaryState extends State<Summary> {
                         widget.commande.restaurant.address ?? "",
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, decoration: TextDecoration.underline, color: Colors.blue),
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                            decoration: TextDecoration.underline,
+                            color: Colors.blue),
                       ),
                     ),
                   )
@@ -574,7 +650,9 @@ class _SummaryState extends State<Summary> {
                   ],
                 ),
                 onTap: () async {
-                  if (widget.commande.restaurant.phoneNumber != null) await launch("tel:${widget.commande.restaurant.phoneNumber}");
+                  if (widget.commande.restaurant.phoneNumber != null)
+                    await launch(
+                        "tel:${widget.commande.restaurant.phoneNumber}");
                 },
               ),
             ],
@@ -600,18 +678,25 @@ class _SummaryState extends State<Summary> {
                               listen: false,
                             ).currentUser;
                             Message message = Message(
-                                email: user.email, message: value, name: "${user.name.first} ${user.name.last}", phoneNumber: user.phoneNumber, read: false, target: widget.commande.restaurant.admin);
+                                email: user.email,
+                                message: value,
+                                name: "${user.name.first} ${user.name.last}",
+                                phoneNumber: user.phoneNumber,
+                                read: false,
+                                target: widget.commande.restaurant.admin);
                             showDialog(
                                 barrierDismissible: false,
                                 context: context,
                                 builder: (_) => Center(
                                       child: CircularProgressIndicator(
-                                        valueColor: AlwaysStoppedAnimation<Color>(
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
                                           CRIMSON,
                                         ),
                                       ),
                                     ));
-                            bool result = await Api.instance.sendMessage(message);
+                            bool result =
+                                await Api.instance.sendMessage(message);
                             RouteUtil.goBack(context: context);
                             setState(() {
                               this.message = value;
@@ -659,7 +744,8 @@ class _SummaryState extends State<Summary> {
   }
 
   Widget _items(CommandItem commandItem) {
-    dynamic item = commandItem.food != null ? commandItem.food : commandItem.menu;
+    dynamic item =
+        commandItem.food != null ? commandItem.food : commandItem.menu;
     List<Option> options = commandItem.options;
     return Column(
       children: [
@@ -668,7 +754,8 @@ class _SummaryState extends State<Summary> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              TextTranslator('${commandItem.quantity}x', style: TextStyle(fontSize: 16)),
+              TextTranslator('${commandItem.quantity}x',
+                  style: TextStyle(fontSize: 16)),
               SizedBox(width: 15),
               InkWell(
                 onTap: () {
@@ -693,10 +780,16 @@ class _SummaryState extends State<Summary> {
                 ),
               ),
               SizedBox(width: 8),
-              TextTranslator(item.isMenu == true ? (item.name as Map).values?.first : item.name ?? "item", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              TextTranslator(
+                  item.isMenu == true
+                      ? (item.name as Map).values?.first
+                      : item.name ?? "item",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               Spacer(),
               item.isMenu
-                  ? widget.commande.priceless || item.type == MenuType.per_food.value || item.type == MenuType.priceless.value
+                  ? widget.commande.priceless ||
+                          item.type == MenuType.per_food.value ||
+                          item.type == MenuType.priceless.value
                       ? Text(" ")
                       : item.price?.amount == null
                           ? Text("_")
@@ -720,7 +813,11 @@ class _SummaryState extends State<Summary> {
           for (int i = 0; i < options.length; i++) ...[
             Container(
               // color: (options.length/quantity) <   ? Colors.grey.withAlpha(100) : Colors.white,
-              padding: EdgeInsets.only(top: 15, bottom: 15, left: MediaQuery.of(context).size.width / 2.5, right: 0),
+              padding: EdgeInsets.only(
+                  top: 15,
+                  bottom: 15,
+                  left: MediaQuery.of(context).size.width / 2.5,
+                  right: 0),
               child: Column(
                 children: [
                   Container(
@@ -728,7 +825,9 @@ class _SummaryState extends State<Summary> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         // SizedBox(width: 150),
-                        TextTranslator('${options[i].title}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        TextTranslator('${options[i].title}',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold)),
                         SizedBox(width: 5),
                       ],
                     ),
@@ -741,7 +840,11 @@ class _SummaryState extends State<Summary> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         // SizedBox(width: 150),
-                        if (itemsOption.quantity != null && itemsOption.quantity > 0) Text("${itemsOption.quantity}x\t", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        if (itemsOption.quantity != null &&
+                            itemsOption.quantity > 0)
+                          Text("${itemsOption.quantity}x\t",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold)),
                         InkWell(
                           onTap: () {
                             RouteUtil.goTo(
@@ -772,17 +875,25 @@ class _SummaryState extends State<Summary> {
                         SizedBox(
                           width: 5,
                         ),
-                        TextTranslator('${itemsOption.item.name}', style: TextStyle(fontSize: 16)),
+                        TextTranslator('${itemsOption.item.name}',
+                            style: TextStyle(fontSize: 16)),
                         Spacer(),
                         /*Image.network(
                         item.imageURL,
                         width: 25,
                       ),*/
                         // SizedBox(width: 8),
-                        if (itemsOption.item.price == 0 || widget.commande.priceless)
+                        if (itemsOption.item.price == 0 ||
+                            widget.commande.priceless)
                           Text("")
                         else
-                          itemsOption.item.price.amount == null ? Text("") : TextTranslator('${itemsOption.item.price.amount / 100} €', style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
+                          itemsOption.item.price.amount == null
+                              ? Text("")
+                              : TextTranslator(
+                                  '${itemsOption.item.price.amount / 100} €',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.normal)),
                         // Spacer(),
                         // item.price?.amount == null ? Text("_") : Text("${item.price.amount / 100} €", style: TextStyle(fontSize: 16)),
                       ],
@@ -794,7 +905,8 @@ class _SummaryState extends State<Summary> {
             Divider(),
           ]
         else
-          for (FoodSelectedFromCommandMenu food in commandItem.foodMenuSelected) ...[_renderMenus(food)]
+          for (FoodSelectedFromCommandMenu food
+              in commandItem.foodMenuSelected) ...[_renderMenus(food)]
       ],
     );
   }
@@ -819,12 +931,14 @@ class _SummaryState extends State<Summary> {
     return Container(
       padding: EdgeInsets.all(5),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.horizontal(left: Radius.circular(15), right: Radius.circular(15)),
+        borderRadius: BorderRadius.horizontal(
+            left: Radius.circular(15), right: Radius.circular(15)),
         color: color,
       ),
       child: TextTranslator(
         title,
-        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12),
+        style: TextStyle(
+            color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12),
       ),
     );
   }
@@ -894,7 +1008,9 @@ class _SummaryState extends State<Summary> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 SizedBox(width: 150),
-                TextTranslator('${option.title}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                TextTranslator('${option.title}',
+                    style:
+                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 SizedBox(width: 5),
               ],
             ),
@@ -908,7 +1024,11 @@ class _SummaryState extends State<Summary> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     SizedBox(width: 150),
-                    if (itemsOption.quantity != null && itemsOption.quantity > 0) Text("${itemsOption.quantity}x\t", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    if (itemsOption.quantity != null &&
+                        itemsOption.quantity > 0)
+                      Text("${itemsOption.quantity}x\t",
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold)),
                     InkWell(
                       onTap: () {
                         RouteUtil.goTo(
@@ -938,12 +1058,18 @@ class _SummaryState extends State<Summary> {
                     SizedBox(
                       width: 5,
                     ),
-                    TextTranslator('${itemsOption.item.name}', style: TextStyle(fontSize: 16)),
+                    TextTranslator('${itemsOption.item.name}',
+                        style: TextStyle(fontSize: 16)),
                     Spacer(),
                     if (widget.commande.priceless)
                       Text("")
                     else
-                      itemsOption.item.price.amount == null ? Text("") : TextTranslator('${itemsOption.item.price.amount / 100} €', style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
+                      itemsOption.item.price.amount == null
+                          ? Text("")
+                          : TextTranslator(
+                              '${itemsOption.item.price.amount / 100} €',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.normal)),
                   ],
                 ),
               ),
@@ -959,7 +1085,11 @@ class _SummaryState extends State<Summary> {
         padding: EdgeInsets.all(15),
         child: TextTranslator(
           comment,
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w300, color: Colors.grey, fontStyle: FontStyle.normal),
+          style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w300,
+              color: Colors.grey,
+              fontStyle: FontStyle.normal),
           textAlign: TextAlign.justify,
         ),
       );

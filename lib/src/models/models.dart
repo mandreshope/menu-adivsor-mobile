@@ -1,6 +1,7 @@
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/constants/constant.dart';
+import 'package:menu_advisor/src/models/restaurants/restaurant_code_discount_model.dart';
 import 'package:menu_advisor/src/models/restaurants/restaurant_discount_model.dart';
 import 'package:menu_advisor/src/models/restaurants/restaurant_livraison_model.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
@@ -103,21 +104,47 @@ class Food {
     this.priority,
   }) : expandableController = ExpandableController();
 
-  factory Food.fromJson(Map<String, dynamic> json, {bool fromCommande = false, bool isPopular = false}) => Food(
+  factory Food.fromJson(Map<String, dynamic> json,
+          {bool fromCommande = false, bool isPopular = false}) =>
+      Food(
         id: json['_id'],
-        name: json['name'] is Map<String, dynamic> ? json['name']["fr"] : json['name'],
-        imageURL: (json['imageURL'] as String)?.contains("localhost:8080") == null ? "" : json['imageURL'],
-        category: json.containsKey('category') && json['category'] != null && json['category'] is Map<String, dynamic> ? FoodCategory.fromJson(json['category']) : null,
-        restaurant: json['restaurant_object'] != null ? json['restaurant_object'] : json['restaurant'],
+        name: json['name'] is Map<String, dynamic>
+            ? json['name']["fr"]
+            : json['name'],
+        imageURL:
+            (json['imageURL'] as String)?.contains("localhost:8080") == null
+                ? ""
+                : json['imageURL'],
+        category: json.containsKey('category') &&
+                json['category'] != null &&
+                json['category'] is Map<String, dynamic>
+            ? FoodCategory.fromJson(json['category'])
+            : null,
+        restaurant: json['restaurant_object'] != null
+            ? json['restaurant_object']
+            : json['restaurant'],
         price: json.containsKey('price') ? Price.fromJson(json['price']) : null,
         type: json['type'] == null
             ? null
             : json['type'] is Map<String, dynamic>
                 ? FoodType.fromJson(json['type'])
                 : json['type'] as String,
-        attributes: fromCommande ? [] : (json['attributes'] as List).map((e) => (e is String) ? FoodAttribute() : FoodAttribute.fromJson(e)).toList(),
-        allergens: fromCommande ? [] : (json['allergene'] as List).map((e) => (e is String) ? FoodAttribute() : FoodAttribute.fromJson(e)).toList(),
-        options: (json['options'] as List).map((e) => Option.fromJson(e)).where((element) => element.maxOptions >= 0).toList(),
+        attributes: fromCommande
+            ? []
+            : (json['attributes'] as List)
+                .map((e) =>
+                    (e is String) ? FoodAttribute() : FoodAttribute.fromJson(e))
+                .toList(),
+        allergens: fromCommande
+            ? []
+            : (json['allergene'] as List)
+                .map((e) =>
+                    (e is String) ? FoodAttribute() : FoodAttribute.fromJson(e))
+                .toList(),
+        options: (json['options'] as List)
+            .map((e) => Option.fromJson(e))
+            .where((element) => element.maxOptions >= 0)
+            .toList(),
         status: json['status'] ?? true,
         title: json['title'],
         maxOptions: json['maxOptions'],
@@ -158,8 +185,18 @@ class Food {
 
   Map<String, dynamic> toJson() {
     return this.isMenu
-        ? {"food": id, if (optionSelected != null) "options": this.optionSelected.map((v) => v.toJson()).toList()}
-        : {"id": id, "name": name, "category": category?.toJson(), if (optionSelected != null) "options": this.optionSelected.map((v) => v.toJson()).toList()};
+        ? {
+            "food": id,
+            if (optionSelected != null)
+              "options": this.optionSelected.map((v) => v.toJson()).toList()
+          }
+        : {
+            "id": id,
+            "name": name,
+            "category": category?.toJson(),
+            if (optionSelected != null)
+              "options": this.optionSelected.map((v) => v.toJson()).toList()
+          };
   }
 
   void copyOptions(List<Option> options) {
@@ -185,7 +222,11 @@ class Food {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is Food && other.id == id && other.name == name && other.title == title && other.restaurant == restaurant;
+    return other is Food &&
+        other.id == id &&
+        other.name == name &&
+        other.title == title &&
+        other.restaurant == restaurant;
   }
 
   @override
@@ -278,7 +319,8 @@ class Menu {
           }
           food.optionSelected?.forEach((option) {
             option?.itemOptionSelected?.forEach((item) {
-              if (item.price?.amount != null) price += item.price.amount * item.quantity;
+              if (item.price?.amount != null)
+                price += item.price.amount * item.quantity;
             });
           });
         } else {
@@ -319,25 +361,44 @@ class Menu {
     return clone;
   }
 
-  factory Menu.fromJson(Map<String, dynamic> json, {String resto, bool fromCommand = false}) {
+  factory Menu.fromJson(Map<String, dynamic> json,
+      {String resto, bool fromCommand = false}) {
     Menu _menu = Menu(
       id: json['_id'],
       name: json['name'],
       imageURL: json['imageURL'] ?? "",
-      foods: json['foods'] is List ? json['foods']?.map<MenuFood>((data) => MenuFood.fromJson(data))?.toList() ?? [] : [],
+      foods: json['foods'] is List
+          ? json['foods']
+                  ?.map<MenuFood>((data) => MenuFood.fromJson(data))
+                  ?.toList() ??
+              []
+          : [],
       description: json['description'],
-      restaurant: json['restaurant'] is String ? json['restaurant'] : Restaurant.fromJson(json["restaurant"]),
+      restaurant: json['restaurant'] is String
+          ? json['restaurant']
+          : Restaurant.fromJson(json["restaurant"]),
       type: json['type'],
       priority: json['priority'],
       price: Price.fromJson(json['price']),
       // status :json["status"] ?? true,
-      optionSelected: json['options'] != null ? (json['options'] as List).map((e) => Option.fromJson(e)).where((element) => element.maxOptions > 0).toList() : [],
+      optionSelected: json['options'] != null
+          ? (json['options'] as List)
+              .map((e) => Option.fromJson(e))
+              .where((element) => element.maxOptions > 0)
+              .toList()
+          : [],
     );
     _menu.isMenu = true;
     return _menu;
   }
 
-  toJson() => {"_id": this.id, "name": this.name, "imageURL": this.imageURL, "foods": this.foods.map((v) => v.toJson()).toList(), "description": this.description};
+  toJson() => {
+        "_id": this.id,
+        "name": this.name,
+        "imageURL": this.imageURL,
+        "foods": this.foods.map((v) => v.toJson()).toList(),
+        "description": this.description
+      };
 }
 
 class MenuFood {
@@ -394,14 +455,6 @@ class MenuFood {
 class Restaurant {
   final String id;
   final String name;
-  static String originName(String nam) {
-    if (nam == null) {
-      return "";
-    }
-    final origin = nam.split(" ")..removeAt(0);
-    return origin.join(" ");
-  }
-
   final String logo;
   final String type;
   final Location location;
@@ -438,12 +491,16 @@ class Restaurant {
   final String customerStripeKey;
   final String customerSectretStripeKey;
   final String createdAt;
+
   DateTime get creatAtDateTime => DateTime.tryParse(createdAt);
   final String updatedAt;
+
   DateTime get updatedAtDateTime => DateTime.tryParse(updatedAt);
   final RestaurantLivraison livraison;
   final String minPriceIsDelivery;
-  double get minPriceIsDeliveryDouble => double.tryParse(minPriceIsDelivery ?? "0.0") ?? 0;
+
+  double get minPriceIsDeliveryDouble =>
+      double.tryParse(minPriceIsDelivery ?? "0.0") ?? 0;
   int priceDelevery;
   final bool deliveryFixed;
   final double priceByMiles;
@@ -451,6 +508,9 @@ class Restaurant {
   String appartement = "";
   String codeappartement = "";
   int etage = 0;
+  final bool discountAEmporter;
+  final bool discountDelivery;
+  final bool hasCodePromo;
 
   bool isFreeCP(String cp) {
     final v = livraison?.freeCP?.contains(cp) == true;
@@ -470,7 +530,8 @@ class Restaurant {
 
   /// unit: km
   double get deleveryDistanceMax {
-    final String distanceMax = livraison?.matrix?.length != 0 ? livraison?.matrix?.first : "0";
+    final String distanceMax =
+        livraison?.matrix?.length != 0 ? livraison?.matrix?.first : "0";
     final res = (double.tryParse(distanceMax ?? '0.0') ?? 0.0);
     return res;
   }
@@ -524,12 +585,15 @@ class Restaurant {
     this.minPriceIsDelivery,
     this.deliveryFixed,
     this.priceByMiles,
+    this.discountAEmporter,
+    this.discountDelivery,
+    this.hasCodePromo,
   });
 
   factory Restaurant.fromJson(Map<String, dynamic> json) {
     Restaurant res = Restaurant(
       id: json['_id'],
-      name: Restaurant.originName(json['name']),
+      name: json['name'],
       type: json['categorie'],
       logo: json['logo'] ?? "",
       location: Location.fromJson(
@@ -539,7 +603,10 @@ class Restaurant {
       description: json['description'] ?? '',
       menus: (json['menus'] as List).map<String>((e) => e).toList(),
       foods: (json['foods'] as List).map<String>((e) => e).toList(),
-      foodTypes: (json['foodTypes'] as List).map<FoodType>((e) => FoodType.fromJson(e)).toList() ?? [],
+      foodTypes: (json['foodTypes'] as List)
+              .map<FoodType>((e) => FoodType.fromJson(e))
+              .toList() ??
+          [],
       phoneNumber: json['phoneNumber'] ?? "",
       status: json['referencement'],
       accessible: json['status'],
@@ -551,7 +618,11 @@ class Restaurant {
       url: json['url'] != null ? json['url'] as String : "Menu advisor",
       category: json['category'],
       priority: json['priority'],
-      openingTimes: (json['openingTimes'] != null) ? (json['openingTimes'] as List).map<OpeningTimes>((e) => OpeningTimes.fromJson(e)).toList() : [],
+      openingTimes: (json['openingTimes'] != null)
+          ? (json['openingTimes'] as List)
+              .map<OpeningTimes>((e) => OpeningTimes.fromJson(e))
+              .toList()
+          : [],
       paiementLivraison: json['paiementLivraison'],
       paiementCB: json['paiementCB'],
       appartement: json['appartement'],
@@ -572,10 +643,15 @@ class Restaurant {
       customerStripeKey: json['customerStripeKey'],
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
-      livraison: json['livraison'] != null ? RestaurantLivraison.fromMap(json['livraison']) : null,
+      livraison: json['livraison'] != null
+          ? RestaurantLivraison.fromMap(json['livraison'])
+          : null,
       minPriceIsDelivery: json['minPriceIsDelivery'],
       deliveryFixed: json['deliveryFixed'],
       priceByMiles: json['priceByMiles']?.toDouble(),
+      discountAEmporter: json['discountAEmporter'],
+      discountDelivery: json['discountDelivery'],
+      hasCodePromo: json['hasCodePromo'],
     );
 
     if (!res.accessible) {
@@ -605,7 +681,8 @@ class Restaurant {
         timeBegin = TimeOfDay(hour: hourAM, minute: minAM);
         timeEnd = TimeOfDay(hour: endhourAM, minute: endminAM);
 
-        if (timeNow.timeOfDayToDouble > timeBegin.timeOfDayToDouble && timeNow.timeOfDayToDouble < timeEnd.timeOfDayToDouble) {
+        if (timeNow.timeOfDayToDouble > timeBegin.timeOfDayToDouble &&
+            timeNow.timeOfDayToDouble < timeEnd.timeOfDayToDouble) {
           open = true;
           return;
         }
@@ -620,7 +697,8 @@ class Restaurant {
           timeBegin = TimeOfDay(hour: hourPM, minute: minPM);
           timeEnd = TimeOfDay(hour: bhourPM, minute: eminPM);
 
-          if (timeNow.timeOfDayToDouble > timeBegin.timeOfDayToDouble && timeNow.timeOfDayToDouble < timeEnd.timeOfDayToDouble) {
+          if (timeNow.timeOfDayToDouble > timeBegin.timeOfDayToDouble &&
+              timeNow.timeOfDayToDouble < timeEnd.timeOfDayToDouble) {
             open = true;
             return;
           }
@@ -647,7 +725,9 @@ class Restaurant {
     TimeOfDay timeEnd;
 
     if (force) {
-      OpeningTimes time = this.openingTimes.firstWhere((element) => element.day == date.weekDayToString);
+      OpeningTimes time = this
+          .openingTimes
+          .firstWhere((element) => element.day == date.weekDayToString);
       hour = time.openings.first.begin.hour;
       return hour;
     }
@@ -666,11 +746,15 @@ class Restaurant {
           timeEnd = TimeOfDay(hour: endhourAM, minute: endminAM);
 
           if (timeNow.timeOfDayToDouble > timeBegin.timeOfDayToDouble) {
-            OpeningTimes time = this.openingTimes.firstWhere((element) => element.day == date.weekDayToString);
+            OpeningTimes time = this
+                .openingTimes
+                .firstWhere((element) => element.day == date.weekDayToString);
             hour = time.openings.first.begin.hour;
             return;
           } else if (timeNow.timeOfDayToDouble < timeEnd.timeOfDayToDouble) {
-            OpeningTimes time = this.openingTimes.firstWhere((element) => element.day == date.weekDayToString);
+            OpeningTimes time = this
+                .openingTimes
+                .firstWhere((element) => element.day == date.weekDayToString);
             hour = time.openings.first.end.hour;
             return;
           }
@@ -686,11 +770,15 @@ class Restaurant {
             timeEnd = TimeOfDay(hour: bhourPM, minute: eminPM);
 
             if (timeNow.timeOfDayToDouble > timeBegin.timeOfDayToDouble) {
-              OpeningTimes time = this.openingTimes.firstWhere((element) => element.day == date.weekDayToString);
+              OpeningTimes time = this
+                  .openingTimes
+                  .firstWhere((element) => element.day == date.weekDayToString);
               hour = time.openings.first.begin.hour;
               return;
             } else if (timeNow.timeOfDayToDouble < timeEnd.timeOfDayToDouble) {
-              OpeningTimes time = this.openingTimes.firstWhere((element) => element.day == date.weekDayToString);
+              OpeningTimes time = this
+                  .openingTimes
+                  .firstWhere((element) => element.day == date.weekDayToString);
               hour = time.openings.first.end.hour;
               return;
             }
@@ -731,7 +819,8 @@ class Restaurant {
         timeBegin = TimeOfDay(hour: hourAM, minute: minAM);
         timeEnd = TimeOfDay(hour: endhourAM, minute: endminAM);
 
-        if (timeNow.timeOfDayToDouble > timeBegin.timeOfDayToDouble && timeNow.timeOfDayToDouble < timeEnd.timeOfDayToDouble) {
+        if (timeNow.timeOfDayToDouble > timeBegin.timeOfDayToDouble &&
+            timeNow.timeOfDayToDouble < timeEnd.timeOfDayToDouble) {
           open = true;
           return;
         }
@@ -746,7 +835,8 @@ class Restaurant {
           timeBegin = TimeOfDay(hour: hourPM, minute: minPM);
           timeEnd = TimeOfDay(hour: bhourPM, minute: eminPM);
 
-          if (timeNow.timeOfDayToDouble > timeBegin.timeOfDayToDouble && timeNow.timeOfDayToDouble < timeEnd.timeOfDayToDouble) {
+          if (timeNow.timeOfDayToDouble > timeBegin.timeOfDayToDouble &&
+              timeNow.timeOfDayToDouble < timeEnd.timeOfDayToDouble) {
             open = true;
             return;
           }
@@ -763,7 +853,8 @@ class Restaurant {
     (categories as List).sort((a, b) => a["priority"].compareTo(b["priority"]));
     String cat = "";
     categories?.forEach((element) {
-      cat += "${(categories as List).indexOf(element) == 0 ? "" : " - "}${element['name'] is String ? element['name'] : element['name']['fr']}";
+      cat +=
+          "${(categories as List).indexOf(element) == 0 ? "" : " - "}${element['name'] is String ? element['name'] : element['name']['fr']}";
     });
     return cat;
   }
@@ -778,6 +869,7 @@ class User {
   final String email;
   final List<String> favoriteRestaurants;
   final List<String> favoriteFoods;
+
   // final List<PaymentCard> paymentCards;
   final List<dynamic> paymentCards;
 
@@ -786,9 +878,13 @@ class User {
       email: json['email'],
       photoURL: json['photoURL'],
       name: UserName.fromJson(json['name']),
-      favoriteRestaurants: (json['favoriteRestaurants'] as List).map<String>((e) => e).toList(),
-      favoriteFoods: (json['favoriteFoods'] as List).map<String>((e) => e).toList(),
-      paymentCards: json['paymentCards'] is List ? (json['paymentCards'] as List).map((e) => e).toList() ?? [] : [],
+      favoriteRestaurants:
+          (json['favoriteRestaurants'] as List).map<String>((e) => e).toList(),
+      favoriteFoods:
+          (json['favoriteFoods'] as List).map<String>((e) => e).toList(),
+      paymentCards: json['paymentCards'] is List
+          ? (json['paymentCards'] as List).map((e) => e).toList() ?? []
+          : [],
       address: json['address'],
       phoneNumber: json['phoneNumber']);
 
@@ -846,6 +942,7 @@ class Command {
   dynamic paiementLivraison;
   dynamic customer;
   bool withCodeDiscount = false;
+  CodeDiscount codeDiscount;
 
   Command({
     this.id,
@@ -883,7 +980,11 @@ class Command {
         discountIsPrice: json['discountIsPrice'],
         validated: json['validated'],
         revoked: json['revoked'],
-        items: json['items'] != null ? (json['items'] as List).map((e) => CommandItem.fromJson(e)).toList() : [],
+        items: json['items'] != null
+            ? (json['items'] as List)
+                .map((e) => CommandItem.fromJson(e))
+                .toList()
+            : [],
         menus: json['menus'] != null
             ? (json['menus'] as List)
                 .map(
@@ -908,7 +1009,9 @@ class Command {
         shipAsSoonAsPossible: json['shipAsSoonAsPossible'] ?? false,
         code: json['code'],
         comment: json['comment'] ?? " ",
-        restaurant: json['restaurant'] is String ? json['restaurant'] : Restaurant.fromJson(json['restaurant']),
+        restaurant: json['restaurant'] is String
+            ? json['restaurant']
+            : Restaurant.fromJson(json['restaurant']),
         priceless: json['priceless'] ?? false,
         optionLivraison: json['optionLivraison'],
         codeappartement: json['codeAppartement'] ?? "",
@@ -988,8 +1091,12 @@ class CommandModel {
     totalPrice = json['totalPrice'];
     commandType = json['commandType'];
     code = json['code'];
-    restaurant = json['restaurant'] != null ? Restaurant.fromJson(json['restaurant']) : null;
-    shippingTime = json['shippingTime'] != null ? DateTime.fromMillisecondsSinceEpoch(json['shippingTime']) : null;
+    restaurant = json['restaurant'] != null
+        ? Restaurant.fromJson(json['restaurant'])
+        : null;
+    shippingTime = json['shippingTime'] != null
+        ? DateTime.fromMillisecondsSinceEpoch(json['shippingTime'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -1011,18 +1118,43 @@ class CommandItem {
 
   List<FoodSelectedFromCommandMenu> foodMenuSelected;
 
-  CommandItem({this.sId, this.quantity, this.food, this.menu, this.options, this.foods});
+  CommandItem(
+      {this.sId,
+      this.quantity,
+      this.food,
+      this.menu,
+      this.options,
+      this.foods});
 
   CommandItem.fromJson(Map<String, dynamic> json, {bool isMenu = false}) {
     sId = json['_id'];
     if (json['item'] is String) food = json['item'];
     if (isMenu) {
-      menu = json['item'] != null ? Menu.fromJson(json['item'], fromCommand: true) : null;
-      foodMenuSelected = json['foods'] is List ? json['foods']?.map<FoodSelectedFromCommandMenu>((data) => FoodSelectedFromCommandMenu.fromJson(data))?.toList() ?? [] : [];
+      menu = json['item'] != null
+          ? Menu.fromJson(json['item'], fromCommand: true)
+          : null;
+      foodMenuSelected = json['foods'] is List
+          ? json['foods']
+                  ?.map<FoodSelectedFromCommandMenu>(
+                      (data) => FoodSelectedFromCommandMenu.fromJson(data))
+                  ?.toList() ??
+              []
+          : [];
     } else {
-      food = json['item'] != null ? Food.fromJson(json['item'], fromCommande: true) : null;
-      if (json['foods'] != null) foods = json['foods'] is List ? json['foods']?.map<Food>((data) => Food.fromJson(data, fromCommande: true))?.toList() ?? [] : [];
-      options = json['options'] == null ? [] : (json['options'] as List).map((e) => Option.fromJson(e)).toList();
+      food = json['item'] != null
+          ? Food.fromJson(json['item'], fromCommande: true)
+          : null;
+      if (json['foods'] != null)
+        foods = json['foods'] is List
+            ? json['foods']
+                    ?.map<Food>(
+                        (data) => Food.fromJson(data, fromCommande: true))
+                    ?.toList() ??
+                []
+            : [];
+      options = json['options'] == null
+          ? []
+          : (json['options'] as List).map((e) => Option.fromJson(e)).toList();
     }
     quantity = json['quantity'] ?? 0;
   }
@@ -1045,10 +1177,13 @@ class FoodSelectedFromCommandMenu {
 
   FoodSelectedFromCommandMenu({this.id, this.options, this.food});
 
-  factory FoodSelectedFromCommandMenu.fromJson(var json) => FoodSelectedFromCommandMenu(
+  factory FoodSelectedFromCommandMenu.fromJson(var json) =>
+      FoodSelectedFromCommandMenu(
         id: json['_id'],
         food: json['food'] != null ? Food.fromJson(json['food']) : null,
-        options: json['options'] == null ? [] : (json['options'] as List).map((e) => Option.fromJson(e)).toList(),
+        options: json['options'] == null
+            ? []
+            : (json['options'] as List).map((e) => Option.fromJson(e)).toList(),
       );
 }
 
@@ -1166,9 +1301,13 @@ class Features {
 
   Features.fromJson(Map<String, dynamic> json) {
     type = json['type'];
-    properties = json['properties'] != null ? new Properties.fromJson(json['properties']) : null;
+    properties = json['properties'] != null
+        ? new Properties.fromJson(json['properties'])
+        : null;
     bbox = json['bbox'].cast<double>();
-    geometry = json['geometry'] != null ? new Geometry.fromJson(json['geometry']) : null;
+    geometry = json['geometry'] != null
+        ? new Geometry.fromJson(json['geometry'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -1198,7 +1337,18 @@ class Properties {
   String displayName;
   Address address;
 
-  Properties({this.placeId, this.osmType, this.osmId, this.placeRank, this.category, this.type, this.importance, this.addresstype, this.name, this.displayName, this.address});
+  Properties(
+      {this.placeId,
+      this.osmType,
+      this.osmId,
+      this.placeRank,
+      this.category,
+      this.type,
+      this.importance,
+      this.addresstype,
+      this.name,
+      this.displayName,
+      this.address});
 
   Properties.fromJson(Map<String, dynamic> json) {
     placeId = json['place_id'];
@@ -1211,7 +1361,8 @@ class Properties {
     addresstype = json['addresstype'];
     name = json['name'];
     displayName = json['display_name'];
-    address = json['address'] != null ? new Address.fromJson(json['address']) : null;
+    address =
+        json['address'] != null ? new Address.fromJson(json['address']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -1247,7 +1398,19 @@ class Address {
   String postcode;
   String countryCode;
 
-  Address({this.houseNumber, this.road, this.neighbourhood, this.suburb, this.cityDistrict, this.city, this.municipality, this.county, this.state, this.country, this.postcode, this.countryCode});
+  Address(
+      {this.houseNumber,
+      this.road,
+      this.neighbourhood,
+      this.suburb,
+      this.cityDistrict,
+      this.city,
+      this.municipality,
+      this.county,
+      this.state,
+      this.country,
+      this.postcode,
+      this.countryCode});
 
   Address.fromJson(Map<String, dynamic> json) {
     houseNumber = json['house_number'];
@@ -1343,7 +1506,8 @@ class Option {
   });
 
   factory Option.copy(Option o) => Option(
-        itemOptionSelected: o.itemOptionSelected?.map((e) => ItemsOption.copy(e))?.toList(),
+        itemOptionSelected:
+            o.itemOptionSelected?.map((e) => ItemsOption.copy(e))?.toList(),
         items: o.items,
         maxOptions: o.maxOptions,
         sId: o.sId,
@@ -1460,7 +1624,13 @@ class Message {
   bool read;
   String target;
 
-  Message({@required this.name, @required this.phoneNumber, @required this.email, @required this.message, this.read, this.target});
+  Message(
+      {@required this.name,
+      @required this.phoneNumber,
+      @required this.email,
+      @required this.message,
+      this.read,
+      this.target});
 
   Message.fromJson(Map<String, dynamic> json) {
     name = json['name'];
@@ -1609,4 +1779,4 @@ class Begin {
     return data;
   }
 }
-// end schedule 
+// end schedule

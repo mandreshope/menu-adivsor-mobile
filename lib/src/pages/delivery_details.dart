@@ -1,6 +1,7 @@
 import 'package:expandable/expandable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 // import 'package:flutter_collapse/flutter_collapse.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
@@ -27,7 +28,9 @@ import '../models/models.dart';
 
 class DeliveryDetailsPage extends StatefulWidget {
   final Restaurant restaurant;
+
   DeliveryDetailsPage({this.restaurant});
+
   @override
   _DeliveryDetailsPageState createState() => _DeliveryDetailsPageState();
 }
@@ -114,18 +117,26 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                             suffixIcon: SizedBox(
                               width: 100,
                               child: TextButton(
-                                style: ButtonStyle(backgroundColor: MaterialStateProperty.all(CRIMSON)),
+                                style: ButtonStyle(
+                                    backgroundColor:
+                                        MaterialStateProperty.all(CRIMSON)),
                                 onPressed: () async {
                                   setState(() {
                                     myAddressLoading = true;
                                   });
-                                  final res = await commandContext.getLatLngFromAddress(authContext.currentUser.address);
+                                  final res =
+                                      await commandContext.getLatLngFromAddress(
+                                          authContext.currentUser.address);
                                   if (res != null) {
-                                    addrContr.text = authContext.currentUser.address;
+                                    addrContr.text =
+                                        authContext.currentUser.address;
                                     // addrContr.text = res.formattedAddress;
-                                    final latLng = LatLng(res.geometry.location.lat, res.geometry.location.lng);
+                                    final latLng = LatLng(
+                                        res.geometry.location.lat,
+                                        res.geometry.location.lng);
                                     commandContext.deliveryLatLng = latLng;
-                                    commandContext.deliveryAddress = authContext.currentUser.address;
+                                    commandContext.deliveryAddress =
+                                        authContext.currentUser.address;
                                   } else {
                                     Fluttertoast.showToast(
                                       msg: 'Adresse introvable',
@@ -141,7 +152,9 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                         height: 20,
                                         width: 20,
                                         child: CircularProgressIndicator(
-                                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                  Colors.white),
                                         ),
                                       )
                                     : Text(
@@ -156,29 +169,34 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                             keyboardType: TextInputType.streetAddress,
                             textInputAction: TextInputAction.done,
                             decoration: InputDecoration(
-                              labelText: AppLocalizations.of(context).translate("address_placeholder"),
+                              labelText: AppLocalizations.of(context)
+                                  .translate("address_placeholder"),
                             ),
                             onChanged: (value) {
                               commandContext.deliveryAddress = value;
                             },
                             onTap: () async {
-                              LocationResult result = await Navigator.of(context).push(
+                              LocationResult result =
+                                  await Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (context) => PlacePicker(
                                     GOOGLE_API_KEY,
-                                    displayLocation: LatLng(31.1975844, 29.9598339),
+                                    displayLocation:
+                                        LatLng(31.1975844, 29.9598339),
                                   ),
                                 ),
                               );
                               print("$logTrace result = $result");
                               addrContr.text = result.formattedAddress;
-                              commandContext.deliveryAddress = result.formattedAddress;
+                              commandContext.deliveryAddress =
+                                  result.formattedAddress;
                               commandContext.deliveryLatLng = result.latLng;
                             },
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.only(left: 30, right: 30, bottom: 30),
+                          padding: const EdgeInsets.only(
+                              left: 30, right: 30, bottom: 30),
                           color: Colors.white,
                           child: TextFormFieldTranslator(
                             controller: codepostalCodeContr,
@@ -190,12 +208,14 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                             ),
                             onChanged: (value) {
                               // commandContext.deliveryAddress = value;
-                              _restaurant.codeappartement = codepostalCodeContr.text;
+                              _restaurant.codeappartement =
+                                  codepostalCodeContr.text;
                             },
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.only(left: 30, right: 30, bottom: 30),
+                          padding: const EdgeInsets.only(
+                              left: 30, right: 30, bottom: 30),
                           color: Colors.white,
                           child: TextFormFieldTranslator(
                             controller: postalCodeContr,
@@ -212,7 +232,8 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.only(left: 30, right: 30, bottom: 30),
+                          padding: const EdgeInsets.only(
+                              left: 30, right: 30, bottom: 30),
                           color: Colors.white,
                           child: TextFormFieldTranslator(
                             controller: etageContr,
@@ -224,7 +245,8 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                             ),
                             onChanged: (value) {
                               // commandContext.deliveryAddress = value;
-                              if (etageContr.text.isNotEmpty) _restaurant.etage = int.parse(etageContr.text);
+                              if (etageContr.text.isNotEmpty)
+                                _restaurant.etage = int.parse(etageContr.text);
                             },
                           ),
                         ),
@@ -239,7 +261,8 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                               scrollOnCollapse: false,
                               child: ExpandablePanel(
                                 theme: const ExpandableThemeData(
-                                  headerAlignment: ExpandablePanelHeaderAlignment.center,
+                                  headerAlignment:
+                                      ExpandablePanelHeaderAlignment.center,
                                   tapBodyToCollapse: true,
                                   hasIcon: true,
                                 ),
@@ -251,7 +274,8 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                   child: TextTranslator(
                                     "Options de livraison",
                                     textAlign: TextAlign.start,
-                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
                                   ),
                                 ),
                                 collapsed: Container(),
@@ -268,18 +292,22 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                           onTap: () {
                                             setState(() {
                                               optionRdv = "behind_the_door";
-                                              _restaurant.optionLivraison = optionRdv;
+                                              _restaurant.optionLivraison =
+                                                  optionRdv;
                                             });
                                           },
                                           child: ListTile(
-                                            contentPadding: const EdgeInsets.symmetric(horizontal: 25.0),
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                    horizontal: 25.0),
                                             title: TextTranslator(
                                               "Devant la porte",
                                             ),
                                             leading: Icon(
                                               Icons.timer,
                                             ),
-                                            trailing: optionRdv == "behind_the_door"
+                                            trailing: optionRdv ==
+                                                    "behind_the_door"
                                                 ? Icon(
                                                     Icons.check,
                                                     color: Colors.green[300],
@@ -295,11 +323,14 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                           onTap: () {
                                             setState(() {
                                               optionRdv = "on_the_door";
-                                              _restaurant.optionLivraison = optionRdv;
+                                              _restaurant.optionLivraison =
+                                                  optionRdv;
                                             });
                                           },
                                           child: ListTile(
-                                            contentPadding: const EdgeInsets.symmetric(horizontal: 25.0),
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                    horizontal: 25.0),
                                             title: TextTranslator(
                                               "Rdv à la porte",
                                             ),
@@ -322,11 +353,14 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                           onTap: () {
                                             setState(() {
                                               optionRdv = "out";
-                                              _restaurant.optionLivraison = optionRdv;
+                                              _restaurant.optionLivraison =
+                                                  optionRdv;
                                             });
                                           },
                                           child: ListTile(
-                                            contentPadding: const EdgeInsets.symmetric(horizontal: 25.0),
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                    horizontal: 25.0),
                                             title: TextTranslator(
                                               "A l'exterieur",
                                             ),
@@ -350,7 +384,8 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                   return Expandable(
                                     collapsed: collapsed,
                                     expanded: expanded,
-                                    theme: const ExpandableThemeData(crossFadePoint: 0),
+                                    theme: const ExpandableThemeData(
+                                        crossFadePoint: 0),
                                   );
                                 },
                               ),
@@ -365,7 +400,8 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                               scrollOnCollapse: false,
                               child: ExpandablePanel(
                                 theme: const ExpandableThemeData(
-                                  headerAlignment: ExpandablePanelHeaderAlignment.center,
+                                  headerAlignment:
+                                      ExpandablePanelHeaderAlignment.center,
                                   tapBodyToCollapse: true,
                                   hasIcon: true,
                                 ),
@@ -377,9 +413,11 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                     vertical: 15,
                                   ),
                                   child: TextTranslator(
-                                    AppLocalizations.of(context).translate('date_and_time'),
+                                    AppLocalizations.of(context)
+                                        .translate('date_and_time'),
                                     textAlign: TextAlign.start,
-                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
                                   ),
                                 ),
                                 collapsed: Container(),
@@ -400,14 +438,19 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                             });
                                           },
                                           child: ListTile(
-                                            contentPadding: const EdgeInsets.symmetric(horizontal: 25.0),
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                    horizontal: 25.0),
                                             title: TextTranslator(
-                                              AppLocalizations.of(context).translate('as_soon_as_possible'),
+                                              AppLocalizations.of(context)
+                                                  .translate(
+                                                      'as_soon_as_possible'),
                                             ),
                                             leading: Icon(
                                               Icons.timer,
                                             ),
-                                            trailing: deliveryDate == null && deliveryTime == null
+                                            trailing: deliveryDate == null &&
+                                                    deliveryTime == null
                                                 ? Icon(
                                                     Icons.check,
                                                     color: Colors.green[300],
@@ -422,22 +465,29 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                         child: InkWell(
                                           onTap: () async {
                                             setState(() {
-                                              deliveryDate = now.add(Duration(days: 0));
-                                              deliveryTime = TimeOfDay(hour: now.hour, minute: 00);
+                                              deliveryDate =
+                                                  now.add(Duration(days: 0));
+                                              deliveryTime = TimeOfDay(
+                                                  hour: now.hour, minute: 00);
 
-                                              commandContext.deliveryDate = deliveryDate;
-                                              commandContext.deliveryTime = deliveryTime;
+                                              commandContext.deliveryDate =
+                                                  deliveryDate;
+                                              commandContext.deliveryTime =
+                                                  deliveryTime;
                                             });
                                           },
                                           child: ListTile(
-                                            contentPadding: const EdgeInsets.symmetric(horizontal: 25.0),
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                    horizontal: 25.0),
                                             title: TextTranslator(
                                               'Planifier une commande',
                                             ),
                                             leading: Icon(
                                               Icons.calendar_today_outlined,
                                             ),
-                                            trailing: deliveryDate != null && deliveryTime != null
+                                            trailing: deliveryDate != null &&
+                                                    deliveryTime != null
                                                 ? Icon(
                                                     Icons.check,
                                                     color: Colors.green[300],
@@ -448,7 +498,8 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                       ),
                                       if (deliveryDate != null) ...[
                                         Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
                                           children: [
                                             _datePicker(),
                                             _timePicker(),
@@ -462,7 +513,8 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                   return Expandable(
                                     collapsed: collapsed,
                                     expanded: expanded,
-                                    theme: const ExpandableThemeData(crossFadePoint: 0),
+                                    theme: const ExpandableThemeData(
+                                        crossFadePoint: 0),
                                   );
                                 },
                               ),
@@ -523,7 +575,8 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                       return;
                     }
 
-                    if (widget.restaurant.isFreeCP(commandContext.deliveryAddress)) {
+                    if (widget.restaurant
+                        .isFreeCP(commandContext.deliveryAddress)) {
                       await Fluttertoast.showToast(
                         msg: "Livraison est gratuite à ce CP",
                       );
@@ -531,77 +584,110 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                       return;
                     }
 
-                    if (widget.restaurant.isFreeCity(commandContext.deliveryAddress)) {
+                    if (widget.restaurant
+                        .isFreeCity(commandContext.deliveryAddress)) {
                       await Fluttertoast.showToast(
                         msg: "Livraison est gratuite à cette ville",
                       );
                       _next(authContext);
                       return;
                     }
-                    final distance = commandContext.getDeliveryDistanceByMiles(widget.restaurant).toInt();
-                    if ((distance > widget.restaurant.deleveryDistanceMax) && widget.restaurant.deleveryDistanceMax != 0) {
+                    final distance = commandContext
+                        .getDeliveryDistanceByMiles(widget.restaurant)
+                        .toInt();
+                    if ((distance > widget.restaurant.deleveryDistanceMax) &&
+                        widget.restaurant.deleveryDistanceMax != 0) {
                       await Fluttertoast.showToast(
-                        msg: "Pas de livraison plus ${widget.restaurant.deleveryDistanceMax} km",
+                        msg:
+                            "Pas de livraison plus ${widget.restaurant.deleveryDistanceMax} km",
                       );
                       return;
                     }
-                    int priceLivraison = commandContext.getDeliveryPriceByMiles(widget.restaurant).toInt();
+                    int priceLivraison = commandContext
+                        .getDeliveryPriceByMiles(widget.restaurant)
+                        .toInt();
                     int totalDeliveryPriceWithRemise = cartContext
                         .calculremise(
                           totalPrice: priceLivraison.toDouble(),
-                          discountIsPrice: widget.restaurant?.discount?.delivery?.discountIsPrice,
-                          discountValue: widget.restaurant?.discount?.delivery?.valueDouble,
+                          discountIsPrice: widget
+                              .restaurant?.discount?.delivery?.discountIsPrice,
+                          discountValue: widget
+                              .restaurant?.discount?.delivery?.valueDouble,
                         )
                         .toInt();
 
-                    final deliveryPrice = "Frais de livraison par km : ${widget.restaurant.priceByMiles} €";
-                    final totalDeliveryPrice = "Frais de livraison : $priceLivraison €";
-                    final totalDeliveryPriceWithRemiseMsg = "Frais de livraison avec remise : $totalDeliveryPriceWithRemise €";
-                    final distanceCustomerResto = "Distance entre vous et le restaurant : ${commandContext.getDeliveryDistanceByMiles(widget.restaurant).toInt()} km";
-                    final totalPrice = "Total à payer : ${cartContext.totalPrice + priceLivraison} €";
-                    final codePromoMsg =
-                        "Remise avec code promo : ${_restaurant?.discount?.codeDiscount?.discountIsPrice == true ? '${_restaurant?.discount?.codeDiscount?.valueDouble ?? 0.0} €' : '${_restaurant?.discount?.codeDiscount?.valueDouble ?? 0.0} % '}";
+                    final deliveryPrice = "${widget.restaurant.priceByMiles}";
+                    final totalDeliveryPrice = "$priceLivraison";
+                    final totalDeliveryPriceWithRemiseMsg =
+                        "$totalDeliveryPriceWithRemise";
+                    final distanceCustomerResto =
+                        "${commandContext.getDeliveryDistanceByMiles(widget.restaurant).toInt()}";
+                    final totalPrice =
+                        "Total à payer : ${cartContext.totalPrice + priceLivraison} €";
+                    String codePromoMsg = "";
                     String remise;
+                    String remiseMsg = "";
                     String totalPriceWithRemiseMsg;
-                    if (((_restaurant?.delivery == true) || (_restaurant?.aEmporter == true)) && ((_restaurant?.discount?.delivery?.valueDouble ?? 0.0) > 0)) {
-                      String remiseMsg =
+                    if (((_restaurant?.delivery == true) ||
+                            (_restaurant?.aEmporter == true)) &&
+                        ((_restaurant?.discount?.delivery?.valueDouble ?? 0.0) >
+                            0)) {
+                      remiseMsg =
                           "Remise ${_restaurant?.discount?.delivery?.discountType == DiscountType.SurTotalite ? "sur la totalité" : _restaurant?.discount?.delivery?.discountType == DiscountType.SurTransport ? "sur le transport" : "sur la commande"}";
-                      remise =
-                          "$remiseMsg : ${_restaurant?.discount?.delivery?.discountIsPrice == true ? '${_restaurant?.discount?.delivery?.valueDouble ?? 0} €' : '${_restaurant?.discount?.delivery?.valueDouble ?? 0} % '}";
 
                       double remiseWithCodeDiscount = cartContext.totalPrice;
-                      if (commandContext.withCodeDiscount) {
+                      if (commandContext.withCodeDiscount != null) {
                         remiseWithCodeDiscount = cartContext.calculremise(
                           totalPrice: cartContext.totalPrice,
-                          discountIsPrice: widget.restaurant?.discount?.codeDiscount?.discountIsPrice,
-                          discountValue: widget.restaurant?.discount?.codeDiscount?.valueDouble,
+                          discountIsPrice:
+                              commandContext.withCodeDiscount.discountIsPrice,
+                          discountValue:
+                              commandContext.withCodeDiscount.value.toDouble(),
                         );
+                        codePromoMsg =
+                            "${(remiseWithCodeDiscount - cartContext.totalPrice).abs()} €";
                       }
 
-                      if (_restaurant?.discount?.delivery?.discountType == DiscountType.SurTransport) {
+                      if (_restaurant?.discount?.delivery?.discountType ==
+                              DiscountType.SurTransport &&
+                          _restaurant.discountDelivery == true) {
                         priceLivraison = cartContext
                             .calculremise(
                               totalPrice: priceLivraison.toDouble(),
-                              discountIsPrice: widget.restaurant?.discount?.delivery?.discountIsPrice,
-                              discountValue: widget.restaurant?.discount?.delivery?.valueDouble,
+                              discountIsPrice: widget.restaurant?.discount
+                                  ?.delivery?.discountIsPrice,
+                              discountValue: widget
+                                  .restaurant?.discount?.delivery?.valueDouble,
                             )
                             .toInt();
-                        totalPriceWithRemiseMsg = "Total à payer avec $remiseMsg : ${remiseWithCodeDiscount + priceLivraison} €";
-                      } else if (_restaurant?.discount?.delivery?.discountType == DiscountType.SurCommande) {
+                        remise =
+                            "${(priceLivraison - priceLivraison.toDouble()).abs()} €";
+                        totalPriceWithRemiseMsg =
+                            "${remiseWithCodeDiscount + priceLivraison} €";
+                      } else if (_restaurant
+                                  ?.discount?.delivery?.discountType ==
+                              DiscountType.SurCommande &&
+                          _restaurant.discountDelivery == true) {
                         int totalPriceWithRemise = cartContext
                             .calculremise(
                               totalPrice: remiseWithCodeDiscount,
-                              discountIsPrice: widget.restaurant?.discount?.delivery?.discountIsPrice,
-                              discountValue: widget.restaurant?.discount?.delivery?.valueDouble,
+                              discountIsPrice: widget.restaurant?.discount
+                                  ?.delivery?.discountIsPrice,
+                              discountValue: widget
+                                  .restaurant?.discount?.delivery?.valueDouble,
                             )
                             .toInt();
-
-                        totalPriceWithRemiseMsg = "Total à payer avec $remiseMsg : ${totalPriceWithRemise + priceLivraison} €";
+                        remise =
+                            "${(totalPriceWithRemise - remiseWithCodeDiscount).abs()} €";
+                        totalPriceWithRemiseMsg =
+                            "${totalPriceWithRemise + priceLivraison} €";
                       } else {
-                        totalPriceWithRemiseMsg = "Total à payer avec $remiseMsg : ${cartContext.calculremise(
+                        totalPriceWithRemiseMsg = "${cartContext.calculremise(
                           totalPrice: remiseWithCodeDiscount + priceLivraison,
-                          discountIsPrice: widget.restaurant?.discount?.delivery?.discountIsPrice,
-                          discountValue: widget.restaurant?.discount?.delivery?.valueDouble,
+                          discountIsPrice: widget
+                              .restaurant?.discount?.delivery?.discountIsPrice,
+                          discountValue: widget
+                              .restaurant?.discount?.delivery?.valueDouble,
                         )} €";
                       }
                     }
@@ -615,45 +701,125 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              TextTranslator(
-                                deliveryPrice,
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  TextTranslator(
+                                    "Total",
+                                  ),
+                                  TextTranslator(
+                                    "${cartContext.totalPrice} €",
+                                  ),
+                                ],
+                              ),
+                              Divider(),
+                              /* Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  TextTranslator(
+                                    "Frais de livraison par km ",
+                                  ),
+                                  TextTranslator(
+                                    "$deliveryPrice €",
+                                  ),
+                                ],
                               ),
                               TextTranslator(
-                                distanceCustomerResto,
-                              ),
+                                "Distance entre vous et le restaurant $distanceCustomerResto km",
+                              ),*/
                               Column(
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  if (_restaurant?.discount?.delivery?.discountType == DiscountType.SurTransport) ...[
-                                    TextTranslator(
-                                      totalDeliveryPrice,
-                                    ),
-                                    TextTranslator(
-                                      totalDeliveryPriceWithRemiseMsg,
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      TextTranslator(
+                                        "Frais de livraison",
+                                      ),
+                                      TextTranslator(
+                                        "+$totalDeliveryPrice €",
+                                      ),
+                                    ],
+                                  ),
+                                  if (_restaurant
+                                          ?.discount?.delivery?.discountType ==
+                                      DiscountType.SurTransport) ...[
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        TextTranslator(
+                                          "Frais de livraison avec remise",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        TextTranslator(
+                                          "-$totalDeliveryPriceWithRemiseMsg €",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
                                     ),
                                   ]
                                 ],
                               ),
-                              if (totalPriceWithRemiseMsg == null)
-                                TextTranslator(
-                                  totalPrice,
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              if (commandContext.withCodeDiscount) ...[
-                                TextTranslator(
-                                  codePromoMsg,
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                              if (commandContext.withCodeDiscount != null) ...[
+                                Divider(),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    TextTranslator(
+                                      "Remise avec code promo ",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    TextTranslator(
+                                      "-$codePromoMsg",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
                                 ),
                               ],
                               if (totalPriceWithRemiseMsg != null) ...[
-                                TextTranslator(
-                                  remise,
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                Divider(),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    TextTranslator(
+                                      remiseMsg,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    TextTranslator(
+                                      "-$remise",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
                                 ),
-                                TextTranslator(
-                                  totalPriceWithRemiseMsg,
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                Divider(),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    TextTranslator(
+                                      "Total à payer",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    TextTranslator(
+                                      totalPriceWithRemiseMsg,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ],
@@ -671,7 +837,8 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                           height: 23,
                           width: 23,
                           child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
                           ),
                         ),
                       )
@@ -692,7 +859,12 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
 
   Future _next(AuthContext authContext) async {
     if (authContext.currentUser != null) {
-      var customer = {'name': authContext.currentUser?.name, 'address': authContext.currentUser?.address, 'phoneNumber': authContext.currentUser?.phoneNumber, 'email': authContext.currentUser?.email};
+      var customer = {
+        'name': authContext.currentUser?.name,
+        'address': authContext.currentUser?.address,
+        'phoneNumber': authContext.currentUser?.phoneNumber,
+        'email': authContext.currentUser?.email
+      };
       setState(() {
         sendingCommand = true;
       });
@@ -739,7 +911,9 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
               String dayName = DateFormat.EEEE('fr_FR').format(date);
               setState(() {
                 print(dayName);
-                if (_restaurant.openingTimes.where((v) => v.day.toLowerCase() == dayName).isNotEmpty) {
+                if (_restaurant.openingTimes
+                    .where((v) => v.day.toLowerCase() == dayName)
+                    .isNotEmpty) {
                   print('ouvert');
                   deliveryDate = date;
                   commandContext.deliveryDate = deliveryDate;
@@ -748,8 +922,12 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                     if (deliveryTime.hour <= now.hour) {
                       deliveryTime = TimeOfDay(hour: now.hour, minute: 00);
                     }
-                  } else if (deliveryTime.hour <= _restaurant.getFirstOpeningHour(deliveryDate, force: true)) {
-                    deliveryTime = TimeOfDay(hour: _restaurant.getFirstOpeningHour(deliveryDate), minute: 00);
+                  } else if (deliveryTime.hour <=
+                      _restaurant.getFirstOpeningHour(deliveryDate,
+                          force: true)) {
+                    deliveryTime = TimeOfDay(
+                        hour: _restaurant.getFirstOpeningHour(deliveryDate),
+                        minute: 00);
                   }
 
                   commandContext.deliveryTime = deliveryTime;
@@ -762,7 +940,8 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                 }
               });
             },
-            style: TextStyle(color: Colors.grey[700], decoration: TextDecoration.none),
+            style: TextStyle(
+                color: Colors.grey[700], decoration: TextDecoration.none),
             underline: Container(),
             selectedItemBuilder: (_) {
               return List.generate(24, (index) {
@@ -774,7 +953,10 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                         : index == 1
                             ? "Demain"
                             : "${now.add(Duration(days: index)).dateToString("EE dd MMM")}",
-                    style: TextStyle(fontSize: 18, color: CRIMSON, fontWeight: FontWeight.w600));
+                    style: TextStyle(
+                        fontSize: 18,
+                        color: CRIMSON,
+                        fontWeight: FontWeight.w600));
               });
             },
             items: [
@@ -813,12 +995,21 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
             value: deliveryTime,
             selectedItemBuilder: (_) {
               return [
-                for (int i = deliveryDate.day == now.day ? now.hour : _restaurant.getFirstOpeningHour(deliveryDate); i < 24; i++) ...[
+                for (int i = deliveryDate.day == now.day
+                        ? now.hour
+                        : _restaurant.getFirstOpeningHour(deliveryDate);
+                    i < 24;
+                    i++) ...[
                   DropdownMenuItem<TimeOfDay>(
                       value: TimeOfDay(hour: i, minute: 00),
                       child: TextTranslator(
-                        now.hour == i ? "${TimeOfDay(hour: i, minute: (DateTime.now().add(Duration(minutes: 15)).minute)).format(context)}" : "${TimeOfDay(hour: i, minute: 00).format(context)}",
-                        style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.w600),
+                        now.hour == i
+                            ? "${TimeOfDay(hour: i, minute: (DateTime.now().add(Duration(minutes: 15)).minute)).format(context)}"
+                            : "${TimeOfDay(hour: i, minute: 00).format(context)}",
+                        style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600),
                       )),
                 ]
               ];
@@ -836,13 +1027,22 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
             ),
             underline: Container(),
             items: [
-              for (int i = deliveryDate.day == now.day ? now.hour : _restaurant.getFirstOpeningHour(deliveryDate); i < 24; i++) ...[
+              for (int i = deliveryDate.day == now.day
+                      ? now.hour
+                      : _restaurant.getFirstOpeningHour(deliveryDate);
+                  i < 24;
+                  i++) ...[
                 // if (deliveryDate.day == now.day && now.hour <= i)...[
                 DropdownMenuItem<TimeOfDay>(
                     value: TimeOfDay(hour: i, minute: 00),
                     child: TextTranslator(
-                      now.hour == i ? "${TimeOfDay(hour: i, minute: (DateTime.now().add(Duration(minutes: 15)).minute)).format(context)}" : "${TimeOfDay(hour: i, minute: 00).format(context)}",
-                      style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.w600),
+                      now.hour == i
+                          ? "${TimeOfDay(hour: i, minute: (DateTime.now().add(Duration(minutes: 15)).minute)).format(context)}"
+                          : "${TimeOfDay(hour: i, minute: 00).format(context)}",
+                      style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w600),
                     )),
               ]
             ],

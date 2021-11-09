@@ -40,6 +40,7 @@ class ConfirmSms extends StatefulWidget {
   dynamic customer;
   bool fromDelivery;
   Restaurant restaurant;
+
   @override
   _ConfirmSmsState createState() => _ConfirmSmsState();
 }
@@ -61,7 +62,9 @@ class _ConfirmSmsState extends State<ConfirmSms> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: TextTranslator(widget.isFromSignup ? "Vérification sms" : "confirmation de commande"),
+        title: TextTranslator(widget.isFromSignup
+            ? "Vérification sms"
+            : "confirmation de commande"),
       ),
       body: Center(
         child: Column(
@@ -185,7 +188,8 @@ class _ConfirmSmsState extends State<ConfirmSms> {
         textColor: Colors.white,
       );
     if (widget.isFromSignup) {
-      AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
+      AuthContext authContext =
+          Provider.of<AuthContext>(context, listen: false);
       try {
         await authContext.confirmPhoneNumber(code: pin);
         await authContext.login(widget.phoneNumber, widget.password);
@@ -199,7 +203,9 @@ class _ConfirmSmsState extends State<ConfirmSms> {
         print(e['message']);
         switch (e['message']) {
           case "session expired":
-            Fluttertoast.showToast(msg: "Le code SMS a expiré. Veuillez renvoyer le code de vérification pour réessayer.");
+            Fluttertoast.showToast(
+                msg:
+                    "Le code SMS a expiré. Veuillez renvoyer le code de vérification pour réessayer.");
             break;
           case "Invalid confirmation code":
             Fluttertoast.showToast(msg: "Invalide sms code");
@@ -220,19 +226,21 @@ class _ConfirmSmsState extends State<ConfirmSms> {
         listen: false,
       );
 
-      AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
+      AuthContext authContext =
+          Provider.of<AuthContext>(context, listen: false);
 
       //TODO: COMMENT THIS SMS CHECK FOR TEST DELEVERY
-      if (widget.code != pin) {
+      /* if (widget.code != pin) {
         Fluttertoast.showToast(msg: "Invalide sms code");
         return;
-      }
-
+      }*/
       //TODO: COMMENT THIS SMS CHECK FOR TEST DELEVERY
-      if (this.dateDelai.isBefore(DateTime.now())) {
-        Fluttertoast.showToast(msg: "Votre délai de confirmation est épuisé. Veuillez renvoyer votre code de confirmation.");
+      /*  if (this.dateDelai.isBefore(DateTime.now())) {
+        Fluttertoast.showToast(
+            msg:
+                "Votre délai de confirmation est épuisé. Veuillez renvoyer votre code de confirmation.");
         return;
-      }
+      }*/
 
       if (widget.fromDelivery) {
         //TODO: LIVRAISON IMPLEMENTATION
@@ -252,29 +260,44 @@ class _ConfirmSmsState extends State<ConfirmSms> {
         int totalPrice = 0;
         int totalPriceSansRemise = (cartContext.totalPrice * 100).toInt();
         double remiseWithCodeDiscount = cartContext.totalPrice;
-        if (commandContext.withCodeDiscount) {
+        if (commandContext.withCodeDiscount != null) {
           remiseWithCodeDiscount = cartContext.calculremise(
             totalPrice: cartContext.totalPrice,
-            discountIsPrice: widget.restaurant?.discount?.codeDiscount?.discountIsPrice,
-            discountValue: widget.restaurant?.discount?.codeDiscount?.valueDouble,
+            discountIsPrice: commandContext.withCodeDiscount.discountIsPrice,
+            discountValue: commandContext.withCodeDiscount.value.toDouble(),
           );
         }
-        totalPrice = cartContext
-            .calculremise(
-              totalPrice: remiseWithCodeDiscount,
-              discountIsPrice: widget.restaurant?.discount?.aEmporter?.discountIsPrice,
-              discountValue: widget.restaurant?.discount?.aEmporter?.valueDouble,
-            )
-            .toInt();
+        if (widget.restaurant?.discountAEmporter == true) {
+          totalPrice = cartContext
+              .calculremise(
+                totalPrice: remiseWithCodeDiscount,
+                discountIsPrice:
+                    widget.restaurant?.discount?.aEmporter?.discountIsPrice,
+                discountValue:
+                    widget.restaurant?.discount?.aEmporter?.valueDouble,
+              )
+              .toInt();
+        }
+
         totalPrice = (totalPrice * 100).toInt();
+
+        ///TODO: await Api.instance.sendCommand - AEMPORTER
         var command = await Api.instance.sendCommand(
-          isCodePromo: commandContext.withCodeDiscount,
+          addCodePromo: commandContext.withCodeDiscount,
+          isCodePromo: commandContext.withCodeDiscount != null,
           discount: widget.restaurant?.discount,
           relatedUser: authContext.currentUser?.id ?? null,
           comment: cartContext.comment,
           commandType: commandContext.commandType,
-          items:
-              cartContext.items.where((e) => !e.isMenu).map((e) => {'quantity': e.quantity, 'item': e.id, 'options': e.optionSelected != null ? e.optionSelected : [], 'comment': e.message}).toList(),
+          items: cartContext.items
+              .where((e) => !e.isMenu)
+              .map((e) => {
+                    'quantity': e.quantity,
+                    'item': e.id,
+                    'options': e.optionSelected != null ? e.optionSelected : [],
+                    'comment': e.message
+                  })
+              .toList(),
           restaurant: cartContext.currentOrigin,
           totalPrice: totalPrice,
           totalPriceSansRemise: totalPriceSansRemise,
@@ -282,16 +305,25 @@ class _ConfirmSmsState extends State<ConfirmSms> {
           shippingTime: commandContext.deliveryDate
                   ?.add(
                     Duration(
-                      minutes: commandContext.deliveryTime.hour * 60 + commandContext.deliveryTime.minute,
+                      minutes: commandContext.deliveryTime.hour * 60 +
+                          commandContext.deliveryTime.minute,
                     ),
                   )
                   ?.millisecondsSinceEpoch ??
               null,
-          menu: cartContext.items.where((e) => e.isMenu).map((e) => {'quantity': e.quantity, 'item': e.id, 'foods': e.foodMenuSelecteds}).toList(),
+          menu: cartContext.items
+              .where((e) => e.isMenu)
+              .map((e) => {
+                    'quantity': e.quantity,
+                    'item': e.id,
+                    'foods': e.foodMenuSelecteds
+                  })
+              .toList(),
           priceless: !cartContext.withPrice,
         );
         Command cm = Command.fromJson(command);
-        cm.withCodeDiscount = commandContext.withCodeDiscount;
+        cm.codeDiscount = commandContext.withCodeDiscount;
+        cm.withCodeDiscount = commandContext.withCodeDiscount != null;
 
         commandContext.clear();
         cartContext.clear();

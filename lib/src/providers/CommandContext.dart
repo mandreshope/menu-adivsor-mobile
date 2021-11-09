@@ -4,6 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/models/models.dart';
+import 'package:menu_advisor/src/models/restaurants/restaurant_code_discount_model.dart';
 
 class CommandContext extends ChangeNotifier {
   PaymentCard _paymentCard;
@@ -13,7 +14,7 @@ class CommandContext extends ChangeNotifier {
   DateTime _deliveryDate;
   TimeOfDay _deliveryTime;
   List<Food> _items;
-  bool withCodeDiscount = false;
+  CodeDiscount withCodeDiscount;
 
   set paymentCard(PaymentCard paymentCard) {
     _paymentCard = paymentCard;
@@ -118,7 +119,7 @@ class CommandContext extends ChangeNotifier {
     _deliveryTime = null;
     _items = null;
     _deliveryLatLng = null;
-    withCodeDiscount = false;
+    withCodeDiscount = null;
     notifyListeners();
   }
 }

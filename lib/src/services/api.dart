@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/models/models.dart';
+import 'package:menu_advisor/src/models/restaurants/restaurant_code_discount_model.dart';
 import 'package:menu_advisor/src/models/restaurants/restaurant_discount_model.dart';
 import 'package:menu_advisor/src/types/types.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class Api {
   // final String _apiURL = 'https://menu-advisor.herokuapp.com';
   static final String _apiURL = 'https://api-advisor.voirlemenu.fr';
+
   static String get apiURL => _apiURL;
   String _accessToken;
   String _refreshToken;
@@ -37,7 +39,8 @@ class Api {
   }
 
   Future resendConfirmationCode({String registrationToken}) {
-    if (registrationToken == null) return Future.error(Exception('No registration token provided'));
+    if (registrationToken == null)
+      return Future.error(Exception('No registration token provided'));
 
     final Uri url = Uri.parse('$_apiURL/users/resend-confirmation-code');
     print("$logTrace $url");
@@ -80,7 +83,8 @@ class Api {
 
   _checkExistingTokenCache() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (prefs.containsKey('access_token') && prefs.containsKey('refresh_token')) {
+    if (prefs.containsKey('access_token') &&
+        prefs.containsKey('refresh_token')) {
       _accessToken = prefs.getString('access_token');
       _refreshToken = prefs.getString('refresh_token');
       await _refreshTokens();
@@ -105,7 +109,10 @@ class Api {
 // asina time out
   Future<List<String>> _checkToken() {
     if (_accessToken == null || _refreshToken == null) return null;
-    return http.get(Uri.parse('$_apiURL/check-token?access_token=$_accessToken&refresh_token=$_refreshToken')).then<List<String>>((response) {
+    return http
+        .get(Uri.parse(
+            '$_apiURL/check-token?access_token=$_accessToken&refresh_token=$_refreshToken'))
+        .then<List<String>>((response) {
       if (response.statusCode == 200) {
         var result = jsonDecode(response.body);
 
@@ -152,10 +159,16 @@ class Api {
   Future<bool> logout() async {
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
 
-    return await sharedPrefs.remove('access_token') && await sharedPrefs.remove('refresh_token');
+    return await sharedPrefs.remove('access_token') &&
+        await sharedPrefs.remove('refresh_token');
   }
 
-  Future<String> register({String email, String phoneNumber, String password, String firstName, String lastName}) {
+  Future<String> register(
+      {String email,
+      String phoneNumber,
+      String password,
+      String firstName,
+      String lastName}) {
     final Uri url = Uri.parse('$_apiURL/users/register');
     print("$logTrace $url");
 
@@ -225,7 +238,9 @@ class Api {
       if (response.statusCode == 200) {
         List<dynamic> list = jsonDecode(response.body);
         list.sort((a, b) => a["priority"].compareTo(b["priority"]));
-        List<Restaurant> restaurants = list.map((data) => Restaurant.fromJson(data["restaurant"])).toList();
+        List<Restaurant> restaurants = list
+            .map((data) => Restaurant.fromJson(data["restaurant"]))
+            .toList();
         return restaurants;
       }
 
@@ -265,7 +280,8 @@ class Api {
     });
   }
 
-  getRecommendedFoods(String lang, {Map<String, dynamic> filters, bool fromQrcode = false}) {
+  getRecommendedFoods(String lang,
+      {Map<String, dynamic> filters, bool fromQrcode = false}) {
     String query = '?lang=$lang';
     if (filters != null) {
       List<String> keys = filters.keys.toList();
@@ -293,9 +309,15 @@ class Api {
         List<dynamic> listFoodMap = list.map((e) => e["food"]).toList();
         List<Food> foods = [];
         if (fromQrcode) {
-          return listFoodMap.map((data) => Food.fromJson(data)).where((element) => element.status).toList();
+          return listFoodMap
+              .map((data) => Food.fromJson(data))
+              .where((element) => element.status)
+              .toList();
         }
-        foods = listFoodMap.map((data) => Food.fromJson(data)).where((element) => element.status && element.statut).toList();
+        foods = listFoodMap
+            .map((data) => Food.fromJson(data))
+            .where((element) => element.status && element.statut)
+            .toList();
         return foods;
       }
 
@@ -305,7 +327,8 @@ class Api {
     });
   }
 
-  Future<List<Food>> getFoods(String lang, {Map<String, dynamic> filters, bool fromQrcode = false}) {
+  Future<List<Food>> getFoods(String lang,
+      {Map<String, dynamic> filters, bool fromQrcode = false}) {
     String query = '?lang=$lang';
     if (filters != null) {
       List<String> keys = filters.keys.toList();
@@ -331,9 +354,15 @@ class Api {
         List<dynamic> list = jsonDecode(response.body);
         List<Food> foods = [];
         if (fromQrcode) {
-          return list.map((data) => Food.fromJson(data)).where((element) => element.status).toList();
+          return list
+              .map((data) => Food.fromJson(data))
+              .where((element) => element.status)
+              .toList();
         }
-        foods = list.map((data) => Food.fromJson(data)).where((element) => element.status && element.statut).toList();
+        foods = list
+            .map((data) => Food.fromJson(data))
+            .where((element) => element.status && element.statut)
+            .toList();
         return foods;
       }
 
@@ -373,7 +402,8 @@ class Api {
       },
     ).then<Food>((response) {
       print(response.body);
-      if (response.statusCode == 200) return Food.fromJson(jsonDecode(response.body));
+      if (response.statusCode == 200)
+        return Food.fromJson(jsonDecode(response.body));
 
       return Future.error(
         jsonDecode(response.body),
@@ -389,7 +419,10 @@ class Api {
     print("$logTrace $url");
     return http.get(
       url,
-      headers: {"authorization": "Bearer $_accessToken", 'content-type': 'application/json'},
+      headers: {
+        "authorization": "Bearer $_accessToken",
+        'content-type': 'application/json'
+      },
     ).then<Restaurant>((response) {
       print(jsonDecode(response.body));
       Restaurant restaurant = Restaurant.fromJson(jsonDecode(response.body));
@@ -448,7 +481,8 @@ class Api {
 
   Future removeFromFavoriteRestaurants(Restaurant restaurant) async {
     await _refreshTokens();
-    final url = Uri.parse('$_apiURL/users/favoriteRestaurants/${restaurant.id}');
+    final url =
+        Uri.parse('$_apiURL/users/favoriteRestaurants/${restaurant.id}');
     print("$logTrace $url");
     return http.delete(url, headers: {
       "authorization": "Bearer $_accessToken",
@@ -486,7 +520,10 @@ class Api {
         if (fromQrcode) {
           return results.map((e) => SearchResult.fromJson(e)).toList();
         } else {
-          return results.map((e) => SearchResult.fromJson(e)).where((element) => element.content['status'] ?? true).toList();
+          return results
+              .map((e) => SearchResult.fromJson(e))
+              .where((element) => element.content['status'] ?? true)
+              .toList();
         }
       }
       return Future.error(
@@ -509,7 +546,8 @@ class Api {
     if (location == null) {
       searchQuery = '?lang=$lang&q=$query&range=$range';
     } else {
-      searchQuery = '?lang=$lang&q=$query&range=$range&location=${jsonEncode(location)}';
+      searchQuery =
+          '?lang=$lang&q=$query&range=$range&location=${jsonEncode(location)}';
     }
 
     if (type is String) searchQuery += '&type=$type';
@@ -526,7 +564,10 @@ class Api {
         if (fromQrcode) {
           return results.map((e) => SearchResult.fromJson(e)).toList();
         } else {
-          return results.map((e) => SearchResult.fromJson(e)).where((element) => element.content['status'] ?? true).toList();
+          return results
+              .map((e) => SearchResult.fromJson(e))
+              .where((element) => element.content['status'] ?? true)
+              .toList();
         }
       }
       return Future.error(
@@ -596,7 +637,8 @@ class Api {
       'authorization': 'Bearer $_accessToken',
     }).then<User>(
       (response) {
-        if (response.statusCode == 200) return User.fromJson(jsonDecode(response.body));
+        if (response.statusCode == 200)
+          return User.fromJson(jsonDecode(response.body));
 
         return Future.error(
           jsonDecode(response.body),
@@ -610,9 +652,12 @@ class Api {
     final url = Uri.parse('$_apiURL/users/paymentCards');
     print("$logTrace $url");
 
-    return http.post(url, body: paymentCard.toJson().map<String, String>((key, value) => MapEntry(key, value.toString())), headers: {
-      'authorization': 'Bearer $_accessToken',
-    }).then(
+    return http.post(url,
+        body: paymentCard.toJson().map<String, String>(
+            (key, value) => MapEntry(key, value.toString())),
+        headers: {
+          'authorization': 'Bearer $_accessToken',
+        }).then(
       (response) {
         if (response.statusCode != 200)
           return Future.error(
@@ -622,7 +667,8 @@ class Api {
     );
   }
 
-  Future<List<Menu>> getMenus(String lang, String id, {bool fromCommand = true}) {
+  Future<List<Menu>> getMenus(String lang, String id,
+      {bool fromCommand = true}) {
     ///@deprecated
     // final url = Uri.parse('$_apiURL/restaurants/$id/menus?lang=$lang');
     final url = Uri.parse("$_apiURL/restaurants/pages/$id?lang=$lang");
@@ -633,7 +679,10 @@ class Api {
         print("$_apiURL/restaurants/pages/$id?lang=$lang");
         if (response.statusCode == 200) {
           final datas = jsonDecode(response.body);
-          return datas["menu"]?.map<Menu>((e) => Menu.fromJson(e, fromCommand: fromCommand))?.toList() ?? [];
+          return datas["menu"]
+                  ?.map<Menu>((e) => Menu.fromJson(e, fromCommand: fromCommand))
+                  ?.toList() ??
+              [];
         }
 
         return Future.error(
@@ -734,11 +783,13 @@ class Api {
     String filter;
 
     if (commandType != null) {
-      filter = 'filter={"relatedUser": "${user.id}","commandType":$commandType}';
+      filter =
+          'filter={"relatedUser": "${user.id}","commandType":$commandType}';
     } else {
       filter = 'filter={"relatedUser": "${user.id}"}';
     }
-    final url = Uri.parse('$_apiURL/commands?$filter&offset=$offset${limit != null ? '&limit=$limit' : ''}');
+    final url = Uri.parse(
+        '$_apiURL/commands?$filter&offset=$offset${limit != null ? '&limit=$limit' : ''}');
     print("$logTrace $url");
 
     return http.get(url, headers: {
@@ -755,8 +806,51 @@ class Api {
     });
   }
 
+  //Verify the max use of code promo
+  Future<CodeDiscount> verifyCodePromo({
+    @required int max,
+    @required String code,
+    @required String dateFin,
+    @required String id_restaurant,
+  }) async {
+    await _refreshTokens();
+    try {
+      final url = Uri.parse('$_apiURL/verifyCodePromo');
+      print("$logTrace $url");
+
+      final post = jsonEncode({
+        "id_restaurant": id_restaurant,
+        "code": code,
+        "dateFin": dateFin,
+        "max": max
+      });
+
+      final res = await http
+          .post(
+        url,
+        headers: {
+          'authorization': 'Bearer $_accessToken',
+          'Content-type': 'application/json',
+        },
+        body: post,
+      )
+          .then<Map>((response) async {
+        if (response.statusCode != 200) {
+          return Future.error(
+            jsonDecode(response.body),
+          );
+        }
+        return jsonDecode(response.body);
+      });
+      return CodeDiscount.fromJson(res);
+    } catch (e) {
+      throw e;
+    }
+  }
+
   Future<Map> sendCommand({
     @required bool isCodePromo,
+    CodeDiscount addCodePromo,
     String relatedUser,
     String commandType,
     RestaurantDiscount discount,
@@ -785,6 +879,7 @@ class Api {
       var post;
       if (isDelivery) {
         post = jsonEncode({
+          'addCodePromo': addCodePromo?.toAddCodePromo(restaurant),
           'isCodePromo': isCodePromo,
           'relatedUser': relatedUser,
           'commandType': commandType,
@@ -810,6 +905,7 @@ class Api {
         });
       } else {
         post = jsonEncode({
+          'addCodePromo': addCodePromo?.toAddCodePromo(restaurant),
           'isCodePromo': isCodePromo,
           'relatedUser': relatedUser,
           'commandType': commandType,
@@ -859,7 +955,9 @@ class Api {
     return http.get(url, headers: {
       'content-type': 'application/json',
       "authorization": "Bearer $_accessToken",
-    }).then((response) => (response.statusCode != 200) ? Future.error(jsonDecode(response.body)) : jsonDecode(response.body));
+    }).then((response) => (response.statusCode != 200)
+        ? Future.error(jsonDecode(response.body))
+        : jsonDecode(response.body));
   }
 
   Future setCommandToPayedStatus(
@@ -924,15 +1022,19 @@ class Api {
     }).then<List<FoodAttribute>>((response) {
       if (response.statusCode == 200) {
         List datas = jsonDecode(response.body);
-        return datas.map<FoodAttribute>((data) => FoodAttribute.fromJson(data)).toList();
+        return datas
+            .map<FoodAttribute>((data) => FoodAttribute.fromJson(data))
+            .toList();
       }
 
       return Future.error(jsonDecode(response.body));
     });
   }
 
-  Future<dynamic> getCityFromCoordinates(double latitude, double longitude) async {
-    final geoUrl = Uri.parse("https://nominatim.openstreetmap.org/reverse?format=geojson&lat=$latitude&lon=$longitude");
+  Future<dynamic> getCityFromCoordinates(
+      double latitude, double longitude) async {
+    final geoUrl = Uri.parse(
+        "https://nominatim.openstreetmap.org/reverse?format=geojson&lat=$latitude&lon=$longitude");
     print("$logTrace $geoUrl");
 
     return http.get(geoUrl).then((value) {
@@ -950,7 +1052,9 @@ class Api {
     final url = Uri.parse('$_apiURL/messages');
     print("$logTrace $url");
 
-    return http.post(url, body: json.encode(message.toJson()), headers: {'content-type': 'application/json'}).then((response) {
+    return http.post(url,
+        body: json.encode(message.toJson()),
+        headers: {'content-type': 'application/json'}).then((response) {
       if (response.statusCode == 200) return true;
       print(jsonDecode(response.body));
       return false;
@@ -973,22 +1077,28 @@ class Api {
     });
   }
 
-  Future<Map<String, dynamic>> confirmSms(String idCommande, String code, String commandType) async {
+  Future<Map<String, dynamic>> confirmSms(
+      String idCommande, String code, String commandType) async {
     await _refreshTokens();
     final url = Uri.parse('$_apiURL/commands/$idCommande/confirm');
     print("$logTrace $url");
 
-    return http.post(url, body: json.encode({'code': code, 'commandType': commandType}), headers: {
-      'content-type': 'application/json',
-      "authorization": "Bearer $_accessToken",
-    }).then((response) {
+    return http.post(url,
+        body: json.encode({'code': code, 'commandType': commandType}),
+        headers: {
+          'content-type': 'application/json',
+          "authorization": "Bearer $_accessToken",
+        }).then((response) {
       if (response.statusCode == 200) return jsonDecode(response.body);
       print(jsonDecode(response.body));
       return jsonDecode(response.body);
     });
   }
 
-  Future<String> sendCode({@required String relatedUser, @required Map customer, @required String commandType}) {
+  Future<String> sendCode(
+      {@required String relatedUser,
+      @required Map customer,
+      @required String commandType}) {
     var post = jsonEncode({
       'relatedUser': relatedUser,
       'commandType': commandType,
@@ -1049,8 +1159,11 @@ class Api {
     return http.get(url).then<List<FoodType>>((response) {
       if (response.statusCode == 200) {
         final list = jsonDecode(response.body);
-        final List<FoodType> foodTypes = list.map<FoodType>((data) => FoodType.fromJson(data)).toList();
-        return foodTypes.where((e) => e?.restaurant?.id == restaurantId).toList();
+        final List<FoodType> foodTypes =
+            list.map<FoodType>((data) => FoodType.fromJson(data)).toList();
+        return foodTypes
+            .where((e) => e?.restaurant?.id == restaurantId)
+            .toList();
       }
       return [];
     });

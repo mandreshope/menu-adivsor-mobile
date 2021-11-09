@@ -60,7 +60,11 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                       padding: const EdgeInsets.all(20),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [for (final c in user.paymentCards.toList()) _renderPayement(c, cartContext, authContext, commandContext)],
+                        children: [
+                          for (final c in user.paymentCards.toList())
+                            _renderPayement(
+                                c, cartContext, authContext, commandContext)
+                        ],
                       ),
                     )
                   : Container(
@@ -82,7 +86,9 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                               horizontal: 40.0,
                             ),
                             child: TextTranslator(
-                              AppLocalizations.of(context).translate('no_payment_card').replaceFirst('\$', '+'),
+                              AppLocalizations.of(context)
+                                  .translate('no_payment_card')
+                                  .replaceFirst('\$', '+'),
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 22,
@@ -141,8 +147,10 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
           var result = await showDialog(
             context: context,
             builder: (_) => ConfirmationDialog(
-              title: AppLocalizations.of(context).translate('confirm_remove_payment_card_title'),
-              content: AppLocalizations.of(context).translate('confirm_remove_payment_card_content'),
+              title: AppLocalizations.of(context)
+                  .translate('confirm_remove_payment_card_title'),
+              content: AppLocalizations.of(context)
+                  .translate('confirm_remove_payment_card_content'),
             ),
           );
 
@@ -155,7 +163,8 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
               await authContext.removePaymentCard(creditCard);
             } catch (error) {
               Fluttertoast.showToast(
-                msg: AppLocalizations.of(context).translate('error_deleting_payment_card'),
+                msg: AppLocalizations.of(context)
+                    .translate('error_deleting_payment_card'),
               );
             }
             setState(() {
@@ -170,59 +179,90 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                 });
                 try {
                   int totalPrice = 0;
-                  int totalPriceSansRemise = (cartContext.totalPrice * 100).toInt();
+                  int totalPriceSansRemise =
+                      (cartContext.totalPrice * 100).toInt();
                   int priceLivraison = 0;
                   if (widget.restaurant.deliveryFixed) {
-                    priceLivraison = (widget.restaurant.priceDelevery != null ? widget.restaurant.priceDelevery : 0).toInt();
-                    totalPrice = ((cartContext.totalPrice + priceLivraison) * 100).round();
+                    priceLivraison = (widget.restaurant.priceDelevery != null
+                            ? widget.restaurant.priceDelevery
+                            : 0)
+                        .toInt();
+                    totalPrice =
+                        ((cartContext.totalPrice + priceLivraison) * 100)
+                            .round();
                   } else {
                     if (commandContext.commandType == "delivery") {
-                      if (widget.restaurant.isFreeCP(commandContext.deliveryAddress) || widget.restaurant.isFreeCity(commandContext.deliveryAddress)) {
+                      if (widget.restaurant
+                              .isFreeCP(commandContext.deliveryAddress) ||
+                          widget.restaurant
+                              .isFreeCity(commandContext.deliveryAddress)) {
                         /// livraison gratuite
                         priceLivraison = 0;
                       } else {
-                        priceLivraison = commandContext.getDeliveryPriceByMiles(widget.restaurant).toInt();
+                        priceLivraison = commandContext
+                            .getDeliveryPriceByMiles(widget.restaurant)
+                            .toInt();
                         double remiseWithCodeDiscount = cartContext.totalPrice;
-                        if (commandContext.withCodeDiscount) {
+                        if (commandContext.withCodeDiscount != null) {
                           remiseWithCodeDiscount = cartContext.calculremise(
                             totalPrice: cartContext.totalPrice,
-                            discountIsPrice: widget.restaurant?.discount?.codeDiscount?.discountIsPrice,
-                            discountValue: widget.restaurant?.discount?.codeDiscount?.valueDouble,
+                            discountIsPrice:
+                                commandContext.withCodeDiscount.discountIsPrice,
+                            discountValue: commandContext.withCodeDiscount.value
+                                .toDouble(),
                           );
                         }
-                        if (widget.restaurant?.discount?.delivery?.discountType == DiscountType.SurTransport) {
-                          priceLivraison = cartContext
-                              .calculremise(
-                                totalPrice: priceLivraison.toDouble(),
-                                discountIsPrice: widget.restaurant?.discount?.delivery?.discountIsPrice,
-                                discountValue: widget.restaurant?.discount?.delivery?.valueDouble,
-                              )
-                              .toInt();
-                          totalPrice = (remiseWithCodeDiscount + priceLivraison).toInt();
-                        } else if (widget.restaurant?.discount?.delivery?.discountType == DiscountType.SurCommande) {
-                          int totalPriceWithRemise = cartContext
-                              .calculremise(
-                                totalPrice: remiseWithCodeDiscount,
-                                discountIsPrice: widget.restaurant?.discount?.delivery?.discountIsPrice,
-                                discountValue: widget.restaurant?.discount?.delivery?.valueDouble,
-                              )
-                              .toInt();
-                          totalPrice = (totalPriceWithRemise + priceLivraison).toInt();
-                        } else {
-                          totalPrice = cartContext
-                              .calculremise(
-                                totalPrice: remiseWithCodeDiscount + priceLivraison,
-                                discountIsPrice: widget.restaurant?.discount?.delivery?.discountIsPrice,
-                                discountValue: widget.restaurant?.discount?.delivery?.valueDouble,
-                              )
-                              .toInt();
+
+                        if (widget.restaurant?.discountDelivery == true) {
+                          if (widget.restaurant?.discount?.delivery
+                                  ?.discountType ==
+                              DiscountType.SurTransport) {
+                            priceLivraison = cartContext
+                                .calculremise(
+                                  totalPrice: priceLivraison.toDouble(),
+                                  discountIsPrice: widget.restaurant?.discount
+                                      ?.delivery?.discountIsPrice,
+                                  discountValue: widget.restaurant?.discount
+                                      ?.delivery?.valueDouble,
+                                )
+                                .toInt();
+                            totalPrice =
+                                (remiseWithCodeDiscount + priceLivraison)
+                                    .toInt();
+                          } else if (widget.restaurant?.discount?.delivery
+                                  ?.discountType ==
+                              DiscountType.SurCommande) {
+                            int totalPriceWithRemise = cartContext
+                                .calculremise(
+                                  totalPrice: remiseWithCodeDiscount,
+                                  discountIsPrice: widget.restaurant?.discount
+                                      ?.delivery?.discountIsPrice,
+                                  discountValue: widget.restaurant?.discount
+                                      ?.delivery?.valueDouble,
+                                )
+                                .toInt();
+                            totalPrice =
+                                (totalPriceWithRemise + priceLivraison).toInt();
+                          } else {
+                            totalPrice = cartContext
+                                .calculremise(
+                                  totalPrice:
+                                      remiseWithCodeDiscount + priceLivraison,
+                                  discountIsPrice: widget.restaurant?.discount
+                                      ?.delivery?.discountIsPrice,
+                                  discountValue: widget.restaurant?.discount
+                                      ?.delivery?.valueDouble,
+                                )
+                                .toInt();
+                          }
                         }
                       }
                     }
                     totalPrice = (totalPrice * 100).toInt();
                   }
 
-                  StripeTransactionResponse payment = await StripeService.payViaExistingCard(
+                  StripeTransactionResponse payment =
+                      await StripeService.payViaExistingCard(
                     restaurant: widget.restaurant,
                     amount: totalPrice.toString(),
                     card: creditCard,
@@ -230,8 +270,10 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                   );
 
                   if (payment.success) {
+                    ///TODO: await Api.instance.sendCommand - DELIVERY
                     var command = await Api.instance.sendCommand(
-                        isCodePromo: commandContext.withCodeDiscount,
+                        addCodePromo: commandContext.withCodeDiscount,
+                        isCodePromo: commandContext.withCodeDiscount != null,
                         priceLivraison: priceLivraison.toString(),
                         optionLivraison: widget.restaurant.optionLivraison,
                         etage: widget.restaurant.etage,
@@ -248,7 +290,9 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                             .map((e) => {
                                   'quantity': e.quantity,
                                   'item': e.id,
-                                  'options': e.optionSelected != null ? e.optionSelected : [],
+                                  'options': e.optionSelected != null
+                                      ? e.optionSelected
+                                      : [],
                                   'comment': e.message,
                                 })
                             .toList(),
@@ -266,11 +310,15 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                                 })
                             .toList(),
                         shippingAddress: commandContext.deliveryAddress,
-                        shipAsSoonAsPossible: commandContext.deliveryDate == null && commandContext.deliveryTime == null,
+                        shipAsSoonAsPossible:
+                            commandContext.deliveryDate == null &&
+                                commandContext.deliveryTime == null,
                         shippingTime: commandContext.deliveryDate
                                 ?.add(
                                   Duration(
-                                    minutes: commandContext.deliveryTime.hour * 60 + commandContext.deliveryTime.minute,
+                                    minutes:
+                                        commandContext.deliveryTime.hour * 60 +
+                                            commandContext.deliveryTime.minute,
                                   ),
                                 )
                                 ?.millisecondsSinceEpoch ??
@@ -278,7 +326,9 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                         priceless: !cartContext.withPrice);
 
                     Command cm = Command.fromJson(command);
-                    cm.withCodeDiscount = commandContext.withCodeDiscount;
+                    cm.codeDiscount = commandContext.withCodeDiscount;
+                    cm.withCodeDiscount =
+                        commandContext.withCodeDiscount != null;
 
                     Api.instance.setCommandToPayedStatus(
                       true,
