@@ -26,10 +26,12 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>This app needs camera access to scan QR codes</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This app needs access to location when in the background.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app needs access to location when open.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>This app requires user’s location for better user experience.</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>This app requires user’s location for better user experience.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>This app requires user’s location for better user experience.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This app does not require access to the microphone.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
