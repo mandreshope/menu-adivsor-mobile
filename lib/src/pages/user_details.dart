@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:menu_advisor/src/components/inputs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/constants/validators.dart';
@@ -32,6 +34,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
   final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
+  String parsedPhone = "";
 
   final FocusNode _displayNameFocus = FocusNode();
   final FocusNode _phoneNumberFocus = FocusNode();
@@ -47,7 +50,6 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
 
   CommandContext commandContext;
   bool isToday = true;
-
   bool isOpen = true;
 
   @override
@@ -62,12 +64,19 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
 
     if (authContext.currentUser != null) {
       _displayNameController.text = authContext.currentUser.toString();
-      _phoneNumberController.text = authContext.currentUser.phoneNumber.replaceFirst(phonePrefix, "");
+      //_phoneNumberController.text = authContext.currentUser.phoneNumber.replaceFirst(phonePrefix, "");
+      _phoneNumberController.text = authContext.currentUser.phoneNumber;
       _emailController.text = authContext.currentUser.email;
       _addressController.text = authContext.currentUser.address ?? "";
+
+      PhoneNumber.getRegionInfoFromPhoneNumber(_phoneNumberController.text)
+          .then((value) async {
+        parsedPhone = await PhoneNumber.getParsableNumber(value);
+        setState(() {});
+      });
     }
 
-    deliveryDate = now; //.add(Duration(days: 0));
+    deliveryDate = now.add(Duration(days: 0)); //.add(Duration(days: 0));
     deliveryTime = TimeOfDay(hour: now.hour, minute: 00);
 
     commandContext.deliveryDate = deliveryDate;
@@ -123,26 +132,30 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                   ),
                 ),
                 SizedBox(height: 5),
-                TextFormField(
-                  controller: _phoneNumberController,
+                PhoneField(
                   focusNode: _phoneNumberFocus,
-                  textInputAction: TextInputAction.next,
-                  keyboardType: TextInputType.phone,
-                  onFieldSubmitted: (_) {
+                  initialValue: phoneInitialCountryCode,
+                  onInputChanged: (PhoneNumber number) {
+                    print(number.phoneNumber);
+                    _phoneNumberController.text = number.phoneNumber;
+                  },
+                  onInputValidated: (bool value) {
+                    print(value);
+                  },
+                  onSaved: (PhoneNumber number) {
                     _phoneNumberFocus.unfocus();
                     FocusScope.of(context).requestFocus(_emailFocus);
                   },
-                  validator: Validators.required(context),
-                  maxLength: 9,
                   decoration: InputDecoration(
                     contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                    prefixText: phonePrefix,
                     counter: Offstage(),
+                    hintText: parsedPhone,
                   ),
                 ),
                 SizedBox(height: 10),
                 TextTranslator(
-                  AppLocalizations.of(context).translate("mail_address_placeholder"),
+                  AppLocalizations.of(context)
+                      .translate("mail_address_placeholder"),
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                   ),
@@ -169,7 +182,8 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                 if (commandContext.commandType == 'delivery') ...[
                   SizedBox(height: 10),
                   TextTranslator(
-                    AppLocalizations.of(context).translate("address_placeholder"),
+                    AppLocalizations.of(context)
+                        .translate("address_placeholder"),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
@@ -228,22 +242,65 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                         //   });
                         // }, pickerMode: DateTimePickerMode.datetime);
                       },
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 25.0),
-                        title: TextTranslator(
-                          'Planifier une commande',
-                        ),
-                        leading: Icon(
-                          Icons.calendar_today_outlined,
-                        ),
-                        trailing:
-                            /*deliveryDate != null && deliveryTime != null
-                            ? Icon(
-                                Icons.edit_outlined,
-                                color: Colors.green[300],
-                              )
-                            :*/
-                            null,
+                      child: Column(
+                        children: [
+                          Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  deliveryDate = null;
+                                  deliveryTime = null;
+                                });
+                              },
+                              child: ListTile(
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 25.0),
+                                title: TextTranslator(
+                                  AppLocalizations.of(context)
+                                      .translate('as_soon_as_possible'),
+                                ),
+                                leading: Icon(
+                                  Icons.timer,
+                                ),
+                                trailing:
+                                    deliveryDate == null && deliveryTime == null
+                                        ? Icon(
+                                            Icons.check,
+                                            color: Colors.green[300],
+                                          )
+                                        : null,
+                              ),
+                            ),
+                          ),
+                          Divider(),
+                          ListTile(
+                              onTap: () {
+                                setState(() {
+                                  deliveryDate = now.add(Duration(days: 0));
+                                  deliveryTime =
+                                      TimeOfDay(hour: now.hour, minute: 00);
+
+                                  commandContext.deliveryDate = deliveryDate;
+                                  commandContext.deliveryTime = deliveryTime;
+                                });
+                              },
+                              contentPadding:
+                                  const EdgeInsets.symmetric(horizontal: 25.0),
+                              title: TextTranslator(
+                                'Planifier une commande',
+                              ),
+                              leading: Icon(
+                                Icons.calendar_today_outlined,
+                              ),
+                              trailing:
+                                  deliveryDate != null && deliveryTime != null
+                                      ? Icon(
+                                          Icons.edit_outlined,
+                                          color: Colors.green[300],
+                                        )
+                                      : null),
+                        ],
                       ),
                     ),
                   ),
@@ -252,13 +309,16 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                 SizedBox(
                   height: 5,
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _datePicker(),
-                    _timePicker(),
-                  ],
-                ),
+                if (deliveryDate != null) ...[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _datePicker(),
+                      _timePicker(),
+                    ],
+                  ),
+                ],
+
                 /*Container(
                     color: CRIMSON,
                     child: ListTile(
@@ -300,12 +360,16 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                             height: 23,
                             width: 23,
                             child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                           ),
                         )
                       : TextTranslator(
-                          commandContext.commandType == 'delivery' ? AppLocalizations.of(context).translate('next') : AppLocalizations.of(context).translate('validate'),
+                          commandContext.commandType == 'delivery'
+                              ? AppLocalizations.of(context).translate('next')
+                              : AppLocalizations.of(context)
+                                  .translate('validate'),
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -350,7 +414,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
             customer: {
               'name': _displayNameController.value.text,
               'address': _addressController.value.text,
-              'phoneNumber': phonePrefix + _phoneNumberController.value.text,
+              'phoneNumber': _phoneNumberController.value.text,
               'email': _emailController.value.text
             },
             commandType: commandContext.commandType);
@@ -363,7 +427,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
             customer: {
               'name': _displayNameController.value.text,
               'address': _addressController.value.text,
-              'phoneNumber': phonePrefix + _phoneNumberController.value.text,
+              'phoneNumber': _phoneNumberController.value.text,
               'email': _emailController.value.text
             },
             code: code,
@@ -379,7 +443,8 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
         setState(() {
           sendingCommand = false;
         });
-        Fluttertoast.showToast(msg: 'Erreur lors de l\'envoi de la commande...');
+        Fluttertoast.showToast(
+            msg: 'Erreur lors de l\'envoi de la commande...');
       }
     } else {
       setState(() {
@@ -407,7 +472,9 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
               String dayName = DateFormat.EEEE('fr_FR').format(date);
               setState(() {
                 print(dayName);
-                if (_restaurant.openingTimes.where((v) => v.day.toLowerCase() == dayName).isNotEmpty) {
+                if (_restaurant.openingTimes
+                    .where((v) => v.day.toLowerCase() == dayName)
+                    .isNotEmpty) {
                   print('ouvert');
                   deliveryDate = date;
                   commandContext.deliveryDate = deliveryDate;
@@ -416,8 +483,12 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                     if (deliveryTime.hour <= now.hour) {
                       deliveryTime = TimeOfDay(hour: now.hour, minute: 00);
                     }
-                  } else if (deliveryTime.hour <= _restaurant.getFirstOpeningHour(deliveryDate, force: true)) {
-                    deliveryTime = TimeOfDay(hour: _restaurant.getFirstOpeningHour(deliveryDate), minute: 00);
+                  } else if (deliveryTime.hour <=
+                      _restaurant.getFirstOpeningHour(deliveryDate,
+                          force: true)) {
+                    deliveryTime = TimeOfDay(
+                        hour: _restaurant.getFirstOpeningHour(deliveryDate),
+                        minute: 00);
                   }
 
                   commandContext.deliveryTime = deliveryTime;
@@ -429,7 +500,8 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                 }
               });
             },
-            style: TextStyle(color: Colors.grey[700], decoration: TextDecoration.none),
+            style: TextStyle(
+                color: Colors.grey[700], decoration: TextDecoration.none),
             underline: Container(),
             selectedItemBuilder: (_) {
               return List.generate(24, (index) {
@@ -441,7 +513,10 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                         : index == 1
                             ? "Demain"
                             : "${now.add(Duration(days: index)).dateToString("EE dd MMM")}",
-                    style: TextStyle(fontSize: 18, color: CRIMSON, fontWeight: FontWeight.w600));
+                    style: TextStyle(
+                        fontSize: 18,
+                        color: CRIMSON,
+                        fontWeight: FontWeight.w600));
               });
             },
             items: [
@@ -480,12 +555,21 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
             value: deliveryTime,
             selectedItemBuilder: (_) {
               return [
-                for (int i = deliveryDate.day == now.day ? now.hour : _restaurant.getFirstOpeningHour(deliveryDate); i < 24; i++) ...[
+                for (int i = deliveryDate.day == now.day
+                        ? now.hour
+                        : _restaurant.getFirstOpeningHour(deliveryDate);
+                    i < 24;
+                    i++) ...[
                   DropdownMenuItem<TimeOfDay>(
                       value: TimeOfDay(hour: i, minute: 00),
                       child: TextTranslator(
-                        now.hour == i ? "${TimeOfDay(hour: i, minute: (DateTime.now().add(Duration(minutes: 15)).minute)).format(context)}" : "${TimeOfDay(hour: i, minute: 00).format(context)}",
-                        style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.w600),
+                        now.hour == i
+                            ? "${TimeOfDay(hour: i, minute: (DateTime.now().add(Duration(minutes: 15)).minute)).format(context)}"
+                            : "${TimeOfDay(hour: i, minute: 00).format(context)}",
+                        style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600),
                       )),
                 ]
               ];
@@ -503,12 +587,21 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
             ),
             underline: Container(),
             items: [
-              for (int i = deliveryDate.day == now.day ? now.hour : _restaurant.getFirstOpeningHour(deliveryDate); i < 24; i++) ...[
+              for (int i = deliveryDate.day == now.day
+                      ? now.hour
+                      : _restaurant.getFirstOpeningHour(deliveryDate);
+                  i < 24;
+                  i++) ...[
                 DropdownMenuItem<TimeOfDay>(
                     value: TimeOfDay(hour: i, minute: 00),
                     child: TextTranslator(
-                      now.hour == i ? "${TimeOfDay(hour: i, minute: (DateTime.now().add(Duration(minutes: 15)).minute)).format(context)}" : "${TimeOfDay(hour: i, minute: 00).format(context)}",
-                      style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.w600),
+                      now.hour == i
+                          ? "${TimeOfDay(hour: i, minute: (DateTime.now().add(Duration(minutes: 15)).minute)).format(context)}"
+                          : "${TimeOfDay(hour: i, minute: 00).format(context)}",
+                      style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w600),
                     )),
               ]
             ],

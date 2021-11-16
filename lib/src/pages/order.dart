@@ -531,7 +531,8 @@ class _OrderPageState extends State<OrderPage> {
                                     isRestaurantLoading = false;
                                   });
                                   Fluttertoast.showToast(
-                                    msg: "code promo invalide",
+                                    msg:
+                                        "Vous avez atteint votre limite d'utilisation",
                                   );
                                   return;
                                 }
@@ -543,7 +544,7 @@ class _OrderPageState extends State<OrderPage> {
                               }
                             } else {
                               Fluttertoast.showToast(
-                                msg: "code promo invalide",
+                                msg: "Code promo invalide",
                               );
                               return;
                             }

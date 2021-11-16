@@ -1,6 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:menu_advisor/src/providers/SettingContext.dart';
+import 'package:menu_advisor/src/utils/extensions.dart';
 import 'package:menu_advisor/src/utils/textFormFieldTranslator.dart';
+import 'package:provider/provider.dart';
+
+class PhoneField extends StatelessWidget {
+  final InputDecoration decoration;
+  final FocusNode focusNode;
+  final String labelText;
+  final String hintText;
+  final PhoneNumber initialValue;
+  final Function(PhoneNumber) onInputChanged;
+  final Function(bool) onInputValidated;
+  final Function(PhoneNumber) onSaved;
+  PhoneField({
+    Key key,
+    this.decoration,
+    this.focusNode,
+    this.hintText,
+    this.labelText,
+    this.onInputChanged,
+    this.onSaved,
+    this.initialValue,
+    this.onInputValidated,
+  }) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    final lang = Provider.of<SettingContext>(context, listen: false)
+        .languageCodeTranslate;
+    return FutureBuilder<String>(
+        future: labelText != null
+            ? labelText.translator(lang)
+            : hintText.translator(lang),
+        builder: (context, snapshot) {
+          return InternationalPhoneNumberInput(
+            focusNode: focusNode,
+            onInputChanged: onInputChanged,
+            onInputValidated: onInputValidated,
+            selectorConfig: SelectorConfig(
+              selectorType: PhoneInputSelectorType.DIALOG,
+            ),
+            ignoreBlank: false,
+            autoValidateMode: AutovalidateMode.disabled,
+            selectorTextStyle: TextStyle(color: Colors.black),
+            initialValue: initialValue,
+            // textFieldController: _emailController,
+            formatInput: false,
+            inputDecoration: labelText != null
+                ? InputDecoration(
+                    labelText: snapshot.data,
+                    hintText: hintText,
+                  )
+                : decoration,
+            keyboardType:
+                TextInputType.numberWithOptions(signed: true, decimal: true),
+            onSaved: onSaved,
+          );
+        });
+  }
+}
 
 class PasswordField extends StatefulWidget {
   final FocusNode focusNode;
@@ -49,13 +109,13 @@ class _PasswordFieldState extends State<PasswordField> {
       obscureText: obscureText,
       textInputAction: widget.textInputAction,
       suffixIcon: IconButton(
-          onPressed: () => setState(() {
-            obscureText = !obscureText;
-          }),
-          icon: FaIcon(
-            obscureText ? FontAwesomeIcons.eye : FontAwesomeIcons.eyeSlash,
-          ),
+        onPressed: () => setState(() {
+          obscureText = !obscureText;
+        }),
+        icon: FaIcon(
+          obscureText ? FontAwesomeIcons.eye : FontAwesomeIcons.eyeSlash,
         ),
+      ),
       decoration: InputDecoration(
         labelText: widget.labelText,
       ),

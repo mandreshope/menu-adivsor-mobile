@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:menu_advisor/src/components/inputs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/models/models.dart';
@@ -22,6 +24,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   TextEditingController firstnameController;
   TextEditingController addressController;
   TextEditingController phoneNumberController;
+  String parsedPhone = "";
 
   FocusNode lastnameFocus = FocusNode();
   FocusNode firstnameFocus = FocusNode();
@@ -40,10 +43,19 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
       listen: false,
     );
 
-    lastnameController = TextEditingController(text: authContext.currentUser.name?.last ?? '');
-    firstnameController = TextEditingController(text: authContext.currentUser.name?.first ?? '');
-    addressController = TextEditingController(text: authContext.currentUser.address ?? '');
-    phoneNumberController = TextEditingController(text: authContext.currentUser.phoneNumber ?? '');
+    lastnameController =
+        TextEditingController(text: authContext.currentUser.name?.last ?? '');
+    firstnameController =
+        TextEditingController(text: authContext.currentUser.name?.first ?? '');
+    addressController =
+        TextEditingController(text: authContext.currentUser.address ?? '');
+    phoneNumberController =
+        TextEditingController(text: authContext.currentUser.phoneNumber ?? '');
+    PhoneNumber.getRegionInfoFromPhoneNumber(phoneNumberController.text)
+        .then((value) async {
+      parsedPhone = await PhoneNumber.getParsableNumber(value);
+      setState(() {});
+    });
   }
 
   @override
@@ -67,7 +79,8 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                 keyboardType: TextInputType.name,
                 textInputAction: TextInputAction.next,
                 decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context).translate("lastname_placeholder"),
+                  labelText: AppLocalizations.of(context)
+                      .translate("lastname_placeholder"),
                 ),
                 onChanged: (_) {
                   _updateChangedState();
@@ -86,7 +99,8 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                 keyboardType: TextInputType.name,
                 textInputAction: TextInputAction.next,
                 decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context).translate("firstname_placeholder"),
+                  labelText: AppLocalizations.of(context)
+                      .translate("firstname_placeholder"),
                 ),
                 onChanged: (_) {
                   _updateChangedState();
@@ -105,7 +119,8 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                 keyboardType: TextInputType.name,
                 textInputAction: TextInputAction.next,
                 decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context).translate("address_placeholder"),
+                  labelText: AppLocalizations.of(context)
+                      .translate("address_placeholder"),
                 ),
                 onChanged: (_) {
                   _updateChangedState();
@@ -145,21 +160,23 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
               SizedBox(
                 height: 30,
               ),
-              TextFormFieldTranslator(
+              PhoneField(
                 focusNode: phoneNumberFocus,
-                controller: phoneNumberController,
-                keyboardType: TextInputType.name,
-                textInputAction: TextInputAction.next,
-                decoration: InputDecoration(
-                  labelText: 'Téléphone',
-                ),
-                onChanged: (_) {
-                  _updateChangedState();
+                initialValue: phoneInitialCountryCode,
+                onInputChanged: (PhoneNumber number) {
+                  print(number.phoneNumber);
+                  phoneNumberController.text = number.phoneNumber;
                 },
-                onFieldSubmitted: (_) {
+                onInputValidated: (bool value) {
+                  print(value);
+                },
+                onSaved: (PhoneNumber number) {
                   phoneNumberFocus.unfocus();
                   _submitForm();
                 },
+                decoration: InputDecoration(
+                  hintText: parsedPhone,
+                ),
               ),
               SizedBox(
                 height: 30,
@@ -215,7 +232,10 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
         inProgress = true;
       });
 
-      String firstname = firstnameController.value.text, lastname = lastnameController.value.text, address = addressController.value.text, phoneNumber = phoneNumberController.value.text;
+      String firstname = firstnameController.value.text,
+          lastname = lastnameController.value.text,
+          address = addressController.value.text,
+          phoneNumber = phoneNumberController.value.text;
 
       try {
         await authContext.updateUserProfile({
@@ -249,7 +269,10 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
       context,
       listen: false,
     );
-    String firstname = firstnameController.value.text, lastname = lastnameController.value.text, address = addressController.value.text, phoneNumber = phoneNumberController.value.text;
+    String firstname = firstnameController.value.text,
+        lastname = lastnameController.value.text,
+        address = addressController.value.text,
+        phoneNumber = phoneNumberController.value.text;
 
     User user = authContext.currentUser;
 
@@ -257,7 +280,10 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
       setState(() {
         changed = true;
       });
-    else if ((user.name.first == firstname && user.name.last == lastname && user.address == address && user.phoneNumber == phoneNumber))
+    else if ((user.name.first == firstname &&
+        user.name.last == lastname &&
+        user.address == address &&
+        user.phoneNumber == phoneNumber))
       setState(() {
         changed = false;
       });

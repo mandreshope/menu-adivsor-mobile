@@ -428,7 +428,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                   ),
                                   child: Column(
                                     children: [
-                                      Material(
+                                      /*Material( TODO: Remove dès que possible option - DELIVERY
                                         color: Colors.transparent,
                                         child: InkWell(
                                           onTap: () {
@@ -459,7 +459,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                           ),
                                         ),
                                       ),
-                                      Divider(),
+                                      Divider(),*/
                                       Material(
                                         color: Colors.transparent,
                                         child: InkWell(

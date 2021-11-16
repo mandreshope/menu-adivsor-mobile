@@ -4,6 +4,7 @@ import 'package:flag/flag.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:menu_advisor/src/animations/FadeAnimation.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/components/inputs.dart';
@@ -119,19 +120,24 @@ class _LoginPageState extends State<LoginPage> {
                           "Langage",
                           style: Theme.of(context).textTheme.headline6,
                         ),
-                        Consumer<SettingContext>(builder: (context, settingContext, _) {
+                        Consumer<SettingContext>(
+                            builder: (context, settingContext, _) {
                           return DropdownButton<String>(
                             elevation: 16,
                             isExpanded: true,
-                            value: /*isSystemSetting ? 'system' :*/ settingContext.languageCode,
+                            value: /*isSystemSetting ? 'system' :*/ settingContext
+                                .languageCode,
                             onChanged: (String languageCode) {
-                              SettingContext settingContext = Provider.of<SettingContext>(
+                              SettingContext settingContext =
+                                  Provider.of<SettingContext>(
                                 context,
                                 listen: false,
                               );
 
                               showDialogProgress(context);
-                              settingContext.setlanguageCode(languageCode).then((value) {
+                              settingContext
+                                  .setlanguageCode(languageCode)
+                                  .then((value) {
                                 dismissDialogProgress(context);
                               });
                             },
@@ -139,12 +145,16 @@ class _LoginPageState extends State<LoginPage> {
                               color: Colors.grey[700],
                             ),
                             items: [
-                              for (int i = 0; i < settingContext.supportedLanguages.length; i++)
+                              for (int i = 0;
+                                  i < settingContext.supportedLanguages.length;
+                                  i++)
                                 DropdownMenuItem<String>(
                                   value: settingContext.supportedLanguages[i],
                                   child: ListTile(
                                     leading: Flag.fromString(
-                                      settingContext.supportedLanguages[i].toString().codeCountry,
+                                      settingContext.supportedLanguages[i]
+                                          .toString()
+                                          .codeCountry,
                                       height: 25,
                                       width: 25,
                                     ),
@@ -159,19 +169,22 @@ class _LoginPageState extends State<LoginPage> {
                         SizedBox(
                           height: 20,
                         ),
-                        TextFormFieldTranslator(
+                        PhoneField(
                           focusNode: _emailFocus,
-                          controller: _emailController,
-                          keyboardType: TextInputType.phone,
-                          textInputAction: TextInputAction.next,
-                          decoration: InputDecoration(
-                            labelText: "Votre numéro de téléphone",
-                            prefixText: phonePrefix,
-                          ),
-                          onFieldSubmitted: (_) {
+                          initialValue: phoneInitialCountryCode,
+                          onInputChanged: (PhoneNumber number) {
+                            print(number.phoneNumber);
+                            _emailController.text = number.phoneNumber;
+                          },
+                          onInputValidated: (bool value) {
+                            print(value);
+                          },
+                          onSaved: (PhoneNumber number) {
+                            print('On Saved: $number');
                             _emailFocus.unfocus();
                             FocusScope.of(context).requestFocus(_passwordFocus);
                           },
+                          labelText: "Votre numéro de téléphone",
                         ),
                         SizedBox(height: 20),
                         PasswordField(
@@ -180,7 +193,8 @@ class _LoginPageState extends State<LoginPage> {
                           keyboardType: TextInputType.text,
                           obscureText: true,
                           textInputAction: TextInputAction.done,
-                          labelText: AppLocalizations.of(context).translate("password_placeholder"),
+                          labelText: AppLocalizations.of(context)
+                              .translate("password_placeholder"),
                           onFieldSubmitted: (_) => _submitForm(),
                         ),
                         // SizedBox(height: 25),
@@ -195,7 +209,8 @@ class _LoginPageState extends State<LoginPage> {
                                   });
                                 }),
                             TextTranslator(
-                              AppLocalizations.of(context).translate("remember_password"),
+                              AppLocalizations.of(context)
+                                  .translate("remember_password"),
                             )
                           ],
                         ),
@@ -229,7 +244,8 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                 )
                               : TextTranslator(
-                                  AppLocalizations.of(context).translate("login_button"),
+                                  AppLocalizations.of(context)
+                                      .translate("login_button"),
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 20,
@@ -239,7 +255,8 @@ class _LoginPageState extends State<LoginPage> {
                         SizedBox(height: 10),
                         TextButton(
                           child: TextTranslator(
-                            AppLocalizations.of(context).translate("forgotten_password"),
+                            AppLocalizations.of(context)
+                                .translate("forgotten_password"),
                             style: TextStyle(
                               color: CRIMSON,
                               decoration: TextDecoration.underline,
@@ -255,7 +272,8 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         TextButton(
                           child: TextTranslator(
-                            AppLocalizations.of(context).translate("skip_for_now"),
+                            AppLocalizations.of(context)
+                                .translate("skip_for_now"),
                           ),
                           onPressed: () {
                             RouteUtil.goTo(
@@ -303,7 +321,8 @@ class _LoginPageState extends State<LoginPage> {
                           );
                         },
                         child: TextTranslator(
-                          AppLocalizations.of(context).translate("create_account"),
+                          AppLocalizations.of(context)
+                              .translate("create_account"),
                           style: TextStyle(
                             decoration: TextDecoration.underline,
                             fontWeight: FontWeight.bold,
@@ -326,7 +345,9 @@ class _LoginPageState extends State<LoginPage> {
 
   _submitForm() async {
     print("$logTrace");
-    final String email = phonePrefix + _emailController.value.text, password = _passwordController.value.text;
+    /*   final String email = phonePrefix + _emailController.value.text,*/
+    final String email = _emailController.value.text,
+        password = _passwordController.value.text;
 
     if (email.isEmpty || password.isEmpty) {
       Fluttertoast.showToast(
@@ -350,7 +371,8 @@ class _LoginPageState extends State<LoginPage> {
       listen: false,
     );
     try {
-      final result = await authContext.login(email.trim(), password, isPasswordRemember: isPasswordRemember);
+      final result = await authContext.login(email.trim(), password,
+          isPasswordRemember: isPasswordRemember);
       if (result) {
         if (cartContext.itemCount > 0)
           RouteUtil.goTo(
@@ -371,13 +393,15 @@ class _LoginPageState extends State<LoginPage> {
       print("$logTrace login error $error");
       if (error.contains("Incorrect phone number or password")) {
         Fluttertoast.showToast(
-          msg: AppLocalizations.of(context).translate("invalid_email_or_password"),
+          msg: AppLocalizations.of(context)
+              .translate("invalid_email_or_password"),
           backgroundColor: CRIMSON,
           textColor: Colors.white,
         );
       } else {
         Fluttertoast.showToast(
-          msg: await (error as String).translator(Provider.of<SettingContext>(context, listen: false).languageCode),
+          msg: await (error as String).translator(
+              Provider.of<SettingContext>(context, listen: false).languageCode),
           backgroundColor: CRIMSON,
           textColor: Colors.white,
         );

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:menu_advisor/src/animations/FadeAnimation.dart';
+import 'package:menu_advisor/src/components/inputs.dart';
 import 'package:menu_advisor/src/components/logo.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/constants/constant.dart';
@@ -92,7 +94,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         TextTranslator(
-                          AppLocalizations.of(context).translate("forgot_password"),
+                          AppLocalizations.of(context)
+                              .translate("forgot_password"),
                           style: TextStyle(
                             color: CRIMSON,
                             fontSize: 20,
@@ -101,19 +104,21 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         SizedBox(
                           height: 20,
                         ),
-                        TextFormFieldTranslator(
+                        PhoneField(
                           focusNode: _emailFocus,
-                          controller: _emailController,
-                          keyboardType: TextInputType.phone,
-                          textInputAction: TextInputAction.next,
-                          decoration: InputDecoration(
-                            labelText: "Votre numéro de téléphone",
-                            prefixText: phonePrefix,
-                          ),
-                          onFieldSubmitted: (_) {
+                          initialValue: phoneInitialCountryCode,
+                          onInputChanged: (PhoneNumber number) {
+                            print(number.phoneNumber);
+                            _emailController.text = number.phoneNumber;
+                          },
+                          onInputValidated: (bool value) {
+                            print(value);
+                          },
+                          onSaved: (PhoneNumber number) {
                             _emailFocus.unfocus();
                             _submitForm();
                           },
+                          labelText: "Votre numéro de téléphone",
                         ),
                         SizedBox(height: 15),
                         ElevatedButton(
@@ -144,7 +149,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                   ),
                                 )
                               : TextTranslator(
-                                  AppLocalizations.of(context).translate("next"),
+                                  AppLocalizations.of(context)
+                                      .translate("next"),
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 20,
@@ -167,7 +173,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   _submitForm() async {
     FormState formState = _formKey.currentState;
     if (formState.validate()) {
-      final String email = phonePrefix + _emailController.value.text;
+      final String email = _emailController.value.text;
 
       setState(() {
         loading = true;

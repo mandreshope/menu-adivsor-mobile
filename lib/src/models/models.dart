@@ -716,6 +716,9 @@ class Restaurant {
   }
 
   int getFirstOpeningHour(DateTime date, {bool force = false}) {
+    if (date == null) {
+      return 0;
+    }
     int hour = 0;
 
     bool open = false;
@@ -741,7 +744,7 @@ class Restaurant {
         int endhourAM = element.openings[0].end.hour;
         int endminAM = element.openings[0].end.minute;
 
-        if (dateNow.hour <= 12) {
+        if (dateNow?.hour <= 12) {
           timeBegin = TimeOfDay(hour: hourAM, minute: minAM);
           timeEnd = TimeOfDay(hour: endhourAM, minute: endminAM);
 
