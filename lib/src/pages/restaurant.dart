@@ -7,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:menu_advisor/src/components/backgrounds.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
@@ -52,7 +53,8 @@ class RestaurantPage extends StatefulWidget {
   _RestaurantPageState createState() => _RestaurantPageState();
 }
 
-class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProviderStateMixin {
+class _RestaurantPageState extends State<RestaurantPage>
+    with SingleTickerProviderStateMixin {
   bool isInFavorite = false;
   bool showFavoriteButton = true;
   bool searchLoading = false;
@@ -105,10 +107,14 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
   void initState() {
     super.initState();
 
-    _autoScrollController = AutoScrollController(viewportBoundaryGetter: () => Rect.fromLTRB(0, 0, MediaQuery.of(context).padding.right, 0), axis: Axis.horizontal);
+    _autoScrollController = AutoScrollController(
+        viewportBoundaryGetter: () =>
+            Rect.fromLTRB(0, 0, MediaQuery.of(context).padding.right, 0),
+        axis: Axis.horizontal);
 
     _lang = Provider.of<SettingContext>(context, listen: false).languageCode;
-    _langTranslate = Provider.of<SettingContext>(context, listen: false).languageCodeTranslate;
+    _langTranslate = Provider.of<SettingContext>(context, listen: false)
+        .languageCodeTranslate;
     Provider.of<SettingContext>(context, listen: false).isRestaurantPage = true;
     range = Provider.of<SettingContext>(context, listen: false).range;
 
@@ -135,7 +141,9 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
       );
 
       if (authContext.currentUser == null) showFavoriteButton = false;
-      if (authContext.currentUser != null && authContext.currentUser.favoriteRestaurants.contains(restaurant.id)) isInFavorite = true;
+      if (authContext.currentUser != null &&
+          authContext.currentUser.favoriteRestaurants.contains(restaurant.id))
+        isInFavorite = true;
 
       drinks = await api.getFoods(
         Provider.of<SettingContext>(
@@ -177,11 +185,16 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
         if (itemPositionsListener.itemPositions.value.length == 0) {
           return;
         }
-        print('Scroll position: ${itemPositionsListener.itemPositions.value.first.index}');
+        print(
+            'Scroll position: ${itemPositionsListener.itemPositions.value.first.index}');
         if (tabController.index == 0) {
-          _restaurantContext.currentIndex = itemPositionsListener.itemPositions.value.first.index;
-          _restaurantContext.setFoodTypeSelected(_restaurantContext.currentIndex);
-          await _autoScrollController.scrollToIndex(_restaurantContext.currentIndex, preferPosition: AutoScrollPosition.begin);
+          _restaurantContext.currentIndex =
+              itemPositionsListener.itemPositions.value.first.index;
+          _restaurantContext
+              .setFoodTypeSelected(_restaurantContext.currentIndex);
+          await _autoScrollController.scrollToIndex(
+              _restaurantContext.currentIndex,
+              preferPosition: AutoScrollPosition.begin);
         }
       });
 
@@ -227,7 +240,9 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
         });
       });
 
-      menus = await api.getMenus(_lang, restaurant.id, fromCommand: false).catchError((onError) {
+      menus = await api
+          .getMenus(_lang, restaurant.id, fromCommand: false)
+          .catchError((onError) {
         print(onError);
       });
 
@@ -270,9 +285,11 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
       }
       for (var attr in attributeFilter) {
         if (attr.tag.contains("allergen")) {
-          value.retainWhere((food) => !food.allergens.map((e) => e.sId).contains(attr.sId));
+          value.retainWhere(
+              (food) => !food.allergens.map((e) => e.sId).contains(attr.sId));
         } else {
-          value.retainWhere((food) => food.attributes.map((e) => e.sId).contains(attr.sId));
+          value.retainWhere(
+              (food) => food.attributes.map((e) => e.sId).contains(attr.sId));
         }
       }
       return value;
@@ -286,12 +303,14 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
     }
 
     String type = filters.containsKey('type') ? filters['type'] : "";
-    List<String> attributes = filters.containsKey('attributes') ? filters['attributes'] : [];
+    List<String> attributes =
+        filters.containsKey('attributes') ? filters['attributes'] : [];
 
     searchFood = searchResult.where((element) {
       bool isType = false;
       bool isFilter = false;
-      final nameFound = element.name.toLowerCase().contains(searchValue.toLowerCase());
+      final nameFound =
+          element.name.toLowerCase().contains(searchValue.toLowerCase());
       if (type.isEmpty && attributes.isEmpty) {
         return nameFound;
       }
@@ -363,7 +382,8 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
           });
           return false;
         }
-        Provider.of<SettingContext>(context, listen: false).isRestaurantPage = false;
+        Provider.of<SettingContext>(context, listen: false).isRestaurantPage =
+            false;
         Provider.of<CartContext>(context, listen: false).withPrice = true;
         Provider.of<DataContext>(context, listen: false).resetAttributes();
 
@@ -393,14 +413,21 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                         print("up");
                       },
                       onVerticalDragDown: (drag) {
-                        if (itemPositionsListener.itemPositions.value.length == 0) {
+                        if (itemPositionsListener.itemPositions.value.length ==
+                            0) {
                           return;
                         }
-                        if ((_scrollController.offset <= 0 && itemPositionsListener.itemPositions.value.first.index == 0)) {
+                        if ((_scrollController.offset <= 0 &&
+                            itemPositionsListener
+                                    .itemPositions.value.first.index ==
+                                0)) {
                           setState(() {
                             _canScrollListRestaurant = false;
                           });
-                        } else if (_scrollController.offset >= 245 && itemPositionsListener.itemPositions.value.first.index >= 0) {
+                        } else if (_scrollController.offset >= 245 &&
+                            itemPositionsListener
+                                    .itemPositions.value.first.index >=
+                                0) {
                           setState(() {
                             _canScrollListRestaurant = true;
                           });
@@ -485,7 +512,8 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
             child: searchValue.length == 0
                 ? Center(
                     child: TextTranslator(
-                      AppLocalizations.of(context).translate('start_by_typing_your_research'),
+                      AppLocalizations.of(context)
+                          .translate('start_by_typing_your_research'),
                     ),
                   )
                 : Container(
@@ -496,13 +524,15 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                         if (searchLoading)
                           Center(
                             child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(CRIMSON),
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(CRIMSON),
                             ),
                           ),
                         if (!searchLoading && searchResults.length == 0)
                           Center(
                             child: TextTranslator(
-                              AppLocalizations.of(context).translate('no_result'),
+                              AppLocalizations.of(context)
+                                  .translate('no_result'),
                             ),
                           ),
                         ...searchFood
@@ -552,7 +582,8 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                 Expanded(
                   child: TextFormFieldTranslator(
                     decoration: InputDecoration.collapsed(
-                      hintText: AppLocalizations.of(context).translate("find_something"),
+                      hintText: AppLocalizations.of(context)
+                          .translate("find_something"),
                     ),
                     onChanged: _onChanged,
                   ),
@@ -565,7 +596,8 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                         context: context,
                         barrierDismissible: false,
                         builder: (_) => SearchSettingDialog(
-                          languageCode: Provider.of<SettingContext>(context).languageCode,
+                          languageCode:
+                              Provider.of<SettingContext>(context).languageCode,
                           inRestaurant: true,
                           filters: filters,
                           type: type,
@@ -603,14 +635,16 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
         children: [
           NestedScrollView(
             controller: _scrollController,
-            headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            headerSliverBuilder:
+                (BuildContext context, bool innerBoxIsScrolled) {
               return <Widget>[
                 SliverOverlapAbsorber(
                   sliver: SliverSafeArea(
                     top: false,
                     sliver: SliverAppBar(
                       backgroundColor: Colors.white,
-                      expandedHeight: restaurant.description.isEmpty ? 400 : 470.0,
+                      expandedHeight:
+                          restaurant.description.isEmpty ? 400 : 470.0,
                       floating: false,
                       pinned: true,
                       flexibleSpace: FlexibleSpaceBar(
@@ -621,26 +655,34 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                             height: 65,
                           ),
                           Padding(
-                            padding: const EdgeInsets.only(top: 20, right: 20, left: 20, bottom: 15),
+                            padding: const EdgeInsets.only(
+                                top: 20, right: 20, left: 20, bottom: 15),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 InkWell(
-                                  // child: Hero(
-                                  //   tag: 'tag:${restaurant.logo}',
                                   child: Image.network(
                                     restaurant.logo,
-                                    // width: 4 * MediaQuery.of(context).size.width / 7,
-                                    width: MediaQuery.of(context).size.width / 3,
-                                    height: MediaQuery.of(context).size.width / 3,
+                                    width:
+                                        MediaQuery.of(context).size.width / 3,
+                                    height:
+                                        MediaQuery.of(context).size.width / 3,
                                     fit: BoxFit.cover,
                                     errorBuilder: (_, __, ___) => Center(
-                                      child: Container(
-                                        width: MediaQuery.of(context).size.width / 3,
-                                        height: MediaQuery.of(context).size.width / 3,
-                                        color: Colors.white,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(5.0),
+                                        child: PlaceholderBackground(
+                                          title: restaurant?.name[0],
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              3,
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              3,
+                                        ),
                                       ),
-                                      // ),
                                     ),
                                   ),
                                   onTap: () {
@@ -676,8 +718,10 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                       children: [
                                         TextTranslator(
                                           "Distance : ${Provider.of<SettingContext>(context).distanceBetweenString(
-                                            restaurant.location.coordinates.last,
-                                            restaurant.location.coordinates.first,
+                                            restaurant
+                                                .location.coordinates.last,
+                                            restaurant
+                                                .location.coordinates.first,
                                           )}",
                                           style: TextStyle(
                                             fontSize: 16,
@@ -688,7 +732,8 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                     ),
                                     SizedBox(height: 5),
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
                                       children: [
                                         Icon(
                                           FontAwesomeIcons.mapMarkerAlt,
@@ -700,25 +745,41 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                         ),
                                         InkWell(
                                           onTap: () async {
-                                            Position currentPosition = await Geolocator.getCurrentPosition();
-                                            var coordinates = restaurant.location.coordinates;
+                                            Position currentPosition =
+                                                await Geolocator
+                                                    .getCurrentPosition();
+                                            var coordinates =
+                                                restaurant.location.coordinates;
                                             RouteUtil.goTo(
                                               context: context,
                                               child: MapPolylinePage(
                                                 restaurant: restaurant,
-                                                initialPosition: LatLng(currentPosition.latitude, currentPosition.longitude),
-                                                destinationPosition: LatLng(coordinates.last, coordinates.first),
+                                                initialPosition: LatLng(
+                                                    currentPosition.latitude,
+                                                    currentPosition.longitude),
+                                                destinationPosition: LatLng(
+                                                    coordinates.last,
+                                                    coordinates.first),
                                               ),
                                               routeName: restaurantRoute,
                                             );
                                           },
                                           child: Container(
-                                            width: (MediaQuery.of(context).size.width / 2) - 10,
+                                            width: (MediaQuery.of(context)
+                                                        .size
+                                                        .width /
+                                                    2) -
+                                                10,
                                             child: TextTranslator(
                                               restaurant.address,
                                               maxLines: 3,
                                               overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(fontWeight: FontWeight.w600, color: Colors.blue, fontSize: 18, decoration: TextDecoration.underline),
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Colors.blue,
+                                                  fontSize: 18,
+                                                  decoration:
+                                                      TextDecoration.underline),
                                             ),
                                           ),
                                         )
@@ -729,7 +790,8 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                     ),
                                     InkWell(
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
                                         children: [
                                           Icon(
                                             FontAwesomeIcons.phoneAlt,
@@ -745,13 +807,16 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                               fontWeight: FontWeight.bold,
                                               fontSize: 18,
                                               color: Colors.blue,
-                                              decoration: TextDecoration.underline,
+                                              decoration:
+                                                  TextDecoration.underline,
                                             ),
                                           )
                                         ],
                                       ),
                                       onTap: () async {
-                                        if (restaurant.phoneNumber != null) await launch("tel:${restaurant.phoneNumber}");
+                                        if (restaurant.phoneNumber != null)
+                                          await launch(
+                                              "tel:${restaurant.phoneNumber}");
                                       },
                                     ),
                                     SizedBox(
@@ -766,22 +831,42 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                             margin: EdgeInsets.only(left: 25),
                                             child: InkWell(
                                                 onTap: () async {
-                                                  Position currentPosition = await Geolocator.getCurrentPosition();
+                                                  Position currentPosition =
+                                                      await Geolocator
+                                                          .getCurrentPosition();
 
-                                                  var coordinates = restaurant.location.coordinates;
-                                                  MapUtils.openMap(currentPosition.latitude, currentPosition.longitude, coordinates.last, coordinates.first);
+                                                  var coordinates = restaurant
+                                                      .location.coordinates;
+                                                  MapUtils.openMap(
+                                                      currentPosition.latitude,
+                                                      currentPosition.longitude,
+                                                      coordinates.last,
+                                                      coordinates.first);
                                                 },
                                                 child: Container(
                                                   padding: EdgeInsets.all(5),
                                                   decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.horizontal(left: Radius.circular(15), right: Radius.circular(15)),
+                                                    borderRadius:
+                                                        BorderRadius.horizontal(
+                                                            left:
+                                                                Radius.circular(
+                                                                    15),
+                                                            right:
+                                                                Radius.circular(
+                                                                    15)),
                                                     color: Colors.orange,
                                                   ),
                                                   child: Padding(
-                                                    padding: const EdgeInsets.all(2.0),
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            2.0),
                                                     child: TextTranslator(
                                                       "Itinéraire",
-                                                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14),
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          fontSize: 14),
                                                     ),
                                                   ),
                                                 )),
@@ -809,8 +894,16 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                         ),
                                         Container(
                                           padding: EdgeInsets.all(8),
-                                          decoration: BoxDecoration(color: restaurant.isOpen ? TEAL : CRIMSON, borderRadius: BorderRadius.circular(25)),
-                                          child: Text(restaurant.isOpen ? "Ouvert" : "Fermé",
+                                          decoration: BoxDecoration(
+                                              color: restaurant.isOpen
+                                                  ? TEAL
+                                                  : CRIMSON,
+                                              borderRadius:
+                                                  BorderRadius.circular(25)),
+                                          child: Text(
+                                              restaurant.isOpen
+                                                  ? "Ouvert"
+                                                  : "Fermé",
                                               style: TextStyle(
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.w600,
@@ -837,7 +930,12 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                   SizedBox(
                                     width: 5,
                                   ),
-                                  Icon(restaurant.delivery ? Icons.check_circle_outline_outlined : Icons.close, color: restaurant.delivery ? TEAL : CRIMSON)
+                                  Icon(
+                                      restaurant.delivery
+                                          ? Icons.check_circle_outline_outlined
+                                          : Icons.close,
+                                      color:
+                                          restaurant.delivery ? TEAL : CRIMSON)
                                 ],
                               ),
                               SizedBox(
@@ -853,7 +951,12 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                   SizedBox(
                                     width: 5,
                                   ),
-                                  Icon(restaurant.surPlace ? Icons.check_circle_outline_outlined : Icons.close, color: restaurant.surPlace ? TEAL : CRIMSON)
+                                  Icon(
+                                      restaurant.surPlace
+                                          ? Icons.check_circle_outline_outlined
+                                          : Icons.close,
+                                      color:
+                                          restaurant.surPlace ? TEAL : CRIMSON)
                                 ],
                               ),
                               SizedBox(
@@ -869,7 +972,12 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                   SizedBox(
                                     width: 5,
                                   ),
-                                  Icon(restaurant.aEmporter ? Icons.check_circle_outline_outlined : Icons.close, color: restaurant.aEmporter ? TEAL : CRIMSON)
+                                  Icon(
+                                      restaurant.aEmporter
+                                          ? Icons.check_circle_outline_outlined
+                                          : Icons.close,
+                                      color:
+                                          restaurant.aEmporter ? TEAL : CRIMSON)
                                 ],
                               ),
                             ],
@@ -880,12 +988,16 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                             height: restaurant.description.isEmpty ? 20 : 30,
                             width: double.infinity,
                             child: TextTranslator(
-                              restaurant.description.isEmpty ? "" : restaurant.description,
+                              restaurant.description.isEmpty
+                                  ? ""
+                                  : restaurant.description,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          restaurant.description.isNotEmpty ? Divider() : Container(),
+                          restaurant.description.isNotEmpty
+                              ? Divider()
+                              : Container(),
                           InkWell(
                             onTap: () {
                               showDialog(
@@ -909,7 +1021,10 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                   ),
                                   TextTranslator(
                                     "Horaire",
-                                    style: TextStyle(fontSize: 18, color: CRIMSON, fontWeight: FontWeight.w600),
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        color: CRIMSON,
+                                        fontWeight: FontWeight.w600),
                                   ),
                                   Spacer(),
                                   Icon(
@@ -935,18 +1050,24 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                   controller: tabController,
                                   isScrollable: true,
                                   unselectedLabelColor: CRIMSON,
-                                  indicator: BoxDecoration(borderRadius: BorderRadius.circular(5), color: CRIMSON),
+                                  indicator: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5),
+                                      color: CRIMSON),
                                   tabs: [
                                     // Text("TEst"),
                                     FutureBuilder(
-                                        future: AppLocalizations.of(context).translate('a_la_carte').translator(_langTranslate),
+                                        future: AppLocalizations.of(context)
+                                            .translate('a_la_carte')
+                                            .translator(_langTranslate),
                                         builder: (_, data) {
                                           return Tab(
                                             text: data.data ?? "",
                                           );
                                         }),
                                     FutureBuilder<String>(
-                                        future: AppLocalizations.of(context).translate('menus').translator(_langTranslate),
+                                        future: AppLocalizations.of(context)
+                                            .translate('menus')
+                                            .translator(_langTranslate),
                                         builder: (_, data) {
                                           return Tab(
                                             text: data.data ?? "",
@@ -954,10 +1075,13 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                         }),
 
                                     FutureBuilder<String>(
-                                        future: AppLocalizations.of(context).translate('menus').translator(_langTranslate),
+                                        future: AppLocalizations.of(context)
+                                            .translate('menus')
+                                            .translator(_langTranslate),
                                         builder: (_, data) {
                                           return Tab(
-                                            text: AppLocalizations.of(context).translate('drinks'),
+                                            text: AppLocalizations.of(context)
+                                                .translate('drinks'),
                                           );
                                         }),
                                   ],
@@ -967,7 +1091,8 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                             Align(
                               child: InkWell(
                                 child: Container(
-                                  decoration: BoxDecoration(color: CRIMSON, shape: BoxShape.circle),
+                                  decoration: BoxDecoration(
+                                      color: CRIMSON, shape: BoxShape.circle),
                                   padding: EdgeInsets.all(5),
                                   child: Center(
                                     child: Icon(
@@ -981,11 +1106,12 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                 ),
                                 onTap: () async {
                                   print("$logTrace foods filter");
-                                  var result = await showDialog<List<FoodAttribute>>(
-                                      context: context,
-                                      builder: (_) {
-                                        return AtributesDialog();
-                                      });
+                                  var result =
+                                      await showDialog<List<FoodAttribute>>(
+                                          context: context,
+                                          builder: (_) {
+                                            return AtributesDialog();
+                                          });
                                   if (result != null) {
                                     attributeFilter = result;
                                     _filterFood();
@@ -996,11 +1122,13 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                             )
                           ],
                         ),
-                        preferredSize: Size(MediaQuery.of(context).size.width, 50),
+                        preferredSize:
+                            Size(MediaQuery.of(context).size.width, 50),
                       ),
                     ),
                   ),
-                  handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                  handle:
+                      NestedScrollView.sliverOverlapAbsorberHandleFor(context),
                 ),
               ];
             },
@@ -1017,9 +1145,14 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                       child: ScrollablePositionedList.separated(
                         itemScrollController: itemScrollController,
                         itemPositionsListener: itemPositionsListener,
-                        itemCount: tabController.index == 0 ? restaurant.foodTypes.length : 2,
-                        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 20),
-                        physics: _canScrollListRestaurant ? AlwaysScrollableScrollPhysics() : NeverScrollableScrollPhysics(),
+                        itemCount: tabController.index == 0
+                            ? restaurant.foodTypes.length
+                            : 2,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 0, vertical: 20),
+                        physics: _canScrollListRestaurant
+                            ? AlwaysScrollableScrollPhysics()
+                            : NeverScrollableScrollPhysics(),
                         itemBuilder: (_, index) {
                           if (tabController.index != 0) {
                             if (index == 0) {
@@ -1033,7 +1166,8 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                   Padding(
                                     padding: const EdgeInsets.only(left: 15),
                                     child: TextTranslator(
-                                      AppLocalizations.of(context).translate('menu'),
+                                      AppLocalizations.of(context)
+                                          .translate('menu'),
                                       style: TextStyle(
                                         fontSize: 22,
                                         fontWeight: FontWeight.bold,
@@ -1056,7 +1190,8 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                   Padding(
                                     padding: const EdgeInsets.only(left: 15),
                                     child: TextTranslator(
-                                      AppLocalizations.of(context).translate('drinks'),
+                                      AppLocalizations.of(context)
+                                          .translate('drinks'),
                                       style: TextStyle(
                                         fontSize: 22,
                                         fontWeight: FontWeight.bold,
@@ -1085,7 +1220,8 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                 SizedBox(
                                   height: 10,
                                 ),
-                                _renderFoodListOfType(restaurant.foodTypes[index].name),
+                                _renderFoodListOfType(
+                                    restaurant.foodTypes[index].name),
                               ],
                             );
                           } else {
@@ -1097,7 +1233,8 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                     Padding(
                                       padding: const EdgeInsets.only(left: 15),
                                       child: TextTranslator(
-                                        AppLocalizations.of(context).translate('a_la_carte'),
+                                        AppLocalizations.of(context)
+                                            .translate('a_la_carte'),
                                         style: TextStyle(
                                           fontSize: 22,
                                           fontWeight: FontWeight.bold,
@@ -1117,7 +1254,8 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                     SizedBox(
                                       height: 10,
                                     ),
-                                    _renderFoodListOfType(restaurant.foodTypes[index].name),
+                                    _renderFoodListOfType(
+                                        restaurant.foodTypes[index].name),
                                   ],
                                 );
                             }
@@ -1137,7 +1275,8 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                   SizedBox(
                                     height: 10,
                                   ),
-                                  _renderFoodListOfType(restaurant.foodTypes[index].name),
+                                  _renderFoodListOfType(
+                                      restaurant.foodTypes[index].name),
                                 ],
                               );
                             return Container();
@@ -1182,9 +1321,11 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
               actions: [
                 InkWell(
                   onTap: () {
-                    RouteUtil.goTo(context: context, child: ListLang(), routeName: "null");
+                    RouteUtil.goTo(
+                        context: context, child: ListLang(), routeName: "null");
                   },
-                  child: Consumer<SettingContext>(builder: (context, snapshot, w) {
+                  child:
+                      Consumer<SettingContext>(builder: (context, snapshot, w) {
                     return Flag.fromString(
                       snapshot?.languageCodeFlag ?? 'fr',
                       height: 30,
@@ -1205,7 +1346,8 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                                 height: 14,
                                 child: FittedBox(
                                   child: CircularProgressIndicator(
-                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white),
                                   ),
                                 ),
                               ),
@@ -1214,7 +1356,9 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                         : IconButton(
                             onPressed: _toggleFavorite,
                             icon: Icon(
-                              isInFavorite ? Icons.favorite : Icons.favorite_border,
+                              isInFavorite
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
                               color: Colors.white,
                             ),
                           ),
@@ -1224,7 +1368,8 @@ class _RestaurantPageState extends State<RestaurantPage> with SingleTickerProvid
                     color: Colors.white,
                   ),
                   onPressed: () {
-                    Share.share("https://advisor.voirlemenu.fr/restaurants/${restaurant.id}");
+                    Share.share(
+                        "https://advisor.voirlemenu.fr/restaurants/${restaurant.id}");
                   },
                 ),
               ],
