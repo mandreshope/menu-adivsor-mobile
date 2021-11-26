@@ -5,7 +5,7 @@ const String phonePrefix = "+261"; //TODO: change it test : +261 / prod : +33
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
 final PhoneNumber phoneInitialCountryCode =
-    PhoneNumber(isoCode: 'MG'); //TODO: Change this to FR in PROD
+    PhoneNumber(isoCode: 'FR'); //TODO: Change this to FR in PROD
 String get logTrace =>
     '[LOG_TRACE] ' +
     StackTrace.current.toString().split("\n").toList()[1].split("      ").last;

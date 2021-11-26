@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:menu_advisor/src/components/backgrounds.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/components/pointer_paint.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
@@ -131,7 +132,14 @@ class FoodCard extends StatefulWidget {
 
   final bool showButton;
 
-  const FoodCard({Key key, @required this.food, this.minified = false, this.imageTag, this.showButton = false, this.withPrice = true}) : super(key: key);
+  const FoodCard(
+      {Key key,
+      @required this.food,
+      this.minified = false,
+      this.imageTag,
+      this.showButton = false,
+      this.withPrice = true})
+      : super(key: key);
 
   @override
   _FoodCardState createState() => _FoodCardState();
@@ -150,7 +158,9 @@ class _FoodCardState extends State<FoodCard> {
   @override
   void initState() {
     super.initState();
-    var restaurantId = widget.food.restaurant is String ? widget.food.restaurant : widget.food.restaurant['_id'];
+    var restaurantId = widget.food.restaurant is String
+        ? widget.food.restaurant
+        : widget.food.restaurant['_id'];
     api.getRestaurantName(id: restaurantId).then((res) {
       if (mounted)
         setState(() {
@@ -158,7 +168,8 @@ class _FoodCardState extends State<FoodCard> {
           loadingRestaurantName = false;
         });
     }).catchError((error) {
-      restaurantName = AppLocalizations.of(context).translate('no_associated_restaurant');
+      restaurantName =
+          AppLocalizations.of(context).translate('no_associated_restaurant');
     });
 
     AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
@@ -222,7 +233,9 @@ class _FoodCardState extends State<FoodCard> {
                       children: [
                         Container(
                           // key: ,
-                          width: widget.minified ? (MediaQuery.of(context).size.width - 288) : (MediaQuery.of(context).size.width - 188),
+                          width: widget.minified
+                              ? (MediaQuery.of(context).size.width - 288)
+                              : (MediaQuery.of(context).size.width - 188),
                           child: Column(
                             mainAxisSize: MainAxisSize.max,
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -239,7 +252,8 @@ class _FoodCardState extends State<FoodCard> {
                                     left: 30.0,
                                   ),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     mainAxisSize: MainAxisSize.max,
                                     children: [
                                       TextTranslator(
@@ -267,31 +281,46 @@ class _FoodCardState extends State<FoodCard> {
                                               .map(
                                                 (attribute) => FittedBox(
                                                   child: Card(
-                                                    shape: RoundedRectangleBorder(
-                                                      borderRadius: BorderRadius.circular(20),
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20),
                                                     ),
                                                     margin: EdgeInsets.zero,
                                                     child: Padding(
-                                                      padding: const EdgeInsets.all(8),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8),
                                                       child: Builder(
                                                         builder: (_) {
                                                           return Row(
                                                             children: [
-                                                              if (widget.food.attributes != null)
+                                                              if (widget.food
+                                                                      .attributes !=
+                                                                  null)
                                                                 //for (var attribute in dataContext.attributes)
                                                                 ...[
-                                                                FadeInImage.assetNetwork(
-                                                                  placeholder: 'assets/images/loading.gif',
-                                                                  image: attribute.imageURL,
+                                                                FadeInImage
+                                                                    .assetNetwork(
+                                                                  placeholder:
+                                                                      'assets/images/loading.gif',
+                                                                  image: attribute
+                                                                      .imageURL,
                                                                   height: 14,
-                                                                  imageErrorBuilder: (_, __, ___) => Container(
+                                                                  imageErrorBuilder: (_,
+                                                                          __,
+                                                                          ___) =>
+                                                                      Container(
                                                                     width: 14,
                                                                     height: 14,
-                                                                    color: Colors.white,
+                                                                    color: Colors
+                                                                        .white,
                                                                   ),
                                                                 ),
                                                               ] else
-                                                                TextTranslator("")
+                                                                TextTranslator(
+                                                                    "")
                                                             ],
                                                           );
                                                         },
@@ -307,31 +336,47 @@ class _FoodCardState extends State<FoodCard> {
                                               .map(
                                                 (attribute) => FittedBox(
                                                   child: Card(
-                                                    shape: RoundedRectangleBorder(
-                                                      borderRadius: BorderRadius.circular(20),
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20),
                                                     ),
                                                     margin: EdgeInsets.zero,
                                                     child: Padding(
-                                                      padding: const EdgeInsets.all(8),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8),
                                                       child: Builder(
                                                         builder: (_) {
                                                           return Row(
                                                             children: [
-                                                              if (widget.food.allergens != null)
+                                                              if (widget.food
+                                                                      .allergens !=
+                                                                  null)
                                                                 //for (var attribute in dataContext.attributes)
                                                                 ...[
-                                                                FadeInImage.assetNetwork(
-                                                                  placeholder: 'assets/images/loading.gif',
-                                                                  image: attribute?.imageURL ?? "",
+                                                                FadeInImage
+                                                                    .assetNetwork(
+                                                                  placeholder:
+                                                                      'assets/images/loading.gif',
+                                                                  image: attribute
+                                                                          ?.imageURL ??
+                                                                      "",
                                                                   height: 14,
-                                                                  imageErrorBuilder: (_, __, ___) => Container(
+                                                                  imageErrorBuilder: (_,
+                                                                          __,
+                                                                          ___) =>
+                                                                      Container(
                                                                     width: 14,
                                                                     height: 14,
-                                                                    color: Colors.white,
+                                                                    color: Colors
+                                                                        .white,
                                                                   ),
                                                                 ),
                                                               ] else
-                                                                TextTranslator("")
+                                                                TextTranslator(
+                                                                    "")
                                                             ],
                                                           );
                                                         },
@@ -352,20 +397,31 @@ class _FoodCardState extends State<FoodCard> {
                                 width: MediaQuery.of(context).size.width - 170,
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.end,
-                                  mainAxisAlignment: widget.showButton ? MainAxisAlignment.end : MainAxisAlignment.start,
+                                  mainAxisAlignment: widget.showButton
+                                      ? MainAxisAlignment.end
+                                      : MainAxisAlignment.start,
                                   children: [
                                     Consumer<CartContext>(
                                       builder: (_, cartContext, __) {
                                         if (widget.showButton)
                                           return ButtonItemCountWidget(
                                             widget.food,
-                                            isContains: cartContext.contains(widget.food),
-                                            itemCount: cartContext.getCount(widget.food),
+                                            isContains: cartContext
+                                                .contains(widget.food),
+                                            itemCount: cartContext
+                                                .getCount(widget.food),
                                             onAdded: (value) {
-                                              cartContext.addItem(widget.food, value, true);
+                                              cartContext.addItem(
+                                                  widget.food, value, true);
                                             },
                                             onRemoved: (value) {
-                                              value == 0 ? cartContext.removeItem(widget.food) : cartContext.addItem(widget.food, value, false);
+                                              value == 0
+                                                  ? cartContext
+                                                      .removeItem(widget.food)
+                                                  : cartContext.addItem(
+                                                      widget.food,
+                                                      value,
+                                                      false);
                                             },
                                           );
                                         return RawMaterialButton(
@@ -380,17 +436,26 @@ class _FoodCardState extends State<FoodCard> {
                                           child: Container(
                                             decoration: BoxDecoration(
                                               shape: BoxShape.circle,
-                                              color: widget.food.isPopular ? Colors.transparent : Colors.white,
+                                              color: widget.food.isPopular
+                                                  ? Colors.transparent
+                                                  : Colors.white,
                                             ),
-                                            padding: widget.food.isPopular ? EdgeInsets.zero : EdgeInsets.all(5.0),
+                                            padding: widget.food.isPopular
+                                                ? EdgeInsets.zero
+                                                : EdgeInsets.all(5.0),
                                             child: FaIcon(
                                               widget.food.isPopular
                                                   ? Icons.visibility
-                                                  : cartContext.contains(widget.food)
+                                                  : cartContext
+                                                          .contains(widget.food)
                                                       ? FontAwesomeIcons.minus
                                                       : FontAwesomeIcons.plus,
-                                              size: widget.food.isPopular ? 22 : 10,
-                                              color: widget.food.isPopular ? Colors.white : Colors.black,
+                                              size: widget.food.isPopular
+                                                  ? 22
+                                                  : 10,
+                                              color: widget.food.isPopular
+                                                  ? Colors.white
+                                                  : Colors.black,
                                             ),
                                           ),
                                           onPressed: widget.food.isPopular
@@ -398,52 +463,91 @@ class _FoodCardState extends State<FoodCard> {
                                                     context: context,
                                                     child: FoodPage(
                                                       food: widget.food,
-                                                      restaurantName: restaurantName,
+                                                      restaurantName:
+                                                          restaurantName,
                                                     ),
                                                     routeName: foodRoute,
                                                   )
-                                              : !cartContext.contains(widget.food)
+                                              : !cartContext
+                                                      .contains(widget.food)
                                                   ? () => RouteUtil.goTo(
                                                         context: context,
                                                         child: FoodPage(
                                                           food: widget.food,
-                                                          restaurantName: restaurantName,
+                                                          restaurantName:
+                                                              restaurantName,
                                                         ),
                                                         routeName: foodRoute,
                                                       )
-                                                  : (cartContext.itemCount == 0) ||
-                                                          (cartContext.pricelessItems && widget.food.price?.amount == null) ||
-                                                          (!cartContext.pricelessItems && widget.food.price?.amount != null)
+                                                  : (cartContext.itemCount ==
+                                                              0) ||
+                                                          (cartContext
+                                                                  .pricelessItems &&
+                                                              widget.food.price
+                                                                      ?.amount ==
+                                                                  null) ||
+                                                          (!cartContext
+                                                                  .pricelessItems &&
+                                                              widget.food.price
+                                                                      ?.amount !=
+                                                                  null)
                                                       ? () async {
-                                                          if (cartContext.contains(widget.food)) {
-                                                            var result = await showDialog(
+                                                          if (cartContext
+                                                              .contains(widget
+                                                                  .food)) {
+                                                            var result =
+                                                                await showDialog(
                                                               context: context,
-                                                              builder: (_) => ConfirmationDialog(
-                                                                title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
-                                                                content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
+                                                              builder: (_) =>
+                                                                  ConfirmationDialog(
+                                                                title: AppLocalizations.of(
+                                                                        context)
+                                                                    .translate(
+                                                                        'confirm_remove_from_cart_title'),
+                                                                content: AppLocalizations.of(
+                                                                        context)
+                                                                    .translate(
+                                                                        'confirm_remove_from_cart_content'),
                                                               ),
                                                             );
 
-                                                            if (result is bool && result) {
-                                                              cartContext.removeAllFood(widget.food);
+                                                            if (result
+                                                                    is bool &&
+                                                                result) {
+                                                              cartContext
+                                                                  .removeAllFood(
+                                                                      widget
+                                                                          .food);
 
                                                               // RouteUtil.goBack(
                                                               //     context: context);
                                                             }
-                                                          } else if (!cartContext.hasSameOriginAsInBag(widget.food)) {
-                                                            Fluttertoast.showToast(
-                                                              msg: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
+                                                          } else if (!cartContext
+                                                              .hasSameOriginAsInBag(
+                                                                  widget
+                                                                      .food)) {
+                                                            Fluttertoast
+                                                                .showToast(
+                                                              msg: AppLocalizations
+                                                                      .of(
+                                                                          context)
+                                                                  .translate(
+                                                                      'from_different_origin_not_allowed'),
                                                             );
                                                           } else
                                                             showDialog(
                                                               context: context,
-                                                              builder: (_) => AddToBagDialog(
-                                                                food: widget.food,
+                                                              builder: (_) =>
+                                                                  AddToBagDialog(
+                                                                food:
+                                                                    widget.food,
                                                               ),
                                                             );
                                                         }
                                                       : () {
-                                                          Fluttertoast.showToast(msg: 'Vous ne pouvez pas à la fois commander des articles sans prix et avec prix');
+                                                          Fluttertoast.showToast(
+                                                              msg:
+                                                                  'Vous ne pouvez pas à la fois commander des articles sans prix et avec prix');
                                                         },
                                         );
                                       },
@@ -466,7 +570,8 @@ class _FoodCardState extends State<FoodCard> {
                               child: widget.food.imageURL != null
                                   ? ClipRRect(
                                       borderRadius: BorderRadius.only(
-                                        bottomRight: Radius.circular(widget.showButton ? 10 : 30),
+                                        bottomRight: Radius.circular(
+                                            widget.showButton ? 10 : 30),
                                         topRight: Radius.circular(
                                           widget.showButton ? 10 : 30,
                                         ),
@@ -475,33 +580,48 @@ class _FoodCardState extends State<FoodCard> {
                                         children: [
                                           FadeInImage.assetNetwork(
                                             image: widget.food.imageURL,
-                                            placeholder: 'assets/images/loading.gif',
+                                            placeholder:
+                                                'assets/images/loading.gif',
                                             imageErrorBuilder: (_, o, s) {
-                                              return Container(
+                                              return PlaceholderBackground(
+                                                title: widget.food?.name[0],
                                                 width: 100,
-                                                height: double.infinity,
-                                                color: Colors.white,
                                               );
                                             },
                                             width: 100,
                                             height: double.infinity,
                                             fit: BoxFit.cover,
                                           ),
-                                          if (widget.food.imageNotContractual == true && widget.food.isAvailable == true) ...[
+                                          if (widget.food.imageNotContractual ==
+                                                  true &&
+                                              widget.food.isAvailable ==
+                                                  true) ...[
                                             Positioned(
                                               bottom: 0,
                                               right: 0,
                                               left: 0,
                                               child: ClipRRect(
-                                                borderRadius: BorderRadius.only(bottomRight: Radius.circular(widget.showButton ? 10 : 30)),
+                                                borderRadius: BorderRadius.only(
+                                                    bottomRight:
+                                                        Radius.circular(
+                                                            widget.showButton
+                                                                ? 10
+                                                                : 30)),
                                                 child: Container(
                                                   width: double.infinity,
-                                                  color: Colors.black.withOpacity(0.5),
-                                                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+                                                  color: Colors.black
+                                                      .withOpacity(0.5),
+                                                  padding: EdgeInsets.symmetric(
+                                                      vertical: 10,
+                                                      horizontal: 5),
                                                   child: Center(
                                                     child: TextTranslator(
-                                                      AppLocalizations.of(context).translate("non_contractual_photo"),
-                                                      textAlign: TextAlign.center,
+                                                      AppLocalizations.of(
+                                                              context)
+                                                          .translate(
+                                                              "non_contractual_photo"),
+                                                      textAlign:
+                                                          TextAlign.center,
                                                       style: TextStyle(
                                                         color: Colors.white,
                                                       ),
@@ -510,21 +630,34 @@ class _FoodCardState extends State<FoodCard> {
                                                 ),
                                               ),
                                             ),
-                                          ] else if (widget.food.isAvailable == false) ...[
+                                          ] else if (widget.food.isAvailable ==
+                                              false) ...[
                                             Positioned(
                                               bottom: 0,
                                               right: 0,
                                               left: 0,
                                               child: ClipRRect(
-                                                borderRadius: BorderRadius.only(bottomRight: Radius.circular(widget.showButton ? 10 : 30)),
+                                                borderRadius: BorderRadius.only(
+                                                    bottomRight:
+                                                        Radius.circular(
+                                                            widget.showButton
+                                                                ? 10
+                                                                : 30)),
                                                 child: Container(
                                                   width: double.infinity,
-                                                  color: Colors.black.withOpacity(0.5),
-                                                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+                                                  color: Colors.black
+                                                      .withOpacity(0.5),
+                                                  padding: EdgeInsets.symmetric(
+                                                      vertical: 10,
+                                                      horizontal: 5),
                                                   child: Center(
                                                     child: TextTranslator(
-                                                      AppLocalizations.of(context).translate("non_disponible"),
-                                                      textAlign: TextAlign.center,
+                                                      AppLocalizations.of(
+                                                              context)
+                                                          .translate(
+                                                              "non_disponible"),
+                                                      textAlign:
+                                                          TextAlign.center,
                                                       style: TextStyle(
                                                         color: Colors.white,
                                                       ),
@@ -537,10 +670,10 @@ class _FoodCardState extends State<FoodCard> {
                                         ],
                                       ),
                                     )
-                                  : Container(
+                                  : PlaceholderBackground(
+                                      title: widget.food?.name[0],
                                       width: 80,
                                       height: 80,
-                                      color: Colors.white,
                                     ),
                               // ),
                             ),
@@ -554,15 +687,21 @@ class _FoodCardState extends State<FoodCard> {
                                   width: 40,
                                   child: ElevatedButton(
                                     style: ButtonStyle(
-                                      padding: MaterialStateProperty.all(EdgeInsets.all(0)),
-                                      backgroundColor: MaterialStateProperty.all(CRIMSON),
+                                      padding: MaterialStateProperty.all(
+                                          EdgeInsets.all(0)),
+                                      backgroundColor:
+                                          MaterialStateProperty.all(CRIMSON),
                                       shape: MaterialStateProperty.all(
-                                        RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(60)),
+                                        RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadiusDirectional
+                                                    .circular(60)),
                                       ),
                                     ),
                                     onPressed: !switchingFavorite
                                         ? () async {
-                                            AuthContext authContext = Provider.of<AuthContext>(
+                                            AuthContext authContext =
+                                                Provider.of<AuthContext>(
                                               context,
                                               listen: false,
                                             );
@@ -571,9 +710,13 @@ class _FoodCardState extends State<FoodCard> {
                                               switchingFavorite = true;
                                             });
                                             if (!isInFavorite) {
-                                              await authContext.addToFavoriteFoods(widget.food);
+                                              await authContext
+                                                  .addToFavoriteFoods(
+                                                      widget.food);
                                             } else {
-                                              await authContext.removeFromFavoriteFoods(widget.food);
+                                              await authContext
+                                                  .removeFromFavoriteFoods(
+                                                      widget.food);
                                             }
 
                                             setState(() {
@@ -581,8 +724,11 @@ class _FoodCardState extends State<FoodCard> {
                                               isInFavorite = !isInFavorite;
                                             });
                                             Fluttertoast.showToast(
-                                              msg: AppLocalizations.of(context).translate(
-                                                isInFavorite ? 'added_to_favorite' : 'removed_from_favorite',
+                                              msg: AppLocalizations.of(context)
+                                                  .translate(
+                                                isInFavorite
+                                                    ? 'added_to_favorite'
+                                                    : 'removed_from_favorite',
                                               ),
                                             );
                                           }
@@ -590,7 +736,9 @@ class _FoodCardState extends State<FoodCard> {
                                     child: Center(
                                       child: !switchingFavorite
                                           ? Icon(
-                                              isInFavorite ? Icons.favorite : Icons.favorite_border,
+                                              isInFavorite
+                                                  ? Icons.favorite
+                                                  : Icons.favorite_border,
                                               color: Colors.white,
                                               size: 18,
                                             )
@@ -598,8 +746,11 @@ class _FoodCardState extends State<FoodCard> {
                                               width: 15,
                                               height: 15,
                                               child: FittedBox(
-                                                child: CircularProgressIndicator(
-                                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  valueColor:
+                                                      AlwaysStoppedAnimation<
+                                                          Color>(
                                                     Colors.white,
                                                   ),
                                                 ),
@@ -656,7 +807,8 @@ class RestaurantFoodCard extends StatefulWidget {
   final Food food;
   final bool withPrice;
 
-  const RestaurantFoodCard({Key key, this.food, this.withPrice}) : super(key: key);
+  const RestaurantFoodCard({Key key, this.food, this.withPrice})
+      : super(key: key);
 
   @override
   _RestaurantFoodCardState createState() => _RestaurantFoodCardState();
@@ -713,7 +865,9 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.only(bottomLeft: Radius.circular(5), topLeft: Radius.circular(5)),
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(5),
+                    topLeft: Radius.circular(5)),
                 child: Stack(
                   children: [
                     FadeInImage.assetNetwork(
@@ -728,7 +882,8 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                         color: Colors.white,
                       ),
                     ),
-                    if (widget.food.imageNotContractual == true && widget.food.isAvailable == true) ...[
+                    if (widget.food.imageNotContractual == true &&
+                        widget.food.isAvailable == true) ...[
                       Positioned(
                         bottom: 0,
                         right: 0,
@@ -738,7 +893,8 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                           color: Colors.black.withOpacity(0.5),
                           child: Center(
                             child: TextTranslator(
-                              AppLocalizations.of(context).translate("non_contractual_photo"),
+                              AppLocalizations.of(context)
+                                  .translate("non_contractual_photo"),
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: Colors.white,
@@ -757,7 +913,8 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                           color: Colors.black.withOpacity(0.5),
                           child: Center(
                             child: TextTranslator(
-                              AppLocalizations.of(context).translate("non_disponible"),
+                              AppLocalizations.of(context)
+                                  .translate("non_disponible"),
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: Colors.white,
@@ -806,7 +963,8 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                                   });
                                 },
                                 child: Container(
-                                  padding: EdgeInsets.only(bottom: expanded ? 20 : 0),
+                                  padding: EdgeInsets.only(
+                                      bottom: expanded ? 20 : 0),
                                   height: expanded ? 46 : 20,
                                   child: SingleChildScrollView(
                                     scrollDirection: Axis.horizontal,
@@ -814,11 +972,18 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                                       ...widget.food.attributes
                                           .map(
                                             (attribute) => Padding(
-                                              padding: expanded ? const EdgeInsets.symmetric(horizontal: 5, vertical: 0.8) : const EdgeInsets.symmetric(horizontal: 5, vertical: 0),
+                                              padding: expanded
+                                                  ? const EdgeInsets.symmetric(
+                                                      horizontal: 5,
+                                                      vertical: 0.8)
+                                                  : const EdgeInsets.symmetric(
+                                                      horizontal: 5,
+                                                      vertical: 0),
                                               child: FittedBox(
                                                 child: Card(
                                                   shape: RoundedRectangleBorder(
-                                                    borderRadius: BorderRadius.circular(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
                                                       20,
                                                     ),
                                                   ),
@@ -829,7 +994,8 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                                                         ? const EdgeInsets.all(
                                                             8,
                                                           )
-                                                        : const EdgeInsets.symmetric(
+                                                        : const EdgeInsets
+                                                            .symmetric(
                                                             vertical: 1,
                                                             horizontal: 1,
                                                           ),
@@ -839,14 +1005,21 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                                                           children: [
                                                             // for (var attribute in dataContext.attributes)
                                                             ...[
-                                                              FadeInImage.assetNetwork(
-                                                                placeholder: 'assets/images/loading.gif',
-                                                                image: attribute.imageURL,
+                                                              FadeInImage
+                                                                  .assetNetwork(
+                                                                placeholder:
+                                                                    'assets/images/loading.gif',
+                                                                image: attribute
+                                                                    .imageURL,
                                                                 height: 14,
-                                                                imageErrorBuilder: (_, __, ___) => Container(
+                                                                imageErrorBuilder: (_,
+                                                                        __,
+                                                                        ___) =>
+                                                                    Container(
                                                                   width: 14,
                                                                   height: 14,
-                                                                  color: Colors.white,
+                                                                  color: Colors
+                                                                      .white,
                                                                 ),
                                                               ),
                                                               if (expanded)
@@ -855,7 +1028,8 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                                                                 ),
                                                               if (expanded)
                                                                 TextTranslator(
-                                                                  attribute.locales,
+                                                                  attribute
+                                                                      .locales,
                                                                 ),
                                                             ]
                                                           ],
@@ -873,11 +1047,18 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                                       ...widget.food.allergens
                                           .map(
                                             (attribute) => Padding(
-                                              padding: expanded ? const EdgeInsets.symmetric(horizontal: 5, vertical: 0.8) : const EdgeInsets.symmetric(horizontal: 5, vertical: 0),
+                                              padding: expanded
+                                                  ? const EdgeInsets.symmetric(
+                                                      horizontal: 5,
+                                                      vertical: 0.8)
+                                                  : const EdgeInsets.symmetric(
+                                                      horizontal: 5,
+                                                      vertical: 0),
                                               child: FittedBox(
                                                 child: Card(
                                                   shape: RoundedRectangleBorder(
-                                                    borderRadius: BorderRadius.circular(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
                                                       20,
                                                     ),
                                                   ),
@@ -888,7 +1069,8 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                                                         ? const EdgeInsets.all(
                                                             8,
                                                           )
-                                                        : const EdgeInsets.symmetric(
+                                                        : const EdgeInsets
+                                                            .symmetric(
                                                             vertical: 1,
                                                             horizontal: 1,
                                                           ),
@@ -898,14 +1080,21 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                                                           children: [
                                                             // for (var attribute in dataContext.attributes)
                                                             ...[
-                                                              FadeInImage.assetNetwork(
-                                                                placeholder: 'assets/images/loading.gif',
-                                                                image: attribute.imageURL,
+                                                              FadeInImage
+                                                                  .assetNetwork(
+                                                                placeholder:
+                                                                    'assets/images/loading.gif',
+                                                                image: attribute
+                                                                    .imageURL,
                                                                 height: 14,
-                                                                imageErrorBuilder: (_, __, ___) => Container(
+                                                                imageErrorBuilder: (_,
+                                                                        __,
+                                                                        ___) =>
+                                                                    Container(
                                                                   width: 14,
                                                                   height: 14,
-                                                                  color: Colors.white,
+                                                                  color: Colors
+                                                                      .white,
                                                                 ),
                                                               ),
                                                               if (expanded)
@@ -914,7 +1103,8 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                                                                 ),
                                                               if (expanded)
                                                                 TextTranslator(
-                                                                  attribute.locales,
+                                                                  attribute
+                                                                      .locales,
                                                                 ),
                                                             ]
                                                           ],
@@ -951,15 +1141,21 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                               padding: const EdgeInsets.only(top: 10),
                               child: Text(
                                 '${widget.food.price.amount / 100}€',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                             ),
                   Consumer<CartContext>(builder: (_, cart, w) {
                     return cart.contains(widget.food)
                         ? Container(
                             padding: EdgeInsets.all(8),
-                            decoration: BoxDecoration(shape: BoxShape.circle, color: CRIMSON),
-                            child: Text("${cart.getFoodCount(widget.food)}x", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle, color: CRIMSON),
+                            child: Text("${cart.getFoodCount(widget.food)}x",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12)),
                           )
                         : Container();
                   }),
@@ -995,11 +1191,13 @@ class _DrinkCardState extends State<DrinkCard> {
           if (cartContext.itemCount != 0) {
             if (!cartContext.hasSamePricingAsInBag(widget.food))
               return Fluttertoast.showToast(
-                msg: AppLocalizations.of(context).translate('priceless_and_not_priceless_not_allowed'),
+                msg: AppLocalizations.of(context)
+                    .translate('priceless_and_not_priceless_not_allowed'),
               );
             if (!cartContext.hasSameOriginAsInBag(widget.food))
               return Fluttertoast.showToast(
-                msg: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
+                msg: AppLocalizations.of(context)
+                    .translate('from_different_origin_not_allowed'),
               );
           }
           RouteUtil.goTo(
@@ -1055,9 +1253,12 @@ class _DrinkCardState extends State<DrinkCard> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          if (widget.food.price != null && widget.food.price?.amount != null)
+                          if (widget.food.price != null &&
+                              widget.food.price?.amount != null)
                             Text(
-                              !cartContext.withPrice ? "" : '${widget.food.price.amount / 100}€',
+                              !cartContext.withPrice
+                                  ? ""
+                                  : '${widget.food.price.amount / 100}€',
                               style: TextStyle(
                                 fontSize: 18,
                                 color: Colors.grey[600],
@@ -1070,8 +1271,15 @@ class _DrinkCardState extends State<DrinkCard> {
                       return cart.contains(widget.food)
                           ? Container(
                               padding: EdgeInsets.all(8),
-                              decoration: BoxDecoration(shape: BoxShape.circle, color: CRIMSON),
-                              child: Text("${cart.getFoodCount(widget.food)}x", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle, color: CRIMSON),
+                              child: Text(
+                                "${cart.getFoodCount(widget.food)}x",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12),
+                              ),
                             )
                           : Container();
                     }),
@@ -1109,7 +1317,10 @@ class MenuCard extends StatelessWidget {
 
     return InkWell(
       onTap: () {
-        RouteUtil.goTo(context: context, child: DetailMenu(menu: Menu.clone(menu)), routeName: null);
+        RouteUtil.goTo(
+            context: context,
+            child: DetailMenu(menu: Menu.clone(menu)),
+            routeName: null);
       },
       child: Card(
         shape: RoundedRectangleBorder(
@@ -1133,7 +1344,8 @@ class MenuCard extends StatelessWidget {
                     children: [
                       TextTranslator(
                         menu.name ?? "",
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 18),
                       ),
                       _renderListPlat(context, _controller),
                     ],
@@ -1154,17 +1366,28 @@ class MenuCard extends StatelessWidget {
                     children: [
                       // SizedBox(height: 5,),
                       TextTranslator(
-                        !Provider.of<CartContext>(context).withPrice || menu.type == MenuType.priceless.value || menu.type == MenuType.per_food.value || menu.price?.amount == null
+                        !Provider.of<CartContext>(context).withPrice ||
+                                menu.type == MenuType.priceless.value ||
+                                menu.type == MenuType.per_food.value ||
+                                menu.price?.amount == null
                             ? " "
                             : "${menu.price.amount / 100 ?? ""}€",
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: CRIMSON),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            color: CRIMSON),
                       ),
                       Consumer<CartContext>(builder: (_, cart, w) {
                         return cart.contains(menu)
                             ? Container(
                                 padding: EdgeInsets.all(8),
-                                decoration: BoxDecoration(shape: BoxShape.circle, color: CRIMSON),
-                                child: Text("${cart.getFoodCount(menu)}x", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle, color: CRIMSON),
+                                child: Text("${cart.getFoodCount(menu)}x",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12)),
                               )
                             : Container();
                       }),
@@ -1194,7 +1417,12 @@ class RestaurantCard extends StatefulWidget {
   final bool fromHome;
   final bool withPrice;
 
-  const RestaurantCard({Key key, @required this.restaurant, this.fromHome = false, this.withPrice = true}) : super(key: key);
+  const RestaurantCard(
+      {Key key,
+      @required this.restaurant,
+      this.fromHome = false,
+      this.withPrice = true})
+      : super(key: key);
 
   @override
   _RestaurantCardState createState() => _RestaurantCardState();
@@ -1283,16 +1511,18 @@ class _RestaurantCardState extends State<RestaurantCard> {
                           width: 120,
                           height: double.infinity,
                           fit: BoxFit.cover,
-                          imageErrorBuilder: (_, __, ___) => Container(
+                          imageErrorBuilder: (_, __, ___) =>
+                              PlaceholderBackground(
+                            title: widget.restaurant?.name[0],
                             width: 125,
-                            height: 70,
-                            color: Colors.white,
                           ),
                         ),
                         Positioned(
                           right: 0,
                           child: Visibility(
-                            visible: Provider.of<AuthContext>(context).currentUser != null,
+                            visible:
+                                Provider.of<AuthContext>(context).currentUser !=
+                                    null,
                             child: Consumer<AuthContext>(
                               builder: (_, authContext, __) => Container(
                                 margin: EdgeInsets.all(10),
@@ -1300,10 +1530,15 @@ class _RestaurantCardState extends State<RestaurantCard> {
                                 width: 40,
                                 child: ElevatedButton(
                                   style: ButtonStyle(
-                                    padding: MaterialStateProperty.all(EdgeInsets.all(0)),
-                                    backgroundColor: MaterialStateProperty.all(CRIMSON),
+                                    padding: MaterialStateProperty.all(
+                                        EdgeInsets.all(0)),
+                                    backgroundColor:
+                                        MaterialStateProperty.all(CRIMSON),
                                     shape: MaterialStateProperty.all(
-                                      RoundedRectangleBorder(borderRadius: BorderRadiusDirectional.circular(60)),
+                                      RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadiusDirectional.circular(
+                                                  60)),
                                     ),
                                   ),
                                   onPressed: () async {
@@ -1311,11 +1546,13 @@ class _RestaurantCardState extends State<RestaurantCard> {
                                       switchingFavorite = true;
                                     });
                                     if (isInFavorite)
-                                      await authContext.removeFromFavoriteRestaurants(
+                                      await authContext
+                                          .removeFromFavoriteRestaurants(
                                         widget.restaurant,
                                       );
                                     else
-                                      await authContext.addToFavoriteRestaurants(
+                                      await authContext
+                                          .addToFavoriteRestaurants(
                                         widget.restaurant,
                                       );
                                     setState(() {
@@ -1323,15 +1560,24 @@ class _RestaurantCardState extends State<RestaurantCard> {
                                       isInFavorite = !isInFavorite;
                                     });
                                     Fluttertoast.showToast(
-                                      msg: AppLocalizations.of(context).translate(
-                                        isInFavorite ? 'added_to_favorite' : 'removed_from_favorite',
+                                      msg: AppLocalizations.of(context)
+                                          .translate(
+                                        isInFavorite
+                                            ? 'added_to_favorite'
+                                            : 'removed_from_favorite',
                                       ),
                                     );
                                   },
                                   child: Center(
                                     child: !switchingFavorite
                                         ? Icon(
-                                            authContext.currentUser?.favoriteRestaurants?.contains(widget.restaurant.id) ?? false ? Icons.favorite : Icons.favorite_border,
+                                            authContext.currentUser
+                                                        ?.favoriteRestaurants
+                                                        ?.contains(widget
+                                                            .restaurant.id) ??
+                                                    false
+                                                ? Icons.favorite
+                                                : Icons.favorite_border,
                                             color: Colors.white,
                                             size: 18,
                                           )
@@ -1340,7 +1586,9 @@ class _RestaurantCardState extends State<RestaurantCard> {
                                             height: 15,
                                             child: FittedBox(
                                               child: CircularProgressIndicator(
-                                                valueColor: AlwaysStoppedAnimation<Color>(
+                                                valueColor:
+                                                    AlwaysStoppedAnimation<
+                                                        Color>(
                                                   Colors.white,
                                                 ),
                                               ),
@@ -1374,7 +1622,15 @@ class BagItem extends StatefulWidget {
   bool withPrice;
   int position;
 
-  BagItem({Key key, @required this.food, this.position, @required this.count, this.activeDelete = true, this.imageTag, this.withPrice = true}) : super(key: key);
+  BagItem(
+      {Key key,
+      @required this.food,
+      this.position,
+      @required this.count,
+      this.activeDelete = true,
+      this.imageTag,
+      this.withPrice = true})
+      : super(key: key);
 
   @override
   _BagItemState createState() => _BagItemState();
@@ -1437,12 +1693,16 @@ class _BagItemState extends State<BagItem> {
                       });
                     },
                     child: Center(
-                      child: Icon(expand ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down),
+                      child: Icon(expand
+                          ? Icons.keyboard_arrow_up
+                          : Icons.keyboard_arrow_down),
                     ),
                   )
                 ]
               ],
-              if (!widget.food.isMenu && widget.food.optionSelected != null && widget.food.optionSelected.isNotEmpty) ...[
+              if (!widget.food.isMenu &&
+                  widget.food.optionSelected != null &&
+                  widget.food.optionSelected.isNotEmpty) ...[
                 Divider(),
                 if (expand) ...[
                   _options(widget.food),
@@ -1455,7 +1715,9 @@ class _BagItemState extends State<BagItem> {
                     });
                   },
                   child: Center(
-                    child: Icon(expand ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down),
+                    child: Icon(expand
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down),
                   ),
                 )
               ]
@@ -1481,7 +1743,10 @@ class _BagItemState extends State<BagItem> {
             ? Container()
             : TextTranslator(
                 '${f.quantity}x ',
-                style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold, fontSize: 20),
+                style: TextStyle(
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20),
               ),
         SizedBox(
           width: 10,
@@ -1531,16 +1796,27 @@ class _BagItemState extends State<BagItem> {
                     ? Container()
                     : f.isMenu
                         ? Text(
-                            !_cartContext.withPrice || f.type == MenuType.priceless.value
+                            !_cartContext.withPrice ||
+                                    f.type == MenuType.priceless.value
                                 ? ""
                                 : f.type == MenuType.per_food.value
                                     ? '${(f.totalPrice.toDouble() / f.quantity) / 100}€'
                                     : '${f.price.amount / 100}€',
-                            style: TextStyle(fontSize: 18, color: Colors.grey[600], fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.grey[600],
+                                fontWeight: FontWeight.bold),
                           )
                         : Text(
-                            !_cartContext.withPrice || (menu != null && menu?.type == MenuType.priceless.value) ? "" : '${f.price.amount / 100}€',
-                            style: TextStyle(fontSize: 18, color: Colors.grey[600], fontWeight: FontWeight.bold),
+                            !_cartContext.withPrice ||
+                                    (menu != null &&
+                                        menu?.type == MenuType.priceless.value)
+                                ? ""
+                                : '${f.price.amount / 100}€',
+                            style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.grey[600],
+                                fontWeight: FontWeight.bold),
                           ),
               ]
             ],
@@ -1563,8 +1839,10 @@ class _BagItemState extends State<BagItem> {
                     var result = await showDialog(
                       context: context,
                       builder: (_) => ConfirmationDialog(
-                        title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
-                        content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
+                        title: AppLocalizations.of(context)
+                            .translate('confirm_remove_from_cart_title'),
+                        content: AppLocalizations.of(context)
+                            .translate('confirm_remove_from_cart_content'),
                       ),
                     );
 
@@ -1621,15 +1899,20 @@ class _BagItemState extends State<BagItem> {
                   SizedBox(
                     height: 15,
                   ),
-                  for (ItemsOption itemsOption in option?.itemOptionSelected?.toList()) ...[
+                  for (ItemsOption itemsOption
+                      in option?.itemOptionSelected?.toList()) ...[
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         SizedBox(width: 15),
                         itemsOption.quantity == null
                             ? Container()
-                            : (itemsOption.quantity != null || itemsOption.quantity > 1)
-                                ? TextTranslator('${itemsOption.quantity}x\t', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600))
+                            : (itemsOption.quantity != null ||
+                                    itemsOption.quantity > 1)
+                                ? TextTranslator('${itemsOption.quantity}x\t',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600))
                                 : Container(),
                         InkWell(
                           onTap: () {
@@ -1660,9 +1943,13 @@ class _BagItemState extends State<BagItem> {
                         SizedBox(
                           width: 5,
                         ),
-                        TextTranslator('${itemsOption.name}', style: TextStyle(fontSize: 16)),
+                        TextTranslator('${itemsOption.name}',
+                            style: TextStyle(fontSize: 16)),
                         Spacer(),
-                        if (itemsOption.price.amount == 0 || !widget.withPrice || (menu != null && menu?.type == MenuType.priceless.value))
+                        if (itemsOption.price.amount == 0 ||
+                            !widget.withPrice ||
+                            (menu != null &&
+                                menu?.type == MenuType.priceless.value))
                           Text("")
                         else
                           itemsOption.price?.amount == null
@@ -1722,12 +2009,18 @@ class CommandHistoryItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               TextTranslator('${command.restaurant.name}'),
-              TextTranslator('${command.code?.toString()?.padLeft(6, '0')}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              TextTranslator('${command.code?.toString()?.padLeft(6, '0')}',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               _validated(),
               Column(
                 children: [
-                  TextTranslator("${command.createdAt.dateToString('dd/MM/yy HH:mm')}", style: TextStyle(fontSize: 16)),
-                  if (command.shippingTime != null) TextTranslator("${command.shippingTime.dateToString('dd/MM/yy HH:mm')}", style: TextStyle(fontSize: 16)),
+                  TextTranslator(
+                      "${command.createdAt.dateToString('dd/MM/yy HH:mm')}",
+                      style: TextStyle(fontSize: 16)),
+                  if (command.shippingTime != null)
+                    TextTranslator(
+                        "${command.shippingTime.dateToString('dd/MM/yy HH:mm')}",
+                        style: TextStyle(fontSize: 16)),
                 ],
               )
             ],
@@ -1754,12 +2047,14 @@ class CommandHistoryItem extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(5),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.horizontal(left: Radius.circular(15), right: Radius.circular(15)),
+        borderRadius: BorderRadius.horizontal(
+            left: Radius.circular(15), right: Radius.circular(15)),
         color: color,
       ),
       child: TextTranslator(
         title,
-        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12),
+        style: TextStyle(
+            color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12),
       ),
     );
   }
@@ -1803,8 +2098,8 @@ class BlogCard extends StatelessWidget {
                       image: blog?.imageURL ?? "",
                       placeholder: 'assets/images/loading.gif',
                       fit: BoxFit.contain,
-                      imageErrorBuilder: (_, __, ___) => Container(
-                        color: Colors.white,
+                      imageErrorBuilder: (_, __, ___) => PlaceholderBackground(
+                        title: blog?.title[0],
                       ),
                     ),
                   ),
@@ -1820,7 +2115,10 @@ class BlogCard extends StatelessWidget {
                         child: Center(
                           child: TextTranslator(
                             blog.title,
-                            style: TextStyle(color: Colors.grey[600], fontSize: 18, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold),
                           ),
                         ),
                       ),

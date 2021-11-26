@@ -45,3 +45,32 @@ class WaveBackground extends StatelessWidget {
     );
   }
 }
+
+class PlaceholderBackground extends StatelessWidget {
+  final String title;
+  final double width;
+  final double height;
+  PlaceholderBackground({
+    this.title,
+    this.width,
+    this.height,
+    Key key,
+  }) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      color: Colors.grey[100],
+      child: Center(
+        child: Text(
+          title ?? "P",
+          style: TextStyle(
+            fontSize: Theme.of(context).textTheme.headline1.fontSize,
+            color: Colors.grey[300],
+          ),
+        ),
+      ),
+    );
+  }
+}
