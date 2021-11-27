@@ -603,94 +603,148 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                       );
                       return;
                     }
-                    int priceLivraison = commandContext
-                        .getDeliveryPriceByMiles(widget.restaurant)
-                        .toInt();
-                    int totalDeliveryPriceWithRemise = cartContext
-                        .calculremise(
-                          totalPrice: priceLivraison.toDouble(),
-                          discountIsPrice: widget
-                              .restaurant?.discount?.delivery?.discountIsPrice,
-                          discountValue: widget
-                              .restaurant?.discount?.delivery?.valueDouble,
-                        )
-                        .toInt();
 
-                    final deliveryPrice = "${widget.restaurant.priceByMiles}";
-                    final totalDeliveryPrice = "$priceLivraison";
-                    final totalDeliveryPriceWithRemiseMsg =
-                        "$totalDeliveryPriceWithRemise";
-                    final distanceCustomerResto =
-                        "${commandContext.getDeliveryDistanceByMiles(widget.restaurant).toInt()}";
-                    final totalPrice =
-                        "Total à payer : ${cartContext.totalPrice + priceLivraison} €";
-                    String codePromoMsg = "";
-                    String remise;
-                    String remiseMsg = "";
-                    String totalPriceWithRemiseMsg;
-                    if (((_restaurant?.delivery == true) ||
-                            (_restaurant?.aEmporter == true)) &&
-                        ((_restaurant?.discount?.delivery?.valueDouble ?? 0.0) >
-                            0)) {
-                      remiseMsg =
-                          "Remise ${_restaurant?.discount?.delivery?.discountType == DiscountType.SurTotalite ? "sur la totalité" : _restaurant?.discount?.delivery?.discountType == DiscountType.SurTransport ? "sur le transport" : "sur la commande"}";
+                    ///delivery process - init all params
+                    int totalPrice = 0;
+                    final int totalPriceSansRemise =
+                        (cartContext.totalPrice).toInt();
+                    int priceLivraison = 0;
+                    double remise = 0; //in €
+                    String remiseType = "totalité";
 
-                      double remiseWithCodeDiscount = cartContext.totalPrice;
-                      if (commandContext.withCodeDiscount != null) {
-                        remiseWithCodeDiscount = cartContext.calculremise(
-                          totalPrice: cartContext.totalPrice,
-                          discountIsPrice:
-                              commandContext.withCodeDiscount.discountIsPrice,
-                          discountValue:
-                              commandContext.withCodeDiscount.value.toDouble(),
-                        );
-                        codePromoMsg =
-                            "${(remiseWithCodeDiscount - cartContext.totalPrice).abs()} €";
+                    if (widget.restaurant.deliveryFixed) {
+                      priceLivraison = (widget.restaurant.priceDelevery != null
+                              ? widget.restaurant.priceDelevery
+                              : 0)
+                          .toInt();
+                      totalPrice =
+                          (cartContext.totalPrice + priceLivraison).toInt();
+                    } else {
+                      if (commandContext.commandType == "delivery") {
+                        if (widget.restaurant
+                                .isFreeCP(commandContext.deliveryAddress) ||
+                            widget.restaurant
+                                .isFreeCity(commandContext.deliveryAddress)) {
+                          /// livraison gratuite
+                          priceLivraison = 0;
+                        } else {
+                          priceLivraison = commandContext
+                              .getDeliveryPriceByMiles(widget.restaurant)
+                              .toInt();
+                          double remiseWithCodeDiscount =
+                              cartContext.totalPrice;
+                          if (commandContext.withCodeDiscount != null) {
+                            remiseWithCodeDiscount = cartContext.calculremise(
+                              totalPrice: cartContext.totalPrice,
+                              discountIsPrice: commandContext
+                                  .withCodeDiscount.discountIsPrice,
+                              discountValue: commandContext
+                                  .withCodeDiscount.value
+                                  .toDouble(),
+                            );
+                          }
+
+                          if (widget.restaurant?.discountDelivery == true) {
+                            if (widget.restaurant?.discount?.delivery
+                                    ?.discountType ==
+                                DiscountType.SurTransport) {
+                              ///remise sur le frais de livraison
+                              remiseType = "livraison";
+                              double discountValue =
+                                  cartContext.discountValueInPlageDiscount(
+                                discountIsPrice: widget.restaurant?.discount
+                                    ?.delivery?.discountIsPrice,
+                                discountValue: widget.restaurant?.discount
+                                    ?.delivery?.valueDouble,
+                                plageDiscount: widget.restaurant?.discount
+                                    ?.delivery?.plageDiscount,
+                                totalPriceSansRemise:
+                                    totalPriceSansRemise.toDouble(),
+                              );
+                              remise = cartContext.remiseInEuro(
+                                discountIsPrice: widget.restaurant?.discount
+                                    ?.delivery?.discountIsPrice,
+                                discountValue: discountValue,
+                                totalPrice: priceLivraison.toDouble(),
+                              );
+                              priceLivraison = cartContext
+                                  .calculremise(
+                                      totalPrice: priceLivraison.toDouble(),
+                                      discountIsPrice: widget.restaurant
+                                          ?.discount?.delivery?.discountIsPrice,
+                                      discountValue: discountValue)
+                                  .toInt();
+                              totalPrice =
+                                  (remiseWithCodeDiscount + priceLivraison)
+                                      .toInt();
+                            } else if (widget.restaurant?.discount?.delivery
+                                    ?.discountType ==
+                                DiscountType.SurCommande) {
+                              ///remise sur le commande
+                              remiseType = "commande";
+                              double discountValue =
+                                  cartContext.discountValueInPlageDiscount(
+                                discountIsPrice: widget.restaurant?.discount
+                                    ?.delivery?.discountIsPrice,
+                                discountValue: widget.restaurant?.discount
+                                    ?.delivery?.valueDouble,
+                                plageDiscount: widget.restaurant?.discount
+                                    ?.delivery?.plageDiscount,
+                                totalPriceSansRemise:
+                                    totalPriceSansRemise.toDouble(),
+                              );
+                              remise = cartContext.remiseInEuro(
+                                discountIsPrice: widget.restaurant?.discount
+                                    ?.delivery?.discountIsPrice,
+                                discountValue: discountValue,
+                                totalPrice: remiseWithCodeDiscount,
+                              );
+                              int totalPriceWithRemise = cartContext
+                                  .calculremise(
+                                      totalPrice: remiseWithCodeDiscount,
+                                      discountIsPrice: widget.restaurant
+                                          ?.discount?.delivery?.discountIsPrice,
+                                      discountValue: discountValue)
+                                  .toInt();
+                              totalPrice =
+                                  (totalPriceWithRemise + priceLivraison)
+                                      .toInt();
+                            } else {
+                              ///remise sur la totalité
+                              remiseType = "totalité";
+                              double discountValue =
+                                  cartContext.discountValueInPlageDiscount(
+                                discountIsPrice: widget.restaurant?.discount
+                                    ?.delivery?.discountIsPrice,
+                                discountValue: widget.restaurant?.discount
+                                    ?.delivery?.valueDouble,
+                                plageDiscount: widget.restaurant?.discount
+                                    ?.delivery?.plageDiscount,
+                                totalPriceSansRemise:
+                                    totalPriceSansRemise.toDouble(),
+                              );
+                              remise = cartContext.remiseInEuro(
+                                discountIsPrice: widget.restaurant?.discount
+                                    ?.delivery?.discountIsPrice,
+                                discountValue: discountValue,
+                                totalPrice:
+                                    remiseWithCodeDiscount + priceLivraison,
+                              );
+                              totalPrice = cartContext
+                                  .calculremise(
+                                      totalPrice: remiseWithCodeDiscount +
+                                          priceLivraison,
+                                      discountIsPrice: widget.restaurant
+                                          ?.discount?.delivery?.discountIsPrice,
+                                      discountValue: discountValue)
+                                  .toInt();
+                            }
+                          }
+                        }
                       }
-
-                      if (_restaurant?.discount?.delivery?.discountType ==
-                              DiscountType.SurTransport &&
-                          _restaurant.discountDelivery == true) {
-                        priceLivraison = cartContext
-                            .calculremise(
-                              totalPrice: priceLivraison.toDouble(),
-                              discountIsPrice: widget.restaurant?.discount
-                                  ?.delivery?.discountIsPrice,
-                              discountValue: widget
-                                  .restaurant?.discount?.delivery?.valueDouble,
-                            )
-                            .toInt();
-                        remise =
-                            "${(priceLivraison - priceLivraison.toDouble()).abs()} €";
-                        totalPriceWithRemiseMsg =
-                            "${remiseWithCodeDiscount + priceLivraison} €";
-                      } else if (_restaurant
-                                  ?.discount?.delivery?.discountType ==
-                              DiscountType.SurCommande &&
-                          _restaurant.discountDelivery == true) {
-                        int totalPriceWithRemise = cartContext
-                            .calculremise(
-                              totalPrice: remiseWithCodeDiscount,
-                              discountIsPrice: widget.restaurant?.discount
-                                  ?.delivery?.discountIsPrice,
-                              discountValue: widget
-                                  .restaurant?.discount?.delivery?.valueDouble,
-                            )
-                            .toInt();
-                        remise =
-                            "${(totalPriceWithRemise - remiseWithCodeDiscount).abs()} €";
-                        totalPriceWithRemiseMsg =
-                            "${totalPriceWithRemise + priceLivraison} €";
-                      } else {
-                        totalPriceWithRemiseMsg = "${cartContext.calculremise(
-                          totalPrice: remiseWithCodeDiscount + priceLivraison,
-                          discountIsPrice: widget
-                              .restaurant?.discount?.delivery?.discountIsPrice,
-                          discountValue: widget
-                              .restaurant?.discount?.delivery?.valueDouble,
-                        )} €";
-                      }
+                      totalPrice = totalPrice.toInt();
                     }
+
                     final confirm = await showDialog(
                       context: context,
                       builder: (_) => ConfirmationDialog(
@@ -709,26 +763,11 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                     "Total",
                                   ),
                                   TextTranslator(
-                                    "${cartContext.totalPrice} €",
+                                    "$totalPriceSansRemise €",
                                   ),
                                 ],
                               ),
                               Divider(),
-                              /* Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  TextTranslator(
-                                    "Frais de livraison par km ",
-                                  ),
-                                  TextTranslator(
-                                    "$deliveryPrice €",
-                                  ),
-                                ],
-                              ),
-                              TextTranslator(
-                                "Distance entre vous et le restaurant $distanceCustomerResto km",
-                              ),*/
                               Column(
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -741,30 +780,10 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                         "Frais de livraison",
                                       ),
                                       TextTranslator(
-                                        "+$totalDeliveryPrice €",
+                                        "+$priceLivraison €",
                                       ),
                                     ],
                                   ),
-                                  if (_restaurant
-                                          ?.discount?.delivery?.discountType ==
-                                      DiscountType.SurTransport) ...[
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        TextTranslator(
-                                          "Frais de livraison avec remise",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        TextTranslator(
-                                          "-$totalDeliveryPriceWithRemiseMsg €",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ],
-                                    ),
-                                  ]
                                 ],
                               ),
                               if (commandContext.withCodeDiscount != null) ...[
@@ -779,49 +798,47 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                           fontWeight: FontWeight.bold),
                                     ),
                                     TextTranslator(
-                                      "-$codePromoMsg",
+                                      "-${commandContext.withCodeDiscount.value}",
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold),
                                     ),
                                   ],
                                 ),
                               ],
-                              if (totalPriceWithRemiseMsg != null) ...[
-                                Divider(),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    TextTranslator(
-                                      remiseMsg,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    TextTranslator(
-                                      "-$remise",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ],
-                                ),
-                                Divider(),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    TextTranslator(
-                                      "Total à payer",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    TextTranslator(
-                                      totalPriceWithRemiseMsg,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                              Divider(),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  TextTranslator(
+                                    "Remise sur $remiseType",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  TextTranslator(
+                                    "-${remise.round()} €",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                              Divider(),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  TextTranslator(
+                                    "Total à payer",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  TextTranslator(
+                                    "$totalPrice €",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
                             ],
                           )),
                     );

@@ -217,13 +217,24 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                           if (widget.restaurant?.discount?.delivery
                                   ?.discountType ==
                               DiscountType.SurTransport) {
+                            ///remise sur le frais de livraison
+                            double discountValue =
+                                cartContext.discountValueInPlageDiscount(
+                              discountIsPrice: widget.restaurant?.discount
+                                  ?.delivery?.discountIsPrice,
+                              discountValue: widget
+                                  .restaurant?.discount?.delivery?.valueDouble,
+                              plageDiscount: widget.restaurant?.discount
+                                  ?.delivery?.plageDiscount,
+                              totalPriceSansRemise:
+                                  totalPriceSansRemise.toDouble(),
+                            );
                             priceLivraison = cartContext
                                 .calculremise(
                                   totalPrice: priceLivraison.toDouble(),
                                   discountIsPrice: widget.restaurant?.discount
                                       ?.delivery?.discountIsPrice,
-                                  discountValue: widget.restaurant?.discount
-                                      ?.delivery?.valueDouble,
+                                  discountValue: discountValue,
                                 )
                                 .toInt();
                             totalPrice =
@@ -232,26 +243,48 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                           } else if (widget.restaurant?.discount?.delivery
                                   ?.discountType ==
                               DiscountType.SurCommande) {
+                            ///remise sur le commande
+                            double discountValue =
+                                cartContext.discountValueInPlageDiscount(
+                              discountIsPrice: widget.restaurant?.discount
+                                  ?.delivery?.discountIsPrice,
+                              discountValue: widget
+                                  .restaurant?.discount?.delivery?.valueDouble,
+                              plageDiscount: widget.restaurant?.discount
+                                  ?.delivery?.plageDiscount,
+                              totalPriceSansRemise:
+                                  totalPriceSansRemise.toDouble(),
+                            );
                             int totalPriceWithRemise = cartContext
                                 .calculremise(
                                   totalPrice: remiseWithCodeDiscount,
                                   discountIsPrice: widget.restaurant?.discount
                                       ?.delivery?.discountIsPrice,
-                                  discountValue: widget.restaurant?.discount
-                                      ?.delivery?.valueDouble,
+                                  discountValue: discountValue,
                                 )
                                 .toInt();
                             totalPrice =
                                 (totalPriceWithRemise + priceLivraison).toInt();
                           } else {
+                            ///remise sur la totalité
+                            double discountValue =
+                                cartContext.discountValueInPlageDiscount(
+                              discountIsPrice: widget.restaurant?.discount
+                                  ?.delivery?.discountIsPrice,
+                              discountValue: widget
+                                  .restaurant?.discount?.delivery?.valueDouble,
+                              plageDiscount: widget.restaurant?.discount
+                                  ?.delivery?.plageDiscount,
+                              totalPriceSansRemise:
+                                  totalPriceSansRemise.toDouble(),
+                            );
                             totalPrice = cartContext
                                 .calculremise(
                                   totalPrice:
                                       remiseWithCodeDiscount + priceLivraison,
                                   discountIsPrice: widget.restaurant?.discount
                                       ?.delivery?.discountIsPrice,
-                                  discountValue: widget.restaurant?.discount
-                                      ?.delivery?.valueDouble,
+                                  discountValue: discountValue,
                                 )
                                 .toInt();
                           }

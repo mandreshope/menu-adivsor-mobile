@@ -268,13 +268,20 @@ class _ConfirmSmsState extends State<ConfirmSms> {
           );
         }
         if (widget.restaurant?.discountAEmporter == true) {
+          double discountValue = cartContext.discountValueInPlageDiscount(
+            discountIsPrice:
+                widget.restaurant?.discount?.aEmporter?.discountIsPrice,
+            discountValue: widget.restaurant?.discount?.aEmporter?.valueDouble,
+            plageDiscount:
+                widget.restaurant?.discount?.aEmporter?.plageDiscount,
+            totalPriceSansRemise: totalPriceSansRemise.toDouble(),
+          );
           totalPrice = cartContext
               .calculremise(
                 totalPrice: remiseWithCodeDiscount,
                 discountIsPrice:
                     widget.restaurant?.discount?.aEmporter?.discountIsPrice,
-                discountValue:
-                    widget.restaurant?.discount?.aEmporter?.valueDouble,
+                discountValue: discountValue,
               )
               .toInt();
         }

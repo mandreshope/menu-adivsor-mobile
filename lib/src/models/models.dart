@@ -941,6 +941,7 @@ class Command {
   final String appartement;
   final bool payed;
   final String priceLivraison;
+  final String totalPriceSansRemise;
   int etage;
   dynamic paiementLivraison;
   dynamic customer;
@@ -973,6 +974,7 @@ class Command {
     this.customer,
     this.priceLivraison,
     this.discountIsPrice,
+    this.totalPriceSansRemise,
   });
 
   factory Command.fromJson(Map<String, dynamic> json) => Command(
@@ -1024,6 +1026,7 @@ class Command {
         paiementLivraison: json['paiementLivraison'] ?? false,
         customer: json['customer'],
         priceLivraison: json['priceLivraison'],
+        totalPriceSansRemise: json['totalPriceSansRemise'],
       );
 }
 

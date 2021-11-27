@@ -100,38 +100,68 @@ class ChoosePayement extends StatelessWidget {
                   if (restaurant?.discountDelivery == true) {
                     if (restaurant?.discount?.delivery?.discountType ==
                         DiscountType.SurTransport) {
+                      ///remise sur le frais de livraison
+                      double discountValue =
+                          cartContext.discountValueInPlageDiscount(
+                        discountIsPrice:
+                            restaurant?.discount?.delivery?.discountIsPrice,
+                        discountValue:
+                            restaurant?.discount?.delivery?.valueDouble,
+                        plageDiscount:
+                            restaurant?.discount?.delivery?.plageDiscount,
+                        totalPriceSansRemise: totalPriceSansRemise.toDouble(),
+                      );
                       priceLivraison = cartContext
                           .calculremise(
                             totalPrice: priceLivraison.toDouble(),
                             discountIsPrice:
                                 restaurant?.discount?.delivery?.discountIsPrice,
-                            discountValue:
-                                restaurant?.discount?.delivery?.valueDouble,
+                            discountValue: discountValue,
                           )
                           .toInt();
                       totalPrice =
                           (remiseWithCodeDiscount + priceLivraison).toInt();
                     } else if (restaurant?.discount?.delivery?.discountType ==
                         DiscountType.SurCommande) {
+                      ///remise sur le commande
+                      double discountValue =
+                          cartContext.discountValueInPlageDiscount(
+                        discountIsPrice:
+                            restaurant?.discount?.delivery?.discountIsPrice,
+                        discountValue:
+                            restaurant?.discount?.delivery?.valueDouble,
+                        plageDiscount:
+                            restaurant?.discount?.delivery?.plageDiscount,
+                        totalPriceSansRemise: totalPriceSansRemise.toDouble(),
+                      );
                       int totalPriceWithRemise = cartContext
                           .calculremise(
                             totalPrice: remiseWithCodeDiscount,
                             discountIsPrice:
                                 restaurant?.discount?.delivery?.discountIsPrice,
-                            discountValue:
-                                restaurant?.discount?.delivery?.valueDouble,
+                            discountValue: discountValue,
                           )
                           .toInt();
                       totalPrice =
                           (totalPriceWithRemise + priceLivraison).toInt();
                     } else {
+                      ///remise sur la totalité
+                      double discountValue =
+                          cartContext.discountValueInPlageDiscount(
+                        discountIsPrice:
+                            restaurant?.discount?.delivery?.discountIsPrice,
+                        discountValue:
+                            restaurant?.discount?.delivery?.valueDouble,
+                        plageDiscount:
+                            restaurant?.discount?.delivery?.plageDiscount,
+                        totalPriceSansRemise: totalPriceSansRemise.toDouble(),
+                      );
                       totalPrice = cartContext
                           .calculremise(
                             totalPrice: remiseWithCodeDiscount + priceLivraison,
                             discountIsPrice:
                                 restaurant?.discount?.delivery?.discountIsPrice,
-                            discountValue:
-                                restaurant?.discount?.delivery?.valueDouble,
+                            discountValue: discountValue,
                           )
                           .toInt();
                     }

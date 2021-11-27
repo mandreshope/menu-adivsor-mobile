@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/models/models.dart';
+import 'package:menu_advisor/src/models/restaurants/restaurant_plage_discount_model.dart';
 
 class CartContext extends ChangeNotifier {
   // Map<dynamic, int> _items = Map();
@@ -51,13 +52,21 @@ class CartContext extends ChangeNotifier {
         );
   }
 
-  bool hasSameOriginAsInBag(dynamic item) => currentOrigin == null || ((item.restaurant is String) ? item.restaurant : item.restaurant['_id']) == currentOrigin;
+  bool hasSameOriginAsInBag(dynamic item) =>
+      currentOrigin == null ||
+      ((item.restaurant is String)
+              ? item.restaurant
+              : item.restaurant['_id']) ==
+          currentOrigin;
 
-  bool hasSamePricingAsInBag(dynamic item) =>
-      !withPrice ? true : (pricelessItems && (item.price == null || item.price.amount == null)) || (!pricelessItems && item.price != null && item.price.amount != null);
+  bool hasSamePricingAsInBag(dynamic item) => !withPrice
+      ? true
+      : (pricelessItems && (item.price == null || item.price.amount == null)) ||
+          (!pricelessItems && item.price != null && item.price.amount != null);
 
   bool addItem(dynamic item, number, bool isAdd) {
-    if (itemCount == 0 || (hasSamePricingAsInBag(item) && hasSameOriginAsInBag(item))) {
+    if (itemCount == 0 ||
+        (hasSamePricingAsInBag(item) && hasSameOriginAsInBag(item))) {
       if (isAdd) {
         _items.add(item);
       } else {
@@ -109,14 +118,56 @@ class CartContext extends ChangeNotifier {
     _items.forEach((food) {
       totalPrice += food.totalPrice.toDouble() / 100;
     });
-    List<Option> _temp = _options.values.expand((element) => element).toList().expand((element) => element).toList();
+    List<Option> _temp = _options.values
+        .expand((element) => element)
+        .toList()
+        .expand((element) => element)
+        .toList();
     _temp.forEach((option) {
       option.itemOptionSelected?.forEach((itemOption) {
-        if (itemOption.price != null && itemOption.price.amount != null) totalPrice += itemOption.price.amount / 100 * itemOption.quantity;
+        if (itemOption.price != null && itemOption.price.amount != null)
+          totalPrice += itemOption.price.amount / 100 * itemOption.quantity;
       });
     });
 
     return totalPrice;
+  }
+
+  double remiseInEuro({
+    @required bool discountIsPrice,
+    @required double discountValue,
+    @required double totalPrice,
+  }) {
+    if (discountIsPrice) {
+      ///in €
+      return discountValue;
+    } else {
+      ///remiseInEuro = totalPrice(€) - discountValue% (ex: 10000€-10% = 1000€)
+      final remiseInEuro = ((totalPrice * discountValue) / 100);
+      return remiseInEuro;
+    }
+  }
+
+  double discountValueInPlageDiscount({
+    @required double totalPriceSansRemise,
+    @required bool discountIsPrice,
+    @required double discountValue,
+    @required List<PlageDiscount> plageDiscount,
+  }) {
+    ///check discountIsPrice
+    ///if discountIsPrice is false, we apply the plageDiscount
+    double result;
+    if (discountIsPrice == true) {
+      result = discountValue;
+    } else {
+      final plages = plageDiscount.where((plage) =>
+          (int.tryParse(plage.max) ?? 0) >= (totalPriceSansRemise / 100) &&
+          (int.tryParse(plage.min) ?? 0) <= (totalPriceSansRemise / 100));
+      if (plages.isNotEmpty) {
+        result = double.tryParse(plages.first.value) ?? 0.0;
+      }
+    }
+    return result ?? 0.0;
   }
 
   //in Euro
@@ -127,8 +178,11 @@ class CartContext extends ChangeNotifier {
   }) {
     double total = 0.0;
     if (discountIsPrice) {
+      ///total(€) = totalPrice(€) - discountValue(€) (ex: 10000€-10€ = 9990€)
       total = totalPrice - discountValue;
     } else {
+      ///remiseInEuro = totalPrice(€) - discountValue% (ex: 10000€-10% = 1000€)
+      ///total(€) = totalPrice(€) - remiseInEuro (ex: 10 000€ - 1 000€ = 9 000€)
       final remiseInEuro = ((totalPrice * discountValue) / 100);
       total = (totalPrice - remiseInEuro);
     }
@@ -156,7 +210,8 @@ class CartContext extends ChangeNotifier {
   bool contains(dynamic food) {
     if (food.isFoodForMenu)
       return _items.firstWhere(
-            (element) => (element.id == food.id && element.idMenu == food.idMenu),
+            (element) =>
+                (element.id == food.id && element.idMenu == food.idMenu),
             orElse: () => null,
           ) !=
           null;
@@ -172,7 +227,8 @@ class CartContext extends ChangeNotifier {
   bool containsTemp(dynamic food) {
     if (food.isFoodForMenu)
       return _itemsTemp.firstWhere(
-            (element) => (element.id == food.id && element.idMenu == food.idMenu),
+            (element) =>
+                (element.id == food.id && element.idMenu == food.idMenu),
             orElse: () => null,
           ) !=
           null;
@@ -189,7 +245,8 @@ class CartContext extends ChangeNotifier {
 
     if (food is Food) {
       if (food.isFoodForMenu) {
-        item = _itemsTemp.lastWhere((element) => (element.id == food.id && element.idMenu == food.idMenu));
+        item = _itemsTemp.lastWhere((element) =>
+            (element.id == food.id && element.idMenu == food.idMenu));
       } else {
         item = _itemsTemp.lastWhere((element) => element.id == food.id);
       }
@@ -326,8 +383,13 @@ class CartContext extends ChangeNotifier {
     }
 
     List<bool> checkList = [];
-    final obligatoryList = food.optionSelected.where((option) => option.isObligatory).toList();
-    final obligatoryCheckList = obligatoryList.map((option) => option?.isObligatory == true && option.itemOptionSelected.isNotEmpty).toList();
+    final obligatoryList =
+        food.optionSelected.where((option) => option.isObligatory).toList();
+    final obligatoryCheckList = obligatoryList
+        .map((option) =>
+            option?.isObligatory == true &&
+            option.itemOptionSelected.isNotEmpty)
+        .toList();
     for (Option option in food.optionSelected) {
       if (option.itemOptionSelected.isEmpty) {
         checkList.add(false);
@@ -337,7 +399,9 @@ class CartContext extends ChangeNotifier {
         checkList.add(false);
       }
     }
-    hasOption = checkList.where((e) => e).toList().isNotEmpty || (!obligatoryCheckList.contains(false) && obligatoryCheckList.isNotEmpty);
+    hasOption = checkList.where((e) => e).toList().isNotEmpty ||
+        (!obligatoryCheckList.contains(false) &&
+            obligatoryCheckList.isNotEmpty);
     return hasOption;
   }
 

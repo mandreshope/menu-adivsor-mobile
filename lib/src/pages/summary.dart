@@ -268,6 +268,35 @@ class _SummaryState extends State<Summary> {
                     if (widget.commande.menus != null)
                       for (var command in widget.commande.menus)
                         _items(command),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 20),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          TextTranslator(
+                            'Total',
+                            style: TextStyle(
+                              fontWeight: FontWeight.normal,
+                              fontSize: 16,
+                            ),
+                          ),
+                          Spacer(),
+                          widget.commande.priceless
+                              ? Text(" ")
+                              : Text(
+                                  '${(int.tryParse(widget.commande?.totalPriceSansRemise) ?? 0.0) / 100} €',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: CRIMSON,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                        ],
+                      ),
+                    ),
+                    Divider(),
                     if (widget.commande.commandType == 'delivery') ...[
                       Padding(
                         padding: const EdgeInsets.symmetric(
@@ -335,7 +364,7 @@ class _SummaryState extends State<Summary> {
                         ],
                       ),
                     ),
-                    Visibility(
+                    /*Visibility(
                       visible: (widget.commande.commandType == 'delivery') &&
                           (widget.commande?.restaurant?.discount?.delivery
                                       ?.valueDouble ??
@@ -376,8 +405,8 @@ class _SummaryState extends State<Summary> {
                           ),
                         ],
                       ),
-                    ),
-                    Visibility(
+                    ),*/
+                    /*Visibility(
                       visible: (widget.commande.commandType == 'takeaway') &&
                           (widget.commande?.restaurant?.discount?.aEmporter
                                       ?.valueDouble ??
@@ -418,7 +447,7 @@ class _SummaryState extends State<Summary> {
                           ),
                         ],
                       ),
-                    ),
+                    ),*/
 
                     Padding(
                       padding: const EdgeInsets.symmetric(
@@ -426,7 +455,7 @@ class _SummaryState extends State<Summary> {
                       child: Row(
                         children: [
                           TextTranslator(
-                            'Total',
+                            'Total à payer',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
