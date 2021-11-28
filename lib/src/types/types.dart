@@ -40,10 +40,11 @@ class Price {
       );
   Map<String, dynamic> toJson() => {
         'amount': amount,
-        'currency': currency,
+        'currency': currency ?? 'eur',
       };
 
-  factory Price.copy(Price p) => Price(amount: p?.amount, currency: p?.currency);
+  factory Price.copy(Price p) =>
+      Price(amount: p?.amount, currency: p?.currency);
 }
 
 class UserName {

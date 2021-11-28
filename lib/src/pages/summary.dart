@@ -313,7 +313,7 @@ class _SummaryState extends State<Summary> {
                             Opacity(
                               opacity: 0.6,
                               child: Text(
-                                '${widget.commande.priceLivraison ?? 0} €',
+                                '${widget.commande?.priceLivraison ?? 0} €',
                                 style: TextStyle(
                                   fontSize: 16,
                                   color: CRIMSON,
@@ -916,10 +916,10 @@ class _SummaryState extends State<Summary> {
                             widget.commande.priceless)
                           Text("")
                         else
-                          itemsOption.item.price.amount == null
+                          itemsOption.price.amount == null
                               ? Text("")
                               : TextTranslator(
-                                  '${itemsOption.item.price.amount / 100} €',
+                                  '${itemsOption.price.amount / 100} €',
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.normal)),
@@ -1093,10 +1093,10 @@ class _SummaryState extends State<Summary> {
                     if (widget.commande.priceless)
                       Text("")
                     else
-                      itemsOption.item.price.amount == null
+                      itemsOption?.price?.amount == null
                           ? Text("")
                           : TextTranslator(
-                              '${itemsOption.item.price.amount / 100} €',
+                              '${itemsOption.price.amount / 100} €',
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.normal)),
                   ],

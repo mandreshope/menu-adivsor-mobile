@@ -606,8 +606,8 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
 
                     ///delivery process - init all params
                     int totalPrice = 0;
-                    final int totalPriceSansRemise =
-                        (cartContext.totalPrice).toInt();
+                    int totalPriceSansRemise =
+                        (cartContext.totalPrice * 100).toInt();
                     int priceLivraison = 0;
                     double remise = 0; //in €
                     String remiseType = "totalité";

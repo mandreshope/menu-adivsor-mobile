@@ -321,20 +321,15 @@ class _OrderPageState extends State<OrderPage> {
                           ...list,
                           Divider(),
                           if (_restaurant?.hasCodePromo == true) ...[
-                            Card(
-                              elevation: 2.0,
+                            Container(
                               margin: const EdgeInsets.all(10.0),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Container(
-                                padding: EdgeInsets.symmetric(horizontal: 25),
-                                child: TextFormField(
-                                  controller: _codePromoController,
-                                  showCursor: true,
-                                  decoration: InputDecoration(
-                                      border: InputBorder.none,
-                                      hintText: "Code promo"),
+                              child: TextFormField(
+                                controller: _codePromoController,
+                                textInputAction: TextInputAction.next,
+                                keyboardType: TextInputType.text,
+                                onFieldSubmitted: (_) {},
+                                decoration: InputDecoration(
+                                  labelText: "Votre code promo",
                                 ),
                               ),
                             ),
@@ -377,7 +372,7 @@ class _OrderPageState extends State<OrderPage> {
                           ),
                           child: Column(
                             children: [
-                              Visibility(
+                              /*Visibility(
                                 visible: ((_restaurant?.delivery == true) ||
                                         (_restaurant?.aEmporter == true)) &&
                                     (((double.tryParse(_restaurant.discount
@@ -456,7 +451,7 @@ class _OrderPageState extends State<OrderPage> {
                                     ]
                                   ],
                                 ),
-                              ),
+                              ),*/
                               Row(
                                 mainAxisSize: MainAxisSize.max,
                                 mainAxisAlignment:

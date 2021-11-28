@@ -34,7 +34,8 @@ class _DetailMenuState extends State<DetailMenu> {
 
   StreamController<bool> _streamController = StreamController();
   StreamSink<bool> get isTransparentSink => _streamController.sink;
-  Stream<bool> get isTransparentStream => _streamController.stream.asBroadcastStream();
+  Stream<bool> get isTransparentStream =>
+      _streamController.stream.asBroadcastStream();
 
   ScrollController _scrollController;
   bool isContains = false;
@@ -138,7 +139,9 @@ class _DetailMenuState extends State<DetailMenu> {
                       SizedBox(
                         height: 25,
                       ),
-                      Container(margin: EdgeInsets.only(left: 15), child: _renderTitlePlat(context)),
+                      Container(
+                          margin: EdgeInsets.only(left: 15),
+                          child: _renderTitlePlat(context)),
                       Divider(),
                       Container(
                         width: double.infinity,
@@ -149,9 +152,13 @@ class _DetailMenuState extends State<DetailMenu> {
                               padding: EdgeInsets.all(5),
                               child: Text(
                                 '€',
-                                style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold),
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
                               ),
-                              decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.black),
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle, color: Colors.black),
                             ),
                             Positioned(
                               left: 70,
@@ -163,14 +170,21 @@ class _DetailMenuState extends State<DetailMenu> {
                                 ),
                               ),
                             ),
-                            if (widget.menu.price != null && widget.menu.price?.amount != null)
+                            if (widget.menu.price != null &&
+                                widget.menu.price?.amount != null)
                               Positioned(
                                 right: 25,
-                                child: !_cartContext.withPrice || widget.menu.type == MenuType.priceless.value
+                                child: !_cartContext.withPrice ||
+                                        widget.menu.type ==
+                                            MenuType.priceless.value
                                     ? Text("")
-                                    : Consumer<CartContext>(builder: (context, snapshot, _) {
+                                    : Consumer<CartContext>(
+                                        builder: (context, snapshot, _) {
                                         return Text(
-                                          widget.menu.type == MenuType.per_food.value || widget.menu.price?.amount == null
+                                          widget.menu.type ==
+                                                      MenuType.per_food.value ||
+                                                  widget.menu.price?.amount ==
+                                                      null
                                               ? '${widget.menu.totalPrice / 100} €'
                                               : '${widget.menu.price.amount / 100} €',
                                           style: TextStyle(
@@ -185,8 +199,10 @@ class _DetailMenuState extends State<DetailMenu> {
                       ),
                       Divider(),
                       Padding(
-                        padding: const EdgeInsets.only(left: 15.0, top: 8.0, bottom: 8.0, right: 15.0),
-                        child: TextTranslator(widget.menu.description, style: TextStyle(fontSize: 18)),
+                        padding: const EdgeInsets.only(
+                            left: 15.0, top: 8.0, bottom: 8.0, right: 15.0),
+                        child: TextTranslator(widget.menu.description,
+                            style: TextStyle(fontSize: 18)),
                       ),
                       Divider(),
                       _renderListPlat(context),
@@ -226,9 +242,13 @@ class _DetailMenuState extends State<DetailMenu> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Expanded(
-                          child: Consumer<CartContext>(builder: (_, cartContext, __) {
+                          child: Consumer<CartContext>(
+                              builder: (_, cartContext, __) {
                             return Container(
-                              color: (_cartContext.hasMenuObligatorySelected(widget.menu, menuFoods)) ? CRIMSON : Colors.grey,
+                              color: (_cartContext.hasMenuObligatorySelected(
+                                      widget.menu, menuFoods))
+                                  ? CRIMSON
+                                  : Colors.grey,
                               width: double.infinity,
                               height: 45,
                               child: Row(
@@ -238,60 +258,77 @@ class _DetailMenuState extends State<DetailMenu> {
                                 children: [
                                   TextButton(
                                     style: ButtonStyle(
-                                      backgroundColor: MaterialStateProperty.all(
+                                      backgroundColor:
+                                          MaterialStateProperty.all(
                                         Colors.transparent,
                                       ),
                                       shape: MaterialStateProperty.all(
                                         RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(10),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
                                         ),
                                       ),
                                     ),
                                     onPressed: () async {
-                                      if (!cartContext.hasSamePricingAsInBag(widget.menu)) {
+                                      if (!cartContext
+                                          .hasSamePricingAsInBag(widget.menu)) {
                                         showDialog(
                                           context: context,
                                           builder: (_) => ConfirmationDialog(
                                             title: "",
                                             isSimple: true,
-                                            content: AppLocalizations.of(context).translate('priceless_and_not_priceless_not_allowed'),
+                                            content: AppLocalizations.of(
+                                                    context)
+                                                .translate(
+                                                    'priceless_and_not_priceless_not_allowed'),
                                           ),
                                         ).then((value) {
                                           if (value) {
                                             _cartContext.clear();
-                                            _cartContext.addItem(widget.menu, 1, true);
+                                            _cartContext.addItem(
+                                                widget.menu, 1, true);
                                             setState(() {});
                                             RouteUtil.goBack(context: context);
                                           }
                                         });
-                                      } else if (!cartContext.hasSameOriginAsInBag(widget.menu)) {
+                                      } else if (!cartContext
+                                          .hasSameOriginAsInBag(widget.menu)) {
                                         showDialog(
                                           context: context,
                                           builder: (_) => ConfirmationDialog(
                                             title: "",
                                             isSimple: true,
-                                            content: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
+                                            content: AppLocalizations.of(
+                                                    context)
+                                                .translate(
+                                                    'from_different_origin_not_allowed'),
                                           ),
                                         ).then((value) {
                                           if (value) {
                                             _cartContext.clear();
-                                            _cartContext.addItem(widget.menu, 1, true);
+                                            _cartContext.addItem(
+                                                widget.menu, 1, true);
                                             setState(() {});
                                             RouteUtil.goBack(context: context);
                                           }
                                         });
                                       } else {
-                                        if (cartContext.hasMenuObligatorySelected(widget.menu, menuFoods)) {
-                                          _cartContext.addItem(widget.menu, 1, true);
+                                        if (cartContext
+                                            .hasMenuObligatorySelected(
+                                                widget.menu, menuFoods)) {
+                                          _cartContext.addItem(
+                                              widget.menu, 1, true);
                                           RouteUtil.goBack(context: context);
                                         } else
                                           Fluttertoast.showToast(
-                                            msg: 'Ajouter au moin un menu obligatoire et une option',
+                                            msg:
+                                                'Ajouter au moin un menu obligatoire et une option',
                                           );
                                       }
                                     },
                                     child: TextTranslator(
-                                      AppLocalizations.of(context).translate("add_to_cart") +
+                                      AppLocalizations.of(context)
+                                              .translate("add_to_cart") +
                                           '\t\t${widget.menu.quantity == 0 || !cartContext.withPrice || widget.menu.type == MenuType.priceless.value ? "" : widget.menu.totalPrice / 100}' +
                                           '${(widget.menu.quantity == 0 || !cartContext.withPrice || widget.menu.type == MenuType.priceless.value ? "" : "€")}',
                                       overflow: TextOverflow.ellipsis,
@@ -385,17 +422,21 @@ class _DetailMenuState extends State<DetailMenu> {
                                 child: ExpandablePanel(
                                   controller: food.expandableController,
                                   theme: ExpandableThemeData(
-                                    headerAlignment: ExpandablePanelHeaderAlignment.center,
+                                    headerAlignment:
+                                        ExpandablePanelHeaderAlignment.center,
                                     tapBodyToCollapse: true,
                                     hasIcon: false,
                                     tapHeaderToExpand: false,
                                     tapBodyToExpand: false,
                                   ),
-                                  header: Consumer<CartContext>(builder: (context, menuContext, w) {
+                                  header: Consumer<CartContext>(
+                                      builder: (context, menuContext, w) {
                                     return Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 5),
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 5),
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
                                         children: [
                                           InkWell(
                                             onTap: () {
@@ -408,9 +449,11 @@ class _DetailMenuState extends State<DetailMenu> {
                                                   routeName: null);
                                             },
                                             child: ClipRRect(
-                                              borderRadius: BorderRadius.circular(0),
+                                              borderRadius:
+                                                  BorderRadius.circular(0),
                                               child: FadeInImage.assetNetwork(
-                                                placeholder: 'assets/images/loading.gif',
+                                                placeholder:
+                                                    'assets/images/loading.gif',
                                                 image: food.imageURL,
                                                 imageErrorBuilder: (_, o, s) {
                                                   return Container(
@@ -426,7 +469,10 @@ class _DetailMenuState extends State<DetailMenu> {
                                             ),
                                           ),
                                           SizedBox(
-                                            width: MediaQuery.of(context).size.width / 6,
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width /
+                                                6,
                                           ),
                                           Align(
                                             alignment: Alignment.center,
@@ -435,17 +481,21 @@ class _DetailMenuState extends State<DetailMenu> {
                                               textAlign: TextAlign.center,
                                             ),
                                           ),
-                                          if (widget.menu.type == MenuType.fixed_price.value && _cartContext.withPrice) ...[
+                                          if (widget.menu.type ==
+                                                  MenuType.fixed_price.value &&
+                                              _cartContext.withPrice) ...[
                                             Spacer(),
                                             food?.price?.amount == null
                                                 ? Text("")
                                                 : Text(
                                                     "${food.price.amount / 100} €",
                                                     style: TextStyle(
-                                                      fontWeight: FontWeight.bold,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                     ),
                                                   ),
-                                          ] else if (widget.menu.type == MenuType.priceless.value) ...[
+                                          ] else if (widget.menu.type ==
+                                              MenuType.priceless.value) ...[
                                             Text(" ")
                                           ] else ...[
                                             Spacer(),
@@ -455,30 +505,32 @@ class _DetailMenuState extends State<DetailMenu> {
                                                   : Text(
                                                       "${food.price.amount / 100} €",
                                                       style: TextStyle(
-                                                        fontWeight: FontWeight.bold,
+                                                        fontWeight:
+                                                            FontWeight.bold,
                                                       ),
                                                     ),
                                           ],
                                           Spacer(),
                                           IconButton(
                                             icon: Icon(
-                                              food.isSelected ? Icons.check_box : Icons.check_box_outline_blank,
-                                              color: food.isSelected ? CRIMSON : Colors.grey,
+                                              food.isSelected
+                                                  ? Icons.check_box
+                                                  : Icons
+                                                      .check_box_outline_blank,
+                                              color: food.isSelected
+                                                  ? CRIMSON
+                                                  : Colors.grey,
                                             ),
                                             onPressed: () {
-                                              setState(() {
-                                                food.isSelected = !food.isSelected;
-                                                food.expandableController.expanded = !food.expandableController.expanded;
-                                                if (!food.expandableController.expanded) {
-                                                  food?.optionSelected?.forEach((option) {
-                                                    option.itemOptionSelected.clear();
-                                                    option.singleItemOptionSelected = null;
-                                                    menuContext.refresh();
-                                                  });
-                                                }
-                                              });
-
                                               print("$logTrace food selected");
+                                              setState(() {
+                                                food.isSelected =
+                                                    !food.isSelected;
+                                                food.expandableController
+                                                        .expanded =
+                                                    !food.expandableController
+                                                        .expanded;
+                                              });
                                               if (menuFood.isMaxOptions) {
                                                 widget.menu.setFoodMenuSelected(
                                                   menuFood.sId,
@@ -495,8 +547,23 @@ class _DetailMenuState extends State<DetailMenu> {
                                                 food.isSelected = false;
                                                 menuContext.refresh();
                                                 print("$logTrace max options");
-                                                Fluttertoast.showToast(msg: "maximum selection ${menuFood.title} : ${menuFood.maxOptions}");
+                                                Fluttertoast.showToast(
+                                                    msg:
+                                                        "maximum selection ${menuFood.title} : ${menuFood.maxOptions}");
                                               }
+                                              if (!food.expandableController
+                                                  .expanded) {
+                                                food?.optionSelected
+                                                    ?.forEach((option) {
+                                                  option.itemOptionSelected
+                                                      .clear();
+                                                  option.singleItemOptionSelected =
+                                                      null;
+                                                  menuContext.refresh();
+                                                });
+                                              }
+
+                                              setState(() {});
                                             },
                                           ),
                                         ],
@@ -504,7 +571,8 @@ class _DetailMenuState extends State<DetailMenu> {
                                     );
                                   }),
                                   collapsed: Container(),
-                                  expanded: Consumer<CartContext>(builder: (context, menuContext, w) {
+                                  expanded: Consumer<CartContext>(
+                                      builder: (context, menuContext, w) {
                                     return MenuItemFoodOption(
                                       food: food,
                                       menu: widget.menu,
@@ -516,7 +584,8 @@ class _DetailMenuState extends State<DetailMenu> {
                                     return Expandable(
                                       collapsed: collapsed,
                                       expanded: expanded,
-                                      theme: const ExpandableThemeData(crossFadePoint: 0),
+                                      theme: const ExpandableThemeData(
+                                          crossFadePoint: 0),
                                     );
                                   },
                                 ),
@@ -542,8 +611,10 @@ class _DetailMenuState extends State<DetailMenu> {
               showDialog(
                 context: context,
                 builder: (_) => ConfirmationDialog(
-                  title: AppLocalizations.of(context).translate('confirm_remove_from_cart_title'),
-                  content: AppLocalizations.of(context).translate('confirm_remove_from_cart_content'),
+                  title: AppLocalizations.of(context)
+                      .translate('confirm_remove_from_cart_title'),
+                  content: AppLocalizations.of(context)
+                      .translate('confirm_remove_from_cart_content'),
                 ),
               ).then((result) {
                 if (result is bool && result) {
@@ -565,7 +636,8 @@ class _DetailMenuState extends State<DetailMenu> {
                     cartContext.refresh();
                   },
                   itemCount: widget.menu.quantity,
-                  isContains: _cartContext.hasMenuObligatorySelected(widget.menu, menuFoods),
+                  isContains: _cartContext.hasMenuObligatorySelected(
+                      widget.menu, menuFoods),
                   isSmal: false,
                 )
               : Container();

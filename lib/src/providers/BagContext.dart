@@ -336,10 +336,11 @@ class CartContext extends ChangeNotifier {
     bool hasOptionSelected = false;
     final menuIds = menu.foodMenuSelected.keys.toList();
     if (menuIds.isEmpty) {
-      return hasMenuObligatorySelected;
+      return false;
     }
     List<bool> listMenu = [];
     List<bool> listOption = [];
+
     for (final menuFood in menuFoods) {
       menu.foodMenuSelected.forEach((menuId, value) {
         if (menuId == menuFood.sId) {
@@ -358,6 +359,7 @@ class CartContext extends ChangeNotifier {
         });
       });
     }
+
     hasMenuObligatorySelected = listMenu.where((e) => e).toList().isNotEmpty;
     if (listOption.contains(false)) {
       hasOptionSelected = false;
@@ -367,9 +369,16 @@ class CartContext extends ChangeNotifier {
 
     if (hasMenuObligatorySelected && hasOptionSelected) {
       return true;
+    } else if (allMenuIsNotObligatory(menu, menuFoods) && hasOptionSelected) {
+      return true;
     } else {
       return false;
     }
+  }
+
+  bool allMenuIsNotObligatory(Menu menu, List<MenuFood> menuFoods) {
+    final menusObligatory = menuFoods.where((m) => m.isObligatory);
+    return menusObligatory.isEmpty && menu.foodMenuSelecteds.isNotEmpty;
   }
 
   bool hasOptionSelectioned(Food food) {

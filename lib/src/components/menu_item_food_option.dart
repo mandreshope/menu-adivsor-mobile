@@ -77,7 +77,10 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                           children: [
                             TextTranslator(
                               "${option.title}",
-                              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16),
                               textAlign: TextAlign.start,
                             ),
                             if (option.isObligatory)
@@ -139,12 +142,15 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
             option.singleItemOptionSelected = value;
             option.singleItemOptionSelected.isSingle = true;
             option.singleItemOptionSelected.quantity = 1;
-            if (option.itemOptionSelected.isEmpty) option.itemOptionSelected = [];
+            if (option.itemOptionSelected.isEmpty)
+              option.itemOptionSelected = [];
 
-            option.itemOptionSelected.removeWhere((element) => element.isSingle);
+            option.itemOptionSelected
+                .removeWhere((element) => element.isSingle);
             option.itemOptionSelected.add(value);
 
-            widget.menu.optionSelected = options.map((o) => Option.copy(o)).toList();
+            widget.menu.optionSelected =
+                options.map((o) => Option.copy(o)).toList();
             widget.food.optionSelected = options;
             _cartContext.addOption(widget.menu, options, key: widget.subMenu);
           });
@@ -202,11 +208,15 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                         // shape: BoxShape.circle,
                         // color: _.value.price == 0 ? null : Colors.grey[400]
                         ),
-                    child: !_cartContext.withPrice || _.value.price.amount == null || widget.menu.type == 'priceless'
+                    child: !_cartContext.withPrice ||
+                            _.value.price.amount == null ||
+                            widget.menu.type == 'priceless'
                         ? Text("")
                         : Text(
                             "${_.value.price.amount == 0 ? '' : _.value.price.amount / 100}${_.value.price.amount == 0 ? '' : "€"}",
-                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
                           ),
                   ),
                   Spacer(),
@@ -219,7 +229,7 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                     },
                     child: _.selected
                         ? Icon(
-                            Icons.check_box,
+                            Icons.radio_button_checked,
                             color: CRIMSON,
                             size: 25,
                           )
@@ -260,11 +270,16 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
               _cartContext.refresh();
             } else {
               print("$logTrace max options");
-              Fluttertoast.showToast(msg: "maximum selection ${option.title} : ${option.maxOptions}");
+              Fluttertoast.showToast(
+                  msg:
+                      "maximum selection ${option.title} : ${option.maxOptions}");
             }
           } else {
             var seen = Set<String>();
-            option.itemOptionSelected = value.cast<ItemsOption>().where((element) => seen.add(element.name)).toList();
+            option.itemOptionSelected = value
+                .cast<ItemsOption>()
+                .where((element) => seen.add(element.name))
+                .toList();
 
             widget.menu.optionSelected = options;
             widget.food.optionSelected = options;
@@ -337,24 +352,31 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                         // shape: BoxShape.circle,
                         // color: _.value.price == 0 ? null : Colors.grey[400]
                         ),
-                    child: !_cartContext.withPrice || _.value.price.amount == null || widget.menu.type == 'priceless'
+                    child: !_cartContext.withPrice ||
+                            _.value.price.amount == null ||
+                            widget.menu.type == 'priceless'
                         ? Text("")
                         : Text(
                             "${_.value.price.amount == 0 ? '' : _.value.price.amount / 100}${_.value.price.amount == 0 ? '' : "€"}",
-                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
                           ),
                   ),
                   Spacer(),
                   !_.selected
                       ? IconButton(
-                          icon: Icon(Icons.add_circle_outlined, color: Colors.grey, size: 25),
+                          icon: Icon(Icons.add_circle_outlined,
+                              color: Colors.grey, size: 25),
                           onPressed: () {
                             if (option.isMaxOptions) {
                               _.value.quantity = 1;
                               _.select(!_.selected);
                             } else {
                               print("$logTrace max options");
-                              Fluttertoast.showToast(msg: "maximum selection ${option.title} : ${option.maxOptions}");
+                              Fluttertoast.showToast(
+                                  msg:
+                                      "maximum selection ${option.title} : ${option.maxOptions}");
                             }
                           },
                         )
@@ -394,7 +416,8 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                                 width: 2,
                               ),
                               IconButton(
-                                icon: Icon(Icons.add_circle_outlined, color: CRIMSON, size: 25),
+                                icon: Icon(Icons.add_circle_outlined,
+                                    color: CRIMSON, size: 25),
                                 onPressed: () {
                                   if (option.isMaxOptions) {
                                     _.value.quantity++;
@@ -402,7 +425,9 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                                     snapshot.refresh();
                                   } else {
                                     print("$logTrace max options");
-                                    Fluttertoast.showToast(msg: "maximum selection ${option.title} : ${option.maxOptions}");
+                                    Fluttertoast.showToast(
+                                        msg:
+                                            "maximum selection ${option.title} : ${option.maxOptions}");
                                   }
                                 },
                               ),
