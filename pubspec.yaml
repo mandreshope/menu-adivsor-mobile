@@ -77,6 +77,8 @@ dependencies:
   carousel_slider: ^4.0.0
   firebase_analytics: ^8.3.4
   intl_phone_number_input: ^0.7.0+2
+  firebase_messaging: ^11.2.0
+  flutter_local_notifications: ^9.1.4
 
 dev_dependencies:
   flutter_test:

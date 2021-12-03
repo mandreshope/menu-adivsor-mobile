@@ -3,6 +3,7 @@ import 'package:flutter_credit_card/credit_card_widget.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/models/models.dart';
 import 'package:menu_advisor/src/models/restaurants/restaurant_discount_model.dart';
 import 'package:menu_advisor/src/pages/add_payment_card.dart';
@@ -13,11 +14,13 @@ import 'package:menu_advisor/src/providers/CommandContext.dart';
 import 'package:menu_advisor/src/providers/MenuContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
+import 'package:menu_advisor/src/services/notification_service.dart';
 import 'package:menu_advisor/src/services/stripe.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PaymentCardListPage extends StatefulWidget {
   final bool isPaymentStep;
@@ -302,9 +305,14 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                     currency: 'eur',
                   );
 
+                  ///get tokenFCM
+                  final sharedPrefs = await SharedPreferences.getInstance();
+                  final tokenFCM = sharedPrefs.getString(kTokenFCM);
+
                   if (payment.success) {
                     ///TODO: await Api.instance.sendCommand - DELIVERY
                     var command = await Api.instance.sendCommand(
+                        tokenNavigator: tokenFCM,
                         addCodePromo: commandContext.withCodeDiscount,
                         isCodePromo: commandContext.withCodeDiscount != null,
                         priceLivraison: priceLivraison.toString(),
@@ -362,6 +370,9 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                     cm.codeDiscount = commandContext.withCodeDiscount;
                     cm.withCodeDiscount =
                         commandContext.withCodeDiscount != null;
+
+                    await sendPushMessage(cm.tokenNavigator,
+                        message: "Vous avez un commande ${cm.commandType}");
 
                     Api.instance.setCommandToPayedStatus(
                       true,

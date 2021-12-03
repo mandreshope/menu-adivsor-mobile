@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/models/models.dart';
 import 'package:menu_advisor/src/pages/choose_payement.dart';
 import 'package:menu_advisor/src/pages/summary.dart';
@@ -10,10 +11,12 @@ import 'package:menu_advisor/src/providers/CommandContext.dart';
 import 'package:menu_advisor/src/providers/MenuContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
+import 'package:menu_advisor/src/services/notification_service.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:pinput/pin_put/pin_put.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'home.dart';
 
@@ -230,17 +233,17 @@ class _ConfirmSmsState extends State<ConfirmSms> {
           Provider.of<AuthContext>(context, listen: false);
 
       //TODO: COMMENT THIS SMS CHECK FOR TEST DELEVERY
-      if (widget.code != pin) {
+      /*if (widget.code != pin) {
         Fluttertoast.showToast(msg: "Invalide sms code");
         return;
-      }
+      }*/
       //TODO: COMMENT THIS SMS CHECK FOR TEST DELEVERY
-      if (this.dateDelai.isBefore(DateTime.now())) {
+      /*if (this.dateDelai.isBefore(DateTime.now())) {
         Fluttertoast.showToast(
             msg:
                 "Votre délai de confirmation est épuisé. Veuillez renvoyer votre code de confirmation.");
         return;
-      }
+      }*/
 
       if (widget.fromDelivery) {
         //TODO: LIVRAISON IMPLEMENTATION
@@ -288,8 +291,13 @@ class _ConfirmSmsState extends State<ConfirmSms> {
 
         totalPrice = (totalPrice * 100).toInt();
 
+        ///get tokenFCM
+        final sharedPrefs = await SharedPreferences.getInstance();
+        final tokenFCM = sharedPrefs.getString(kTokenFCM);
+
         ///TODO: await Api.instance.sendCommand - AEMPORTER
         var command = await Api.instance.sendCommand(
+          tokenNavigator: tokenFCM,
           addCodePromo: commandContext.withCodeDiscount,
           isCodePromo: commandContext.withCodeDiscount != null,
           discount: widget.restaurant?.discount,
@@ -331,6 +339,9 @@ class _ConfirmSmsState extends State<ConfirmSms> {
         Command cm = Command.fromJson(command);
         cm.codeDiscount = commandContext.withCodeDiscount;
         cm.withCodeDiscount = commandContext.withCodeDiscount != null;
+
+        await sendPushMessage(cm.tokenNavigator,
+            message: "Vous avez un commande ${cm.commandType}");
 
         commandContext.clear();
         cartContext.clear();

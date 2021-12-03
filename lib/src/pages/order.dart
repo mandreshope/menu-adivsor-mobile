@@ -8,6 +8,7 @@ import 'package:menu_advisor/src/animations/FadeAnimation.dart';
 import 'package:menu_advisor/src/components/cards.dart';
 import 'package:menu_advisor/src/components/dialogs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/pages/delivery_details.dart';
 import 'package:menu_advisor/src/pages/login.dart';
 import 'package:menu_advisor/src/pages/map_polyline.dart';
@@ -21,10 +22,12 @@ import 'package:menu_advisor/src/providers/MenuContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
+import 'package:menu_advisor/src/services/notification_service.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../models/models.dart';
@@ -686,8 +689,13 @@ class _OrderPageState extends State<OrderPage> {
             }
             totalPrice = (remiseWithCodeDiscount * 100).toInt();
 
+            ///get tokenFCM
+            final sharedPrefs = await SharedPreferences.getInstance();
+            final tokenFCM = sharedPrefs.getString(kTokenFCM);
+
             ///TODO: await Api.instance.sendCommand - ON_SITE
             var command = await Api.instance.sendCommand(
+              tokenNavigator: tokenFCM,
               addCodePromo: commandContext.withCodeDiscount,
               isCodePromo: commandContext.withCodeDiscount != null,
               discount: _restaurant?.discount,
@@ -718,6 +726,9 @@ class _OrderPageState extends State<OrderPage> {
               priceless: !cartContext.withPrice,
             );
             Command cm = Command.fromJson(command);
+
+            await sendPushMessage(cm.tokenNavigator,
+                message: "Vous avez un commande ${cm.commandType}");
 
             cartContext.clear();
             commandContext.clear();
@@ -804,8 +815,13 @@ class _OrderPageState extends State<OrderPage> {
         }
         totalPrice = (remiseWithCodeDiscount * 100).toInt();
 
+        ///get tokenFCM
+        final sharedPrefs = await SharedPreferences.getInstance();
+        final tokenFCM = sharedPrefs.getString(kTokenFCM);
+
         ///TODO: await Api.instance.sendCommand - ON_SITE
         var command = await Api.instance.sendCommand(
+          tokenNavigator: tokenFCM,
           addCodePromo: commandContext.withCodeDiscount,
           isCodePromo: commandContext.withCodeDiscount != null,
           discount: _restaurant?.discount,
@@ -834,6 +850,9 @@ class _OrderPageState extends State<OrderPage> {
           priceless: !cartContext.withPrice,
         );
         Command cm = Command.fromJson(command);
+
+        await sendPushMessage(cm.tokenNavigator,
+            message: "Vous avez un commande ${cm.commandType}");
 
         cartContext.clear();
         commandContext.clear();

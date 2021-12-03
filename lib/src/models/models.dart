@@ -951,6 +951,7 @@ class Command {
   dynamic customer;
   bool withCodeDiscount = false;
   CodeDiscount codeDiscount;
+  final String tokenNavigator;
 
   Command({
     this.id,
@@ -979,6 +980,7 @@ class Command {
     this.priceLivraison,
     this.discountIsPrice,
     this.totalPriceSansRemise,
+    this.tokenNavigator,
   });
 
   factory Command.fromJson(Map<String, dynamic> json) => Command(
@@ -1031,6 +1033,7 @@ class Command {
         customer: json['customer'],
         priceLivraison: json['priceLivraison'],
         totalPriceSansRemise: json['totalPriceSansRemise'],
+        tokenNavigator: json['tokenNavigator'],
       );
 }
 

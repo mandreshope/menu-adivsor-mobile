@@ -850,6 +850,7 @@ class Api {
 
   Future<Map> sendCommand({
     @required bool isCodePromo,
+    @required String tokenNavigator,
     CodeDiscount addCodePromo,
     String relatedUser,
     String commandType,
@@ -880,6 +881,7 @@ class Api {
       if (isDelivery) {
         post = jsonEncode({
           'addCodePromo': addCodePromo?.toAddCodePromo(restaurant),
+          'tokenNavigator': tokenNavigator,
           'isCodePromo': isCodePromo,
           'relatedUser': relatedUser,
           'commandType': commandType,
@@ -906,6 +908,7 @@ class Api {
       } else {
         post = jsonEncode({
           'addCodePromo': addCodePromo?.toAddCodePromo(restaurant),
+          'tokenNavigator': tokenNavigator,
           'isCodePromo': isCodePromo,
           'relatedUser': relatedUser,
           'commandType': commandType,

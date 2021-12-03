@@ -1,5 +1,8 @@
 import 'dart:async';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -23,6 +26,7 @@ import 'package:menu_advisor/src/providers/DataContext.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
+import 'package:menu_advisor/src/services/notification_service.dart';
 import 'package:menu_advisor/src/services/stripe.dart';
 import 'package:menu_advisor/src/types/types.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
@@ -30,6 +34,7 @@ import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
@@ -44,11 +49,15 @@ class _HomePageState extends State<HomePage> {
   Location currentLocation;
   String city;
 
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+
   @override
   void initState() {
     super.initState();
 
     StripeService.init();
+
+    _firebaseMessagingHandler();
 
     Geolocator.checkPermission().then((LocationPermission permission) async {
       if (permission == LocationPermission.deniedForever) {
@@ -70,7 +79,8 @@ class _HomePageState extends State<HomePage> {
           context,
           listen: false,
         ).languageCode;
-        await Provider.of<DataContext>(context, listen: false).setCity(currentPosition.latitude, currentPosition.longitude);
+        await Provider.of<DataContext>(context, listen: false)
+            .setCity(currentPosition.latitude, currentPosition.longitude);
         Provider.of<DataContext>(
           context,
           listen: false,
@@ -80,7 +90,8 @@ class _HomePageState extends State<HomePage> {
         );
         this.city = Provider.of<DataContext>(context, listen: false).getCity();
       } else {
-        Position currentPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.medium);
+        Position currentPosition = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.medium);
 
         setState(() {
           currentLocation = Location(
@@ -94,12 +105,67 @@ class _HomePageState extends State<HomePage> {
           listen: false,
         ).languageCode;
 
-        await Provider.of<DataContext>(context, listen: false).setCity(currentPosition.latitude, currentPosition.longitude);
+        await Provider.of<DataContext>(context, listen: false)
+            .setCity(currentPosition.latitude, currentPosition.longitude);
         Provider.of<DataContext>(context, listen: false).refresh(
           lang,
           currentLocation,
         );
         this.city = Provider.of<DataContext>(context, listen: false).getCity();
+      }
+    });
+  }
+
+  _firebaseMessagingHandler() {
+    _firebaseMessaging.requestPermission();
+
+    _firebaseMessaging.getToken().then((token) async {
+      debugPrint('tokenFCM.... $token');
+      final sharedPrefs = await SharedPreferences.getInstance();
+      await sharedPrefs.setString(kTokenFCM, token);
+    });
+
+    _firebaseMessaging.getInitialMessage().then((RemoteMessage message) {
+      debugPrint("$message");
+      RemoteNotification notification = message.notification;
+      AndroidNotification android = message.notification?.android;
+      if (notification != null && android != null && !kIsWeb) {
+        flutterLocalNotificationsPlugin.show(
+          notification.hashCode,
+          notification.title,
+          notification.body,
+          NotificationDetails(
+            android: AndroidNotificationDetails(
+              channel.id,
+              channel.name,
+              // TODO add a proper drawable resource to android, for now using
+              //      one that already exists in example app.
+              icon: 'launch_background',
+            ),
+          ),
+        );
+      }
+    });
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print(message);
+      RemoteNotification notification = message.notification;
+      AndroidNotification android = message.notification?.android;
+      if (notification != null && android != null && !kIsWeb) {
+        flutterLocalNotificationsPlugin.show(
+          notification.hashCode,
+          notification.title,
+          notification.body,
+          NotificationDetails(
+            android: AndroidNotificationDetails(
+              channel.id,
+              channel.name,
+              // TODO add a proper drawable resource to android, for now using
+              //      one that already exists in example app.
+              icon: 'launch_background',
+            ),
+          ),
+        );
       }
     });
   }
@@ -118,7 +184,8 @@ class _HomePageState extends State<HomePage> {
             ? Scaffold(
                 body: Center(
                   child: TextTranslator(
-                    AppLocalizations.of(context).translate('geolocation_denied'),
+                    AppLocalizations.of(context)
+                        .translate('geolocation_denied'),
                   ),
                 ),
               )
@@ -135,7 +202,8 @@ class _HomePageState extends State<HomePage> {
                       },
                     );
                     Fluttertoast.showToast(
-                      msg: AppLocalizations.of(context).translate('before_exit_message'),
+                      msg: AppLocalizations.of(context)
+                          .translate('before_exit_message'),
                     );
                     return false;
                   }
@@ -159,16 +227,21 @@ class _HomePageState extends State<HomePage> {
                           RefreshIndicator(
                             onRefresh: () async {
                               try {
-                                DataContext dataContext = Provider.of<DataContext>(
+                                DataContext dataContext =
+                                    Provider.of<DataContext>(
                                   context,
                                   listen: false,
                                 );
 
-                                Position position = await Geolocator.getCurrentPosition();
+                                Position position =
+                                    await Geolocator.getCurrentPosition();
 
                                 Location location = Location(
                                   type: 'Point',
-                                  coordinates: [position.longitude, position.latitude],
+                                  coordinates: [
+                                    position.longitude,
+                                    position.latitude
+                                  ],
                                 );
 
                                 return dataContext.refresh(
@@ -181,7 +254,8 @@ class _HomePageState extends State<HomePage> {
                               } catch (error) {
                                 print(error);
                                 Fluttertoast.showToast(
-                                  msg: AppLocalizations.of(context).translate('gelocation_issue'),
+                                  msg: AppLocalizations.of(context)
+                                      .translate('gelocation_issue'),
                                 );
                               }
                             },
@@ -245,12 +319,20 @@ class _HomePageState extends State<HomePage> {
                                             top: 0,
                                             right: 0,
                                             child: Container(
-                                              padding: EdgeInsets.only(bottom: 5),
-                                              decoration: BoxDecoration(color: CRIMSON, borderRadius: BorderRadius.circular(12.5)),
+                                              padding:
+                                                  EdgeInsets.only(bottom: 5),
+                                              decoration: BoxDecoration(
+                                                  color: CRIMSON,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          12.5)),
                                               child: Center(
                                                 child: Text(
                                                   "${cart.totalItems}",
-                                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold),
                                                 ),
                                               ),
                                               width: 25,
@@ -318,7 +400,8 @@ class _HomePageState extends State<HomePage> {
                           context: context,
                           child: SearchPage(
                             location: {
-                              "coordinates": currentLocation?.coordinates ?? [0, 0]
+                              "coordinates":
+                                  currentLocation?.coordinates ?? [0, 0]
                             },
                             filters: {
                               // "city":this.city ?? ""
@@ -406,7 +489,8 @@ class _HomePageState extends State<HomePage> {
                               type: 'restaurant',
                               fromCategory: true,
                               location: {
-                                "coordinates": currentLocation?.coordinates ?? [0, 0]
+                                "coordinates":
+                                    currentLocation?.coordinates ?? [0, 0]
                               },
                               filters: {
                                 "category": [category.id],
@@ -607,7 +691,9 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     TextTranslator(
-                      AppLocalizations.of(context).translate('no_restaurant_near') ?? "Aucun restaurant trouvé",
+                      AppLocalizations.of(context)
+                              .translate('no_restaurant_near') ??
+                          "Aucun restaurant trouvé",
                       style: TextStyle(
                         fontSize: 22,
                       ),
@@ -713,7 +799,9 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     TextTranslator(
-                      AppLocalizations.of(context).translate('no_restaurant_near') ?? "Aucun restaurant trouvé",
+                      AppLocalizations.of(context)
+                              .translate('no_restaurant_near') ??
+                          "Aucun restaurant trouvé",
                       style: TextStyle(
                         fontSize: 22,
                       ),
@@ -818,7 +906,9 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     TextTranslator(
-                      AppLocalizations.of(context).translate('no_restaurant_near') ?? "Aucun restaurant trouvé",
+                      AppLocalizations.of(context)
+                              .translate('no_restaurant_near') ??
+                          "Aucun restaurant trouvé",
                       style: TextStyle(
                         fontSize: 22,
                       ),
@@ -884,7 +974,8 @@ class _HomePageState extends State<HomePage> {
                         child: SearchPage(
                           type: 'food',
                           location: {
-                            "coordinates": currentLocation?.coordinates ?? [0, 0]
+                            "coordinates":
+                                currentLocation?.coordinates ?? [0, 0]
                           },
                           filters: {
                             // "searchCategory": "with_price",

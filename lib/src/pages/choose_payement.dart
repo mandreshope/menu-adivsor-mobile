@@ -14,9 +14,11 @@ import 'package:menu_advisor/src/providers/CommandContext.dart';
 import 'package:menu_advisor/src/providers/MenuContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
+import 'package:menu_advisor/src/services/notification_service.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ChoosePayement extends StatelessWidget {
   final Restaurant restaurant;
@@ -171,8 +173,13 @@ class ChoosePayement extends StatelessWidget {
               totalPrice = (totalPrice * 100).toInt();
             }
 
+            ///get tokenFCM
+            final sharedPrefs = await SharedPreferences.getInstance();
+            final tokenFCM = sharedPrefs.getString(kTokenFCM);
+
             ///TODO: await Api.instance.sendCommand - DELIVERY
             var command = await Api.instance.sendCommand(
+              tokenNavigator: tokenFCM,
               addCodePromo: commandContext.withCodeDiscount,
               isCodePromo: commandContext.withCodeDiscount != null,
               priceLivraison: priceLivraison.toString(),
@@ -227,6 +234,9 @@ class ChoosePayement extends StatelessWidget {
             Command cm = Command.fromJson(command);
             cm.codeDiscount = commandContext.withCodeDiscount;
             cm.withCodeDiscount = commandContext.withCodeDiscount != null;
+
+            await sendPushMessage(cm.tokenNavigator,
+                message: "Vous avez un commande ${cm.commandType}");
 
             commandContext.clear();
             cartContext.clear();
