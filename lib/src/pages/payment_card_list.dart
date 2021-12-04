@@ -185,6 +185,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                   int totalPriceSansRemise =
                       (cartContext.totalPrice * 100).toInt();
                   int priceLivraison = 0;
+                  double remiseWithCodeDiscount = cartContext.totalPrice;
                   if (widget.restaurant.deliveryFixed) {
                     priceLivraison = (widget.restaurant.priceDelevery != null
                             ? widget.restaurant.priceDelevery
@@ -205,7 +206,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                         priceLivraison = commandContext
                             .getDeliveryPriceByMiles(widget.restaurant)
                             .toInt();
-                        double remiseWithCodeDiscount = cartContext.totalPrice;
+                        remiseWithCodeDiscount = cartContext.totalPrice;
                         if (commandContext.withCodeDiscount != null) {
                           remiseWithCodeDiscount = cartContext.calculremise(
                             totalPrice: cartContext.totalPrice,
@@ -309,10 +310,16 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                   final sharedPrefs = await SharedPreferences.getInstance();
                   final tokenFCM = sharedPrefs.getString(kTokenFCM);
 
+                  ///calacul totalDiscount
+                  final totalDiscount = cartContext.calculTotalDiscount(
+                      totalPriceSansRemise: totalPriceSansRemise,
+                      remiseWithCodeDiscount: remiseWithCodeDiscount.toInt());
+
                   if (payment.success) {
                     ///TODO: await Api.instance.sendCommand - DELIVERY
                     var command = await Api.instance.sendCommand(
                         tokenNavigator: tokenFCM,
+                        totalDiscount: totalDiscount.toString(),
                         addCodePromo: commandContext.withCodeDiscount,
                         isCodePromo: commandContext.withCodeDiscount != null,
                         priceLivraison: priceLivraison.toString(),

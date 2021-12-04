@@ -148,6 +148,13 @@ class CartContext extends ChangeNotifier {
     }
   }
 
+  int calculTotalDiscount(
+      {int totalPriceSansRemise, int remiseWithCodeDiscount}) {
+    final dif = (totalPriceSansRemise - remiseWithCodeDiscount);
+    final totalDiscount = dif.isNegative ? 0 : dif;
+    return totalDiscount;
+  }
+
   double discountValueInPlageDiscount({
     @required double totalPriceSansRemise,
     @required bool discountIsPrice,

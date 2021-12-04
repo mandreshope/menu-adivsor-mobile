@@ -693,9 +693,15 @@ class _OrderPageState extends State<OrderPage> {
             final sharedPrefs = await SharedPreferences.getInstance();
             final tokenFCM = sharedPrefs.getString(kTokenFCM);
 
+            ///calacul totalDiscount
+            final totalDiscount = cartContext.calculTotalDiscount(
+                totalPriceSansRemise: totalPriceSansRemise,
+                remiseWithCodeDiscount: remiseWithCodeDiscount.toInt());
+
             ///TODO: await Api.instance.sendCommand - ON_SITE
             var command = await Api.instance.sendCommand(
               tokenNavigator: tokenFCM,
+              totalDiscount: totalDiscount.toString(),
               addCodePromo: commandContext.withCodeDiscount,
               isCodePromo: commandContext.withCodeDiscount != null,
               discount: _restaurant?.discount,
@@ -796,12 +802,13 @@ class _OrderPageState extends State<OrderPage> {
           routeName: userDetailsRoute,
           arguments: _restaurant);
     } else if (commandContext.commandType == 'on_site') {
+      int totalPrice = 0;
+      double remiseWithCodeDiscount = cartContext.totalPrice;
+      int totalPriceSansRemise = (cartContext.totalPrice * 100).toInt();
       try {
         setState(() {
           sendingCommand = true;
         });
-        int totalPrice = 0;
-        double remiseWithCodeDiscount = cartContext.totalPrice;
         if (commandContext.withCodeDiscount) {
           remiseWithCodeDiscount = cartContext.calculremise(
               totalPrice: cartContext.totalPrice,
@@ -819,9 +826,15 @@ class _OrderPageState extends State<OrderPage> {
         final sharedPrefs = await SharedPreferences.getInstance();
         final tokenFCM = sharedPrefs.getString(kTokenFCM);
 
+        ///calacul totalDiscount
+        final totalDiscount = cartContext.calculTotalDiscount(
+            totalPriceSansRemise: totalPriceSansRemise,
+            remiseWithCodeDiscount: remiseWithCodeDiscount.toInt());
+
         ///TODO: await Api.instance.sendCommand - ON_SITE
         var command = await Api.instance.sendCommand(
           tokenNavigator: tokenFCM,
+          totalDiscount: totalDiscount.toString(),
           addCodePromo: commandContext.withCodeDiscount,
           isCodePromo: commandContext.withCodeDiscount != null,
           discount: _restaurant?.discount,

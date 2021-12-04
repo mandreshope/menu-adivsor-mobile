@@ -72,6 +72,7 @@ class ChoosePayement extends StatelessWidget {
             int totalPrice = 0;
             int totalPriceSansRemise = (cartContext.totalPrice * 100).toInt();
             int priceLivraison = 0;
+            double remiseWithCodeDiscount = cartContext.totalPrice;
             if (restaurant.deliveryFixed) {
               priceLivraison = (restaurant.priceDelevery != null
                       ? restaurant.priceDelevery
@@ -89,7 +90,7 @@ class ChoosePayement extends StatelessWidget {
                   priceLivraison = commandContext
                       .getDeliveryPriceByMiles(restaurant)
                       .toInt();
-                  double remiseWithCodeDiscount = cartContext.totalPrice;
+                  remiseWithCodeDiscount = cartContext.totalPrice;
                   if (commandContext.withCodeDiscount != null) {
                     remiseWithCodeDiscount = cartContext.calculremise(
                       totalPrice: cartContext.totalPrice,
@@ -177,9 +178,15 @@ class ChoosePayement extends StatelessWidget {
             final sharedPrefs = await SharedPreferences.getInstance();
             final tokenFCM = sharedPrefs.getString(kTokenFCM);
 
+            ///calacul totalDiscount
+            final totalDiscount = cartContext.calculTotalDiscount(
+                totalPriceSansRemise: totalPriceSansRemise,
+                remiseWithCodeDiscount: remiseWithCodeDiscount.toInt());
+
             ///TODO: await Api.instance.sendCommand - DELIVERY
             var command = await Api.instance.sendCommand(
               tokenNavigator: tokenFCM,
+              totalDiscount: totalDiscount.toString(),
               addCodePromo: commandContext.withCodeDiscount,
               isCodePromo: commandContext.withCodeDiscount != null,
               priceLivraison: priceLivraison.toString(),
