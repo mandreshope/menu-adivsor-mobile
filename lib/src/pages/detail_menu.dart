@@ -512,15 +512,25 @@ class _DetailMenuState extends State<DetailMenu> {
                                           ],
                                           Spacer(),
                                           IconButton(
-                                            icon: Icon(
-                                              food.isSelected
-                                                  ? Icons.check_box
-                                                  : Icons
-                                                      .check_box_outline_blank,
-                                              color: food.isSelected
-                                                  ? CRIMSON
-                                                  : Colors.grey,
-                                            ),
+                                            icon: menuFood.maxOptions == 1
+                                                ? Icon(
+                                                    food.isSelected
+                                                        ? Icons.radio_button_on
+                                                        : Icons
+                                                            .radio_button_off,
+                                                    color: food.isSelected
+                                                        ? CRIMSON
+                                                        : Colors.grey,
+                                                  )
+                                                : Icon(
+                                                    food.isSelected
+                                                        ? Icons.check_box
+                                                        : Icons
+                                                            .check_box_outline_blank,
+                                                    color: food.isSelected
+                                                        ? CRIMSON
+                                                        : Colors.grey,
+                                                  ),
                                             onPressed: () {
                                               print("$logTrace food selected");
                                               setState(() {

@@ -364,8 +364,10 @@ class _SummaryState extends State<Summary> {
                       ),
                     ),
                     Visibility(
-                      visible: int.tryParse((widget.commande).totalDiscount) ??
-                          0 != 0,
+                      visible:
+                          (int.tryParse((widget.commande)?.totalDiscount) ??
+                                  0) !=
+                              0,
                       child: Column(
                         children: [
                           Padding(

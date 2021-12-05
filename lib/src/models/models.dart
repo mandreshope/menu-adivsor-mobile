@@ -951,7 +951,7 @@ class Command {
   dynamic customer;
   bool withCodeDiscount = false;
   CodeDiscount codeDiscount;
-  final String tokenNavigator;
+  final List<String> tokenNavigator;
   final String totalDiscount;
 
   Command({
@@ -1035,7 +1035,9 @@ class Command {
         customer: json['customer'],
         priceLivraison: json['priceLivraison'],
         totalPriceSansRemise: json['totalPriceSansRemise'],
-        tokenNavigator: json['tokenNavigator'],
+        tokenNavigator: json['tokenNavigator'] != null
+            ? List<String>.from(json['tokenNavigator'])
+            : [],
         totalDiscount: json['totalDiscount'],
       );
 }

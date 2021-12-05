@@ -346,8 +346,10 @@ class _ConfirmSmsState extends State<ConfirmSms> {
         cm.codeDiscount = commandContext.withCodeDiscount;
         cm.withCodeDiscount = commandContext.withCodeDiscount != null;
 
-        await sendPushMessage(cm.tokenNavigator,
-            message: "Vous avez un commande ${cm.commandType}");
+        for (var tokenNavigator in cm.tokenNavigator) {
+          await sendPushMessage(tokenNavigator,
+              message: "Vous avez un commande ${cm.commandType}");
+        }
 
         commandContext.clear();
         cartContext.clear();

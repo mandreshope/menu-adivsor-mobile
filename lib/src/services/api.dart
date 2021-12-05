@@ -857,7 +857,7 @@ class Api {
     String commandType,
     RestaurantDiscount discount,
     int totalPrice,
-    int totalPriceSansRemise,
+    @required int totalPriceSansRemise,
     String restaurant,
     var items,
     int shippingTime,

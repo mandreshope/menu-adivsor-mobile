@@ -207,7 +207,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                             .getDeliveryPriceByMiles(widget.restaurant)
                             .toInt();
                         remiseWithCodeDiscount = cartContext.totalPrice;
-                        if (commandContext.withCodeDiscount != null) {
+                        if (commandContext?.withCodeDiscount != null) {
                           remiseWithCodeDiscount = cartContext.calculremise(
                             totalPrice: cartContext.totalPrice,
                             discountIsPrice:
@@ -378,8 +378,10 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                     cm.withCodeDiscount =
                         commandContext.withCodeDiscount != null;
 
-                    await sendPushMessage(cm.tokenNavigator,
-                        message: "Vous avez un commande ${cm.commandType}");
+                    for (var tokenNavigator in cm.tokenNavigator) {
+                      await sendPushMessage(tokenNavigator,
+                          message: "Vous avez un commande ${cm.commandType}");
+                    }
 
                     Api.instance.setCommandToPayedStatus(
                       true,

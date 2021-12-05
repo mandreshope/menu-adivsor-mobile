@@ -733,8 +733,10 @@ class _OrderPageState extends State<OrderPage> {
             );
             Command cm = Command.fromJson(command);
 
-            await sendPushMessage(cm.tokenNavigator,
-                message: "Vous avez un commande ${cm.commandType}");
+            for (var tokenNavigator in cm.tokenNavigator) {
+              await sendPushMessage(tokenNavigator,
+                  message: "Vous avez un commande ${cm.commandType}");
+            }
 
             cartContext.clear();
             commandContext.clear();
@@ -809,7 +811,7 @@ class _OrderPageState extends State<OrderPage> {
         setState(() {
           sendingCommand = true;
         });
-        if (commandContext.withCodeDiscount) {
+        if (commandContext.withCodeDiscount != null) {
           remiseWithCodeDiscount = cartContext.calculremise(
               totalPrice: cartContext.totalPrice,
               discountIsPrice: (commandContext as CommandContext)
@@ -852,6 +854,7 @@ class _OrderPageState extends State<OrderPage> {
               .toList(),
           restaurant: cartContext.currentOrigin,
           totalPrice: totalPrice,
+          totalPriceSansRemise: totalPriceSansRemise,
           menu: cartContext.items
               .where((e) => e.isMenu)
               .map((e) => {
@@ -864,8 +867,10 @@ class _OrderPageState extends State<OrderPage> {
         );
         Command cm = Command.fromJson(command);
 
-        await sendPushMessage(cm.tokenNavigator,
-            message: "Vous avez un commande ${cm.commandType}");
+        for (var tokenNavigator in cm.tokenNavigator) {
+          await sendPushMessage(tokenNavigator,
+              message: "Vous avez un commande ${cm.commandType}");
+        }
 
         cartContext.clear();
         commandContext.clear();
