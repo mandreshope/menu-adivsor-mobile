@@ -760,10 +760,10 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   TextTranslator(
-                                    "Total",
+                                    "Total ",
                                   ),
                                   TextTranslator(
-                                    "$totalPriceSansRemise €",
+                                    "${totalPriceSansRemise / 100} €",
                                   ),
                                 ],
                               ),

@@ -106,7 +106,9 @@ class _FoodPageState extends State<FoodPage> {
       _scrollController.addListener(_scrollListener);
       api
           .getRestaurant(
-        id: (widget.food.restaurant is String) ? widget.food.restaurant : widget.food.restaurant['_id'],
+        id: (widget.food.restaurant is String)
+            ? widget.food.restaurant
+            : widget.food.restaurant['_id'],
         lang: Provider.of<SettingContext>(
           context,
           listen: false,
@@ -126,7 +128,8 @@ class _FoodPageState extends State<FoodPage> {
         );
       });
 
-      AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
+      AuthContext authContext =
+          Provider.of<AuthContext>(context, listen: false);
       if (authContext.currentUser == null)
         showFavorite = false;
       else
@@ -138,7 +141,8 @@ class _FoodPageState extends State<FoodPage> {
               ) !=
               null;
 
-      DataContext dataContext = Provider.of<DataContext>(context, listen: false);
+      DataContext dataContext =
+          Provider.of<DataContext>(context, listen: false);
       dataContext.attributes = widget.food.attributes;
       _init();
     });
@@ -200,7 +204,8 @@ class _FoodPageState extends State<FoodPage> {
                   ? IconButton(
                       onPressed: !switchingFavorite
                           ? () async {
-                              AuthContext authContext = Provider.of<AuthContext>(
+                              AuthContext authContext =
+                                  Provider.of<AuthContext>(
                                 context,
                                 listen: false,
                               );
@@ -209,22 +214,30 @@ class _FoodPageState extends State<FoodPage> {
                                 switchingFavorite = true;
                               });
                               if (!isInFavorite)
-                                await authContext.addToFavoriteFoods(widget.food);
+                                await authContext
+                                    .addToFavoriteFoods(widget.food);
                               else
-                                await authContext.removeFromFavoriteFoods(widget.food);
+                                await authContext
+                                    .removeFromFavoriteFoods(widget.food);
                               setState(() {
                                 switchingFavorite = false;
                                 isInFavorite = !isInFavorite;
                               });
                               Fluttertoast.showToast(
                                 msg: AppLocalizations.of(context).translate(
-                                  isInFavorite ? 'added_to_favorite' : 'removed_from_favorite',
+                                  isInFavorite
+                                      ? 'added_to_favorite'
+                                      : 'removed_from_favorite',
                                 ),
                               );
                             }
                           : null,
                       icon: !switchingFavorite
-                          ? Icon(isInFavorite ? Icons.favorite : Icons.favorite_border, color: isInFavorite ? CRIMSON : Colors.black)
+                          ? Icon(
+                              isInFavorite
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              color: isInFavorite ? CRIMSON : Colors.black)
                           : SizedBox(
                               width: 15,
                               height: 15,
@@ -250,25 +263,36 @@ class _FoodPageState extends State<FoodPage> {
                   padding: EdgeInsets.all(5),
                   child: Text(
                     '€',
-                    style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        fontSize: 15,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold),
                   ),
-                  decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.black),
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle, color: Colors.black),
                 ),
                 Positioned(
                   left: 70,
                   child: TextTranslator(
                     'Prix',
-                    style: TextStyle(fontSize: 20, color: Colors.black, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
-                if (widget.food.price != null && widget.food.price?.amount != null)
+                if (widget.food.price != null &&
+                    widget.food.price?.amount != null)
                   Positioned(
                     right: 25,
                     child: !_cartContext.withPrice
                         ? Text("")
                         : Text(
                             '${widget.food.price.amount / 100} €',
-                            style: TextStyle(fontSize: 20, color: Colors.black, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
                           ),
                   ),
               ],
@@ -321,7 +345,8 @@ class _FoodPageState extends State<FoodPage> {
                       ? IconButton(
                           onPressed: !switchingFavorite
                               ? () async {
-                                  AuthContext authContext = Provider.of<AuthContext>(
+                                  AuthContext authContext =
+                                      Provider.of<AuthContext>(
                                     context,
                                     listen: false,
                                   );
@@ -330,22 +355,30 @@ class _FoodPageState extends State<FoodPage> {
                                     switchingFavorite = true;
                                   });
                                   if (!isInFavorite)
-                                    await authContext.addToFavoriteFoods(widget.food);
+                                    await authContext
+                                        .addToFavoriteFoods(widget.food);
                                   else
-                                    await authContext.removeFromFavoriteFoods(widget.food);
+                                    await authContext
+                                        .removeFromFavoriteFoods(widget.food);
                                   setState(() {
                                     switchingFavorite = false;
                                     isInFavorite = !isInFavorite;
                                   });
                                   Fluttertoast.showToast(
                                     msg: AppLocalizations.of(context).translate(
-                                      isInFavorite ? 'added_to_favorite' : 'removed_from_favorite',
+                                      isInFavorite
+                                          ? 'added_to_favorite'
+                                          : 'removed_from_favorite',
                                     ),
                                   );
                                 }
                               : null,
                           icon: !switchingFavorite
-                              ? Icon(isInFavorite ? Icons.favorite : Icons.favorite_border, color: isInFavorite ? CRIMSON : Colors.black)
+                              ? Icon(
+                                  isInFavorite
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
+                                  color: isInFavorite ? CRIMSON : Colors.black)
                               : SizedBox(
                                   width: 15,
                                   height: 15,
@@ -393,7 +426,10 @@ class _FoodPageState extends State<FoodPage> {
                               ),
                               TextTranslator(
                                 "Horaire",
-                                style: TextStyle(fontSize: 18, color: CRIMSON, fontWeight: FontWeight.w600),
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    color: CRIMSON,
+                                    fontWeight: FontWeight.w600),
                               ),
                               Spacer(),
                               Icon(
@@ -437,7 +473,9 @@ class _FoodPageState extends State<FoodPage> {
                     RouteUtil.goTo(
                       context: context,
                       child: RestaurantPage(
-                        restaurant: (widget.food.restaurant is String) ? widget.food.restaurant : widget.food.restaurant['_id'],
+                        restaurant: (widget.food.restaurant is String)
+                            ? widget.food.restaurant
+                            : widget.food.restaurant['_id'],
                       ),
                       routeName: restaurantRoute,
                     );
@@ -447,7 +485,11 @@ class _FoodPageState extends State<FoodPage> {
                   children: [
                     TextTranslator(
                       restaurantName,
-                      style: TextStyle(color: Colors.blue, fontSize: 16, decoration: TextDecoration.underline, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                          color: Colors.blue,
+                          fontSize: 16,
+                          decoration: TextDecoration.underline,
+                          fontWeight: FontWeight.w600),
                     ),
                     SizedBox(
                       height: 5,
@@ -467,7 +509,9 @@ class _FoodPageState extends State<FoodPage> {
                               width: 5,
                             ),
                             Icon(
-                              restaurant.delivery ? Icons.check_circle_outline_outlined : Icons.close,
+                              restaurant.delivery
+                                  ? Icons.check_circle_outline_outlined
+                                  : Icons.close,
                               color: restaurant.delivery ? TEAL : CRIMSON,
                             )
                           ],
@@ -485,7 +529,11 @@ class _FoodPageState extends State<FoodPage> {
                             SizedBox(
                               width: 5,
                             ),
-                            Icon(restaurant.surPlace ? Icons.check_circle_outline_outlined : Icons.close, color: restaurant.surPlace ? TEAL : CRIMSON)
+                            Icon(
+                                restaurant.surPlace
+                                    ? Icons.check_circle_outline_outlined
+                                    : Icons.close,
+                                color: restaurant.surPlace ? TEAL : CRIMSON)
                           ],
                         ),
                         SizedBox(
@@ -501,7 +549,11 @@ class _FoodPageState extends State<FoodPage> {
                             SizedBox(
                               width: 5,
                             ),
-                            Icon(restaurant.aEmporter ? Icons.check_circle_outline_outlined : Icons.close, color: restaurant.aEmporter ? TEAL : CRIMSON)
+                            Icon(
+                                restaurant.aEmporter
+                                    ? Icons.check_circle_outline_outlined
+                                    : Icons.close,
+                                color: restaurant.aEmporter ? TEAL : CRIMSON)
                           ],
                         ),
                       ],
@@ -509,21 +561,30 @@ class _FoodPageState extends State<FoodPage> {
                     Divider(),
                     TextTranslator(
                       restaurant.address ?? "",
-                      style: TextStyle(color: Colors.black, fontSize: 16, decoration: TextDecoration.none, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          decoration: TextDecoration.none,
+                          fontWeight: FontWeight.bold),
                     ),
                     SizedBox(
                       height: 5,
                     ),
                     TextTranslator(
                       "Distance : ${Provider.of<SettingContext>(context).distanceBetweenString(restaurant.location.coordinates.last, restaurant.location.coordinates.first)}",
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(
                       height: 5,
                     ),
                     TextTranslator(
                       restaurant.phoneNumber ?? "",
-                      style: TextStyle(color: Colors.black, fontSize: 16, decoration: TextDecoration.none, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          decoration: TextDecoration.none,
+                          fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -533,7 +594,9 @@ class _FoodPageState extends State<FoodPage> {
         );
 
   Widget get mainContent => Container(
-        width: !widget.modalMode ? double.infinity : MediaQuery.of(context).size.width - 60,
+        width: !widget.modalMode
+            ? double.infinity
+            : MediaQuery.of(context).size.width - 60,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -543,7 +606,8 @@ class _FoodPageState extends State<FoodPage> {
             SingleChildScrollView(
               controller: _scrollController,
               child: Column(
-                mainAxisSize: widget.fromDelevery ? MainAxisSize.min : MainAxisSize.max,
+                mainAxisSize:
+                    widget.fromDelevery ? MainAxisSize.min : MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
@@ -575,7 +639,8 @@ class _FoodPageState extends State<FoodPage> {
                                       (attribute) => FittedBox(
                                         child: Card(
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(20),
+                                            borderRadius:
+                                                BorderRadius.circular(20),
                                           ),
                                           margin: EdgeInsets.zero,
                                           child: Padding(
@@ -584,14 +649,20 @@ class _FoodPageState extends State<FoodPage> {
                                               builder: (_) {
                                                 return Row(
                                                   children: [
-                                                    if (dataContext.attributes != null)
+                                                    if (dataContext
+                                                            .attributes !=
+                                                        null)
                                                       //for (var attribute in dataContext.attributes)
                                                       ...[
                                                       FadeInImage.assetNetwork(
-                                                        placeholder: 'assets/images/loading.gif',
-                                                        image: attribute.imageURL,
+                                                        placeholder:
+                                                            'assets/images/loading.gif',
+                                                        image:
+                                                            attribute.imageURL,
                                                         height: 14,
-                                                        imageErrorBuilder: (_, __, ___) => Container(
+                                                        imageErrorBuilder:
+                                                            (_, __, ___) =>
+                                                                Container(
                                                           width: 14,
                                                           height: 14,
                                                           color: Colors.white,
@@ -621,7 +692,8 @@ class _FoodPageState extends State<FoodPage> {
                                       (attribute) => FittedBox(
                                         child: Card(
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(20),
+                                            borderRadius:
+                                                BorderRadius.circular(20),
                                           ),
                                           margin: EdgeInsets.zero,
                                           child: Padding(
@@ -630,14 +702,20 @@ class _FoodPageState extends State<FoodPage> {
                                               builder: (_) {
                                                 return Row(
                                                   children: [
-                                                    if (widget.food.allergens != null)
+                                                    if (widget.food.allergens !=
+                                                        null)
                                                       //for (var attribute in dataContext.attributes)
                                                       ...[
                                                       FadeInImage.assetNetwork(
-                                                        placeholder: 'assets/images/loading.gif',
-                                                        image: attribute?.imageURL ?? "",
+                                                        placeholder:
+                                                            'assets/images/loading.gif',
+                                                        image: attribute
+                                                                ?.imageURL ??
+                                                            "",
                                                         height: 14,
-                                                        imageErrorBuilder: (_, __, ___) => Container(
+                                                        imageErrorBuilder:
+                                                            (_, __, ___) =>
+                                                                Container(
                                                           width: 14,
                                                           height: 14,
                                                           color: Colors.white,
@@ -715,30 +793,45 @@ class _FoodPageState extends State<FoodPage> {
                                             scrollOnCollapse: false,
                                             child: ExpandablePanel(
                                               theme: const ExpandableThemeData(
-                                                headerAlignment: ExpandablePanelHeaderAlignment.center,
+                                                headerAlignment:
+                                                    ExpandablePanelHeaderAlignment
+                                                        .center,
                                                 tapBodyToCollapse: true,
                                                 hasIcon: true,
                                               ),
                                               header: Container(
-                                                margin: EdgeInsets.symmetric(horizontal: 10),
-                                                padding: const EdgeInsets.all(8.0),
+                                                margin: EdgeInsets.symmetric(
+                                                    horizontal: 10),
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
                                                 child: Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
                                                   children: [
                                                     Row(
                                                       children: [
                                                         TextTranslator(
                                                           "${option.title}",
-                                                          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
-                                                          textAlign: TextAlign.start,
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.black,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize: 16),
+                                                          textAlign:
+                                                              TextAlign.start,
                                                         ),
                                                         if (option.isObligatory)
                                                           Text(
                                                             "*",
                                                             style: TextStyle(
                                                               color: Colors.red,
-                                                              fontWeight: FontWeight.bold,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
                                                               fontSize: 20,
                                                             ),
                                                           )
@@ -748,7 +841,8 @@ class _FoodPageState extends State<FoodPage> {
                                                       "Choisissez-en jusqu'à ${option.maxOptions}",
                                                       style: TextStyle(
                                                         color: Colors.black,
-                                                        fontWeight: FontWeight.bold,
+                                                        fontWeight:
+                                                            FontWeight.bold,
                                                       ),
                                                     ),
                                                   ],
@@ -757,20 +851,27 @@ class _FoodPageState extends State<FoodPage> {
                                               collapsed: Container(),
                                               expanded: Container(
                                                 color: Colors.white,
-                                                margin: EdgeInsets.symmetric(horizontal: 10),
+                                                margin: EdgeInsets.symmetric(
+                                                    horizontal: 10),
                                                 child: Padding(
-                                                  padding: const EdgeInsets.all(0),
+                                                  padding:
+                                                      const EdgeInsets.all(0),
                                                   child: _choice(
                                                     option,
-                                                    option.maxOptions == 1 ? true : false,
+                                                    option.maxOptions == 1
+                                                        ? true
+                                                        : false,
                                                   ),
                                                 ),
                                               ),
-                                              builder: (_, collapsed, expanded) {
+                                              builder:
+                                                  (_, collapsed, expanded) {
                                                 return Expandable(
                                                   collapsed: collapsed,
                                                   expanded: expanded,
-                                                  theme: const ExpandableThemeData(crossFadePoint: 0),
+                                                  theme:
+                                                      const ExpandableThemeData(
+                                                          crossFadePoint: 0),
                                                 );
                                               },
                                             ),
@@ -799,7 +900,8 @@ class _FoodPageState extends State<FoodPage> {
                                   builder: (_, cartContext, __) {
                                     this.itemCount = foodAdded.quantity;
                                     if (this.itemCount == 0) {
-                                      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                                      WidgetsBinding.instance
+                                          .addPostFrameCallback((timeStamp) {
                                         setState(() {
                                           _init();
                                         });
@@ -810,10 +912,12 @@ class _FoodPageState extends State<FoodPage> {
                                         : ButtonItemCountWidget(
                                             foodAdded,
                                             onAdded: () async {
-                                              print("$logTrace increment total price");
+                                              print(
+                                                  "$logTrace increment total price");
                                               setState(() {
                                                 ++this.itemCount;
-                                                foodAdded.quantity = this.itemCount;
+                                                foodAdded.quantity =
+                                                    this.itemCount;
                                                 if (this.itemCount > 1) {
                                                   this.isAdded = true;
                                                 } else {
@@ -822,10 +926,12 @@ class _FoodPageState extends State<FoodPage> {
                                               });
                                             },
                                             onRemoved: () {
-                                              print("$logTrace decrement total price");
+                                              print(
+                                                  "$logTrace decrement total price");
                                               setState(() {
                                                 --this.itemCount;
-                                                foodAdded.quantity = this.itemCount;
+                                                foodAdded.quantity =
+                                                    this.itemCount;
                                                 if (this.itemCount <= 0) {
                                                   this.itemCount = 0;
                                                   this.isAdded = false;
@@ -845,13 +951,14 @@ class _FoodPageState extends State<FoodPage> {
                       ),
                     ],
                   Consumer<CartContext>(
-                    builder: (_, cartContext, __) => cartContext.contains(widget.food)
-                        ? SizedBox(
-                            height: 95,
-                          )
-                        : SizedBox(
-                            height: 95,
-                          ),
+                    builder: (_, cartContext, __) =>
+                        cartContext.contains(widget.food)
+                            ? SizedBox(
+                                height: 95,
+                              )
+                            : SizedBox(
+                                height: 95,
+                              ),
                   )
                 ],
               ),
@@ -907,14 +1014,22 @@ class _FoodPageState extends State<FoodPage> {
                                     RouteUtil.goTo(
                                       context: context,
                                       child: RestaurantPage(
-                                        restaurant: (widget.food.restaurant is String) ? widget.food.restaurant : widget.food.restaurant['_id'],
+                                        restaurant:
+                                            (widget.food.restaurant is String)
+                                                ? widget.food.restaurant
+                                                : widget.food.restaurant['_id'],
                                       ),
                                       routeName: restaurantRoute,
                                     );
                                     return;
                                   }
-                                  if ((this.itemCount == 0) || (cartContext.hasSamePricingAsInBag(widget.food) && cartContext.hasSameOriginAsInBag(widget.food))) {
-                                    if (cartContext.hasOptionSelectioned(foodAdded)) {
+                                  if ((this.itemCount == 0) ||
+                                      (cartContext.hasSamePricingAsInBag(
+                                              widget.food) &&
+                                          cartContext.hasSameOriginAsInBag(
+                                              widget.food))) {
+                                    if (cartContext
+                                        .hasOptionSelectioned(foodAdded)) {
                                       _cartContext.addItem(foodAdded, 1, true);
                                       setState(() {});
                                       RouteUtil.goBack(context: context);
@@ -923,18 +1038,22 @@ class _FoodPageState extends State<FoodPage> {
                                         msg: 'Ajouter une option',
                                       );
                                     //}
-                                  } else if (!cartContext.hasSamePricingAsInBag(widget.food)) {
+                                  } else if (!cartContext
+                                      .hasSamePricingAsInBag(widget.food)) {
                                     showDialog(
                                       context: context,
                                       builder: (_) => ConfirmationDialog(
                                         title: "",
                                         isSimple: true,
-                                        content: AppLocalizations.of(context).translate('priceless_and_not_priceless_not_allowed'),
+                                        content: AppLocalizations.of(context)
+                                            .translate(
+                                                'priceless_and_not_priceless_not_allowed'),
                                       ),
                                     ).then((value) {
                                       if (value) {
                                         _cartContext.clear();
-                                        _cartContext.addItem(foodAdded, 1, true);
+                                        _cartContext.addItem(
+                                            foodAdded, 1, true);
                                         setState(() {});
                                         RouteUtil.goBack(context: context);
                                       }
@@ -943,18 +1062,22 @@ class _FoodPageState extends State<FoodPage> {
                                     // Fluttertoast.showToast(
                                     //   msg: AppLocalizations.of(context).translate('priceless_and_not_priceless_not_allowed'),
                                     // );
-                                  } else if (!cartContext.hasSameOriginAsInBag(widget.food)) {
+                                  } else if (!cartContext
+                                      .hasSameOriginAsInBag(widget.food)) {
                                     showDialog(
                                       context: context,
                                       builder: (_) => ConfirmationDialog(
                                         title: "",
                                         isSimple: true,
-                                        content: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
+                                        content: AppLocalizations.of(context)
+                                            .translate(
+                                                'from_different_origin_not_allowed'),
                                       ),
                                     ).then((value) {
                                       if (value) {
                                         _cartContext.clear();
-                                        _cartContext.addItem(foodAdded, 1, true);
+                                        _cartContext.addItem(
+                                            foodAdded, 1, true);
                                         setState(() {});
                                         RouteUtil.goBack(context: context);
                                       }
@@ -967,7 +1090,8 @@ class _FoodPageState extends State<FoodPage> {
                                 child: TextTranslator(
                                   widget.food.isPopular
                                       ? "Voir restaurant"
-                                      : AppLocalizations.of(context).translate("add_to_cart") +
+                                      : AppLocalizations.of(context)
+                                              .translate("add_to_cart") +
                                           '\t\t${itemCount == 0 || !cartContext.withPrice ? "" : foodAdded.totalPrice / 100}' +
                                           '${(itemCount == 0 || !cartContext.withPrice ? "" : "€")}',
                                   overflow: TextOverflow.ellipsis,
@@ -1011,15 +1135,19 @@ class _FoodPageState extends State<FoodPage> {
                               // SizedBox(height: 10,),
                               Container(
                                 padding: EdgeInsets.only(right: 5),
-                                decoration: BoxDecoration(shape: BoxShape.circle, color: CRIMSON),
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle, color: CRIMSON),
                                 child: Center(
                                   child: IconButton(
                                     icon: Icon(
                                       Icons.keyboard_arrow_left,
-                                      color: snapshot.data ? Colors.white : Colors.white,
+                                      color: snapshot.data
+                                          ? Colors.white
+                                          : Colors.white,
                                       size: 35,
                                     ),
-                                    onPressed: () => RouteUtil.goBack(context: context),
+                                    onPressed: () =>
+                                        RouteUtil.goBack(context: context),
                                   ),
                                 ),
                               ),
@@ -1055,7 +1183,8 @@ class _FoodPageState extends State<FoodPage> {
                             ),
                           ),
                         ),
-                        if (widget.food.imageNotContractual == true && widget.food.isAvailable == true) ...[
+                        if (widget.food.imageNotContractual == true &&
+                            widget.food.isAvailable == true) ...[
                           Align(
                             alignment: Alignment.bottomCenter,
                             child: Container(
@@ -1064,7 +1193,8 @@ class _FoodPageState extends State<FoodPage> {
                               color: Colors.black.withOpacity(0.5),
                               child: Center(
                                 child: TextTranslator(
-                                  AppLocalizations.of(context).translate("non_contractual_photo"),
+                                  AppLocalizations.of(context)
+                                      .translate("non_contractual_photo"),
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     color: Colors.white,
@@ -1082,7 +1212,8 @@ class _FoodPageState extends State<FoodPage> {
                               color: Colors.black.withOpacity(0.5),
                               child: Center(
                                 child: TextTranslator(
-                                  AppLocalizations.of(context).translate("non_disponible"),
+                                  AppLocalizations.of(context)
+                                      .translate("non_disponible"),
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     color: Colors.white,
@@ -1139,12 +1270,15 @@ class _FoodPageState extends State<FoodPage> {
             singleItemOptionSelected = value;
             singleItemOptionSelected.isSingle = true;
             singleItemOptionSelected.quantity = 1;
-            if (option.itemOptionSelected.isEmpty) option.itemOptionSelected = [];
+            if (option.itemOptionSelected.isEmpty)
+              option.itemOptionSelected = [];
 
-            option.itemOptionSelected.removeWhere((element) => element.isSingle);
+            option.itemOptionSelected
+                .removeWhere((element) => element.isSingle);
             option.itemOptionSelected.add(value);
 
-            foodAdded.optionSelected = options.map((o) => Option.copy(o)).toList();
+            foodAdded.optionSelected =
+                options.map((o) => Option.copy(o)).toList();
             _optionContext.itemOptions = option.itemOptionSelected;
 
             if (_cartContext.hasOptionSelectioned(foodAdded)) {
@@ -1229,12 +1363,15 @@ class _FoodPageState extends State<FoodPage> {
                         // shape: BoxShape.circle,
                         // color: _.value.price == 0 ? null : Colors.grey[400]
                         ),
-                    child: !_cartContext.withPrice || _.value.price.amount == null
-                        ? Text("")
-                        : Text(
-                            "${_.value.price.amount == 0 ? '' : _.value.price.amount / 100}${_.value.price.amount == 0 ? '' : "€"}",
-                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-                          ),
+                    child:
+                        !_cartContext.withPrice || _.value.price.amount == null
+                            ? Text("")
+                            : Text(
+                                "${_.value.price.amount == 0 ? '' : _.value.price.amount / 100}${_.value.price.amount == 0 ? '' : "€"}",
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold),
+                              ),
                   ),
                   Spacer(),
                   SizedBox(
@@ -1248,7 +1385,7 @@ class _FoodPageState extends State<FoodPage> {
                       },
                       child: _.selected
                           ? Icon(
-                              Icons.check_box,
+                              Icons.radio_button_on,
                               color: CRIMSON,
                               size: 25,
                             )
@@ -1272,7 +1409,10 @@ class _FoodPageState extends State<FoodPage> {
 
     return ChipsChoice.multiple(
       value: option.itemOptionSelected,
-      choiceStyle: C2ChoiceStyle(borderColor: Colors.transparent, disabledColor: Colors.white, borderRadius: BorderRadius.zero),
+      choiceStyle: C2ChoiceStyle(
+          borderColor: Colors.transparent,
+          disabledColor: Colors.white,
+          borderRadius: BorderRadius.zero),
       padding: EdgeInsets.zero,
       // wrapped: true,
       // textDirection: TextDirection.ltr,
@@ -1284,17 +1424,27 @@ class _FoodPageState extends State<FoodPage> {
           if (option.itemOptionSelected?.length == option.maxOptions) {
             if (option.itemOptionSelected.length >= value.length) {
               var seen = Set<String>();
-              option.itemOptionSelected = value.cast<ItemsOption>().where((element) => seen.add(element.name)).toList();
-              foodAdded.optionSelected = options.map((o) => Option.copy(o)).toList();
+              option.itemOptionSelected = value
+                  .cast<ItemsOption>()
+                  .where((element) => seen.add(element.name))
+                  .toList();
+              foodAdded.optionSelected =
+                  options.map((o) => Option.copy(o)).toList();
             } else {
               print("$logTrace max options");
-              Fluttertoast.showToast(msg: "maximum selection ${option.title} : ${option.maxOptions}");
+              Fluttertoast.showToast(
+                  msg:
+                      "maximum selection ${option.title} : ${option.maxOptions}");
             }
           } else {
             var seen = Set<String>();
-            option.itemOptionSelected = value.cast<ItemsOption>().where((element) => seen.add(element.name)).toList();
+            option.itemOptionSelected = value
+                .cast<ItemsOption>()
+                .where((element) => seen.add(element.name))
+                .toList();
 
-            foodAdded.optionSelected = options.map((o) => Option.copy(o)).toList();
+            foodAdded.optionSelected =
+                options.map((o) => Option.copy(o)).toList();
           }
           _optionContext.itemOptions = option.itemOptionSelected;
           if (_cartContext.hasOptionSelectioned(foodAdded)) {
@@ -1379,7 +1529,8 @@ class _FoodPageState extends State<FoodPage> {
                       ? Text("")
                       : Text(
                           "${_.value.price.amount == 0 ? '' : _.value.price.amount / 100}${_.value.price.amount == 0 ? '' : "€"}",
-                          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.bold),
                         ),
                 ),
                 Spacer(),
@@ -1387,16 +1538,20 @@ class _FoodPageState extends State<FoodPage> {
                     ? Visibility(
                         visible: !widget.food.isPopular,
                         child: IconButton(
-                          icon: Icon(Icons.add_circle_outlined, color: Colors.grey, size: 25),
+                          icon: Icon(Icons.add_circle_outlined,
+                              color: Colors.grey, size: 25),
                           onPressed: () {
                             print("$logTrace add");
                             if (this.isAdded) return;
                             if (option.isMaxOptions) {
                               _.value.quantity = 1;
+                              _.value.isSelected = !_.value.isSelected;
                               _.select(!_.selected);
                             } else {
                               print("$logTrace max options");
-                              Fluttertoast.showToast(msg: "maximum selection ${option.title} : ${option.maxOptions}");
+                              Fluttertoast.showToast(
+                                  msg:
+                                      "maximum selection ${option.title} : ${option.maxOptions}");
                             }
                           },
                         ),
@@ -1442,7 +1597,8 @@ class _FoodPageState extends State<FoodPage> {
                                 width: 2,
                               ),
                               IconButton(
-                                  icon: Icon(Icons.add_circle_outlined, color: CRIMSON, size: 25),
+                                  icon: Icon(Icons.add_circle_outlined,
+                                      color: CRIMSON, size: 25),
                                   onPressed: () {
                                     // if (_optionContext.quantityOptions == option.maxOptions){
                                     if (this.isAdded) return;
@@ -1454,7 +1610,9 @@ class _FoodPageState extends State<FoodPage> {
                                       _cartContext.refresh();
                                     } else {
                                       print("$logTrace max options");
-                                      Fluttertoast.showToast(msg: "maximum selection ${option.title} : ${option.maxOptions}");
+                                      Fluttertoast.showToast(
+                                          msg:
+                                              "maximum selection ${option.title} : ${option.maxOptions}");
                                     }
                                   }),
                             ],

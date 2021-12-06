@@ -1036,7 +1036,9 @@ class Command {
         priceLivraison: json['priceLivraison'],
         totalPriceSansRemise: json['totalPriceSansRemise'],
         tokenNavigator: json['tokenNavigator'] != null
-            ? List<String>.from(json['tokenNavigator'])
+            ? json['tokenNavigator'] is String
+                ? [json['tokenNavigator']]
+                : List<String>.from(json['tokenNavigator'])
             : [],
         totalDiscount: json['totalDiscount'],
       );

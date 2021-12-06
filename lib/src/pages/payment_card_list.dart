@@ -378,6 +378,9 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                     cm.withCodeDiscount =
                         commandContext.withCodeDiscount != null;
 
+                    ///TODO: SEND PUSH NOTIFICATION
+                    /*  await sendPushMessage(tokenFCM,
+                        message: "Votre commande est livré");*/
                     for (var tokenNavigator in cm.tokenNavigator) {
                       await sendPushMessage(tokenNavigator,
                           message: "Vous avez un commande ${cm.commandType}");

@@ -1,5 +1,4 @@
 import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:menu_advisor/src/models/models.dart';
 import 'package:menu_advisor/src/models/restaurants/restaurant_plage_discount_model.dart';
@@ -388,6 +387,11 @@ class CartContext extends ChangeNotifier {
     return menusObligatory.isEmpty && menu.foodMenuSelecteds.isNotEmpty;
   }
 
+  bool allOptionIsNotObligatory(List<Option> options) {
+    final optionObligatory = options.where((o) => o.isObligatory).toList();
+    return optionObligatory.isEmpty;
+  }
+
   bool hasOptionSelectioned(Food food) {
     if (food == null) return false;
     bool hasOption = true;
@@ -409,15 +413,22 @@ class CartContext extends ChangeNotifier {
     for (Option option in food.optionSelected) {
       if (option.itemOptionSelected.isEmpty) {
         checkList.add(false);
+      } else if (option.itemOptionSelected.isNotEmpty) {
+        checkList.add(true);
       } else if (food.options.length == 1) {
         checkList.add(true);
       } else {
         checkList.add(false);
       }
     }
-    hasOption = checkList.where((e) => e).toList().isNotEmpty ||
+    hasOption = checkList.where((e) => e).toList().isNotEmpty &&
         (!obligatoryCheckList.contains(false) &&
             obligatoryCheckList.isNotEmpty);
+    if (checkList.where((e) => e).toList().isNotEmpty &&
+        allOptionIsNotObligatory(food.options)) {
+      return true;
+    }
+
     return hasOption;
   }
 
