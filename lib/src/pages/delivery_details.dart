@@ -594,12 +594,12 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                     }
                     final distance = commandContext
                         .getDeliveryDistanceByMiles(widget.restaurant)
-                        .toInt();
-                    if ((distance > widget.restaurant.deleveryDistanceMax) &&
-                        widget.restaurant.deleveryDistanceMax != 0) {
+                        .round();
+
+                    if (distance > widget.restaurant.distanceMaxDouble) {
                       await Fluttertoast.showToast(
                         msg:
-                            "Pas de livraison plus ${widget.restaurant.deleveryDistanceMax} km",
+                            "Pas de livraison plus ${widget.restaurant.distanceMaxDouble} km",
                       );
                       return;
                     }
@@ -607,7 +607,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                     ///delivery process - init all params
                     int totalPrice = 0;
                     int totalPriceSansRemise =
-                        (cartContext.totalPrice * 100).toInt();
+                        (cartContext.totalPrice * 100).round();
                     int priceLivraison = 0;
                     double remise = 0; //in €
                     String remiseType = "totalité";
@@ -616,9 +616,9 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                       priceLivraison = (widget.restaurant.priceDelevery != null
                               ? widget.restaurant.priceDelevery
                               : 0)
-                          .toInt();
+                          .round();
                       totalPrice =
-                          (cartContext.totalPrice + priceLivraison).toInt();
+                          (cartContext.totalPrice + priceLivraison).round();
                     } else {
                       if (commandContext.commandType == "delivery") {
                         if (widget.restaurant
@@ -630,7 +630,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                         } else {
                           priceLivraison = commandContext
                               .getDeliveryPriceByMiles(widget.restaurant)
-                              .toInt();
+                              .round();
                           double remiseWithCodeDiscount =
                               cartContext.totalPrice;
                           if (commandContext.withCodeDiscount != null) {
@@ -673,10 +673,10 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                       discountIsPrice: widget.restaurant
                                           ?.discount?.delivery?.discountIsPrice,
                                       discountValue: discountValue)
-                                  .toInt();
+                                  .round();
                               totalPrice =
                                   (remiseWithCodeDiscount + priceLivraison)
-                                      .toInt();
+                                      .round();
                             } else if (widget.restaurant?.discount?.delivery
                                     ?.discountType ==
                                 DiscountType.SurCommande) {
@@ -705,10 +705,10 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                       discountIsPrice: widget.restaurant
                                           ?.discount?.delivery?.discountIsPrice,
                                       discountValue: discountValue)
-                                  .toInt();
+                                  .round();
                               totalPrice =
                                   (totalPriceWithRemise + priceLivraison)
-                                      .toInt();
+                                      .round();
                             } else {
                               ///remise sur la totalité
                               remiseType = "totalité";
@@ -737,12 +737,12 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                       discountIsPrice: widget.restaurant
                                           ?.discount?.delivery?.discountIsPrice,
                                       discountValue: discountValue)
-                                  .toInt();
+                                  .round();
                             }
                           }
                         }
                       }
-                      totalPrice = totalPrice.toInt();
+                      totalPrice = totalPrice.round();
                     }
 
                     final confirm = await showDialog(

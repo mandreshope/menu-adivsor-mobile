@@ -312,7 +312,7 @@ class _SummaryState extends State<Summary> {
                             Opacity(
                               opacity: 0.6,
                               child: Text(
-                                '${widget.commande?.priceLivraison ?? 0} €',
+                                '${widget.commande?.deliveryPrice?.amount ?? 0} €',
                                 style: TextStyle(
                                   fontSize: 16,
                                   color: CRIMSON,
@@ -365,7 +365,7 @@ class _SummaryState extends State<Summary> {
                     ),
                     Visibility(
                       visible:
-                          (int.tryParse((widget.commande)?.totalDiscount) ??
+                          (int.tryParse((widget.commande)?.discountPrice) ??
                                   0) !=
                               0,
                       child: Column(
@@ -385,7 +385,7 @@ class _SummaryState extends State<Summary> {
                                   ),
                                 ),
                                 Text(
-                                  '${widget.commande?.totalDiscount} €',
+                                  '${widget.commande?.discountPrice} €',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,

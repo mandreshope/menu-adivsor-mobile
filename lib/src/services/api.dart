@@ -851,13 +851,13 @@ class Api {
   Future<Map> sendCommand({
     @required bool isCodePromo,
     @required String tokenNavigator,
-    @required String totalDiscount,
+    @required int totalPrice, // totalPrice - discount
+    @required int discountPrice, //total discount
+    @required int totalPriceSansRemise,
     CodeDiscount addCodePromo,
     String relatedUser,
     String commandType,
     RestaurantDiscount discount,
-    int totalPrice,
-    @required int totalPriceSansRemise,
     String restaurant,
     var items,
     int shippingTime,
@@ -874,7 +874,7 @@ class Api {
     bool payed = false,
     bool paiementLivraison = false,
     bool isDelivery = false,
-    String priceLivraison,
+    Price deliveryPrice,
   }) async {
     await _refreshTokens();
     try {
@@ -883,12 +883,11 @@ class Api {
         post = jsonEncode({
           'addCodePromo': addCodePromo?.toAddCodePromo(restaurant),
           'tokenNavigator': tokenNavigator,
-          'totalDiscount': totalDiscount,
           'isCodePromo': isCodePromo,
           'relatedUser': relatedUser,
           'commandType': commandType,
           'discount': discount?.toMap(),
-          'totalPrice': totalPrice.toString(),
+          'discountPrice': discountPrice.toString(),
           'totalPriceSansRemise': totalPriceSansRemise.toString(),
           'restaurant': restaurant,
           'items': items,
@@ -905,18 +904,18 @@ class Api {
           'etage': etage,
           'payed': payed,
           'paiementLivraison': paiementLivraison,
-          'priceLivraison': priceLivraison,
+          'deliveryPrice': deliveryPrice.toJson(),
+          'totalPrice': totalPrice,
         });
       } else {
         post = jsonEncode({
           'addCodePromo': addCodePromo?.toAddCodePromo(restaurant),
           'tokenNavigator': tokenNavigator,
-          'totalDiscount': totalDiscount,
           'isCodePromo': isCodePromo,
           'relatedUser': relatedUser,
           'commandType': commandType,
           'discount': discount?.toMap(),
-          'totalPrice': totalPrice.toString(),
+          'discountPrice': discountPrice.toString(),
           'totalPriceSansRemise': totalPriceSansRemise.toString(),
           'restaurant': restaurant,
           'items': items,
@@ -927,6 +926,7 @@ class Api {
           'menus': menu,
           'comment': comment,
           'priceless': priceless,
+          'totalPrice': totalPrice,
         });
       }
 

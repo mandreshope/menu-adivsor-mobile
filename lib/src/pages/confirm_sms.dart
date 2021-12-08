@@ -261,7 +261,8 @@ class _ConfirmSmsState extends State<ConfirmSms> {
           loading = true;
         });
         int totalPrice = 0;
-        int totalPriceSansRemise = (cartContext.totalPrice * 100).toInt();
+        int totalDiscount = 0;
+        int totalPriceSansRemise = (cartContext.totalPrice * 100).round();
         double remiseWithCodeDiscount = cartContext.totalPrice;
         if (commandContext.withCodeDiscount != null) {
           remiseWithCodeDiscount = cartContext.calculremise(
@@ -279,6 +280,14 @@ class _ConfirmSmsState extends State<ConfirmSms> {
                 widget.restaurant?.discount?.aEmporter?.plageDiscount,
             totalPriceSansRemise: totalPriceSansRemise.toDouble(),
           );
+          totalDiscount = cartContext
+              .remiseInEuro(
+                discountIsPrice:
+                    widget.restaurant?.discount?.aEmporter?.discountIsPrice,
+                discountValue: discountValue,
+                totalPrice: remiseWithCodeDiscount,
+              )
+              .round();
           totalPrice = cartContext
               .calculremise(
                 totalPrice: remiseWithCodeDiscount,
@@ -286,24 +295,18 @@ class _ConfirmSmsState extends State<ConfirmSms> {
                     widget.restaurant?.discount?.aEmporter?.discountIsPrice,
                 discountValue: discountValue,
               )
-              .toInt();
+              .round();
         }
 
-        totalPrice = (totalPrice * 100).toInt();
+        totalPrice = (totalPrice * 100).round();
 
         ///get tokenFCM
         final sharedPrefs = await SharedPreferences.getInstance();
         final tokenFCM = sharedPrefs.getString(kTokenFCM);
 
-        ///calacul totalDiscount
-        final totalDiscount = cartContext.calculTotalDiscount(
-            totalPriceSansRemise: totalPriceSansRemise,
-            remiseWithCodeDiscount: remiseWithCodeDiscount.toInt());
-
         ///TODO: await Api.instance.sendCommand - AEMPORTER
         var command = await Api.instance.sendCommand(
           tokenNavigator: tokenFCM,
-          totalDiscount: totalDiscount.toString(),
           addCodePromo: commandContext.withCodeDiscount,
           isCodePromo: commandContext.withCodeDiscount != null,
           discount: widget.restaurant?.discount,
@@ -320,6 +323,7 @@ class _ConfirmSmsState extends State<ConfirmSms> {
                   })
               .toList(),
           restaurant: cartContext.currentOrigin,
+          discountPrice: totalDiscount,
           totalPrice: totalPrice,
           totalPriceSansRemise: totalPriceSansRemise,
           customer: widget.customer,

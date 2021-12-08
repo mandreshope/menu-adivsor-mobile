@@ -495,6 +495,8 @@ class Restaurant {
   final String customerStripeKey;
   final String customerSectretStripeKey;
   final String createdAt;
+  final String distanceMax;
+  double get distanceMaxDouble => double.tryParse(distanceMax) ?? 0.0;
 
   DateTime get creatAtDateTime => DateTime.tryParse(createdAt);
   final String updatedAt;
@@ -530,14 +532,6 @@ class Restaurant {
       print("$logTrace free City");
     }
     return v;
-  }
-
-  /// unit: km
-  double get deleveryDistanceMax {
-    final String distanceMax =
-        livraison?.matrix?.length != 0 ? livraison?.matrix?.first : "0";
-    final res = (double.tryParse(distanceMax ?? '0.0') ?? 0.0);
-    return res;
   }
 
   Restaurant({
@@ -592,6 +586,7 @@ class Restaurant {
     this.discountAEmporter,
     this.discountDelivery,
     this.hasCodePromo,
+    this.distanceMax,
   });
 
   factory Restaurant.fromJson(Map<String, dynamic> json) {
@@ -656,6 +651,7 @@ class Restaurant {
       discountAEmporter: json['discountAEmporter'],
       discountDelivery: json['discountDelivery'],
       hasCodePromo: json['hasCodePromo'],
+      distanceMax: json['DistanceMax'],
     );
 
     if (!res.accessible) {
@@ -944,7 +940,7 @@ class Command {
   final String codeappartement;
   final String appartement;
   final bool payed;
-  final String priceLivraison;
+  final Price deliveryPrice;
   final String totalPriceSansRemise;
   int etage;
   dynamic paiementLivraison;
@@ -952,7 +948,7 @@ class Command {
   bool withCodeDiscount = false;
   CodeDiscount codeDiscount;
   final List<String> tokenNavigator;
-  final String totalDiscount;
+  final String discountPrice;
 
   Command({
     this.id,
@@ -978,11 +974,11 @@ class Command {
     this.appartement,
     this.paiementLivraison,
     this.customer,
-    this.priceLivraison,
+    this.deliveryPrice,
     this.discountIsPrice,
     this.totalPriceSansRemise,
     this.tokenNavigator,
-    this.totalDiscount,
+    this.discountPrice,
   });
 
   factory Command.fromJson(Map<String, dynamic> json) => Command(
@@ -1033,14 +1029,16 @@ class Command {
         etage: json['etage'] ?? 0,
         paiementLivraison: json['paiementLivraison'] ?? false,
         customer: json['customer'],
-        priceLivraison: json['priceLivraison'],
+        deliveryPrice: json['deliveryPrice'] != null
+            ? Price.fromJson(json['deliveryPrice'])
+            : null,
         totalPriceSansRemise: json['totalPriceSansRemise'],
         tokenNavigator: json['tokenNavigator'] != null
             ? json['tokenNavigator'] is String
                 ? [json['tokenNavigator']]
                 : List<String>.from(json['tokenNavigator'])
             : [],
-        totalDiscount: json['totalDiscount'],
+        discountPrice: json['discountPrice'],
       );
 }
 

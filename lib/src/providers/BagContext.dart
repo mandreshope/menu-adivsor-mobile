@@ -154,6 +154,7 @@ class CartContext extends ChangeNotifier {
     return totalDiscount;
   }
 
+  ///in Euro
   double discountValueInPlageDiscount({
     @required double totalPriceSansRemise,
     @required bool discountIsPrice,

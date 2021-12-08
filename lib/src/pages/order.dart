@@ -673,7 +673,7 @@ class _OrderPageState extends State<OrderPage> {
             });
 
             int totalPrice = 0;
-            int totalPriceSansRemise = (cartContext.totalPrice * 100).toInt();
+            int totalPriceSansRemise = (cartContext.totalPrice * 100).round();
             double remiseWithCodeDiscount = cartContext.totalPrice;
             if (commandContext.withCodeDiscount != null) {
               remiseWithCodeDiscount = cartContext.calculremise(
@@ -687,21 +687,16 @@ class _OrderPageState extends State<OrderPage> {
                     ?.toDouble(),
               );
             }
-            totalPrice = (remiseWithCodeDiscount * 100).toInt();
+
+            totalPrice = (remiseWithCodeDiscount * 100).round();
 
             ///get tokenFCM
             final sharedPrefs = await SharedPreferences.getInstance();
             final tokenFCM = sharedPrefs.getString(kTokenFCM);
 
-            ///calacul totalDiscount
-            final totalDiscount = cartContext.calculTotalDiscount(
-                totalPriceSansRemise: totalPriceSansRemise,
-                remiseWithCodeDiscount: remiseWithCodeDiscount.toInt());
-
             ///TODO: await Api.instance.sendCommand - ON_SITE
             var command = await Api.instance.sendCommand(
               tokenNavigator: tokenFCM,
-              totalDiscount: totalDiscount.toString(),
               addCodePromo: commandContext.withCodeDiscount,
               isCodePromo: commandContext.withCodeDiscount != null,
               discount: _restaurant?.discount,
@@ -719,6 +714,7 @@ class _OrderPageState extends State<OrderPage> {
                       })
                   .toList(),
               restaurant: cartContext.currentOrigin,
+              discountPrice: 0,
               totalPrice: totalPrice,
               totalPriceSansRemise: totalPriceSansRemise,
               menu: cartContext.items
@@ -806,7 +802,7 @@ class _OrderPageState extends State<OrderPage> {
     } else if (commandContext.commandType == 'on_site') {
       int totalPrice = 0;
       double remiseWithCodeDiscount = cartContext.totalPrice;
-      int totalPriceSansRemise = (cartContext.totalPrice * 100).toInt();
+      int totalPriceSansRemise = (cartContext.totalPrice * 100).round();
       try {
         setState(() {
           sendingCommand = true;
@@ -822,7 +818,7 @@ class _OrderPageState extends State<OrderPage> {
                   ?.value
                   ?.toDouble());
         }
-        totalPrice = (remiseWithCodeDiscount * 100).toInt();
+        totalPrice = (remiseWithCodeDiscount * 100).round();
 
         ///get tokenFCM
         final sharedPrefs = await SharedPreferences.getInstance();
@@ -831,12 +827,11 @@ class _OrderPageState extends State<OrderPage> {
         ///calacul totalDiscount
         final totalDiscount = cartContext.calculTotalDiscount(
             totalPriceSansRemise: totalPriceSansRemise,
-            remiseWithCodeDiscount: remiseWithCodeDiscount.toInt());
+            remiseWithCodeDiscount: (remiseWithCodeDiscount * 100).round());
 
         ///TODO: await Api.instance.sendCommand - ON_SITE
         var command = await Api.instance.sendCommand(
           tokenNavigator: tokenFCM,
-          totalDiscount: totalDiscount.toString(),
           addCodePromo: commandContext.withCodeDiscount,
           isCodePromo: commandContext.withCodeDiscount != null,
           discount: _restaurant?.discount,
@@ -853,6 +848,7 @@ class _OrderPageState extends State<OrderPage> {
                   })
               .toList(),
           restaurant: cartContext.currentOrigin,
+          discountPrice: totalDiscount,
           totalPrice: totalPrice,
           totalPriceSansRemise: totalPriceSansRemise,
           menu: cartContext.items

@@ -15,6 +15,7 @@ import 'package:menu_advisor/src/providers/MenuContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/services/notification_service.dart';
+import 'package:menu_advisor/src/types/types.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
@@ -70,14 +71,15 @@ class ChoosePayement extends StatelessWidget {
                 Provider.of<AuthContext>(context, listen: false);
 
             int totalPrice = 0;
-            int totalPriceSansRemise = (cartContext.totalPrice * 100).toInt();
+            int totalDiscount = 0;
+            int totalPriceSansRemise = (cartContext.totalPrice * 100).round();
             int priceLivraison = 0;
             double remiseWithCodeDiscount = cartContext.totalPrice;
             if (restaurant.deliveryFixed) {
               priceLivraison = (restaurant.priceDelevery != null
                       ? restaurant.priceDelevery
                       : 0)
-                  .toInt();
+                  .round();
               totalPrice =
                   ((cartContext.totalPrice * 100) + priceLivraison).round();
             } else {
@@ -89,7 +91,7 @@ class ChoosePayement extends StatelessWidget {
                 } else {
                   priceLivraison = commandContext
                       .getDeliveryPriceByMiles(restaurant)
-                      .toInt();
+                      .round();
                   remiseWithCodeDiscount = cartContext.totalPrice;
                   if (commandContext.withCodeDiscount != null) {
                     remiseWithCodeDiscount = cartContext.calculremise(
@@ -121,9 +123,17 @@ class ChoosePayement extends StatelessWidget {
                                 restaurant?.discount?.delivery?.discountIsPrice,
                             discountValue: discountValue,
                           )
-                          .toInt();
+                          .round();
+                      totalDiscount = cartContext
+                          .remiseInEuro(
+                            discountIsPrice:
+                                restaurant?.discount?.delivery?.discountIsPrice,
+                            discountValue: discountValue,
+                            totalPrice: priceLivraison.toDouble(),
+                          )
+                          .round();
                       totalPrice =
-                          (remiseWithCodeDiscount + priceLivraison).toInt();
+                          (remiseWithCodeDiscount + priceLivraison).round();
                     } else if (restaurant?.discount?.delivery?.discountType ==
                         DiscountType.SurCommande) {
                       ///remise sur le commande
@@ -144,9 +154,17 @@ class ChoosePayement extends StatelessWidget {
                                 restaurant?.discount?.delivery?.discountIsPrice,
                             discountValue: discountValue,
                           )
-                          .toInt();
+                          .round();
+                      totalDiscount = cartContext
+                          .remiseInEuro(
+                            discountIsPrice:
+                                restaurant?.discount?.delivery?.discountIsPrice,
+                            discountValue: discountValue,
+                            totalPrice: remiseWithCodeDiscount,
+                          )
+                          .round();
                       totalPrice =
-                          (totalPriceWithRemise + priceLivraison).toInt();
+                          (totalPriceWithRemise + priceLivraison).round();
                     } else {
                       ///remise sur la totalité
                       double discountValue =
@@ -159,6 +177,14 @@ class ChoosePayement extends StatelessWidget {
                             restaurant?.discount?.delivery?.plageDiscount,
                         totalPriceSansRemise: totalPriceSansRemise.toDouble(),
                       );
+                      totalDiscount = cartContext
+                          .remiseInEuro(
+                            discountIsPrice:
+                                restaurant?.discount?.delivery?.discountIsPrice,
+                            discountValue: discountValue,
+                            totalPrice: remiseWithCodeDiscount + priceLivraison,
+                          )
+                          .round();
                       totalPrice = cartContext
                           .calculremise(
                             totalPrice: remiseWithCodeDiscount + priceLivraison,
@@ -166,30 +192,24 @@ class ChoosePayement extends StatelessWidget {
                                 restaurant?.discount?.delivery?.discountIsPrice,
                             discountValue: discountValue,
                           )
-                          .toInt();
+                          .round();
                     }
                   }
                 }
               }
-              totalPrice = (totalPrice * 100).toInt();
+              totalPrice = (totalPrice * 100).round();
             }
 
             ///get tokenFCM
             final sharedPrefs = await SharedPreferences.getInstance();
             final tokenFCM = sharedPrefs.getString(kTokenFCM);
 
-            ///calacul totalDiscount
-            final totalDiscount = cartContext.calculTotalDiscount(
-                totalPriceSansRemise: totalPriceSansRemise,
-                remiseWithCodeDiscount: remiseWithCodeDiscount.toInt());
-
             ///TODO: await Api.instance.sendCommand - DELIVERY
             var command = await Api.instance.sendCommand(
               tokenNavigator: tokenFCM,
-              totalDiscount: totalDiscount.toString(),
               addCodePromo: commandContext.withCodeDiscount,
               isCodePromo: commandContext.withCodeDiscount != null,
-              priceLivraison: priceLivraison.toString(),
+              deliveryPrice: Price(amount: priceLivraison, currency: 'eur'),
               paiementLivraison: true,
               isDelivery: true,
               optionLivraison: restaurant.optionLivraison,
@@ -211,6 +231,7 @@ class ChoosePayement extends StatelessWidget {
                   .toList(),
               restaurant: cartContext.currentOrigin,
               discount: restaurant?.discount,
+              discountPrice: totalDiscount,
               totalPrice: totalPrice,
               totalPriceSansRemise: totalPriceSansRemise,
               menu: cartContext.items
