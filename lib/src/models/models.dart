@@ -1627,7 +1627,8 @@ class ItemsOption {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['quantity'] = this.quantity;
-    data['price'] = this.price.toJson(); //TODO: add price here
+    data['price'] =
+        this.price.toJson(); //TODO: FOOD & MENU toJSON POST - add price here
     data['item'] = {
       "_id": this.sId,
       'name': this.name,
