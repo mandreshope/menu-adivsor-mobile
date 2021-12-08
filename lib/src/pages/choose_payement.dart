@@ -31,7 +31,7 @@ class ChoosePayement extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: TextTranslator("Choix de payement"),
+        title: TextTranslator("Choix de paiement"),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
