@@ -949,6 +949,8 @@ class Command {
   CodeDiscount codeDiscount;
   final List<String> tokenNavigator;
   final String discountPrice;
+  final String discountCode;
+  final String discountDelivery;
 
   Command({
     this.id,
@@ -979,6 +981,8 @@ class Command {
     this.totalPriceSansRemise,
     this.tokenNavigator,
     this.discountPrice,
+    this.discountCode,
+    this.discountDelivery,
   });
 
   factory Command.fromJson(Map<String, dynamic> json) => Command(
@@ -1039,6 +1043,8 @@ class Command {
                 : List<String>.from(json['tokenNavigator'])
             : [],
         discountPrice: json['discountPrice'],
+        discountCode: json['discountCode'],
+        discountDelivery: json['discountDelivery'],
       );
 }
 

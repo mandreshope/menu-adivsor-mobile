@@ -264,36 +264,36 @@ class _ConfirmSmsState extends State<ConfirmSms> {
         int totalDiscount = 0;
         int totalPriceSansRemise = (cartContext.totalPrice * 100).round();
         double remiseWithCodeDiscount = cartContext.totalPrice;
+        int discountCode =
+            0; // prix en euro an'le code promo, default value : 0
         if (commandContext.withCodeDiscount != null) {
           remiseWithCodeDiscount = cartContext.calculremise(
             totalPrice: cartContext.totalPrice,
             discountIsPrice: commandContext.withCodeDiscount.discountIsPrice,
             discountValue: commandContext.withCodeDiscount.value.toDouble(),
           );
-        }
-        if (widget.restaurant?.discountAEmporter == true) {
-          double discountValue = cartContext.discountValueInPlageDiscount(
-            discountIsPrice:
-                widget.restaurant?.discount?.aEmporter?.discountIsPrice,
-            discountValue: widget.restaurant?.discount?.aEmporter?.valueDouble,
-            plageDiscount:
-                widget.restaurant?.discount?.aEmporter?.plageDiscount,
-            totalPriceSansRemise: totalPriceSansRemise.toDouble(),
-          );
-          totalDiscount = cartContext
+          discountCode = cartContext
               .remiseInEuro(
                 discountIsPrice:
-                    widget.restaurant?.discount?.aEmporter?.discountIsPrice,
-                discountValue: discountValue,
-                totalPrice: remiseWithCodeDiscount,
+                    commandContext.withCodeDiscount.discountIsPrice,
+                discountValue: commandContext.withCodeDiscount.value.toDouble(),
+                totalPrice: remiseWithCodeDiscount.toDouble(),
+              )
+              .round();
+        }
+        if (widget.restaurant?.discountAEmporter == true) {
+          totalDiscount = cartContext
+              .discountValueInPlageDiscount(
+                plageDiscounts:
+                    widget.restaurant?.discount?.delivery?.plageDiscount,
+                price: totalPriceSansRemise.toDouble(),
               )
               .round();
           totalPrice = cartContext
               .calculremise(
                 totalPrice: remiseWithCodeDiscount,
-                discountIsPrice:
-                    widget.restaurant?.discount?.aEmporter?.discountIsPrice,
-                discountValue: discountValue,
+                discountIsPrice: true,
+                discountValue: totalDiscount.toDouble(),
               )
               .round();
         }
@@ -324,6 +324,7 @@ class _ConfirmSmsState extends State<ConfirmSms> {
               .toList(),
           restaurant: cartContext.currentOrigin,
           discountPrice: totalDiscount,
+          discountCode: discountCode,
           totalPrice: totalPrice,
           totalPriceSansRemise: totalPriceSansRemise,
           customer: widget.customer,

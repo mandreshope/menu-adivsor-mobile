@@ -854,7 +854,10 @@ class Api {
     @required int totalPrice, // totalPrice - discount
     @required int discountPrice, //total discount
     @required int totalPriceSansRemise,
-    CodeDiscount addCodePromo,
+    @required CodeDiscount addCodePromo,
+    @required
+        int discountCode, // prix en euro an'le code promo, default value : 0
+    int discountDelivery, // prix en euro an'le remise sur le transport
     String relatedUser,
     String commandType,
     RestaurantDiscount discount,
@@ -882,6 +885,8 @@ class Api {
       if (isDelivery) {
         post = jsonEncode({
           'addCodePromo': addCodePromo?.toAddCodePromo(restaurant),
+          'discountDelivery': discountDelivery,
+          'discountCode': discountCode,
           'tokenNavigator': tokenNavigator,
           'isCodePromo': isCodePromo,
           'relatedUser': relatedUser,
@@ -910,6 +915,7 @@ class Api {
       } else {
         post = jsonEncode({
           'addCodePromo': addCodePromo?.toAddCodePromo(restaurant),
+          'discountCode': discountCode,
           'tokenNavigator': tokenNavigator,
           'isCodePromo': isCodePromo,
           'relatedUser': relatedUser,

@@ -303,7 +303,7 @@ class _SummaryState extends State<Summary> {
                         child: Row(
                           children: [
                             TextTranslator(
-                              'Frais de livraison : ',
+                              'Frais de livraison',
                               style: TextStyle(
                                 fontSize: 16,
                               ),
@@ -326,7 +326,9 @@ class _SummaryState extends State<Summary> {
                       Divider(),
                     ],
                     Visibility(
-                      visible: widget.commande?.withCodeDiscount,
+                      visible: (int.tryParse((widget.commande)?.discountCode) ??
+                              0) !=
+                          0,
                       child: Column(
                         children: [
                           Padding(
@@ -337,18 +339,14 @@ class _SummaryState extends State<Summary> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 TextTranslator(
-                                  'Remise code promo : ',
+                                  'Remise code promo',
                                   style: TextStyle(
                                     fontWeight: FontWeight.normal,
                                     fontSize: 16,
                                   ),
                                 ),
                                 Text(
-                                  widget.commande?.codeDiscount
-                                              ?.discountIsPrice ==
-                                          true
-                                      ? '${widget.commande?.codeDiscount?.value ?? 0.0} €'
-                                      : '${widget.commande?.codeDiscount?.value ?? 0.0} % ',
+                                  '${widget.commande?.discountCode} €',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
@@ -377,13 +375,24 @@ class _SummaryState extends State<Summary> {
                               mainAxisSize: MainAxisSize.max,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                TextTranslator(
-                                  "Remise",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.normal,
-                                    fontSize: 16,
+                                if (widget.commande.commandType ==
+                                    'delivery') ...[
+                                  TextTranslator(
+                                    "Remise sur ${(widget.commande?.restaurant as Restaurant).discount.delivery.discountTypeExplainText}",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 16,
+                                    ),
                                   ),
-                                ),
+                                ] else ...[
+                                  TextTranslator(
+                                    "Remise sur totalité",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
                                 Text(
                                   '${widget.commande?.discountPrice} €',
                                   style: TextStyle(

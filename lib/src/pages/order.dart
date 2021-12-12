@@ -505,9 +505,8 @@ class _OrderPageState extends State<OrderPage> {
                                     (e) => e.code == _codePromoController.text);
                             if (codes.isNotEmpty) {
                               ///check codePromo expiration date
-                              if (!DateTime.parse(codes.first.date)
-                                  .toUtc()
-                                  .isAfter(DateTime.now())) {
+                              if (DateTime.now().toUtc().isBefore(
+                                  DateTime.parse(codes.first.date).toUtc())) {
                                 try {
                                   setState(() {
                                     isRestaurantLoading = true;
@@ -675,6 +674,8 @@ class _OrderPageState extends State<OrderPage> {
             int totalPrice = 0;
             int totalPriceSansRemise = (cartContext.totalPrice * 100).round();
             double remiseWithCodeDiscount = cartContext.totalPrice;
+            int discountCode =
+                0; // prix en euro an'le code promo, default value : 0
             if (commandContext.withCodeDiscount != null) {
               remiseWithCodeDiscount = cartContext.calculremise(
                 totalPrice: cartContext.totalPrice,
@@ -686,6 +687,15 @@ class _OrderPageState extends State<OrderPage> {
                     ?.value
                     ?.toDouble(),
               );
+              discountCode = cartContext
+                  .remiseInEuro(
+                    discountIsPrice:
+                        commandContext.withCodeDiscount.discountIsPrice,
+                    discountValue:
+                        commandContext.withCodeDiscount.value.toDouble(),
+                    totalPrice: remiseWithCodeDiscount.toDouble(),
+                  )
+                  .round();
             }
 
             totalPrice = (remiseWithCodeDiscount * 100).round();
@@ -715,6 +725,7 @@ class _OrderPageState extends State<OrderPage> {
                   .toList(),
               restaurant: cartContext.currentOrigin,
               discountPrice: 0,
+              discountCode: discountCode,
               totalPrice: totalPrice,
               totalPriceSansRemise: totalPriceSansRemise,
               menu: cartContext.items
@@ -803,6 +814,7 @@ class _OrderPageState extends State<OrderPage> {
       int totalPrice = 0;
       double remiseWithCodeDiscount = cartContext.totalPrice;
       int totalPriceSansRemise = (cartContext.totalPrice * 100).round();
+      int discountCode = 0; // prix en euro an'le code promo, default value : 0
       try {
         setState(() {
           sendingCommand = true;
@@ -817,6 +829,14 @@ class _OrderPageState extends State<OrderPage> {
                   .withCodeDiscount
                   ?.value
                   ?.toDouble());
+          discountCode = cartContext
+              .remiseInEuro(
+                discountIsPrice:
+                    commandContext.withCodeDiscount.discountIsPrice,
+                discountValue: commandContext.withCodeDiscount.value.toDouble(),
+                totalPrice: remiseWithCodeDiscount.toDouble(),
+              )
+              .round();
         }
         totalPrice = (remiseWithCodeDiscount * 100).round();
 
@@ -848,9 +868,10 @@ class _OrderPageState extends State<OrderPage> {
                   })
               .toList(),
           restaurant: cartContext.currentOrigin,
-          discountPrice: totalDiscount,
+          discountPrice: 0,
           totalPrice: totalPrice,
           totalPriceSansRemise: totalPriceSansRemise,
+          discountCode: discountCode,
           menu: cartContext.items
               .where((e) => e.isMenu)
               .map((e) => {

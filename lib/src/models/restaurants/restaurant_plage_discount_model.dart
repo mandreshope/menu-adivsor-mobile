@@ -5,11 +5,13 @@ class PlageDiscount {
   final String min;
   final String value;
   final String max;
+  final bool discountIsPrice;
   PlageDiscount({
     this.id,
     this.min,
     this.value,
     this.max,
+    this.discountIsPrice,
   });
 
   PlageDiscount copyWith({
@@ -23,6 +25,7 @@ class PlageDiscount {
       min: min ?? this.min,
       value: value ?? this.value,
       max: max ?? this.max,
+      discountIsPrice: discountIsPrice ?? this.discountIsPrice,
     );
   }
 
@@ -32,6 +35,7 @@ class PlageDiscount {
       'min': min,
       'value': value,
       'max': max,
+      'discountIsPrice': discountIsPrice,
     };
   }
 
@@ -41,6 +45,8 @@ class PlageDiscount {
       min: map['min'],
       value: map['value'],
       max: map['max'],
+      discountIsPrice:
+          map['discountIsPrice'] != null ? map['discountIsPrice'] : false,
     );
   }
 
@@ -51,7 +57,7 @@ class PlageDiscount {
 
   @override
   String toString() {
-    return 'RestaurantPlageDiscount(id: $id, min: $min, value: $value, max: $max)';
+    return 'RestaurantPlageDiscount(id: $id, min: $min, value: $value, max: $max, discountIsPrice: $discountIsPrice)';
   }
 
   @override
@@ -62,7 +68,8 @@ class PlageDiscount {
         other.id == id &&
         other.min == min &&
         other.value == value &&
-        other.max == max;
+        other.max == max &&
+        other.discountIsPrice == discountIsPrice;
   }
 
   @override

@@ -609,8 +609,13 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                     int totalPriceSansRemise =
                         (cartContext.totalPrice * 100).round();
                     int priceLivraison = 0;
+                    final priceLivraisonSansRemise = commandContext
+                        .getDeliveryPriceByMiles(widget.restaurant)
+                        .round();
                     double remise = 0; //in €
                     String remiseType = "totalité";
+                    int discountCode =
+                        0; // prix en euro an'le code promo, default value : 0
 
                     if (widget.restaurant.deliveryFixed) {
                       priceLivraison = (widget.restaurant.priceDelevery != null
@@ -642,6 +647,16 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                   .withCodeDiscount.value
                                   .toDouble(),
                             );
+                            discountCode = cartContext
+                                .remiseInEuro(
+                                  discountIsPrice: commandContext
+                                      .withCodeDiscount.discountIsPrice,
+                                  discountValue: commandContext
+                                      .withCodeDiscount.value
+                                      .toDouble(),
+                                  totalPrice: remiseWithCodeDiscount.toDouble(),
+                                )
+                                .round();
                           }
 
                           if (widget.restaurant?.discountDelivery == true) {
@@ -650,29 +665,17 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                 DiscountType.SurTransport) {
                               ///remise sur le frais de livraison
                               remiseType = "livraison";
-                              double discountValue =
-                                  cartContext.discountValueInPlageDiscount(
-                                discountIsPrice: widget.restaurant?.discount
-                                    ?.delivery?.discountIsPrice,
-                                discountValue: widget.restaurant?.discount
-                                    ?.delivery?.valueDouble,
-                                plageDiscount: widget.restaurant?.discount
+                              remise = cartContext.discountValueInPlageDiscount(
+                                plageDiscounts: widget.restaurant?.discount
                                     ?.delivery?.plageDiscount,
-                                totalPriceSansRemise:
-                                    totalPriceSansRemise.toDouble(),
-                              );
-                              remise = cartContext.remiseInEuro(
-                                discountIsPrice: widget.restaurant?.discount
-                                    ?.delivery?.discountIsPrice,
-                                discountValue: discountValue,
-                                totalPrice: priceLivraison.toDouble(),
+                                price: totalPriceSansRemise.toDouble(),
                               );
                               priceLivraison = cartContext
                                   .calculremise(
-                                      totalPrice: priceLivraison.toDouble(),
-                                      discountIsPrice: widget.restaurant
-                                          ?.discount?.delivery?.discountIsPrice,
-                                      discountValue: discountValue)
+                                    totalPrice: priceLivraison.toDouble(),
+                                    discountIsPrice: true,
+                                    discountValue: remise,
+                                  )
                                   .round();
                               totalPrice =
                                   (remiseWithCodeDiscount + priceLivraison)
@@ -682,29 +685,16 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                 DiscountType.SurCommande) {
                               ///remise sur le commande
                               remiseType = "commande";
-                              double discountValue =
-                                  cartContext.discountValueInPlageDiscount(
-                                discountIsPrice: widget.restaurant?.discount
-                                    ?.delivery?.discountIsPrice,
-                                discountValue: widget.restaurant?.discount
-                                    ?.delivery?.valueDouble,
-                                plageDiscount: widget.restaurant?.discount
+                              remise = cartContext.discountValueInPlageDiscount(
+                                plageDiscounts: widget.restaurant?.discount
                                     ?.delivery?.plageDiscount,
-                                totalPriceSansRemise:
-                                    totalPriceSansRemise.toDouble(),
-                              );
-                              remise = cartContext.remiseInEuro(
-                                discountIsPrice: widget.restaurant?.discount
-                                    ?.delivery?.discountIsPrice,
-                                discountValue: discountValue,
-                                totalPrice: remiseWithCodeDiscount,
+                                price: totalPriceSansRemise.toDouble(),
                               );
                               int totalPriceWithRemise = cartContext
                                   .calculremise(
                                       totalPrice: remiseWithCodeDiscount,
-                                      discountIsPrice: widget.restaurant
-                                          ?.discount?.delivery?.discountIsPrice,
-                                      discountValue: discountValue)
+                                      discountIsPrice: true,
+                                      discountValue: remise)
                                   .round();
                               totalPrice =
                                   (totalPriceWithRemise + priceLivraison)
@@ -712,31 +702,17 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                             } else {
                               ///remise sur la totalité
                               remiseType = "totalité";
-                              double discountValue =
-                                  cartContext.discountValueInPlageDiscount(
-                                discountIsPrice: widget.restaurant?.discount
-                                    ?.delivery?.discountIsPrice,
-                                discountValue: widget.restaurant?.discount
-                                    ?.delivery?.valueDouble,
-                                plageDiscount: widget.restaurant?.discount
+                              remise = cartContext.discountValueInPlageDiscount(
+                                plageDiscounts: widget.restaurant?.discount
                                     ?.delivery?.plageDiscount,
-                                totalPriceSansRemise:
-                                    totalPriceSansRemise.toDouble(),
-                              );
-                              remise = cartContext.remiseInEuro(
-                                discountIsPrice: widget.restaurant?.discount
-                                    ?.delivery?.discountIsPrice,
-                                discountValue: discountValue,
-                                totalPrice:
-                                    remiseWithCodeDiscount + priceLivraison,
+                                price: totalPriceSansRemise.toDouble(),
                               );
                               totalPrice = cartContext
                                   .calculremise(
                                       totalPrice: remiseWithCodeDiscount +
                                           priceLivraison,
-                                      discountIsPrice: widget.restaurant
-                                          ?.discount?.delivery?.discountIsPrice,
-                                      discountValue: discountValue)
+                                      discountIsPrice: true,
+                                      discountValue: remise)
                                   .round();
                             }
                           }
@@ -780,7 +756,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                         "Frais de livraison",
                                       ),
                                       TextTranslator(
-                                        "+$priceLivraison €",
+                                        "+$priceLivraisonSansRemise €",
                                       ),
                                     ],
                                   ),
@@ -798,7 +774,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                           fontWeight: FontWeight.bold),
                                     ),
                                     TextTranslator(
-                                      "-${commandContext.withCodeDiscount.value}",
+                                      "-$discountCode €",
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold),
                                     ),
@@ -806,23 +782,25 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                 ),
                               ],
                               Divider(),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  TextTranslator(
-                                    "Remise sur $remiseType",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                  TextTranslator(
-                                    "-${remise.round()} €",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                              Divider(),
+                              if (remise != 0) ...[
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    TextTranslator(
+                                      "Remise sur $remiseType",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    TextTranslator(
+                                      "-${remise.round()} €",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
+                                Divider(),
+                              ],
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,

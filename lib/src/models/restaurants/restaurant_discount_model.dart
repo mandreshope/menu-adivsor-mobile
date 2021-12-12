@@ -82,6 +82,11 @@ class Delivery {
 
   double get valueDouble => double.tryParse(value) ?? 0.0;
   final DiscountType discountType;
+  String get discountTypeExplainText => discountType == DiscountType.SurCommande
+      ? "commande"
+      : discountType == DiscountType.SurTransport
+          ? "livraison"
+          : "totalité";
 
   Delivery({
     this.discountIsPrice,

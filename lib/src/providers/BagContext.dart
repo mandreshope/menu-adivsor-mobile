@@ -156,25 +156,29 @@ class CartContext extends ChangeNotifier {
 
   ///in Euro
   double discountValueInPlageDiscount({
-    @required double totalPriceSansRemise,
-    @required bool discountIsPrice,
-    @required double discountValue,
-    @required List<PlageDiscount> plageDiscount,
+    @required double price,
+    @required List<PlageDiscount> plageDiscounts,
   }) {
-    ///check discountIsPrice
-    ///if discountIsPrice is false, we apply the plageDiscount
-    double result;
-    if (discountIsPrice == true) {
-      result = discountValue;
-    } else {
-      final plages = plageDiscount.where((plage) =>
-          (int.tryParse(plage.max) ?? 0) >= (totalPriceSansRemise / 100) &&
-          (int.tryParse(plage.min) ?? 0) <= (totalPriceSansRemise / 100));
-      if (plages.isNotEmpty) {
-        result = double.tryParse(plages.first.value) ?? 0.0;
+    PlageDiscount plageDiscount;
+    double discountValue = 0.0;
+    final plages = plageDiscounts.where((plage) =>
+        (int.tryParse(plage.max) ?? 0) >= (price / 100) &&
+        (int.tryParse(plage.min) ?? 0) <= (price / 100));
+    if (plages.isNotEmpty) {
+      plageDiscount = plages.first;
+      final value = double.tryParse(plageDiscount.value) ?? 0.0;
+      if (plageDiscount.discountIsPrice) {
+        discountValue = value;
+      } else {
+        discountValue = remiseInEuro(
+          discountIsPrice: false,
+          discountValue: value,
+          totalPrice: (price / 100),
+        );
       }
     }
-    return result ?? 0.0;
+
+    return discountValue;
   }
 
   //in Euro
