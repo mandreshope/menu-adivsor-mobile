@@ -157,7 +157,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                                   Colors.white),
                                         ),
                                       )
-                                    : Text(
+                                    : TextTranslator(
                                         "Utiliser mon addresse",
                                         style: TextStyle(
                                           color: Colors.white,

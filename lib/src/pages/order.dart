@@ -25,6 +25,7 @@ import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/services/notification_service.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
+import 'package:menu_advisor/src/utils/textFormFieldTranslator.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -326,7 +327,7 @@ class _OrderPageState extends State<OrderPage> {
                           if (_restaurant?.hasCodePromo == true) ...[
                             Container(
                               margin: const EdgeInsets.all(10.0),
-                              child: TextFormField(
+                              child: TextFormFieldTranslator(
                                 controller: _codePromoController,
                                 textInputAction: TextInputAction.next,
                                 keyboardType: TextInputType.text,
@@ -347,7 +348,7 @@ class _OrderPageState extends State<OrderPage> {
                             child: Container(
                               height: 150,
                               padding: EdgeInsets.symmetric(horizontal: 25),
-                              child: TextFormField(
+                              child: TextFormFieldTranslator(
                                 controller: _messageController,
                                 keyboardType: TextInputType.multiline,
                                 maxLines: null,
@@ -355,6 +356,11 @@ class _OrderPageState extends State<OrderPage> {
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
                                   hintText: "Votre commentaire...",
+                                  enabledBorder: InputBorder.none,
+                                  disabledBorder: InputBorder.none,
+                                  errorBorder: InputBorder.none,
+                                  focusedBorder: InputBorder.none,
+                                  focusedErrorBorder: InputBorder.none,
                                 ),
                               ),
                             ),

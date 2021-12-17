@@ -393,6 +393,9 @@ class CartContext extends ChangeNotifier {
   }
 
   bool allOptionIsNotObligatory(List<Option> options) {
+    if (options == null) {
+      return false;
+    }
     final optionObligatory = options.where((o) => o.isObligatory).toList();
     return optionObligatory.isEmpty;
   }

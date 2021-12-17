@@ -7,6 +7,7 @@ import 'package:menu_advisor/src/utils/textFormFieldTranslator.dart';
 import 'package:provider/provider.dart';
 
 class PhoneField extends StatelessWidget {
+  final TextEditingController textEditingController;
   final InputDecoration decoration;
   final FocusNode focusNode;
   final String labelText;
@@ -25,6 +26,7 @@ class PhoneField extends StatelessWidget {
     this.onSaved,
     this.initialValue,
     this.onInputValidated,
+    this.textEditingController,
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -36,6 +38,7 @@ class PhoneField extends StatelessWidget {
             : hintText.translator(lang),
         builder: (context, snapshot) {
           return InternationalPhoneNumberInput(
+            textFieldController: textEditingController,
             focusNode: focusNode,
             onInputChanged: onInputChanged,
             onInputValidated: onInputValidated,

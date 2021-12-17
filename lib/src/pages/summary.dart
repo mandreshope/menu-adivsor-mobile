@@ -783,17 +783,23 @@ class _SummaryState extends State<Summary> {
                       ? Text(" ")
                       : item.price?.amount == null
                           ? Text("_")
-                          : Text(
-                              "${item.price.amount / 100} €",
-                              style: TextStyle(fontSize: 16),
+                          : Visibility(
+                              visible: (item.price.amount / 100) != 0.0,
+                              child: Text(
+                                "${(item.price.amount / 100)} €",
+                                style: TextStyle(fontSize: 16),
+                              ),
                             )
                   : widget.commande.priceless
                       ? Text(" ")
                       : item.price?.amount == null
                           ? Text("_")
-                          : Text(
-                              "${item.price.amount / 100} €",
-                              style: TextStyle(fontSize: 16),
+                          : Visibility(
+                              visible: (item.price.amount / 100) != 0.0,
+                              child: Text(
+                                "${item.price.amount / 100} €",
+                                style: TextStyle(fontSize: 16),
+                              ),
                             ),
             ],
           ),
@@ -879,11 +885,15 @@ class _SummaryState extends State<Summary> {
                         else
                           itemsOption.price.amount == null
                               ? Text("")
-                              : TextTranslator(
-                                  '${itemsOption.price.amount / 100} €',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.normal)),
+                              : Visibility(
+                                  visible:
+                                      (itemsOption.price.amount / 100) != 0.0,
+                                  child: TextTranslator(
+                                      '${itemsOption.price.amount / 100} €',
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.normal)),
+                                ),
                         // Spacer(),
                         // item.price?.amount == null ? Text("_") : Text("${item.price.amount / 100} €", style: TextStyle(fontSize: 16)),
                       ],
@@ -982,10 +992,13 @@ class _SummaryState extends State<Summary> {
                       ? Text(" ")
                       : item.food.price?.amount == null
                           ? Text("_")
-                          : Text(
-                              "${item.food.price.amount / 100} €",
-                              style: TextStyle(
-                                fontSize: 16,
+                          : Visibility(
+                              visible: (item.food.price.amount / 100) != 0.0,
+                              child: Text(
+                                "${item.food.price.amount / 100} €",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
                               ),
                             ),
                 ]
@@ -1056,10 +1069,14 @@ class _SummaryState extends State<Summary> {
                     else
                       itemsOption?.price?.amount == null
                           ? Text("")
-                          : TextTranslator(
-                              '${itemsOption.price.amount / 100} €',
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.normal)),
+                          : Visibility(
+                              visible: (itemsOption.price.amount / 100) != 0.0,
+                              child: TextTranslator(
+                                  '${itemsOption.price.amount / 100} €',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.normal)),
+                            ),
                   ],
                 ),
               ),

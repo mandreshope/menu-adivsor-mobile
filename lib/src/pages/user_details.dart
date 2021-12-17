@@ -35,6 +35,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   String parsedPhone = "";
+  PhoneNumber phoneNumber = PhoneNumber(isoCode: "FR");
 
   final FocusNode _displayNameFocus = FocusNode();
   final FocusNode _phoneNumberFocus = FocusNode();
@@ -71,7 +72,10 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
 
       PhoneNumber.getRegionInfoFromPhoneNumber(_phoneNumberController.text)
           .then((value) async {
-        parsedPhone = await PhoneNumber.getParsableNumber(value);
+        phoneNumber = value;
+        parsedPhone =
+            (await PhoneNumber.getParsableNumber(value)).replaceAll(" ", "");
+        _phoneNumberController.text = parsedPhone;
         setState(() {});
       });
     }
@@ -133,12 +137,9 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                 ),
                 SizedBox(height: 5),
                 PhoneField(
+                  textEditingController: _phoneNumberController,
                   focusNode: _phoneNumberFocus,
-                  initialValue: phoneInitialCountryCode,
-                  onInputChanged: (PhoneNumber number) {
-                    print(number.phoneNumber);
-                    _phoneNumberController.text = number.phoneNumber;
-                  },
+                  initialValue: phoneNumber,
                   onInputValidated: (bool value) {
                     print(value);
                   },

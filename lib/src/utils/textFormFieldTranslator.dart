@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/utils/extensions.dart';
+import 'package:mlkit_translate/mlkit_translate.dart';
 import 'package:provider/provider.dart';
 
 class TextFormFieldTranslator extends StatelessWidget {
@@ -25,8 +26,11 @@ class TextFormFieldTranslator extends StatelessWidget {
     this.border,
     this.onTap,
     this.prefixIcon,
+    this.maxLines,
+    this.showCursor,
   }) : super(key: key);
-
+  final bool showCursor;
+  final int maxLines;
   final FocusNode focusNode;
   final TextEditingController controller;
   final TextInputType keyboardType;
@@ -48,9 +52,19 @@ class TextFormFieldTranslator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final lang = Provider.of<SettingContext>(context, listen: false).languageCodeTranslate;
-    return FutureBuilder<String>(
-        future: decoration.labelText != null ? decoration.labelText.translator(lang) : decoration.hintText.translator(lang),
+    final lang = Provider.of<SettingContext>(context, listen: false)
+        .languageCodeTranslate;
+    final langRestaurant = Provider.of<SettingContext>(context, listen: false)
+            .languageCodeRestaurantTranslate ??
+        lang;
+    final isRestaurantPage =
+        Provider.of<SettingContext>(context, listen: true).isRestaurantPage;
+    return FutureBuilder(
+        future: decoration.labelText != null
+            ? _translate(
+                decoration.labelText, isRestaurantPage ? langRestaurant : lang)
+            : _translate(
+                decoration.hintText, isRestaurantPage ? langRestaurant : lang),
         builder: (context, snapshot) {
           return TextFormField(
               enabled: enabled,
@@ -59,6 +73,8 @@ class TextFormFieldTranslator extends StatelessWidget {
               keyboardType: keyboardType,
               textInputAction: textInputAction,
               obscureText: obscureText ?? false,
+              maxLines: maxLines,
+              showCursor: showCursor,
               decoration: decoration.labelText != null
                   ? InputDecoration(
                       labelText: snapshot.data,
@@ -67,7 +83,18 @@ class TextFormFieldTranslator extends StatelessWidget {
                       border: border,
                       prefixText: decoration.prefixText ?? "",
                     )
-                  : decoration,
+                  : InputDecoration(
+                      hintText: snapshot.data,
+                      suffixIcon: decoration.suffixIcon,
+                      prefixIcon: decoration.prefixIcon,
+                      border: decoration.border,
+                      prefixText: decoration.prefixText ?? "",
+                      focusedErrorBorder: decoration.focusedErrorBorder,
+                      focusedBorder: decoration.focusedBorder,
+                      enabledBorder: decoration.enabledBorder,
+                      errorBorder: decoration.errorBorder,
+                      disabledBorder: decoration.disabledBorder,
+                    ),
               onTap: onTap,
               onChanged: onChanged,
               onFieldSubmitted: onFieldSubmitted,
@@ -77,5 +104,20 @@ class TextFormFieldTranslator extends StatelessWidget {
               autofocus: autofocus ?? false,
               textAlign: textAlign ?? TextAlign.start);
         });
+  }
+
+  Future<dynamic> _translate(String data, lang) async {
+    try {
+      // var translate = await FirebaseLanguage.instance.languageTranslator(SupportedLanguages.French, lang).processText(data ?? " ");
+      var translate = await MlkitTranslate.translateText(
+        source: "fr",
+        text: data ?? "",
+        target: lang,
+      );
+      return translate.isEmpty ? data : translate;
+    } catch (e) {
+      print("error transalator $e");
+      return data ?? " ";
+    }
   }
 }

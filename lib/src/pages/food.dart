@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'dart:math' as math;
 import 'package:chips_choice/chips_choice.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/cupertino.dart';
@@ -785,7 +785,10 @@ class _FoodPageState extends State<FoodPage> {
                                         height: 15,
                                       ),
                                       ExpandableNotifier(
-                                        initialExpanded: true,
+                                        initialExpanded:
+                                            option.isObligatory == true
+                                                ? true
+                                                : false,
                                         child: Container(
                                           color: Colors.white,
                                           child: ScrollOnExpand(
@@ -797,52 +800,96 @@ class _FoodPageState extends State<FoodPage> {
                                                     ExpandablePanelHeaderAlignment
                                                         .center,
                                                 tapBodyToCollapse: true,
-                                                hasIcon: true,
+                                                hasIcon: false,
                                               ),
                                               header: Container(
                                                 margin: EdgeInsets.symmetric(
                                                     horizontal: 10),
                                                 padding:
                                                     const EdgeInsets.all(8.0),
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
+                                                child: Row(
                                                   mainAxisAlignment:
-                                                      MainAxisAlignment.start,
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
                                                   children: [
-                                                    Row(
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
                                                       children: [
-                                                        TextTranslator(
-                                                          "${option.title}",
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.black,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              fontSize: 16),
-                                                          textAlign:
-                                                              TextAlign.start,
-                                                        ),
-                                                        if (option.isObligatory)
-                                                          Text(
-                                                            "*",
-                                                            style: TextStyle(
-                                                              color: Colors.red,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              fontSize: 20,
+                                                        Row(
+                                                          children: [
+                                                            TextTranslator(
+                                                              "${option.title}",
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .black,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  fontSize: 16),
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .start,
                                                             ),
-                                                          )
+                                                            Visibility(
+                                                              visible: option
+                                                                  .isObligatory,
+                                                              child:
+                                                                  TextTranslator(
+                                                                " (Obligatoire)",
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: Colors
+                                                                      .red,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  fontSize: 15,
+                                                                ),
+                                                              ),
+                                                              replacement:
+                                                                  TextTranslator(
+                                                                " (Facultatif)",
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  fontSize: 15,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        TextTranslator(
+                                                          "Choisissez-en jusqu'à ${option.maxOptions}",
+                                                          style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
                                                       ],
                                                     ),
-                                                    TextTranslator(
-                                                      "Choisissez-en jusqu'à ${option.maxOptions}",
-                                                      style: TextStyle(
-                                                        color: Colors.black,
-                                                        fontWeight:
-                                                            FontWeight.bold,
+                                                    ExpandableIcon(
+                                                      theme:
+                                                          const ExpandableThemeData(
+                                                        expandIcon: Icons
+                                                            .keyboard_arrow_right,
+                                                        collapseIcon: Icons
+                                                            .keyboard_arrow_down,
+                                                        iconColor: Colors.grey,
+                                                        iconSize: 28.0,
+                                                        iconRotationAngle:
+                                                            math.pi / 2,
+                                                        iconPadding:
+                                                            EdgeInsets.only(
+                                                                right: 5),
+                                                        hasIcon: false,
                                                       ),
                                                     ),
                                                   ],
@@ -981,7 +1028,11 @@ class _FoodPageState extends State<FoodPage> {
                       child: Container(
                         color: widget.food.isPopular
                             ? CRIMSON
-                            : _cartContext.hasOptionSelectioned(foodAdded)
+                            : _cartContext.hasOptionSelectioned(foodAdded) ==
+                                        true ||
+                                    _cartContext.allOptionIsNotObligatory(
+                                            foodAdded?.options) ==
+                                        true
                                 ? CRIMSON
                                 : Colors.grey,
                         width: double.infinity,
@@ -1010,6 +1061,7 @@ class _FoodPageState extends State<FoodPage> {
                                   ),
                                 ),
                                 onPressed: () async {
+                                  print("$logTrace AJOUTER A MON PANIER BTN");
                                   if (widget.food.isPopular) {
                                     RouteUtil.goTo(
                                       context: context,
@@ -1029,15 +1081,24 @@ class _FoodPageState extends State<FoodPage> {
                                           cartContext.hasSameOriginAsInBag(
                                               widget.food))) {
                                     if (cartContext
-                                        .hasOptionSelectioned(foodAdded)) {
+                                            .hasOptionSelectioned(foodAdded) ||
+                                        cartContext.allOptionIsNotObligatory(
+                                            foodAdded.options)) {
                                       _cartContext.addItem(foodAdded, 1, true);
+                                      if (!cartContext.hasOptionSelectioned(
+                                              foodAdded) &&
+                                          cartContext.allOptionIsNotObligatory(
+                                              foodAdded.options)) {
+                                        foodAdded.quantity = 1;
+                                      }
                                       setState(() {});
+
                                       RouteUtil.goBack(context: context);
-                                    } else
+                                    } else {
                                       Fluttertoast.showToast(
                                         msg: 'Ajouter une option',
                                       );
-                                    //}
+                                    }
                                   } else if (!cartContext
                                       .hasSamePricingAsInBag(widget.food)) {
                                     showDialog(

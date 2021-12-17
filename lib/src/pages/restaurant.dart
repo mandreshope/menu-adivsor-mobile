@@ -92,6 +92,7 @@ class _RestaurantPageState extends State<RestaurantPage>
   bool _canScrollListRestaurant = true;
 
   String _langTranslate;
+  String languageCodeRestaurantTranslate;
   int range;
   List<FoodAttribute> attributeFilter;
   List<Menu> menus;
@@ -115,6 +116,9 @@ class _RestaurantPageState extends State<RestaurantPage>
     _lang = Provider.of<SettingContext>(context, listen: false).languageCode;
     _langTranslate = Provider.of<SettingContext>(context, listen: false)
         .languageCodeTranslate;
+    languageCodeRestaurantTranslate =
+        Provider.of<SettingContext>(context, listen: false)
+            .languageCodeRestaurantTranslate;
     Provider.of<SettingContext>(context, listen: false).isRestaurantPage = true;
     range = Provider.of<SettingContext>(context, listen: false).range;
 
@@ -629,6 +633,19 @@ class _RestaurantPageState extends State<RestaurantPage>
     );
   }
 
+  Future<List<Tab>> _tabTranslated() async {
+    List<String> tabString = ["à la carte", "nos menus", "boissons"];
+    for (var i = 0; i <= tabString.length; i++) {
+      tabString[i] =
+          await tabString[i].translator(languageCodeRestaurantTranslate);
+    }
+    return tabString
+        .map(
+          (tab) => Tab(text: tab),
+        )
+        .toList();
+  }
+
   Widget _renderMain() {
     return Scaffold(
       body: Stack(
@@ -900,7 +917,7 @@ class _RestaurantPageState extends State<RestaurantPage>
                                                   : CRIMSON,
                                               borderRadius:
                                                   BorderRadius.circular(25)),
-                                          child: Text(
+                                          child: TextTranslator(
                                               restaurant.isOpen
                                                   ? "Ouvert"
                                                   : "Fermé",
@@ -1046,47 +1063,33 @@ class _RestaurantPageState extends State<RestaurantPage>
                             Container(
                               width: double.infinity,
                               child: Center(
-                                child: TabBar(
-                                  controller: tabController,
-                                  isScrollable: true,
-                                  unselectedLabelColor: CRIMSON,
-                                  indicator: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(5),
-                                      color: CRIMSON),
-                                  tabs: [
-                                    // Text("TEst"),
-                                    FutureBuilder(
-                                        future: AppLocalizations.of(context)
-                                            .translate('a_la_carte')
-                                            .translator(_langTranslate),
-                                        builder: (_, data) {
-                                          return Tab(
-                                            text: data.data ?? "",
-                                          );
-                                        }),
-                                    FutureBuilder<String>(
-                                        future: AppLocalizations.of(context)
-                                            .translate('menus')
-                                            .translator(_langTranslate),
-                                        builder: (_, data) {
-                                          return Tab(
-                                            text: data.data ?? "",
-                                          );
-                                        }),
+                                  child: TabBar(
+                                controller: tabController,
+                                isScrollable: true,
+                                unselectedLabelColor: CRIMSON,
+                                indicator: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    color: CRIMSON),
+                                tabs: [
+                                  // Text("TEst"),
 
-                                    FutureBuilder<String>(
-                                        future: AppLocalizations.of(context)
-                                            .translate('menus')
-                                            .translator(_langTranslate),
-                                        builder: (_, data) {
-                                          return Tab(
-                                            text: AppLocalizations.of(context)
-                                                .translate('drinks'),
-                                          );
-                                        }),
-                                  ],
-                                ),
-                              ),
+                                  Tab(
+                                    child: TextTranslator(
+                                        AppLocalizations.of(context)
+                                            .translate('a_la_carte')),
+                                  ),
+                                  Tab(
+                                    child: TextTranslator(
+                                        AppLocalizations.of(context)
+                                            .translate('menus')),
+                                  ),
+                                  Tab(
+                                    child: TextTranslator(
+                                        AppLocalizations.of(context)
+                                            .translate('drinks')),
+                                  )
+                                ],
+                              )),
                             ),
                             Align(
                               child: InkWell(

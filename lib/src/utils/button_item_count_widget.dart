@@ -3,6 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:menu_advisor/src/components/buttons.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
+import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/models/models.dart';
 import 'package:menu_advisor/src/pages/food.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
@@ -77,12 +78,14 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
             if (_cartContext.itemCount != 0) {
               if (!_cartContext.hasSamePricingAsInBag(widget.food)) {
                 Fluttertoast.showToast(
-                  msg: AppLocalizations.of(context).translate('priceless_and_not_priceless_not_allowed'),
+                  msg: AppLocalizations.of(context)
+                      .translate('priceless_and_not_priceless_not_allowed'),
                 );
                 return;
               } else if (!_cartContext.hasSameOriginAsInBag(widget.food)) {
                 Fluttertoast.showToast(
-                  msg: AppLocalizations.of(context).translate('from_different_origin_not_allowed'),
+                  msg: AppLocalizations.of(context)
+                      .translate('from_different_origin_not_allowed'),
                 );
                 return;
               }
@@ -104,12 +107,15 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
           )),
       padding: EdgeInsets.symmetric(vertical: 2),
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: widget.isFromDelevery ? 0 : 0),
+        padding:
+            EdgeInsets.symmetric(horizontal: widget.isFromDelevery ? 0 : 0),
         child: Row(
           children: [
             RoundedButton(
               backgroundColor: CRIMSON,
-              padding: widget.isSmal ? EdgeInsets.symmetric(horizontal: 10, vertical: 6) : EdgeInsets.symmetric(horizontal: 25, vertical: 6),
+              padding: widget.isSmal
+                  ? EdgeInsets.symmetric(horizontal: 10, vertical: 6)
+                  : EdgeInsets.symmetric(horizontal: 25, vertical: 6),
               radius: widget.isSmal ? 0.0 : 35.0,
               child: FaIcon(
                 FontAwesomeIcons.minus,
@@ -117,6 +123,7 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                 size: 12,
               ),
               onPressed: () async {
+                print("$logTrace FOOD QUANTITY DECREMENT");
                 widget.food.quantity--;
                 widget.onRemoved();
               },
@@ -135,7 +142,10 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                 child: Center(
                   child: TextTranslator(
                     '${widget.itemCount}',
-                    style: TextStyle(color: CRIMSON, fontWeight: FontWeight.bold, fontSize: widget.isSmal ? 14 : 25),
+                    style: TextStyle(
+                        color: CRIMSON,
+                        fontWeight: FontWeight.bold,
+                        fontSize: widget.isSmal ? 14 : 25),
                   ),
                 ),
               ),
@@ -145,7 +155,9 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
             ),
             RoundedButton(
               backgroundColor: CRIMSON,
-              padding: widget.isSmal ? EdgeInsets.symmetric(horizontal: 10, vertical: 6) : EdgeInsets.symmetric(horizontal: 25, vertical: 6),
+              padding: widget.isSmal
+                  ? EdgeInsets.symmetric(horizontal: 10, vertical: 6)
+                  : EdgeInsets.symmetric(horizontal: 25, vertical: 6),
               radius: widget.isSmal ? 0.0 : 35.0,
               child: FaIcon(
                 FontAwesomeIcons.plus,
@@ -153,6 +165,7 @@ class _ButtonItemCountWidgetState extends State<ButtonItemCountWidget> {
                 size: widget.isFromDelevery ? 12 : 12,
               ),
               onPressed: () async {
+                print("$logTrace FOOD QUANTITY INCREMENT");
                 widget.food.quantity++;
                 widget.onAdded();
               },

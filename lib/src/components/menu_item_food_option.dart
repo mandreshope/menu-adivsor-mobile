@@ -1,4 +1,5 @@
 import 'package:chips_choice/chips_choice.dart';
+import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
@@ -9,6 +10,7 @@ import 'package:menu_advisor/src/providers/OptionContext.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
+import 'dart:math' as math;
 
 import '../models/models.dart';
 
@@ -68,47 +70,104 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                     SizedBox(
                       height: 2,
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            TextTranslator(
-                              "${option.title}",
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16),
-                              textAlign: TextAlign.start,
-                            ),
-                            if (option.isObligatory)
-                              Text(
-                                "*",
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
-                                ),
-                              )
-                          ],
-                        ),
-                        TextTranslator(
-                          "Choisissez-en jusqu'à ${option.maxOptions}",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
+                    if (position != 0) Divider(),
+                    ExpandableNotifier(
+                      initialExpanded:
+                          option.isObligatory == true ? true : false,
+                      child: ScrollOnExpand(
+                        scrollOnExpand: true,
+                        scrollOnCollapse: false,
+                        child: ExpandablePanel(
+                          theme: const ExpandableThemeData(
+                            headerAlignment:
+                                ExpandablePanelHeaderAlignment.center,
+                            tapBodyToCollapse: true,
+                            hasIcon: false,
                           ),
-                        ),
-                      ],
-                    ),
-                    Container(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 25.0),
-                        child: _choice(
-                          option,
-                          option.maxOptions == 1 ? true : false,
+                          header: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              ExpandableIcon(
+                                theme: const ExpandableThemeData(
+                                  iconColor: Colors.transparent,
+                                  hasIcon: false,
+                                ),
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      TextTranslator(
+                                        "${option.title}",
+                                        style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16),
+                                        textAlign: TextAlign.start,
+                                      ),
+                                      Visibility(
+                                        visible: option.isObligatory,
+                                        child: TextTranslator(
+                                          " (Obligatoire)",
+                                          style: TextStyle(
+                                            color: Colors.red,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                        replacement: TextTranslator(
+                                          " (Facultatif)",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  TextTranslator(
+                                    "Choisissez-en jusqu'à ${option.maxOptions}",
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              ExpandableIcon(
+                                theme: const ExpandableThemeData(
+                                  expandIcon: Icons.keyboard_arrow_right,
+                                  collapseIcon: Icons.keyboard_arrow_down,
+                                  iconColor: Colors.grey,
+                                  iconSize: 28.0,
+                                  iconRotationAngle: math.pi / 2,
+                                  iconPadding: EdgeInsets.only(right: 5),
+                                  hasIcon: false,
+                                ),
+                              ),
+                            ],
+                          ),
+                          collapsed: Container(),
+                          expanded: Container(
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 25.0),
+                              child: _choice(
+                                option,
+                                option.maxOptions == 1 ? true : false,
+                              ),
+                            ),
+                          ),
+                          builder: (_, collapsed, expanded) {
+                            return Expandable(
+                              collapsed: collapsed,
+                              expanded: expanded,
+                              theme:
+                                  const ExpandableThemeData(crossFadePoint: 0),
+                            );
+                          },
                         ),
                       ),
                     ),
