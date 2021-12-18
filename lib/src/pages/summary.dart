@@ -804,109 +804,111 @@ class _SummaryState extends State<Summary> {
             ],
           ),
         ),
-        Divider(),
         if (item is Food)
           for (int i = 0; i < options.length; i++) ...[
-            Container(
-              // color: (options.length/quantity) <   ? Colors.grey.withAlpha(100) : Colors.white,
-              padding: EdgeInsets.only(
-                  top: 15,
-                  bottom: 15,
-                  left: MediaQuery.of(context).size.width / 2.5,
-                  right: 0),
-              child: Column(
-                children: [
-                  Container(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        // SizedBox(width: 150),
-                        TextTranslator('${options[i].title}',
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold)),
-                        SizedBox(width: 5),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  for (ItemsOption itemsOption in options[i].items) ...[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        // SizedBox(width: 150),
-                        if (itemsOption.quantity != null &&
-                            itemsOption.quantity > 0)
-                          Text("${itemsOption.quantity}x\t",
+            Visibility(
+              visible: options[i].items.isNotEmpty,
+              child: Container(
+                // color: (options.length/quantity) <   ? Colors.grey.withAlpha(100) : Colors.white,
+                padding: EdgeInsets.only(
+                    top: 15,
+                    bottom: 15,
+                    left: MediaQuery.of(context).size.width / 2.5,
+                    right: 0),
+                child: Column(
+                  children: [
+                    Container(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          // SizedBox(width: 150),
+                          TextTranslator('${options[i].title}',
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.bold)),
-                        InkWell(
-                          onTap: () {
-                            RouteUtil.goTo(
-                                context: context,
-                                child: PhotoViewPage(
-                                  tag: 'tag:${itemsOption.item.imageUrl}',
-                                  img: itemsOption.item.imageUrl,
-                                ),
-                                routeName: null);
-                          },
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(50),
-                            child: FadeInImage.assetNetwork(
-                              placeholder: 'assets/images/loading.gif',
-                              image: itemsOption.item.imageUrl ?? "",
-                              height: 35,
-                              width: 35,
-                              fit: BoxFit.cover,
-                              imageErrorBuilder: (_, __, ___) => Container(
-                                width: 35,
+                          SizedBox(width: 5),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    for (ItemsOption itemsOption in options[i].items) ...[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          // SizedBox(width: 150),
+                          if (itemsOption.quantity != null &&
+                              itemsOption.quantity > 0)
+                            Text("${itemsOption.quantity}x\t",
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold)),
+                          InkWell(
+                            onTap: () {
+                              RouteUtil.goTo(
+                                  context: context,
+                                  child: PhotoViewPage(
+                                    tag: 'tag:${itemsOption.item.imageUrl}',
+                                    img: itemsOption.item.imageUrl,
+                                  ),
+                                  routeName: null);
+                            },
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(50),
+                              child: FadeInImage.assetNetwork(
+                                placeholder: 'assets/images/loading.gif',
+                                image: itemsOption.item.imageUrl ?? "",
                                 height: 35,
-                                color: Colors.white,
+                                width: 35,
+                                fit: BoxFit.cover,
+                                imageErrorBuilder: (_, __, ___) => Container(
+                                  width: 35,
+                                  height: 35,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ),
-                        ),
 
-                        SizedBox(
-                          width: 5,
-                        ),
-                        TextTranslator('${itemsOption.item.name}',
-                            style: TextStyle(fontSize: 16)),
-                        Spacer(),
-                        /*Image.network(
-                        item.imageURL,
-                        width: 25,
-                      ),*/
-                        // SizedBox(width: 8),
-                        if (itemsOption.item.price == 0 ||
-                            widget.commande.priceless)
-                          Text("")
-                        else
-                          itemsOption.price.amount == null
-                              ? Text("")
-                              : Visibility(
-                                  visible:
-                                      (itemsOption.price.amount / 100) != 0.0,
-                                  child: TextTranslator(
-                                      '${itemsOption.price.amount / 100} €',
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.normal)),
-                                ),
-                        // Spacer(),
-                        // item.price?.amount == null ? Text("_") : Text("${item.price.amount / 100} €", style: TextStyle(fontSize: 16)),
-                      ],
-                    ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          TextTranslator('${itemsOption.item.name}',
+                              style: TextStyle(fontSize: 16)),
+                          Spacer(),
+                          /*Image.network(
+                          item.imageURL,
+                          width: 25,
+                        ),*/
+                          // SizedBox(width: 8),
+                          if (itemsOption.item.price == 0 ||
+                              widget.commande.priceless)
+                            Text("")
+                          else
+                            itemsOption.price.amount == null
+                                ? Text("")
+                                : Visibility(
+                                    visible:
+                                        (itemsOption.price.amount / 100) != 0.0,
+                                    child: TextTranslator(
+                                        '${itemsOption.price.amount / 100} €',
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.normal)),
+                                  ),
+                          // Spacer(),
+                          // item.price?.amount == null ? Text("_") : Text("${item.price.amount / 100} €", style: TextStyle(fontSize: 16)),
+                        ],
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
-            Divider(),
           ]
         else
           for (FoodSelectedFromCommandMenu food
-              in commandItem.foodMenuSelected) ...[_renderMenus(food)]
+              in commandItem.foodMenuSelected) ...[_renderMenus(food)],
+        Divider(),
       ],
     );
   }
@@ -993,9 +995,9 @@ class _SummaryState extends State<Summary> {
                       : item.food.price?.amount == null
                           ? Text("_")
                           : Visibility(
-                              visible: (item.food.price.amount / 100) != 0.0,
+                              visible: (item.price.amount / 100) != 0.0,
                               child: Text(
-                                "${item.food.price.amount / 100} €",
+                                "${item.price.amount / 100} €",
                                 style: TextStyle(
                                   fontSize: 16,
                                 ),
@@ -1005,20 +1007,26 @@ class _SummaryState extends State<Summary> {
               ],
             ),
           ),
-          Divider(),
           for (Option option in item.options) ...[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                SizedBox(width: 150),
-                TextTranslator('${option.title}',
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                SizedBox(width: 5),
-              ],
-            ),
-            SizedBox(
-              height: 5,
+            Visibility(
+              visible: option.items.isNotEmpty,
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SizedBox(width: 150),
+                      TextTranslator('${option.title}',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold)),
+                      SizedBox(width: 5),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                ],
+              ),
             ),
             for (ItemsOption itemsOption in option.items) ...[
               Container(
@@ -1081,8 +1089,8 @@ class _SummaryState extends State<Summary> {
                 ),
               ),
             ],
-            Divider(),
-          ]
+          ],
+          Divider(),
         ],
       ),
     );

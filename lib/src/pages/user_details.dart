@@ -252,6 +252,8 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                                 setState(() {
                                   deliveryDate = null;
                                   deliveryTime = null;
+                                  commandContext.deliveryDate = null;
+                                  commandContext.deliveryTime = null;
                                 });
                               },
                               child: ListTile(
@@ -405,7 +407,9 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
 
     AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
 
-    if (formState.validate() && deliveryDate != null && deliveryTime != null) {
+    print("$logTrace ${formState.validate()} $deliveryDate $deliveryTime");
+
+    if (formState.validate()) {
       setState(() {
         sendingCommand = true;
       });

@@ -328,6 +328,8 @@ class _ConfirmSmsState extends State<ConfirmSms> {
           totalPrice: totalPrice,
           totalPriceSansRemise: totalPriceSansRemise,
           customer: widget.customer,
+          shipAsSoonAsPossible: commandContext.deliveryDate == null &&
+              commandContext.deliveryTime == null,
           shippingTime: commandContext.deliveryDate
                   ?.add(
                     Duration(

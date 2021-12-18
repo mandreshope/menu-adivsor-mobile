@@ -73,7 +73,7 @@ class TextFormFieldTranslator extends StatelessWidget {
               keyboardType: keyboardType,
               textInputAction: textInputAction,
               obscureText: obscureText ?? false,
-              maxLines: maxLines,
+              maxLines: maxLines ?? 1,
               showCursor: showCursor,
               decoration: decoration.labelText != null
                   ? InputDecoration(

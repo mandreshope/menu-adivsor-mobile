@@ -187,6 +187,7 @@ class Food {
     return this.isMenu
         ? {
             "food": id,
+            "price": price.toJson(),
             if (optionSelected != null)
               "options": this.optionSelected.map((v) => v.toJson()).toList()
           }
@@ -1198,12 +1199,19 @@ class FoodSelectedFromCommandMenu {
   String id;
   List<Option> options;
   Food food;
+  Price price;
 
-  FoodSelectedFromCommandMenu({this.id, this.options, this.food});
+  FoodSelectedFromCommandMenu({
+    this.id,
+    this.options,
+    this.food,
+    this.price,
+  });
 
   factory FoodSelectedFromCommandMenu.fromJson(var json) =>
       FoodSelectedFromCommandMenu(
         id: json['_id'],
+        price: Price.fromJson(json['price']),
         food: json['food'] != null ? Food.fromJson(json['food']) : null,
         options: json['options'] == null
             ? []

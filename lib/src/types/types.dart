@@ -36,7 +36,7 @@ class Price {
 
   factory Price.fromJson(Map<String, dynamic> json) => Price(
         amount: json['amount'] ?? 0,
-        currency: json['currency'],
+        currency: json['currency'] ?? "eur",
       );
   Map<String, dynamic> toJson() => {
         'amount': amount,
