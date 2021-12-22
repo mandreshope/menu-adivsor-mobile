@@ -7,6 +7,7 @@ import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/pages/photo_view.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
 import 'package:menu_advisor/src/providers/OptionContext.dart';
+import 'package:menu_advisor/src/utils/price_formated.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
@@ -272,7 +273,7 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                             widget.menu.type == 'priceless'
                         ? Text("")
                         : Text(
-                            "${_.value.price.amount == 0 ? '' : _.value.price.amount / 100}${_.value.price.amount == 0 ? '' : "€"}",
+                            priceFormated(_.value.price.amount / 100),
                             style: TextStyle(
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold),
@@ -416,7 +417,7 @@ class _MenuItemFoodOptionState extends State<MenuItemFoodOption> {
                             widget.menu.type == 'priceless'
                         ? Text("")
                         : Text(
-                            "${_.value.price.amount == 0 ? '' : _.value.price.amount / 100}${_.value.price.amount == 0 ? '' : "€"}",
+                            priceFormated(_.value.price.amount / 100),
                             style: TextStyle(
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold),

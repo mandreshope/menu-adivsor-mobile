@@ -18,6 +18,7 @@ import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/extensions.dart';
+import 'package:menu_advisor/src/utils/price_formated.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
@@ -312,7 +313,9 @@ class _SummaryState extends State<Summary> {
                             Opacity(
                               opacity: 0.6,
                               child: Text(
-                                '${widget.commande?.deliveryPrice?.amount ?? 0} €',
+                                priceFormated(widget
+                                    .commande?.deliveryPrice?.amount
+                                    ?.toDouble()),
                                 style: TextStyle(
                                   fontSize: 16,
                                   color: CRIMSON,
@@ -786,7 +789,7 @@ class _SummaryState extends State<Summary> {
                           : Visibility(
                               visible: (item.price.amount / 100) != 0.0,
                               child: Text(
-                                "${(item.price.amount / 100)} €",
+                                priceFormated((item.price.amount / 100)),
                                 style: TextStyle(fontSize: 16),
                               ),
                             )
@@ -797,7 +800,7 @@ class _SummaryState extends State<Summary> {
                           : Visibility(
                               visible: (item.price.amount / 100) != 0.0,
                               child: Text(
-                                "${item.price.amount / 100} €",
+                                priceFormated(item.price.amount / 100),
                                 style: TextStyle(fontSize: 16),
                               ),
                             ),
@@ -890,7 +893,8 @@ class _SummaryState extends State<Summary> {
                                     visible:
                                         (itemsOption.price.amount / 100) != 0.0,
                                     child: TextTranslator(
-                                        '${itemsOption.price.amount / 100} €',
+                                        priceFormated(
+                                            itemsOption.price.amount / 100),
                                         style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.normal)),
@@ -997,7 +1001,7 @@ class _SummaryState extends State<Summary> {
                           : Visibility(
                               visible: (item.price.amount / 100) != 0.0,
                               child: Text(
-                                "${item.price.amount / 100} €",
+                                priceFormated(item.price.amount / 100),
                                 style: TextStyle(
                                   fontSize: 16,
                                 ),

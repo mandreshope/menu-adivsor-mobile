@@ -14,6 +14,7 @@ import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/button_item_count_widget.dart';
+import 'package:menu_advisor/src/utils/price_formated.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
@@ -488,7 +489,9 @@ class _DetailMenuState extends State<DetailMenu> {
                                             food?.price?.amount == null
                                                 ? Text("")
                                                 : Text(
-                                                    "${food.price.amount / 100} €",
+                                                    priceFormated(
+                                                        food.price.amount /
+                                                            100),
                                                     style: TextStyle(
                                                       fontWeight:
                                                           FontWeight.bold,
@@ -503,7 +506,9 @@ class _DetailMenuState extends State<DetailMenu> {
                                               food?.price?.amount == null
                                                   ? Text("")
                                                   : Text(
-                                                      "${food.price.amount / 100} €",
+                                                      priceFormated(
+                                                          food.price.amount /
+                                                              100),
                                                       style: TextStyle(
                                                         fontWeight:
                                                             FontWeight.bold,

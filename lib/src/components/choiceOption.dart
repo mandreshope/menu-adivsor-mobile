@@ -4,6 +4,7 @@ import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/constants/constant.dart';
 import 'package:menu_advisor/src/models/models.dart';
 import 'package:menu_advisor/src/providers/BagContext.dart';
+import 'package:menu_advisor/src/utils/price_formated.dart';
 import 'package:provider/provider.dart';
 
 class ChoiceOption extends StatelessWidget {
@@ -33,7 +34,8 @@ class ChoiceOption extends StatelessWidget {
                 children: [
                   itemsOption.isSelected
                       ? IconButton(
-                          icon: Icon(Icons.add_circle_outlined, color: Colors.grey, size: 25),
+                          icon: Icon(Icons.add_circle_outlined,
+                              color: Colors.grey, size: 25),
                           onPressed: () {
                             itemsOption.quantity = 1;
                             itemsOption.isSelected = !itemsOption.isSelected;
@@ -74,14 +76,17 @@ class ChoiceOption extends StatelessWidget {
                                 width: 2,
                               ),
                               IconButton(
-                                  icon: Icon(Icons.add_circle_outlined, color: CRIMSON, size: 35),
+                                  icon: Icon(Icons.add_circle_outlined,
+                                      color: CRIMSON, size: 35),
                                   onPressed: () {
                                     if (option.isMaxOptions) {
                                       itemsOption.quantity++;
                                       _cartContext.refresh();
                                     } else {
                                       print("$logTrace max options");
-                                      Fluttertoast.showToast(msg: "maximum selection ${option.title} : ${option.maxOptions}");
+                                      Fluttertoast.showToast(
+                                          msg:
+                                              "maximum selection ${option.title} : ${option.maxOptions}");
                                     }
                                   }),
                             ],
@@ -114,11 +119,14 @@ class ChoiceOption extends StatelessWidget {
                   ),
                   Container(
                     padding: EdgeInsets.all(5),
-                    child: !_cartContext.withPrice || itemsOption.price.amount == null
+                    child: !_cartContext.withPrice ||
+                            itemsOption.price.amount == null
                         ? Text("")
                         : Text(
-                            "${itemsOption.price.amount == 0 ? '' : itemsOption.price.amount / 100}${itemsOption.price.amount == 0 ? '' : "€"}",
-                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                            priceFormated(itemsOption.price.amount / 100),
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
                           ),
                   ),
                   Spacer(),

@@ -20,6 +20,7 @@ import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/button_item_count_widget.dart';
+import 'package:menu_advisor/src/utils/price_formated.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
@@ -288,7 +289,7 @@ class _FoodPageState extends State<FoodPage> {
                     child: !_cartContext.withPrice
                         ? Text("")
                         : Text(
-                            '${widget.food.price.amount / 100} €',
+                            priceFormated(widget.food.price.amount / 100),
                             style: TextStyle(
                                 fontSize: 20,
                                 color: Colors.black,
@@ -1428,7 +1429,7 @@ class _FoodPageState extends State<FoodPage> {
                         !_cartContext.withPrice || _.value.price.amount == null
                             ? Text("")
                             : Text(
-                                "${_.value.price.amount == 0 ? '' : _.value.price.amount / 100}${_.value.price.amount == 0 ? '' : "€"}",
+                                priceFormated(_.value.price.amount / 100),
                                 style: TextStyle(
                                     color: Colors.black,
                                     fontWeight: FontWeight.bold),
@@ -1589,7 +1590,7 @@ class _FoodPageState extends State<FoodPage> {
                   child: !_cartContext.withPrice || _.value.price.amount == null
                       ? Text("")
                       : Text(
-                          "${_.value.price.amount == 0 ? '' : _.value.price.amount / 100}${_.value.price.amount == 0 ? '' : "€"}",
+                          priceFormated(_.value.price.amount / 100),
                           style: TextStyle(
                               color: Colors.black, fontWeight: FontWeight.bold),
                         ),

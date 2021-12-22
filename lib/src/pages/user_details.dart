@@ -154,7 +154,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                   ),
                 ),
                 SizedBox(height: 10),
-                TextTranslator(
+                /*TextTranslator(
                   AppLocalizations.of(context)
                       .translate("mail_address_placeholder"),
                   style: TextStyle(
@@ -179,7 +179,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                   decoration: InputDecoration(
                     contentPadding: EdgeInsets.symmetric(horizontal: 10),
                   ),
-                ),
+                ),*/
                 if (commandContext.commandType == 'delivery') ...[
                   SizedBox(height: 10),
                   TextTranslator(

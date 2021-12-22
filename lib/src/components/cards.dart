@@ -20,6 +20,7 @@ import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/services/api.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/button_item_count_widget.dart';
+import 'package:menu_advisor/src/utils/price_formated.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
@@ -1140,7 +1141,7 @@ class _RestaurantFoodCardState extends State<RestaurantFoodCard> {
                           : Padding(
                               padding: const EdgeInsets.only(top: 10),
                               child: Text(
-                                '${widget.food.price.amount / 100}€',
+                                '${priceFormated(widget.food.price.amount / 100)}',
                                 style: TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.bold),
                               ),
@@ -1258,7 +1259,7 @@ class _DrinkCardState extends State<DrinkCard> {
                             Text(
                               !cartContext.withPrice
                                   ? ""
-                                  : '${widget.food.price.amount / 100}€',
+                                  : '${priceFormated(widget.food.price.amount / 100)}',
                               style: TextStyle(
                                 fontSize: 18,
                                 color: Colors.grey[600],
@@ -1371,7 +1372,7 @@ class MenuCard extends StatelessWidget {
                                 menu.type == MenuType.per_food.value ||
                                 menu.price?.amount == null
                             ? " "
-                            : "${menu.price.amount / 100 ?? ""}€",
+                            : '${priceFormated((menu.price.amount / 100))}',
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 20,
@@ -1801,7 +1802,7 @@ class _BagItemState extends State<BagItem> {
                                 ? ""
                                 : f.type == MenuType.per_food.value
                                     ? '${(f.totalPrice.toDouble() / f.quantity) / 100}€'
-                                    : '${f.price.amount / 100}€',
+                                    : priceFormated(f.price.amount / 100),
                             style: TextStyle(
                                 fontSize: 18,
                                 color: Colors.grey[600],
@@ -1812,7 +1813,7 @@ class _BagItemState extends State<BagItem> {
                                     (menu != null &&
                                         menu?.type == MenuType.priceless.value)
                                 ? ""
-                                : '${f.price.amount / 100}€',
+                                : priceFormated(f.price.amount / 100),
                             style: TextStyle(
                                 fontSize: 18,
                                 color: Colors.grey[600],
@@ -1955,7 +1956,7 @@ class _BagItemState extends State<BagItem> {
                           itemsOption.price?.amount == null
                               ? Text("")
                               : TextTranslator(
-                                  '${itemsOption.price.amount / 100} €',
+                                  priceFormated(itemsOption.price.amount / 100),
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.normal,

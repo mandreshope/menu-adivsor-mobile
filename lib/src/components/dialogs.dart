@@ -14,6 +14,7 @@ import 'package:menu_advisor/src/providers/SettingContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
 import 'package:menu_advisor/src/utils/AppLocalization.dart';
 import 'package:menu_advisor/src/utils/button_item_count_widget.dart';
+import 'package:menu_advisor/src/utils/price_formated.dart';
 import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
@@ -131,7 +132,8 @@ class BagModal extends StatelessWidget {
                   if (cartContext.itemCount == 0)
                     return Center(
                       child: TextTranslator(
-                        AppLocalizations.of(context).translate('no_item_in_cart'),
+                        AppLocalizations.of(context)
+                            .translate('no_item_in_cart'),
                       ),
                     );
 
@@ -201,7 +203,8 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
     super.initState();
 
     CartContext cartContext = Provider.of<CartContext>(context, listen: false);
-    if (cartContext.contains(widget.food)) itemCount = cartContext.getCount(widget.food);
+    if (cartContext.contains(widget.food))
+      itemCount = cartContext.getCount(widget.food);
     options = widget.food.options;
     // if (options.length > 0)
     //   optionSelected = options.first;
@@ -215,7 +218,8 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
         borderRadius: BorderRadius.circular(10),
       ),
       child: Consumer<CartContext>(builder: (_, cartContext, __) {
-        if (cartContext.contains(widget.food)) itemCount = cartContext.getCount(widget.food);
+        if (cartContext.contains(widget.food))
+          itemCount = cartContext.getCount(widget.food);
         return Container(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -228,7 +232,9 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
                   right: 25.0,
                 ),
                 child: TextTranslator(
-                  cartContext.contains(widget.food) ? AppLocalizations.of(context).translate('edit') : AppLocalizations.of(context).translate('add_to_cart'),
+                  cartContext.contains(widget.food)
+                      ? AppLocalizations.of(context).translate('edit')
+                      : AppLocalizations.of(context).translate('add_to_cart'),
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -249,14 +255,16 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 25.0),
                           child: TextTranslator(
-                            AppLocalizations.of(context).translate('item_count'),
+                            AppLocalizations.of(context)
+                                .translate('item_count'),
                           ),
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 25.0),
                           child: Row(
                             children: [
-                              ButtonItemCountWidget(widget.food, onAdded: (value) {
+                              ButtonItemCountWidget(widget.food,
+                                  onAdded: (value) {
                                 setState(() {
                                   itemCount = value;
                                 });
@@ -283,7 +291,9 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
                         ),
                       ),
                       child: TextTranslator(
-                        cartContext.contains(widget.food) ? AppLocalizations.of(context).translate('edit') : AppLocalizations.of(context).translate('add'),
+                        cartContext.contains(widget.food)
+                            ? AppLocalizations.of(context).translate('edit')
+                            : AppLocalizations.of(context).translate('add'),
                         style: TextStyle(
                           fontSize: 18,
                           color: Colors.white,
@@ -291,9 +301,11 @@ class _AddToBagDialogState extends State<AddToBagDialog> {
                         ),
                       ),
                       onPressed: () {
-                        if (widget.food.options.isNotEmpty && optionSelected == null) {
+                        if (widget.food.options.isNotEmpty &&
+                            optionSelected == null) {
                           Fluttertoast.showToast(
-                            msg: AppLocalizations.of(context).translate('choose_option'),
+                            msg: AppLocalizations.of(context)
+                                .translate('choose_option'),
                           );
                         } else {
                           /* if (cartContext.contains(widget.food))
@@ -352,12 +364,16 @@ class LanguageDialog extends StatelessWidget {
                           vertical: 0,
                         ),
                         decoration: BoxDecoration(
-                          color: lang == 'fr' ? Colors.grey[400].withOpacity(.4) : Colors.transparent,
+                          color: lang == 'fr'
+                              ? Colors.grey[400].withOpacity(.4)
+                              : Colors.transparent,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: IconButton(
-                          icon: SvgPicture.asset('assets/images/france-flag.svg'),
-                          onPressed: () => Navigator.of(context).pop<String>('fr'),
+                          icon:
+                              SvgPicture.asset('assets/images/france-flag.svg'),
+                          onPressed: () =>
+                              Navigator.of(context).pop<String>('fr'),
                         ),
                       ),
                       Container(
@@ -366,12 +382,15 @@ class LanguageDialog extends StatelessWidget {
                           vertical: 0,
                         ),
                         decoration: BoxDecoration(
-                          color: lang == 'en' ? Colors.grey[400].withOpacity(.4) : Colors.transparent,
+                          color: lang == 'en'
+                              ? Colors.grey[400].withOpacity(.4)
+                              : Colors.transparent,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: IconButton(
                           icon: SvgPicture.asset('assets/images/usa-flag.svg'),
-                          onPressed: () => Navigator.of(context).pop<String>('en'),
+                          onPressed: () =>
+                              Navigator.of(context).pop<String>('en'),
                         ),
                       ),
                     ],
@@ -517,7 +536,8 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                   onChanged: (val) {
                     distanceAround = (val * 100).round();
                     _slider1Value.value = val;
-                    Provider.of<SettingContext>(context, listen: false).range = distanceAround;
+                    Provider.of<SettingContext>(context, listen: false).range =
+                        distanceAround;
                     print("$distanceAround km");
                   },
                   onChangeEnd: (val) {},
@@ -532,7 +552,9 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
 
             if (!widget.fromCategory) ...[
               if (!widget.isDiscover) ...[
-                if (!widget.inRestaurant && !widget.fromRestaurantHome && !widget.fromMap) ...[
+                if (!widget.inRestaurant &&
+                    !widget.fromRestaurantHome &&
+                    !widget.fromMap) ...[
                   TextTranslator(
                     AppLocalizations.of(context).translate('search_type'),
                     style: TextStyle(
@@ -551,7 +573,9 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                           .map(
                             (e) => Theme(
                               data: ThemeData(
-                                brightness: type == e ? Brightness.dark : Brightness.light,
+                                brightness: type == e
+                                    ? Brightness.dark
+                                    : Brightness.light,
                                 cardColor: type == e ? CRIMSON : Colors.white,
                               ),
                               child: Card(
@@ -598,7 +622,9 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
               ],
               if (type == 'restaurant' || widget.fromMap || widget.inRestaurant)
                 TextTranslator(
-                  widget.inRestaurant ? 'Types' : AppLocalizations.of(context).translate('categories'),
+                  widget.inRestaurant
+                      ? 'Types'
+                      : AppLocalizations.of(context).translate('categories'),
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -617,8 +643,12 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                       if (widget.inRestaurant) ...[
                         Theme(
                           data: ThemeData(
-                            brightness: !filters.containsKey('type') ? Brightness.dark : Brightness.light,
-                            cardColor: !filters.containsKey('type') ? CRIMSON : Colors.white,
+                            brightness: !filters.containsKey('type')
+                                ? Brightness.dark
+                                : Brightness.light,
+                            cardColor: !filters.containsKey('type')
+                                ? CRIMSON
+                                : Colors.white,
                           ),
                           child: Card(
                             shape: RoundedRectangleBorder(
@@ -646,11 +676,20 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                                 .map(
                                   (e) => Theme(
                                     data: ThemeData(
-                                      brightness: filters.containsKey('type') && filters['type'] == e.name ? Brightness.dark : Brightness.light,
-                                      cardColor: filters.containsKey('type') && filters['type'] == e.name ? CRIMSON : Colors.white,
+                                      brightness: filters.containsKey('type') &&
+                                              filters['type'] == e.name
+                                          ? Brightness.dark
+                                          : Brightness.light,
+                                      cardColor: filters.containsKey('type') &&
+                                              filters['type'] == e.name
+                                          ? CRIMSON
+                                          : Colors.white,
                                     ),
                                     child: Card(
-                                      color: filters.containsKey('type') && filters['type'] == e.name ? CRIMSON : Colors.white,
+                                      color: filters.containsKey('type') &&
+                                              filters['type'] == e.name
+                                          ? CRIMSON
+                                          : Colors.white,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(50),
                                       ),
@@ -664,7 +703,8 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                                         child: Container(
                                           padding: const EdgeInsets.all(10),
                                           child: Row(
-                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
                                             children: [
                                               TextTranslator(
                                                 e.name,
@@ -683,11 +723,20 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                                 .map(
                                   (e) => Theme(
                                     data: ThemeData(
-                                      brightness: filters.containsKey('type') && filters['type'] == e.name ? Brightness.dark : Brightness.light,
-                                      cardColor: filters.containsKey('type') && filters['type'] == e.name ? CRIMSON : Colors.white,
+                                      brightness: filters.containsKey('type') &&
+                                              filters['type'] == e.name
+                                          ? Brightness.dark
+                                          : Brightness.light,
+                                      cardColor: filters.containsKey('type') &&
+                                              filters['type'] == e.name
+                                          ? CRIMSON
+                                          : Colors.white,
                                     ),
                                     child: Card(
-                                      color: filters.containsKey('type') && filters['type'] == e.name ? CRIMSON : Colors.white,
+                                      color: filters.containsKey('type') &&
+                                              filters['type'] == e.name
+                                          ? CRIMSON
+                                          : Colors.white,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(50),
                                       ),
@@ -701,7 +750,8 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                                         child: Container(
                                           padding: const EdgeInsets.all(10),
                                           child: Row(
-                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
                                             children: [
                                               TextTranslator(
                                                 e.name,
@@ -719,8 +769,12 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                         if (type != 'food')
                           Theme(
                             data: ThemeData(
-                              brightness: !filters.containsKey('category') ? Brightness.dark : Brightness.light,
-                              cardColor: !filters.containsKey('category') ? CRIMSON : Colors.white,
+                              brightness: !filters.containsKey('category')
+                                  ? Brightness.dark
+                                  : Brightness.light,
+                              cardColor: !filters.containsKey('category')
+                                  ? CRIMSON
+                                  : Colors.white,
                             ),
                             child: Card(
                               shape: RoundedRectangleBorder(
@@ -749,8 +803,11 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                             choiceBuilder: (_) {
                               return Theme(
                                 data: ThemeData(
-                                  brightness: _.selected ? Brightness.dark : Brightness.light,
-                                  cardColor: _.selected ? CRIMSON : Colors.white,
+                                  brightness: _.selected
+                                      ? Brightness.dark
+                                      : Brightness.light,
+                                  cardColor:
+                                      _.selected ? CRIMSON : Colors.white,
                                 ),
                                 child: Card(
                                   color: _.selected ? CRIMSON : Colors.white,
@@ -774,9 +831,12 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                             },
                             onChanged: (value) {
                               setState(() {
-                                _foodCategoriesSelected = value.cast<FoodCategory>();
+                                _foodCategoriesSelected =
+                                    value.cast<FoodCategory>();
                                 print(_foodCategoriesSelected.toString());
-                                filters['category'] = _foodCategoriesSelected.map<String>((e) => e.id).toList();
+                                filters['category'] = _foodCategoriesSelected
+                                    .map<String>((e) => e.id)
+                                    .toList();
                               });
                             },
                             choiceItems: C2Choice.listFrom(
@@ -809,8 +869,12 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                     children: [
                       Theme(
                         data: ThemeData(
-                          brightness: !filters.containsKey('attributes') ? Brightness.dark : Brightness.light,
-                          cardColor: !filters.containsKey('attributes') ? CRIMSON : Colors.white,
+                          brightness: !filters.containsKey('attributes')
+                              ? Brightness.dark
+                              : Brightness.light,
+                          cardColor: !filters.containsKey('attributes')
+                              ? CRIMSON
+                              : Colors.white,
                         ),
                         child: Card(
                           shape: RoundedRectangleBorder(
@@ -838,7 +902,9 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                         choiceBuilder: (_) {
                           return Theme(
                             data: ThemeData(
-                              brightness: _.selected ? Brightness.dark : Brightness.light,
+                              brightness: _.selected
+                                  ? Brightness.dark
+                                  : Brightness.light,
                               cardColor: _.selected ? CRIMSON : Colors.white,
                             ),
                             child: Card(
@@ -856,7 +922,8 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                                 child: Container(
                                   padding: const EdgeInsets.all(10),
                                   child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     children: [
                                       Image.network(
                                         _.value?.imageURL ?? "",
@@ -885,7 +952,9 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                           setState(() {
                             _foodAttributSelected = value.cast<FoodAttribute>();
                             print(_foodAttributSelected.toString());
-                            filters['attributes'] = _foodAttributSelected.map<String>((e) => e.sId).toList();
+                            filters['attributes'] = _foodAttributSelected
+                                .map<String>((e) => e.sId)
+                                .toList();
                           });
                         },
                         choiceItems: C2Choice.listFrom(
@@ -939,7 +1008,8 @@ class _SearchSettingDialogState extends State<SearchSettingDialog> {
                     'range': distanceAround,
                     "shedule": shedule,
                     "foodAttributSelected": _foodAttributSelected,
-                    "attributes": _foodAttributSelected.map((e) => e.sId).toList(),
+                    "attributes":
+                        _foodAttributSelected.map((e) => e.sId).toList(),
                   },
                 ),
                 child: TextTranslator(
@@ -1007,10 +1077,17 @@ class _OptionChoiceDialogState extends State<OptionChoiceDialog> {
                         children: [
                           TextTranslator(
                             "${option.title}",
-                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16),
                             textAlign: TextAlign.start,
                           ),
-                          TextTranslator("Choisissez-en jusqu'à ${option.maxOptions}", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                          TextTranslator(
+                              "Choisissez-en jusqu'à ${option.maxOptions}",
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold)),
                         ],
                       ),
                       Container(
@@ -1022,16 +1099,22 @@ class _OptionChoiceDialogState extends State<OptionChoiceDialog> {
                             onChanged: (value) {
                               // int diff =
                               setState(() {
-                                if (option.itemOptionSelected?.length == option.maxOptions) {
-                                  if (option.itemOptionSelected.length >= value.length) {
-                                    option.itemOptionSelected = value.cast<ItemsOption>();
+                                if (option.itemOptionSelected?.length ==
+                                    option.maxOptions) {
+                                  if (option.itemOptionSelected.length >=
+                                      value.length) {
+                                    option.itemOptionSelected =
+                                        value.cast<ItemsOption>();
                                     widget.food.optionSelected = options;
                                   } else {
                                     print("$logTrace max options");
-                                    Fluttertoast.showToast(msg: "maximum selection ${option.title} : ${option.maxOptions}");
+                                    Fluttertoast.showToast(
+                                        msg:
+                                            "maximum selection ${option.title} : ${option.maxOptions}");
                                   }
                                 } else {
-                                  option.itemOptionSelected = value.cast<ItemsOption>();
+                                  option.itemOptionSelected =
+                                      value.cast<ItemsOption>();
                                   widget.food.optionSelected = options;
                                 }
                               });
@@ -1052,8 +1135,10 @@ class _OptionChoiceDialogState extends State<OptionChoiceDialog> {
                                     child: !_cartContext.withPrice
                                         ? Text("")
                                         : Text(
-                                            "${_.value.price == 0 ? '' : _.value.price / 100}${_.value.price == 0 ? '' : "€"}",
-                                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                                            priceFormated(_.value.price / 100),
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.bold),
                                           ),
                                   )
                                 ],
@@ -1119,7 +1204,8 @@ class MessageDialog extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       child: Container(
-        decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10))),
+        decoration:
+            BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10))),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -1131,7 +1217,12 @@ class MessageDialog extends StatelessWidget {
               height: 50,
               width: double.infinity,
               child: Center(
-                child: TextTranslator("Message", textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
+                child: TextTranslator("Message",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20)),
               ),
             ),
             Container(
@@ -1142,7 +1233,8 @@ class MessageDialog extends StatelessWidget {
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
                 showCursor: true,
-                decoration: InputDecoration(border: InputBorder.none, hintText: "Votre message..."),
+                decoration: InputDecoration(
+                    border: InputBorder.none, hintText: "Votre message..."),
               ),
             ),
             InkWell(
@@ -1152,11 +1244,17 @@ class MessageDialog extends StatelessWidget {
               child: Container(
                 height: 50,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.vertical(bottom: Radius.circular(10)),
+                  borderRadius:
+                      BorderRadius.vertical(bottom: Radius.circular(10)),
                   color: TEAL,
                 ),
                 child: Center(
-                  child: TextTranslator("Envoyer", textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
+                  child: TextTranslator("Envoyer",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20)),
                 ),
               ),
             )
@@ -1179,7 +1277,8 @@ class SheduleDialog extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       child: Container(
-        decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10))),
+        decoration:
+            BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10))),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -1191,7 +1290,12 @@ class SheduleDialog extends StatelessWidget {
               height: 50,
               width: double.infinity,
               child: Center(
-                child: TextTranslator("Horaire", textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
+                child: TextTranslator("Horaire",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20)),
               ),
             ),
             Container(
@@ -1207,13 +1311,20 @@ class SheduleDialog extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            TextTranslator("${op.day}", style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.normal)),
+                            TextTranslator("${op.day}",
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.normal)),
                             Column(
                               children: [
                                 ...op.openings.map((e) {
                                   return TextTranslator(
                                     "${e.begin.hour.toString()?.padLeft(2, '0')} : ${e.begin.minute.toString()?.padLeft(2, '0')}  -  ${e.end.hour.toString()?.padLeft(2, '0')} : ${e.end.minute.toString()?.padLeft(2, '0')}",
-                                    style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.normal),
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.normal),
                                   );
                                 }).toList()
                               ],
@@ -1232,11 +1343,17 @@ class SheduleDialog extends StatelessWidget {
               child: Container(
                 height: 50,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.vertical(bottom: Radius.circular(10)),
+                  borderRadius:
+                      BorderRadius.vertical(bottom: Radius.circular(10)),
                   color: TEAL,
                 ),
                 child: Center(
-                  child: TextTranslator("Fermer", textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
+                  child: TextTranslator("Fermer",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20)),
                 ),
               ),
             )
@@ -1378,7 +1495,9 @@ class _AtributesDialogState extends State<AtributesDialog> {
                         TextTranslator(att.locales),
                         Spacer(),
                         Checkbox(
-                          value: dataContext.isAllAttribute ? false : att.isChecked,
+                          value: dataContext.isAllAttribute
+                              ? false
+                              : att.isChecked,
                           onChanged: (value) {
                             setState(() {
                               att.isChecked = value;
@@ -1407,10 +1526,13 @@ class _AtributesDialogState extends State<AtributesDialog> {
                   );
                 }),
           ),
-          if (attributes.where((element) => !element.tag.contains("allergen")).isNotEmpty) ...[
+          if (attributes
+              .where((element) => !element.tag.contains("allergen"))
+              .isNotEmpty) ...[
             Padding(
               padding: EdgeInsets.only(left: 35),
-              child: TextTranslator("Afficher : ", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+              child: TextTranslator("Afficher : ",
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
             ),
             Divider(),
             Expanded(
@@ -1459,7 +1581,9 @@ class _AtributesDialogState extends State<AtributesDialog> {
                           TextTranslator(att.locales),
                           Spacer(),
                           Checkbox(
-                            value: dataContext.isAllAttribute ? false : att.isChecked,
+                            value: dataContext.isAllAttribute
+                                ? false
+                                : att.isChecked,
                             onChanged: (value) {
                               setState(() {
                                 att.isChecked = value;
@@ -1492,7 +1616,8 @@ class _AtributesDialogState extends State<AtributesDialog> {
           InkWell(
             onTap: () {
               List<FoodAttribute> selectedAttributes = [];
-              selectedAttributes = attributes.where((element) => element.isChecked).toList();
+              selectedAttributes =
+                  attributes.where((element) => element.isChecked).toList();
               Navigator.of(context).pop(selectedAttributes);
             },
             child: Container(
@@ -1519,7 +1644,8 @@ class _AtributesDialogState extends State<AtributesDialog> {
   }
 }
 
-showDialogProgress(BuildContext context, {bool barrierDismissible = true, String msg}) {
+showDialogProgress(BuildContext context,
+    {bool barrierDismissible = true, String msg}) {
   showDialog(
       barrierDismissible: barrierDismissible,
       context: context,
