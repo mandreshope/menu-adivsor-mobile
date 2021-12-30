@@ -29,16 +29,20 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: SafeArea(
-        child: Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              fit: BoxFit.cover,
-              image: AssetImage("assets/images/login-background.png"),
-            ),
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+      ),
+      body: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            fit: BoxFit.cover,
+            image: AssetImage("assets/images/login-background.png"),
           ),
+        ),
+        child: SafeArea(
           child: Form(
             key: _formKey,
             autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -198,6 +202,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         );
       } catch (error) {
         print(error);
+        if (error is Map) {
+          Fluttertoast.showToast(
+            msg: error["message"],
+            backgroundColor: CRIMSON,
+            textColor: Colors.white,
+          );
+        }
         Fluttertoast.showToast(
           msg: error,
           backgroundColor: CRIMSON,

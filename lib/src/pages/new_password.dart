@@ -29,7 +29,8 @@ class NewPasswordPage extends StatefulWidget {
 class _NewPasswordPageState extends State<NewPasswordPage> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _codeController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   final FocusNode _passwordFocus = FocusNode();
   final FocusNode _codeFocus = FocusNode();
@@ -42,15 +43,20 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              fit: BoxFit.cover,
-              image: AssetImage("assets/images/login-background.png"),
-            ),
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+      ),
+      body: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            fit: BoxFit.cover,
+            image: AssetImage("assets/images/login-background.png"),
           ),
+        ),
+        child: SafeArea(
           child: Form(
             key: _formKey,
             autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -79,7 +85,9 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         TextTranslator(
-                          AppLocalizations.of(context).translate("enter_code_sms").replaceFirst('*', widget.email),
+                          AppLocalizations.of(context)
+                              .translate("enter_code_sms")
+                              .replaceFirst('*', widget.email),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
@@ -95,13 +103,15 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
                             FocusScope.of(context).requestFocus(_passwordFocus);
                           },
                           decoration: InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                            contentPadding:
+                                EdgeInsets.symmetric(horizontal: 10),
                           ),
                           validator: Validators.required(context),
                         ),
                         SizedBox(height: 5),
                         TextTranslator(
-                          AppLocalizations.of(context).translate("new_password"),
+                          AppLocalizations.of(context)
+                              .translate("new_password"),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
@@ -115,17 +125,20 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
                           keyboardType: TextInputType.text,
                           onFieldSubmitted: (_) {
                             _passwordFocus.unfocus();
-                            FocusScope.of(context).requestFocus(_confirmPasswordFocus);
+                            FocusScope.of(context)
+                                .requestFocus(_confirmPasswordFocus);
                           },
                           decoration: InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                            contentPadding:
+                                EdgeInsets.symmetric(horizontal: 10),
                           ),
                           validator: Validators.required(context),
                           labelText: "",
                         ),
                         SizedBox(height: 10),
                         TextTranslator(
-                          AppLocalizations.of(context).translate("confirm_password_placeholder"),
+                          AppLocalizations.of(context)
+                              .translate("confirm_password_placeholder"),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
@@ -142,7 +155,8 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
                             _submitForm();
                           },
                           decoration: InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                            contentPadding:
+                                EdgeInsets.symmetric(horizontal: 10),
                           ),
                           validator: Validators.required(context),
                           labelText: "",
@@ -176,7 +190,8 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
                                   ),
                                 )
                               : TextTranslator(
-                                  AppLocalizations.of(context).translate("confirm"),
+                                  AppLocalizations.of(context)
+                                      .translate("confirm"),
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 20,
@@ -218,11 +233,13 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
           loading = false;
         });
         return Fluttertoast.showToast(
-          msg: AppLocalizations.of(context).translate('password_does_not_match'),
+          msg:
+              AppLocalizations.of(context).translate('password_does_not_match'),
         );
       }
 
-      AuthContext authContext = Provider.of<AuthContext>(context, listen: false);
+      AuthContext authContext =
+          Provider.of<AuthContext>(context, listen: false);
 
       try {
         setState(() {

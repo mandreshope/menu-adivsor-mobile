@@ -24,6 +24,7 @@ import 'package:menu_advisor/src/utils/routing.dart';
 import 'package:menu_advisor/src/utils/textTranslator.dart';
 import 'package:provider/provider.dart';
 import 'package:menu_advisor/src/utils/extensions.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -38,6 +39,16 @@ class _LoginPageState extends State<LoginPage> {
 
   bool loading = false;
   bool isPasswordRemember = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    SharedPreferences.getInstance().then((sharedPrefs) {
+      _emailController.text = sharedPrefs.getString('phoneNumber');
+      _passwordController.text = sharedPrefs.getString('password');
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

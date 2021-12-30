@@ -546,7 +546,12 @@ class _DetailMenuState extends State<DetailMenu> {
                                                     !food.expandableController
                                                         .expanded;
                                               });
-                                              if (menuFood.isMaxOptions) {
+                                              if (menuFood.maxOptions == 1) {
+                                                menuFood.foods.forEach((f) {
+                                                  f.isSelected = false;
+                                                });
+                                                food.isSelected =
+                                                    !food.isSelected;
                                                 widget.menu.setFoodMenuSelected(
                                                   menuFood.sId,
                                                   food,
@@ -559,13 +564,30 @@ class _DetailMenuState extends State<DetailMenu> {
                                                   () => menuContext.refresh(),
                                                 );
                                               } else {
-                                                food.isSelected = false;
-                                                menuContext.refresh();
-                                                print("$logTrace max options");
-                                                Fluttertoast.showToast(
-                                                    msg:
-                                                        "maximum selection ${menuFood.title} : ${menuFood.maxOptions}");
+                                                if (menuFood.isMaxOptions) {
+                                                  widget.menu
+                                                      .setFoodMenuSelected(
+                                                    menuFood.sId,
+                                                    food,
+                                                    menuFood.foods,
+                                                  );
+                                                  widget.menu.select(
+                                                    _cartContext,
+                                                    menuFood.sId,
+                                                    food,
+                                                    () => menuContext.refresh(),
+                                                  );
+                                                } else {
+                                                  food.isSelected = false;
+                                                  menuContext.refresh();
+                                                  print(
+                                                      "$logTrace max options");
+                                                  Fluttertoast.showToast(
+                                                      msg:
+                                                          "maximum selection ${menuFood.title} : ${menuFood.maxOptions}");
+                                                }
                                               }
+
                                               if (!food.expandableController
                                                   .expanded) {
                                                 food?.optionSelected

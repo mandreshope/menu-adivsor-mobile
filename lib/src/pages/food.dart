@@ -1662,6 +1662,7 @@ class _FoodPageState extends State<FoodPage> {
                                   icon: Icon(Icons.add_circle_outlined,
                                       color: CRIMSON, size: 25),
                                   onPressed: () {
+                                    print("$logTrace add");
                                     // if (_optionContext.quantityOptions == option.maxOptions){
                                     if (this.isAdded) return;
                                     if (option.isMaxOptions) {
