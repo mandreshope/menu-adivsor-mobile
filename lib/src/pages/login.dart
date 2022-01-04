@@ -37,6 +37,8 @@ class _LoginPageState extends State<LoginPage> {
   final FocusNode _emailFocus = FocusNode();
   final FocusNode _passwordFocus = FocusNode();
 
+  PhoneNumber phoneNumber = phoneInitialCountryCode;
+
   bool loading = false;
   bool isPasswordRemember = false;
 
@@ -46,6 +48,14 @@ class _LoginPageState extends State<LoginPage> {
 
     SharedPreferences.getInstance().then((sharedPrefs) {
       _emailController.text = sharedPrefs.getString('phoneNumber');
+      PhoneNumber.getRegionInfoFromPhoneNumber(_emailController.text)
+          .then((value) async {
+        phoneNumber = value;
+        final parsedPhone =
+            (await PhoneNumber.getParsableNumber(value)).replaceAll(" ", "");
+        _emailController.text = parsedPhone;
+        setState(() {});
+      });
       _passwordController.text = sharedPrefs.getString('password');
     });
   }
@@ -181,7 +191,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         PhoneField(
                           focusNode: _emailFocus,
-                          initialValue: phoneInitialCountryCode,
+                          initialValue: phoneNumber,
                           onInputChanged: (PhoneNumber number) {
                             print(number.phoneNumber);
                             _emailController.text = number.phoneNumber;

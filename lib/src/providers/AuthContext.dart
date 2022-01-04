@@ -139,7 +139,7 @@ class AuthContext extends ChangeNotifier {
         code: code,
       );
 
-  Future<bool> confirmResetPassword({
+  Future confirmResetPassword({
     String token,
     int code,
     String password,

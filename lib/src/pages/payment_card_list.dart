@@ -182,7 +182,7 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                   isPaying = true;
                 });
                 try {
-                  int totalPrice = 0;
+                  int totalPrice = cartContext.totalPrice.round();
                   int totalDiscount = 0;
                   int totalPriceSansRemise =
                       (cartContext.totalPrice * 100).round();

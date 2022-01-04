@@ -1695,6 +1695,8 @@ class Blog {
   String description;
   String url;
   String urlMobile;
+  String imageMobile;
+  String imageWeb;
   String imageURL;
   String postedAt;
   String updatedAt;
@@ -1709,6 +1711,8 @@ class Blog {
     this.imageURL,
     this.postedAt,
     this.updatedAt,
+    this.imageMobile,
+    this.imageWeb,
     this.iV,
   });
 
@@ -1719,6 +1723,8 @@ class Blog {
     url = json['url'];
     urlMobile = json['urlMobile'];
     imageURL = json['imageURL'];
+    imageMobile = json['imageMobile'];
+    imageWeb = json['imageWeb'];
     postedAt = json['postedAt'];
     updatedAt = json['updatedAt'];
     iV = json['__v'];
@@ -1732,6 +1738,8 @@ class Blog {
     data['url'] = this.url;
     data['urlMobile'] = this.urlMobile;
     data['imageURL'] = this.imageURL;
+    data['imageMobile'] = this.imageMobile;
+    data['imageWeb'] = this.imageWeb;
     data['postedAt'] = this.postedAt;
     data['updatedAt'] = this.updatedAt;
     data['__v'] = this.iV;

@@ -73,7 +73,7 @@ class ChoosePayement extends StatelessWidget {
               AuthContext authContext =
                   Provider.of<AuthContext>(context, listen: false);
 
-              int totalPrice = 0;
+              int totalPrice = cartContext.totalPrice.round();
               int totalDiscount = 0;
               int totalPriceSansRemise = (cartContext.totalPrice * 100).round();
               int priceLivraison = 0;
@@ -119,6 +119,7 @@ class ChoosePayement extends StatelessWidget {
                             totalPrice: remiseWithCodeDiscount.toDouble(),
                           )
                           .round();
+                      totalPrice = remiseWithCodeDiscount.round();
                     }
                     if (restaurant?.discountDelivery == true) {
                       if (restaurant?.discount?.delivery?.discountType ==
@@ -178,6 +179,8 @@ class ChoosePayement extends StatelessWidget {
                             )
                             .round();
                       }
+                    } else {
+                      totalPrice = totalPrice + priceLivraison;
                     }
                   }
                 }

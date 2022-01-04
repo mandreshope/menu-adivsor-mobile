@@ -35,7 +35,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   String parsedPhone = "";
-  PhoneNumber phoneNumber = PhoneNumber(isoCode: "FR");
+  PhoneNumber phoneNumber = phoneInitialCountryCode;
 
   final FocusNode _displayNameFocus = FocusNode();
   final FocusNode _phoneNumberFocus = FocusNode();

@@ -677,7 +677,7 @@ class _OrderPageState extends State<OrderPage> {
               sendingCommand = true;
             });
 
-            int totalPrice = 0;
+            int totalPrice = cartContext.totalPrice.round();
             int totalPriceSansRemise = (cartContext.totalPrice * 100).round();
             double remiseWithCodeDiscount = cartContext.totalPrice;
             int discountCode =
@@ -817,7 +817,7 @@ class _OrderPageState extends State<OrderPage> {
           routeName: userDetailsRoute,
           arguments: _restaurant);
     } else if (commandContext.commandType == 'on_site') {
-      int totalPrice = 0;
+      int totalPrice = cartContext.totalPrice.round();
       double remiseWithCodeDiscount = cartContext.totalPrice;
       int totalPriceSansRemise = (cartContext.totalPrice * 100).round();
       int discountCode = 0; // prix en euro an'le code promo, default value : 0

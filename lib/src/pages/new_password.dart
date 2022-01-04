@@ -253,7 +253,7 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
         setState(() {
           loading = false;
         });
-        if (result) {
+        if (result != null) {
           Fluttertoast.showToast(
             msg: AppLocalizations.of(context).translate('success'),
           );

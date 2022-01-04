@@ -2096,7 +2096,7 @@ class BlogCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(5),
                     ),
                     child: FadeInImage.assetNetwork(
-                      image: blog?.imageURL ?? "",
+                      image: blog?.imageMobile ?? "",
                       placeholder: 'assets/images/loading.gif',
                       fit: BoxFit.contain,
                       imageErrorBuilder: (_, __, ___) => PlaceholderBackground(

@@ -622,9 +622,12 @@ class Api {
       'code': code.toString(),
       'password': password,
     }).then<bool>((response) {
-      if (response.statusCode == 200) return true;
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data;
+      }
 
-      return false;
+      return null;
     });
   }
 

@@ -605,9 +605,10 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                     }
 
                     ///delivery process - init all params
-                    int totalPrice = 0;
+                    int totalPrice = (cartContext.totalPrice).round();
                     int totalPriceSansRemise =
                         (cartContext.totalPrice * 100).round();
+                    double remiseWithCodeDiscount = cartContext.totalPrice;
                     int priceLivraison = 0;
                     final priceLivraisonSansRemise = commandContext
                         .getDeliveryPriceByMiles(widget.restaurant)
@@ -636,8 +637,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                           priceLivraison = commandContext
                               .getDeliveryPriceByMiles(widget.restaurant)
                               .round();
-                          double remiseWithCodeDiscount =
-                              cartContext.totalPrice;
+
                           if (commandContext.withCodeDiscount != null) {
                             remiseWithCodeDiscount = cartContext.calculremise(
                               totalPrice: cartContext.totalPrice,
@@ -657,6 +657,7 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                   totalPrice: remiseWithCodeDiscount.toDouble(),
                                 )
                                 .round();
+                            totalPrice = remiseWithCodeDiscount.round();
                           }
 
                           if (widget.restaurant?.discountDelivery == true) {
@@ -715,6 +716,8 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                                       discountValue: remise)
                                   .round();
                             }
+                          } else {
+                            totalPrice = totalPrice + priceLivraison;
                           }
                         }
                       }
