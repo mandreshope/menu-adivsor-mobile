@@ -609,7 +609,7 @@ class Api {
     });
   }
 
-  Future<bool> confirmResetPassword({
+  Future<dynamic> confirmResetPassword({
     String token,
     int code,
     String password,
@@ -621,11 +621,12 @@ class Api {
       'token': token,
       'code': code.toString(),
       'password': password,
-    }).then<bool>((response) {
+    }).then<dynamic>((response) {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        return data;
+        return data["user"];
       }
+      // return {"phoneNumber": "+261344569100", "password": "123456789"};
 
       return null;
     });

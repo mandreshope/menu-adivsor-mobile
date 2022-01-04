@@ -3,6 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:menu_advisor/src/components/inputs.dart';
 import 'package:menu_advisor/src/constants/colors.dart';
 import 'package:menu_advisor/src/constants/validators.dart';
+import 'package:menu_advisor/src/pages/home.dart';
 import 'package:menu_advisor/src/pages/login.dart';
 import 'package:menu_advisor/src/providers/AuthContext.dart';
 import 'package:menu_advisor/src/routes/routes.dart';
@@ -254,13 +255,11 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
           loading = false;
         });
         if (result != null) {
-          Fluttertoast.showToast(
-            msg: AppLocalizations.of(context).translate('success'),
-          );
+          await authContext.login(result["phoneNumber"], result["password"]);
           RouteUtil.goTo(
             context: context,
-            child: LoginPage(),
-            routeName: loginRoute,
+            child: HomePage(),
+            routeName: homeRoute,
             method: RoutingMethod.atTop,
           );
         } else {
