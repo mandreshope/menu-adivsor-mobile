@@ -158,9 +158,11 @@ class _FoodPageState extends State<FoodPage> {
     this.isAdded = false;
     singleItemOptionSelected = null;
 
-    if (options.isEmpty) {
+    if (options.isEmpty ||
+        _cartContext.allOptionIsNotObligatory(foodAdded?.options) == true) {
       itemCount = 1;
       foodAdded.quantity = 1;
+      setState(() {});
     }
     if (foodAdded.optionSelected == null) isContains = true;
   }
