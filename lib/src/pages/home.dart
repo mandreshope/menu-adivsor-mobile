@@ -120,7 +120,7 @@ class _HomePageState extends State<HomePage> {
     _firebaseMessaging.requestPermission();
 
     _firebaseMessaging.getToken().then((token) async {
-      debugPrint('tokenFCM.... $token');
+      debugPrint('$logTrace tokenFCM.... $token');
       final sharedPrefs = await SharedPreferences.getInstance();
       await sharedPrefs.setString(kTokenFCM, token);
     });

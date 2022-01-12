@@ -746,10 +746,10 @@ class _OrderPageState extends State<OrderPage> {
             );
             Command cm = Command.fromJson(command);
 
-            for (var tokenNavigator in cm.tokenNavigator) {
+            /*for (var tokenNavigator in cm.tokenNavigator) {
               await sendPushMessage(tokenNavigator,
                   message: "Vous avez un commande ${cm.commandType}");
-            }
+            }*/
 
             cartContext.clear();
             commandContext.clear();
@@ -890,10 +890,10 @@ class _OrderPageState extends State<OrderPage> {
         );
         Command cm = Command.fromJson(command);
 
-        for (var tokenNavigator in cm.tokenNavigator) {
+        /*for (var tokenNavigator in cm.tokenNavigator) {
           await sendPushMessage(tokenNavigator,
               message: "Vous avez un commande ${cm.commandType}");
-        }
+        }*/
 
         cartContext.clear();
         commandContext.clear();

@@ -8,39 +8,39 @@ class DefaultFirebaseConfig {
     if (kIsWeb) {
       // Web
       return const FirebaseOptions(
-        apiKey: "AIzaSyBt5xCXINLzU4B2r9C9KdISVlqNeLnbMH8",
-        authDomain: "menuadvisor-f06d2.firebaseapp.com",
-        databaseURL: "https://menuadvisor-f06d2.firebaseio.com",
-        projectId: "menuadvisor-f06d2",
-        storageBucket: "menuadvisor-f06d2.appspot.com",
-        messagingSenderId: "886054910744",
-        appId: "1:886054910744:web:78aa961c8e157fec3e7c6d",
-        measurementId: "G-FB5SQB4ZFY",
+        apiKey: "AIzaSyAdrpwqbREnk2raUqm9YGDtMD_qf2oZt8k",
+        authDomain: "advisor-b7d65.firebaseapp.com",
+        databaseURL: "https://advisor-b7d65-default-rtdb.firebaseio.com",
+        projectId: "advisor-b7d65",
+        storageBucket: "advisor-b7d65.appspot.com",
+        messagingSenderId: "1042310334359",
+        appId: "1:1042310334359:web:063c67719a4eb1a15c26d2",
+        measurementId: "G-NTZE8BX507",
       );
     } else if (Platform.isIOS || Platform.isMacOS) {
       // iOS and MacOS
       return const FirebaseOptions(
-        apiKey: 'AIzaSyB87DZ_x_5plS_no0vkbL3vRejuVcxHSOU',
-        appId: '1:886054910744:ios:de31fe210985ca423e7c6d',
-        messagingSenderId: '886054910744',
-        projectId: "menuadvisor-f06d2",
-        authDomain: "menuadvisor-f06d2.firebaseapp.com",
+        apiKey: 'AIzaSyDaFS2A0WvRobRJc3vraRj1AHf_Yr79W5g',
+        appId: '1:1042310334359:ios:7bcebc5bd1fd28b95c26d2',
+        messagingSenderId: '1042310334359',
+        projectId: "advisor-b7d65",
+        authDomain: "advisor-b7d65.firebaseapp.com",
         iosBundleId: "com.pdu.menuadvisor.menuadvisor",
         iosClientId:
-            '886054910744-al0frcjdpub5b52jut2c7utskiqa6kbl.apps.googleusercontent.com',
-        databaseURL: "https://menuadvisor-f06d2.firebaseio.com",
+            '1042310334359-7qjd5plkpfl0csbv78877dlr6uq6mu76.apps.googleusercontent.com',
+        databaseURL: "https://advisor-b7d65-default-rtdb.firebaseio.com",
       );
     } else {
       // Android
       return const FirebaseOptions(
-        apiKey: 'AIzaSyB87DZ_x_5plS_no0vkbL3vRejuVcxHSOU',
-        appId: "1:886054910744:android:6dc71859d5cb6a333e7c6d",
-        messagingSenderId: '886054910744',
-        projectId: "menuadvisor-f06d2",
-        authDomain: "menuadvisor-f06d2.firebaseapp.com",
+        apiKey: 'AIzaSyAjjiR1_zNCHiCJz9UDUSNmQq2ijYzo6TY',
+        appId: "1:1042310334359:android:50ebdfdc354cbbb05c26d2",
+        messagingSenderId: '1042310334359',
+        projectId: "advisor-b7d65",
+        authDomain: "advisor-b7d65.firebaseapp.com",
         androidClientId:
-            '886054910744-af3dn3tvo67dc1v7jc9b1ilkbi7ev616.apps.googleusercontent.com',
-        databaseURL: "https://menuadvisor-f06d2.firebaseio.com",
+            '1042310334359-do63m7jlmifglqnciq6qpv89i0kunl1a.apps.googleusercontent.com',
+        databaseURL: "https://advisor-b7d65-default-rtdb.firebaseio.com",
       );
     }
   }

@@ -256,10 +256,10 @@ class ChoosePayement extends StatelessWidget {
               cm.codeDiscount = commandContext.withCodeDiscount;
               cm.withCodeDiscount = commandContext.withCodeDiscount != null;
 
-              for (var tokenNavigator in cm.tokenNavigator) {
+              /*for (var tokenNavigator in cm.tokenNavigator) {
                 await sendPushMessage(tokenNavigator,
                     message: "Vous avez un commande ${cm.commandType}");
-              }
+              }*/
 
               commandContext.clear();
               cartContext.clear();

@@ -384,10 +384,10 @@ class _PaymentCardListPageState extends State<PaymentCardListPage> {
                     ///TODO: SEND PUSH NOTIFICATION
                     /*  await sendPushMessage(tokenFCM,
                         message: "Votre commande est livré");*/
-                    for (var tokenNavigator in cm.tokenNavigator) {
+                    /*for (var tokenNavigator in cm.tokenNavigator) {
                       await sendPushMessage(tokenNavigator,
                           message: "Vous avez un commande ${cm.commandType}");
-                    }
+                    }*/
 
                     Api.instance.setCommandToPayedStatus(
                       true,
