@@ -546,6 +546,8 @@ class _DeliveryDetailsPageState extends State<DeliveryDetailsPage> {
                   ),
                 ),
                 onPressed: () async {
+                  print(_restaurant);
+                  print("$logTrace");
                   if (!_restaurant.isOpenByDate(deliveryDate, deliveryTime)) {
                     print('fermé');
                     Fluttertoast.showToast(msg: 'Le restaurant est fermé');

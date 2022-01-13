@@ -497,7 +497,7 @@ class Restaurant {
   final String customerSectretStripeKey;
   final String createdAt;
   final String distanceMax;
-  double get distanceMaxDouble => double.tryParse(distanceMax) ?? 0.0;
+  double get distanceMaxDouble => double.tryParse(distanceMax ?? "0.0") ?? 0.0;
 
   DateTime get creatAtDateTime => DateTime.tryParse(createdAt);
   final String updatedAt;
@@ -811,6 +811,8 @@ class Restaurant {
     }
 
     this.openingTimes.forEach((element) {
+      print(
+          "${element.day.toLowerCase()} / ${dateNow.weekDayToString.toLowerCase()} ");
       if (element.day.toLowerCase() == dateNow.weekDayToString.toLowerCase()) {
         //AM
         int hourAM = element.openings[0].begin.hour;

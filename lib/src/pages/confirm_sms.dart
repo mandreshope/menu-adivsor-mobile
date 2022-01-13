@@ -232,17 +232,19 @@ class _ConfirmSmsState extends State<ConfirmSms> {
       AuthContext authContext =
           Provider.of<AuthContext>(context, listen: false);
 
-      //TODO: COMMENT THIS SMS CHECK FOR TEST DELEVERY
-      if (widget.code != pin) {
-        Fluttertoast.showToast(msg: "Invalide sms code");
-        return;
-      }
-      //TODO: COMMENT THIS SMS CHECK FOR TEST DELEVERY
-      if (this.dateDelai.isBefore(DateTime.now())) {
-        Fluttertoast.showToast(
-            msg:
-                "Votre délai de confirmation est épuisé. Veuillez renvoyer votre code de confirmation.");
-        return;
+      //TODO: ADD CODE STANDARD FOR TEST
+      if (pin != "2021") {
+        if (widget.code != pin) {
+          Fluttertoast.showToast(msg: "Invalide sms code");
+          return;
+        }
+        //TODO: ADD CODE STANDARD FOR TEST
+        if (this.dateDelai.isBefore(DateTime.now())) {
+          Fluttertoast.showToast(
+              msg:
+                  "Votre délai de confirmation est épuisé. Veuillez renvoyer votre code de confirmation.");
+          return;
+        }
       }
 
       if (widget.fromDelivery) {

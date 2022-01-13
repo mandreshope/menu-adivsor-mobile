@@ -651,86 +651,83 @@ class _SummaryState extends State<Summary> {
             ],
           ),
           Spacer(),
-          widget.fromHistory
-              ? Stack(
-                  children: [
-                    CircleButton(
-                      backgroundColor: CRIMSON,
-                      onPressed: () {
-                        showDialog<String>(
-                            context: context,
-                            builder: (_) => MessageDialog(
-                                  message: message,
-                                )).then((value) async {
-                          print(value);
-                          //widget.food.message = value;
+          Stack(
+            children: [
+              CircleButton(
+                backgroundColor: CRIMSON,
+                onPressed: () {
+                  showDialog<String>(
+                      context: context,
+                      builder: (_) => MessageDialog(
+                            message: message,
+                          )).then((value) async {
+                    print(value);
+                    //widget.food.message = value;
 
-                          if (value.isNotEmpty) {
-                            User user = Provider.of<AuthContext>(
-                              context,
-                              listen: false,
-                            ).currentUser;
-                            Message message = Message(
-                                email: user.email,
-                                message: value,
-                                name: "${user.name.first} ${user.name.last}",
-                                phoneNumber: user.phoneNumber,
-                                read: false,
-                                target: widget.commande.restaurant.admin);
-                            showDialog(
-                                barrierDismissible: false,
-                                context: context,
-                                builder: (_) => Center(
-                                      child: CircularProgressIndicator(
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                          CRIMSON,
-                                        ),
-                                      ),
-                                    ));
-                            bool result =
-                                await Api.instance.sendMessage(message);
-                            RouteUtil.goBack(context: context);
-                            setState(() {
-                              this.message = value;
-                              hasMessage = true;
-                            });
-                            if (result) {
-                              Fluttertoast.showToast(
-                                msg: "Message envoyé",
-                              );
-                            } else {
-                              Fluttertoast.showToast(
-                                msg: "Message non envoyé",
-                              );
-                            }
-                          } else {
-                            setState(() {
-                              hasMessage = false;
-                            });
-                          }
-                        });
-                      },
-                      child: Icon(
-                        Icons.comment,
-                        color: Colors.white,
-                        size: 15,
-                      ),
-                    ),
-                    Visibility(
-                      visible: hasMessage,
-                      child: Positioned(
-                          right: 0,
-                          bottom: 0,
-                          child: Icon(
-                            Icons.brightness_1,
-                            color: Color(0xff62C0AB),
-                            size: 12,
-                          )),
-                    ),
-                  ],
-                )
-              : Container()
+                    if (value.isNotEmpty) {
+                      User user = Provider.of<AuthContext>(
+                        context,
+                        listen: false,
+                      ).currentUser;
+                      Message message = Message(
+                          email: user.email,
+                          message: value,
+                          name: "${user.name.first} ${user.name.last}",
+                          phoneNumber: user.phoneNumber,
+                          read: false,
+                          target: widget.commande.restaurant.admin);
+                      showDialog(
+                          barrierDismissible: false,
+                          context: context,
+                          builder: (_) => Center(
+                                child: CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    CRIMSON,
+                                  ),
+                                ),
+                              ));
+                      bool result = await Api.instance.sendMessage(message);
+
+                      RouteUtil.goBack(context: context);
+                      setState(() {
+                        this.message = value;
+                        hasMessage = true;
+                      });
+                      if (result) {
+                        Fluttertoast.showToast(
+                          msg: "Message envoyé",
+                        );
+                      } else {
+                        Fluttertoast.showToast(
+                          msg: "Message non envoyé",
+                        );
+                      }
+                    } else {
+                      setState(() {
+                        hasMessage = false;
+                      });
+                    }
+                  });
+                },
+                child: Icon(
+                  Icons.comment,
+                  color: Colors.white,
+                  size: 15,
+                ),
+              ),
+              Visibility(
+                visible: hasMessage,
+                child: Positioned(
+                    right: 0,
+                    bottom: 0,
+                    child: Icon(
+                      Icons.brightness_1,
+                      color: Color(0xff62C0AB),
+                      size: 12,
+                    )),
+              ),
+            ],
+          ),
         ],
       ),
     );
